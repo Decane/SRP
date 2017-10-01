@@ -1,0 +1,70 @@
+[logic]
+active					= walker
+relation				= enemy
+sympathy				= 0
+on_hit					= hit
+on_death				= death
+;meet					= meet
+
+[walker]
+path_walk				= esc_voditel_walk
+path_look				= esc_voditel_look
+combat_ignore_cond			= true
+combat_ignore_keep_when_attacked	= true
+on_actor_dist_le_nvis			= 3 | {-esc_voditel_talked} remark
+;on_info				= {=actor_in_zone(esc_voditel_restrictor) -esc_voditel_talked} remark
+on_info					= {+esc_driver_fight} walker@think
+on_info2				= {+esc_actor_kill_driver} %=kill_npc%
+meet					= meet
+
+[remark]
+anim					= wait
+target					= actor
+combat_ignore_cond			= true
+combat_ignore_keep_when_attacked	= true
+on_actor_dist_ge_nvis			= 3 | walker
+;on_info				= {!actor_in_zone(esc_voditel_restrictor)} walker
+on_info					= {+esc_driver_fight} walker@think
+on_info2				= {+esc_actor_kill_driver} %=kill_npc%
+meet					= meet@a
+
+[walker@think]
+path_walk				= esc_voditel_walk
+path_look				= esc_voditel_look
+combat_ignore_cond			= true
+combat_ignore_keep_when_attacked	= true
+on_game_timer				= 20 | walker@fight
+on_info					= {+esc_actor_kill_driver} %=kill_npc%
+meet					= no_meet
+
+[walker@fight]
+path_walk				= esc_voditel_walk
+path_look				= esc_voditel_look
+on_info					= {+esc_actor_kill_driver} %=kill_npc%
+meet					= no_meet
+
+[hit]
+on_info					= %+esc_actor_kill_driver%
+
+[death]
+on_info					= %+esc_driver_dead%
+
+[meet]
+meet_state				= 30 | wait@nil
+meet_state_wpn				= 30 | wait@esc_driver_treat
+victim					= 30 | actor
+victim_wpn				= 30 | actor
+use					= true
+use_wpn					= true
+abuse					= false
+trade_enable				= false
+
+[meet@a]
+meet_state				= 30 | wait@nil
+meet_state_wpn				= 30 | hands_up@esc_driver_treat
+victim					= 30 | actor
+victim_wpn				= 30 | actor
+use					= true
+use_wpn					= true
+abuse					= false
+trade_enable				= false

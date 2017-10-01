@@ -1,0 +1,104 @@
+crow_storage = {}
+crow_counter = 0
+
+function bind(obj)
+	obj:bind_object(crow_binder(obj))
+end
+
+--------------------------------------------------------------------------------
+-- Class "crow_binder"
+--------------------------------------------------------------------------------
+
+class "crow_binder" (object_binder)
+
+function crow_binder:__init(obj) super(obj)
+	self.death_time = nil
+end
+
+function crow_binder:reload(section)
+	object_binder.reload(self, section)
+end
+
+function crow_binder:reinit()
+	object_binder.reinit(self)
+	local t = {}
+	db.storage[self.object:id()] = t
+	self.st = t
+end
+
+function crow_binder:update(delta)
+	object_binder.update(self, delta)
+	local sobj = self.object
+	local death_time = self.death_time
+	if death_time ~= nil then
+		if game.get_game_time():diffSec(death_time) >= 1200 then	-- 10 * 120 seconds = 1200 game-seconds
+			local sim = alife()
+			sim:release(sim:object(sobj:id()), true)
+		end
+	end
+end
+
+function crow_binder:net_spawn(sobject)
+	if not object_binder.net_spawn(self, sobject) then
+		return false
+	end
+	local sobj = self.object
+	if not sobj:alive() then
+		local sim = alife()
+		sim:release(sim:object(sobj:id()), true)
+		return true
+	end
+	db.add_obj(sobj)
+--	crow_storage[#crow_storage + 1] = sobj
+	crow_storage[sobj:id()] = sobj
+	crow_counter = crow_counter + 1
+	sobj:set_callback(callback.death, self.death_callback, self)
+--	dbglog("net_spawn() called on crow: number of crows = "..crow_counter)
+	return true
+end
+
+function crow_binder:net_destroy()
+	local sobj = self.object
+	sobj:set_callback(callback.death, nil)
+	db.del_obj(sobj)
+	object_binder.net_destroy(self)
+end
+
+function crow_binder:death_callback(victim, who)
+	self.death_time = game.get_game_time()
+	local sobj_id = self.object:id()
+--[[
+	for k, v in pairs (crow_storage) do
+		if v:id() == sobj_id then
+			table.remove(crow_storage, k)
+			crow_counter = crow_counter - 1
+			break
+		end
+	end
+]]
+	if crow_storage[sobj_id] ~= nil then
+		crow_storage[sobj_id] = nil
+		crow_counter = crow_counter - 1
+	end
+	minigames_manager.get_minigames_manager():increase_killed_crow_counter()
+end
+
+function crow_binder:net_save_relevant()
+	return true
+end
+
+function crow_binder:save(package)
+	set_save_marker(package, "save", false, "crow_binder")
+	object_binder.save(self, package)
+	xr_logic.save_obj(self.object, package)
+	utils.w_CTime(package, self.death_time)
+	set_save_marker(package, "save", true, "crow_binder")
+end
+
+function crow_binder:load(reader)
+	set_save_marker(reader, "load", false, "crow_binder")
+	object_binder.load(self, reader)
+	xr_logic.load_obj(self.object, reader)
+	self.death_time = utils.r_CTime(reader)
+	set_save_marker(reader, "load", true, "crow_binder")
+end

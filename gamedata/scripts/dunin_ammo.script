@@ -1,0 +1,96 @@
+local ammo_data_table = {}
+local repack_needed = false
+
+local function get_ammo_count(ammo_id, sim)
+	local packet = net_packet()
+	local se_obj = sim:object(ammo_id)
+	packet:w_begin(0)
+	se_obj:STATE_Write(packet)
+	packet:r_seek(packet:w_tell() - 2)
+	return packet:r_s16()
+end
+
+local function repack_ammo(section, box_size, sim, who)
+
+	local release_table = {}
+	local ammo_to_repack = 0
+	local boxes_to_repack = 0
+
+	for i = 0, who:object_count() - 1 do
+		local obj = who:object(i)
+		if obj:section() == section then
+			local ammo_id = obj:id()
+			local ammo_count = get_ammo_count(ammo_id, sim)
+			if ammo_count ~= box_size then
+				boxes_to_repack = boxes_to_repack + 1
+				ammo_to_repack = ammo_to_repack + ammo_count
+				release_table[ammo_id] = true
+			end
+		end
+	end
+
+	if ammo_to_repack > 0 then
+		if boxes_to_repack > 1 then
+
+			for ammo_id in pairs (release_table) do
+				sim:release(sim:object(ammo_id), true)
+			end
+
+			local vec = vector()
+			local pid = who:id()
+
+			while ammo_to_repack >= box_size do
+				ammo_to_repack = ammo_to_repack - box_size
+				sim:create_ammo(section, vec, 0, 0, pid, box_size)
+			end
+
+			if ammo_to_repack > 0 then
+				sim:create_ammo(section, vec, 0, 0, pid, ammo_to_repack)
+			end
+		end
+	end
+end
+
+function on_update(who)
+	if repack_needed then
+		local sim = alife()
+		for section, ammo_data in pairs (ammo_data_table) do
+			if ammo_data.repack_needed then
+				repack_ammo(section, ammo_data.box_size, sim, who)
+				ammo_data.repack_needed = false
+			end
+		end
+		repack_needed = false
+	end
+end
+
+function on_take(ammo)
+
+	local section = ammo:section()
+
+	if section == nil then
+		dbglog("[dunin_ammo.on_take]: No ammo section defined for '%s'.", ammo:name())
+		dbgmsg("[dunin_ammo.on_take]: No ammo section defined for '%s'.", ammo:name())
+		return
+	end
+
+	local ammo_data = ammo_data_table[section]
+
+	if not ammo_data then
+		ammo_data = {}
+		ammo_data.box_size = system_ini():r_u32(section, "box_size")
+		ammo_data_table[section] = ammo_data
+	end
+
+	local box_size = ammo_data.box_size
+
+	if box_size > 1 then
+		if not ammo_data.repack_needed then
+			local sim = alife()
+			if box_size > get_ammo_count(ammo:id(), sim) then
+				ammo_data.repack_needed = true
+				repack_needed = true
+			end
+		end
+	end
+end

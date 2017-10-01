@@ -1,0 +1,87 @@
+[logic]
+active = sr_idle@spawn
+
+[sr_idle@spawn]
+on_info = sr_idle@check_actor %=create_squad(lim_allyes_recon_squad:lim_smart_terrain_10)%
+
+[sr_idle@check_actor]
+on_info = {=actor_in_zone(lim_construction_passed_restr)} sr_idle@hello3 %+lim_final_scene_begin%
+
+[sr_idle@hello3]
+on_info = {+lim_recon_squad_go_1} sr_idle@spawn2 %=play_sound(lim_cs_reconnaissance_squad_to_actor:csky:st_ui_pda_legend_squad)%
+
+[sr_idle@spawn2]
+on_info = {+lim_electro_fence_off} sr_idle@cs_spawner %=create_squad(lim_allyes_final_squad2:lim_smart_terrain_10) =create_squad(lim_allyes_final_squad3:lim_smart_terrain_10)%
+
+[sr_idle@cs_spawner]
+on_info = {+lim_final_squad_destroy} sr_idle@spawn3 %=remove_squad(lim_allyes_recon_squad)%
+on_info2 = {+stc_final_movie} sr_idle@freeplay_freedom %=clear_smart_terrain(lim_smart_terrain_2)%
+
+[sr_idle@spawn3]
+on_game_timer = 300 | {-stc_final_movie !squad_exist(lim_allyes_final_squad)} sr_idle@freeplay_start %=create_squad(lim_allyes_final_squad:lim_smart_terrain_10)%
+on_info = {+stc_final_movie} sr_idle@freeplay_freedom %=clear_smart_terrain(lim_smart_terrain_2)%
+
+;-----------------------------------------
+; Freeplay
+;-----------------------------------------
+
+[sr_idle@freeplay_start]
+on_info = {+stc_final_movie} sr_idle@freeplay_freedom %=clear_smart_terrain(lim_smart_terrain_2)%
+
+; Freedom:
+
+[sr_idle@freeplay_freedom]
+on_info = sr_idle@freeplay_duty %=create_squad(lim_freeplay_2_freedom_1:lim_smart_terrain_2) =create_squad(lim_freeplay_2_freedom_2:lim_smart_terrain_2) =clear_smart_terrain(lim_smart_terrain_4) =clear_smart_terrain(lim_smart_terrain_5)%
+
+; Duty:
+
+[sr_idle@freeplay_duty]
+on_info = sr_idle@freeplay_monolith %=create_squad(lim_freeplay_4_duty:lim_smart_terrain_4) =create_squad(lim_freeplay_5_duty:lim_smart_terrain_5) =clear_smart_terrain(lim_smart_terrain_6) =clear_smart_terrain(lim_smart_terrain_7)%
+
+; Monolith:
+
+[sr_idle@freeplay_monolith]
+on_info = sr_idle@freeplay_mutant_help %=create_squad(lim_freeplay_6_monolith:lim_smart_terrain_6) =create_squad(lim_freeplay_7_monolith_1:lim_smart_terrain_7) =create_squad(lim_freeplay_7_monolith_2:lim_smart_terrain_7) =clear_smart_terrain(lim_smart_terrain_help_smart)%
+
+; Mutants:
+
+[sr_idle@freeplay_mutant_help]
+on_info = {~33} sr_idle@freeplay_mutant_10 %=create_squad(lim_freeplay_help_bloodsuckers:lim_smart_terrain_help_smart) =clear_smart_terrain(lim_smart_terrain_10)%, {~66} sr_idle@freeplay_mutant_10 %=create_squad(lim_freeplay_help_controller:lim_smart_terrain_help_smart) =clear_smart_terrain(lim_smart_terrain_10)%, sr_idle@freeplay_mutant_10 %=create_squad(lim_freeplay_help_poltergeists:lim_smart_terrain_help_smart) =clear_smart_terrain(lim_smart_terrain_10)%
+
+[sr_idle@freeplay_mutant_10]
+on_info = {~33} sr_idle@cooldown %=create_squad(lim_freeplay_10_bloodsuckers:lim_smart_terrain_10)%, {~66} sr_idle@cooldown %=create_squad(lim_freeplay_10_controller:lim_smart_terrain_10)%, sr_idle@cooldown %=create_squad(lim_freeplay_10_poltergeists:lim_smart_terrain_10)%
+
+; Respawn:
+
+[sr_idle@cooldown]
+on_game_timer = 300 | sr_idle@respawn
+
+[sr_idle@check_delay]
+on_game_timer = 600 | sr_idle@respawn
+
+[sr_idle@respawn]
+on_info = {!squad_exist(lim_freeplay_help_bloodsuckers) !squad_exist(lim_freeplay_help_controller) !squad_exist(lim_freeplay_help_poltergeists) !is_smart_captured(lim_smart_terrain_help_smart) !actor_dist_to_zone_le(lim_bandit_ambush:150)} sr_idle@mutant_help_respawn
+on_info2 = {!squad_exist(lim_freeplay_10_bloodsuckers) !squad_exist(lim_freeplay_10_controller) !squad_exist(lim_freeplay_10_poltergeists) !is_smart_captured(lim_smart_terrain_10) !actor_dist_to_zone_le(lim_construction_passed_restr:150)} sr_idle@mutant_10_respawn
+on_info3 = {!squad_exist(lim_freeplay_4_duty) !squad_exist(lim_freeplay_5_duty) !squad_exist(lim_freeplay_1_to_6_respawn_duty) !is_smart_captured(lim_smart_terrain_1) !actor_dist_to_zone_le(lim_bandit_ambush:150)} sr_idle@duty_respawn
+on_info4 = {!squad_exist(lim_freeplay_2_freedom_1) !squad_exist(lim_freeplay_2_freedom_2) !squad_exist(lim_freeplay_2_to_6_respawn_freedom) !is_smart_captured(lim_smart_terrain_2) !actor_dist_to_zone_le(lim_bandit_ambush:150)} sr_idle@freedom_respawn
+on_info5 = {!squad_exist(lim_freeplay_7_monolith_1) !is_smart_captured(lim_smart_terrain_7) !actor_dist_to_zone_le(lim_military_minigun_reversed_restr:200)} sr_idle@monolith_respawn_1
+on_info6 = {!squad_exist(lim_freeplay_7_monolith_2) !is_smart_captured(lim_smart_terrain_7) !actor_dist_to_zone_le(lim_military_minigun_reversed_restr:200)} sr_idle@monolith_respawn_2
+on_info7 = sr_idle@check_delay
+
+[sr_idle@mutant_help_respawn]
+on_info = {~33} sr_idle@cooldown %=create_squad(lim_freeplay_help_bloodsuckers:lim_smart_terrain_help_smart)%, {~66} sr_idle@cooldown %=create_squad(lim_freeplay_help_controller:lim_smart_terrain_help_smart)%, sr_idle@cooldown %=create_squad(lim_freeplay_help_poltergeists:lim_smart_terrain_help_smart)%
+
+[sr_idle@mutant_10_respawn]
+on_info = {~33} sr_idle@cooldown %=create_squad(lim_freeplay_10_bloodsuckers:lim_smart_terrain_10)%, {~66} sr_idle@cooldown %=create_squad(lim_freeplay_10_controller:lim_smart_terrain_10)%, sr_idle@cooldown %=create_squad(lim_freeplay_10_poltergeists:lim_smart_terrain_10)%
+
+[sr_idle@duty_respawn]
+on_info = sr_idle@cooldown %=create_squad(lim_freeplay_1_to_6_respawn_duty:lim_smart_terrain_1)%
+
+[sr_idle@freedom_respawn]
+on_info = sr_idle@cooldown %=create_squad(lim_freeplay_2_to_6_respawn_freedom:lim_smart_terrain_2)%
+
+[sr_idle@monolith_respawn_1]
+on_info = sr_idle@cooldown %=create_squad(lim_freeplay_7_monolith_1:lim_smart_terrain_7)%
+
+[sr_idle@monolith_respawn_2]
+on_info = sr_idle@cooldown %=create_squad(lim_freeplay_7_monolith_2:lim_smart_terrain_7)%

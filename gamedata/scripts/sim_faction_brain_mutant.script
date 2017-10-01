@@ -1,0 +1,136 @@
+class "faction_brain_mutant"
+
+function faction_brain_mutant:__init(faction)
+	self.faction = faction
+	self.human = false	
+	self.use_issue_order = false
+	self.use_cover_attack = false
+	if self.faction.player_name == "monster" then
+		self.use_delay_attack = true
+		self.use_prepare_phase = false		
+	else
+		self.use_delay_attack = false
+		self.use_prepare_phase = true
+	end
+	self.use_counter_attack = false
+end
+
+function faction_brain_mutant:calculate_current_expansion()
+
+	local faction = self.faction
+	local cur_exp = faction.current_expansion_level
+
+	if cur_exp == 0 then
+		cur_exp = 1
+	end
+
+	local exp_dec, exp_level, act, cond_invalid
+	= false, faction.expansion_level, db.actor
+
+	for i = 1, (cur_exp - 1) do
+		cond_invalid = xr_logic.pick_section_from_condlist(act, self, exp_level[i].precondition_cond) ~= "true"
+		if cond_invalid then
+			cur_exp = i
+			exp_dec = true
+			break
+		end
+	end
+
+	if exp_dec ~= true then
+		if cur_exp < #exp_level then
+			local cond_valid = xr_logic.pick_section_from_condlist(act, self, exp_level[cur_exp].precondition_cond) == "true"
+			if cond_valid then
+				cur_exp = cur_exp + 1
+			end
+		end
+	end
+
+	faction.current_expansion_level = cur_exp
+--[[
+	for k, expansion in pairs(faction.expansion_level) do
+		if faction.current_expansion_level > k then
+			local cond_valid = xr_logic.pick_section_from_condlist(db.actor, self, expansion.precondition_cond) == "true"
+			if not cond_valid then
+				faction.current_expansion_level = k
+				break
+			end
+		elseif faction.current_expansion_level == k then
+			local cond_valid = xr_logic.pick_section_from_condlist(db.actor, self, expansion.precondition_cond) == "true"
+			if not cond_valid then
+				break
+			end
+		else
+			faction.current_expansion_level = k
+			break
+		end
+	end
+]]
+	self:calculate_expansion_targets()
+end
+
+function faction_brain_mutant:calculate_expansion_targets()
+
+	local faction = self.faction
+	faction.target_smart_value = {}
+
+	if faction.current_expansion_level == 0 then
+		return
+	end
+
+--	if level.name() ~= nil then
+--		if (level.get_time_hours() >= 5 and level.get_time_hours() < 21) then
+--			self:register_day_point()
+--		else
+			self:register_night_point()
+--		end
+--	end
+
+	faction:calculate_total_squads()
+	faction:calculate_squad_tasks()
+end
+
+function faction_brain_mutant:register_night_point()
+	local faction = self.faction
+	for k, v in pairs (faction.board.smarts) do
+		local smart_obj = v.smrt
+		local point_faction = smart_obj.player_name
+		if point_faction ~= "none" then
+--			if faction.board.players[point_faction].brain.human == true then
+			if game_relations.is_factions_enemies(faction.player_name, point_faction) then
+				self:register_target_point(smart_obj)
+			end
+		end
+	end
+end
+--[[
+function faction_brain_mutant:register_day_point()
+	local faction = self.faction
+	for k in pairs (faction.board.mutant_lair) do
+		self:register_target_point(faction.board.smarts[k].smrt)	
+	end
+end
+]]
+function faction_brain_mutant:register_target_point(smart_obj)
+
+	local faction = self.faction
+	local faction_name = faction.player_name
+
+	if not sim_board.is_point_avail(smart_obj, faction_name) then
+		return
+	end
+
+	local point_capacity, point_faction = smart_obj.squad_capacity, smart_obj.player_name
+
+	if point_faction == faction_name or point_faction == "none" then
+		if smart_obj.respawn_sector ~= nil then
+			point_capacity = point_capacity - 1
+		end
+	end
+
+	local smrt_id = smart_obj.id
+	faction.target_smart_value[smrt_id] = {	smart = smart_obj,
+						cap = 2 * point_capacity,
+						num = 0,
+--						smart_name = smart_obj:name(),
+						smart_id = smrt_id		}
+end

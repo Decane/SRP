@@ -1,0 +1,443 @@
+; Decane 17.03.2013: Re-wrote script.
+;        27.07.2013: Added checks to force section switch at regular intervals in case one gets stuck.
+;	 12.11.2014: Minimized performance hit when player is not in bunker.
+
+[logic]
+active = mob_trader@new_idle1
+trade = misc\trade\trade_trader_esc.ltx
+level_spot = trader
+
+;---------------- Meet
+
+[mob_trader@hello_first]
+anim_global = hello
+anim_head = normal
+sound_phrase = trader_greet_first
+on_signal = animation_end | mob_trader@new_idle2
+on_game_timer = 70 | mob_trader@new_idle2
+
+[mob_trader@new_hello]
+anim_global = hello
+anim_head = normal
+sound_phrase = trader_hello_what_have_you_got
+on_signal = animation_end | mob_trader@new_idle2
+on_game_timer = 70 | mob_trader@new_idle2
+
+[mob_trader@hello_search]
+anim_global = hello
+anim_head = normal
+sound_phrase = trader_wait_habar_greet
+on_signal = animation_end | mob_trader@new_idle2
+on_game_timer = 70 | mob_trader@new_idle2
+
+[mob_trader@hello_return]
+anim_global = hello
+anim_head = normal
+sound_phrase = trader_greet_habar
+on_signal = animation_end | mob_trader@new_idle2
+on_game_timer = 70 | mob_trader@new_idle2
+
+[mob_trader@new_bye]
+anim_global = hello
+anim_head = normal
+on_signal = animation_end | mob_trader@new_idle2
+on_game_timer = 70 | mob_trader@new_idle2
+
+[mob_trader@bye_search]
+anim_global = hello
+anim_head = normal
+sound_phrase = trader_wait_habar_bye
+on_signal = animation_end | mob_trader@new_idle2
+on_game_timer = 70 | mob_trader@new_idle2
+
+[mob_trader@bye_give_habar]
+anim_global = hello
+anim_head = angry
+sound_phrase = trader_bye_give_habar
+on_signal = animation_end | mob_trader@new_idle2
+on_game_timer = 70 | mob_trader@new_idle2
+
+[mob_trader@bye_garbage]
+anim_global = hello
+anim_head = good
+sound_phrase = trader_bye_garbage
+on_signal = animation_end | mob_trader@new_idle2
+on_game_timer = 70 | mob_trader@new_idle2
+
+;---------------- Active logic
+
+[mob_trader@inactive]
+anim_global = desk_idle
+on_info = {+esc_in_sid_door_zone} mob_trader@new_idle2
+
+[mob_trader@new_idle1]
+anim_global = desk_idle
+on_signal = animation_end | {~25} mob_trader@new_idle1_to_idle3, {~50} mob_trader@new_idle1_to_idle5, {~75} mob_trader@new_idle1_to_idle2, mob_trader@new_idle1_to_idle1
+on_info = {-esc_in_sid_door_zone} mob_trader@inactive
+on_info2 = {!talking !npc_talking +esc_player_sleeps} mob_trader@angry_1 %-esc_player_sleeps%
+on_info3 = {+esc_actor_come_first -esc_trader_hello_first_played} mob_trader@hello_first %+esc_trader_hello_first_played +esc_trader_hello_played%
+on_info4 = {+esc_actor_come_first +esc_trader_hello_first_played -esc_trader_hello_played -esc_actor_inside_traders_dung} mob_trader@new_hello %+esc_trader_hello_played%
+on_info5 = {+esc_actor_come_first -esc_trader_hello_played +esc_actor_inside_traders_dung -esc_take_habar_complete} mob_trader@hello_search %+esc_trader_hello_played%
+on_info6 = {+esc_actor_come_first -esc_trader_hello_played +esc_take_habar_complete -esc_bring_habar_complete} mob_trader@hello_return %+esc_trader_hello_played%
+on_info7 = {+esc_actor_come_first -esc_trader_hello_played +esc_bring_habar_complete} mob_trader@new_hello %+esc_trader_hello_played%
+on_info8 = {-esc_actor_come_first -esc_trader_bye_played -esc_actor_inside_traders_dung} mob_trader@new_bye %+esc_trader_bye_played%
+on_info9 = {-esc_actor_come_first -esc_trader_bye_played +esc_actor_inside_traders_dung -esc_take_habar_complete} mob_trader@bye_search %+esc_trader_bye_played%
+on_info10 = {-esc_actor_come_first -esc_trader_bye_played +esc_take_habar_complete -esc_bring_habar_complete} mob_trader@bye_give_habar %+esc_trader_bye_played%
+on_info11 = {-esc_actor_come_first -esc_trader_bye_garbage_played +esc_bring_habar_complete} mob_trader@bye_garbage %+esc_trader_bye_garbage_played +esc_trader_bye_played%
+on_info12 = {-esc_actor_come_first -esc_trader_bye_played +esc_trader_bye_garbage_played +esc_bring_habar_complete} mob_trader@new_bye %+esc_trader_bye_played%
+on_game_timer = 100 | mob_trader@new_idle1_to_idle3
+
+[mob_trader@new_idle2]
+anim_global = diagonal_idle
+on_signal = animation_end | {~25} mob_trader@new_idle2_to_idle3, {~50} mob_trader@new_idle2_to_idle4, {~75} mob_trader@new_idle2_to_idle1, mob_trader@new_idle2_to_idle2
+on_info = {-esc_in_sid_door_zone} mob_trader@inactive
+on_info2 = {!talking !npc_talking +esc_player_sleeps} mob_trader@angry_2 %-esc_player_sleeps%
+on_info3 = {+esc_actor_come_first -esc_trader_hello_first_played} mob_trader@hello_first %+esc_trader_hello_first_played +esc_trader_hello_played%
+on_info4 = {+esc_actor_come_first +esc_trader_hello_first_played -esc_trader_hello_played -esc_actor_inside_traders_dung} mob_trader@new_hello %+esc_trader_hello_played%
+on_info5 = {+esc_actor_come_first -esc_trader_hello_played +esc_actor_inside_traders_dung -esc_take_habar_complete} mob_trader@hello_search %+esc_trader_hello_played%
+on_info6 = {+esc_actor_come_first -esc_trader_hello_played +esc_take_habar_complete -esc_bring_habar_complete} mob_trader@hello_return %+esc_trader_hello_played%
+on_info7 = {+esc_actor_come_first -esc_trader_hello_played +esc_bring_habar_complete} mob_trader@new_hello %+esc_trader_hello_played%
+on_info8 = {-esc_actor_come_first -esc_trader_bye_played -esc_actor_inside_traders_dung} mob_trader@new_bye %+esc_trader_bye_played%
+on_info9 = {-esc_actor_come_first -esc_trader_bye_played +esc_actor_inside_traders_dung -esc_take_habar_complete} mob_trader@bye_search %+esc_trader_bye_played%
+on_info10 = {-esc_actor_come_first -esc_trader_bye_played +esc_take_habar_complete -esc_bring_habar_complete} mob_trader@bye_give_habar %+esc_trader_bye_played%
+on_info11 = {-esc_actor_come_first -esc_trader_bye_garbage_played +esc_bring_habar_complete} mob_trader@bye_garbage %+esc_trader_bye_garbage_played +esc_trader_bye_played%
+on_info12 = {-esc_actor_come_first -esc_trader_bye_played +esc_trader_bye_garbage_played +esc_bring_habar_complete} mob_trader@new_bye %+esc_trader_bye_played%
+on_game_timer = 100 | mob_trader@new_idle2_to_idle3
+
+[mob_trader@new_idle3]
+anim_global = chair_hack_idle
+on_signal = animation_end | {~30} mob_trader@new_idle3_to_idle2, {~70} mob_trader@new_idle3_to_idle1, mob_trader@new_idle3_to_idle3
+on_info = {-esc_in_sid_door_zone} mob_trader@inactive
+on_info2 = {!talking !npc_talking +esc_player_sleeps} mob_trader@angry_3 %-esc_player_sleeps%
+on_info3 = {+esc_actor_come_first -esc_trader_hello_first_played} mob_trader@hello_first %+esc_trader_hello_first_played +esc_trader_hello_played%
+on_info4 = {+esc_actor_come_first +esc_trader_hello_first_played -esc_trader_hello_played -esc_actor_inside_traders_dung} mob_trader@new_hello %+esc_trader_hello_played%
+on_info5 = {+esc_actor_come_first -esc_trader_hello_played +esc_actor_inside_traders_dung -esc_take_habar_complete} mob_trader@hello_search %+esc_trader_hello_played%
+on_info6 = {+esc_actor_come_first -esc_trader_hello_played +esc_take_habar_complete -esc_bring_habar_complete} mob_trader@hello_return %+esc_trader_hello_played%
+on_info7 = {+esc_actor_come_first -esc_trader_hello_played +esc_bring_habar_complete} mob_trader@new_hello %+esc_trader_hello_played%
+on_info8 = {-esc_actor_come_first -esc_trader_bye_played -esc_actor_inside_traders_dung} mob_trader@new_bye %+esc_trader_bye_played%
+on_info9 = {-esc_actor_come_first -esc_trader_bye_played +esc_actor_inside_traders_dung -esc_take_habar_complete} mob_trader@bye_search %+esc_trader_bye_played%
+on_info10 = {-esc_actor_come_first -esc_trader_bye_played +esc_take_habar_complete -esc_bring_habar_complete} mob_trader@bye_give_habar %+esc_trader_bye_played%
+on_info11 = {-esc_actor_come_first -esc_trader_bye_garbage_played +esc_bring_habar_complete} mob_trader@bye_garbage %+esc_trader_bye_garbage_played +esc_trader_bye_played%
+on_info12 = {-esc_actor_come_first -esc_trader_bye_played +esc_trader_bye_garbage_played +esc_bring_habar_complete} mob_trader@new_bye %+esc_trader_bye_played%
+on_game_timer = 100 | mob_trader@new_idle3_to_idle2
+
+[mob_trader@new_idle4]
+anim_global = compute_idle
+on_signal = animation_end | {~40} mob_trader@new_idle4_to_idle2, mob_trader@new_idle4_to_idle4
+on_info = {-esc_in_sid_door_zone} mob_trader@inactive
+on_info2 = {!talking !npc_talking +esc_player_sleeps} mob_trader@angry_4 %-esc_player_sleeps%
+on_info3 = {+esc_actor_come_first -esc_trader_hello_first_played} mob_trader@hello_first %+esc_trader_hello_first_played +esc_trader_hello_played%
+on_info4 = {+esc_actor_come_first +esc_trader_hello_first_played -esc_trader_hello_played -esc_actor_inside_traders_dung} mob_trader@new_hello %+esc_trader_hello_played%
+on_info5 = {+esc_actor_come_first -esc_trader_hello_played +esc_actor_inside_traders_dung -esc_take_habar_complete} mob_trader@hello_search %+esc_trader_hello_played%
+on_info6 = {+esc_actor_come_first -esc_trader_hello_played +esc_take_habar_complete -esc_bring_habar_complete} mob_trader@hello_return %+esc_trader_hello_played%
+on_info7 = {+esc_actor_come_first -esc_trader_hello_played +esc_bring_habar_complete} mob_trader@new_hello %+esc_trader_hello_played%
+on_info8 = {-esc_actor_come_first -esc_trader_bye_played -esc_actor_inside_traders_dung} mob_trader@new_bye %+esc_trader_bye_played%
+on_info9 = {-esc_actor_come_first -esc_trader_bye_played +esc_actor_inside_traders_dung -esc_take_habar_complete} mob_trader@bye_search %+esc_trader_bye_played%
+on_info10 = {-esc_actor_come_first -esc_trader_bye_played +esc_take_habar_complete -esc_bring_habar_complete} mob_trader@bye_give_habar %+esc_trader_bye_played%
+on_info11 = {-esc_actor_come_first -esc_trader_bye_garbage_played +esc_bring_habar_complete} mob_trader@bye_garbage %+esc_trader_bye_garbage_played +esc_trader_bye_played%
+on_info12 = {-esc_actor_come_first -esc_trader_bye_played +esc_trader_bye_garbage_played +esc_bring_habar_complete} mob_trader@new_bye %+esc_trader_bye_played%
+on_game_timer = 100 | mob_trader@new_idle4_to_idle2
+
+[mob_trader@new_idle5]
+anim_global = listen_idle
+on_signal = animation_end | {~45} mob_trader@new_idle5_to_idle1, mob_trader@new_idle5_to_idle5
+on_info = {-esc_in_sid_door_zone} mob_trader@inactive
+on_info2 = {!talking !npc_talking +esc_player_sleeps} mob_trader@angry_5 %-esc_player_sleeps%
+on_info3 = {+esc_actor_come_first -esc_trader_hello_first_played} mob_trader@hello_first %+esc_trader_hello_first_played +esc_trader_hello_played%
+on_info4 = {+esc_actor_come_first +esc_trader_hello_first_played -esc_trader_hello_played -esc_actor_inside_traders_dung} mob_trader@new_hello %+esc_trader_hello_played%
+on_info5 = {+esc_actor_come_first -esc_trader_hello_played +esc_actor_inside_traders_dung -esc_take_habar_complete} mob_trader@hello_search %+esc_trader_hello_played%
+on_info6 = {+esc_actor_come_first -esc_trader_hello_played +esc_take_habar_complete -esc_bring_habar_complete} mob_trader@hello_return %+esc_trader_hello_played%
+on_info7 = {+esc_actor_come_first -esc_trader_hello_played +esc_bring_habar_complete} mob_trader@new_hello %+esc_trader_hello_played%
+on_info8 = {-esc_actor_come_first -esc_trader_bye_played -esc_actor_inside_traders_dung} mob_trader@new_bye %+esc_trader_bye_played%
+on_info9 = {-esc_actor_come_first -esc_trader_bye_played +esc_actor_inside_traders_dung -esc_take_habar_complete} mob_trader@bye_search %+esc_trader_bye_played%
+on_info10 = {-esc_actor_come_first -esc_trader_bye_played +esc_take_habar_complete -esc_bring_habar_complete} mob_trader@bye_give_habar %+esc_trader_bye_played%
+on_info11 = {-esc_actor_come_first -esc_trader_bye_garbage_played +esc_bring_habar_complete} mob_trader@bye_garbage %+esc_trader_bye_garbage_played +esc_trader_bye_played%
+on_info12 = {-esc_actor_come_first -esc_trader_bye_played +esc_trader_bye_garbage_played +esc_bring_habar_complete} mob_trader@new_bye %+esc_trader_bye_played%
+on_game_timer = 100 | mob_trader@new_idle5_to_idle1
+
+;---------------- Active transitions
+
+[mob_trader@new_idle1_to_idle1]
+anim_global = desk_idle
+on_signal = animation_end | mob_trader@new_idle1
+on_info = {-esc_in_sid_door_zone} mob_trader@inactive
+on_info2 = {+esc_actor_come_first -esc_trader_hello_first_played} mob_trader@hello_first %+esc_trader_hello_first_played +esc_trader_hello_played%
+on_info3 = {+esc_actor_come_first +esc_trader_hello_first_played -esc_trader_hello_played -esc_actor_inside_traders_dung} mob_trader@new_hello %+esc_trader_hello_played%
+on_info4 = {+esc_actor_come_first -esc_trader_hello_played +esc_actor_inside_traders_dung -esc_take_habar_complete} mob_trader@hello_search %+esc_trader_hello_played%
+on_info5 = {+esc_actor_come_first -esc_trader_hello_played +esc_take_habar_complete -esc_bring_habar_complete} mob_trader@hello_return %+esc_trader_hello_played%
+on_info6 = {+esc_actor_come_first -esc_trader_hello_played +esc_bring_habar_complete} mob_trader@new_hello %+esc_trader_hello_played%
+on_info7 = {-esc_actor_come_first -esc_trader_bye_played -esc_actor_inside_traders_dung} mob_trader@new_bye %+esc_trader_bye_played%
+on_info8 = {-esc_actor_come_first -esc_trader_bye_played +esc_actor_inside_traders_dung -esc_take_habar_complete} mob_trader@bye_search %+esc_trader_bye_played%
+on_info9 = {-esc_actor_come_first -esc_trader_bye_played +esc_take_habar_complete -esc_bring_habar_complete} mob_trader@bye_give_habar %+esc_trader_bye_played%
+on_info10 = {-esc_actor_come_first -esc_trader_bye_garbage_played +esc_bring_habar_complete} mob_trader@bye_garbage %+esc_trader_bye_garbage_played +esc_trader_bye_played%
+on_info11 = {-esc_actor_come_first -esc_trader_bye_played +esc_trader_bye_garbage_played +esc_bring_habar_complete} mob_trader@new_bye %+esc_trader_bye_played%
+on_game_timer = 100 | mob_trader@new_idle1
+
+[mob_trader@new_idle1_to_idle2]
+anim_global = desk_to_diagonal
+on_signal = animation_end | mob_trader@new_idle2
+on_info = {-esc_in_sid_door_zone} mob_trader@inactive
+on_info2 = {+esc_actor_come_first -esc_trader_hello_first_played} mob_trader@hello_first %+esc_trader_hello_first_played +esc_trader_hello_played%
+on_info3 = {+esc_actor_come_first +esc_trader_hello_first_played -esc_trader_hello_played -esc_actor_inside_traders_dung} mob_trader@new_hello %+esc_trader_hello_played%
+on_info4 = {+esc_actor_come_first -esc_trader_hello_played +esc_actor_inside_traders_dung -esc_take_habar_complete} mob_trader@hello_search %+esc_trader_hello_played%
+on_info5 = {+esc_actor_come_first -esc_trader_hello_played +esc_take_habar_complete -esc_bring_habar_complete} mob_trader@hello_return %+esc_trader_hello_played%
+on_info6 = {+esc_actor_come_first -esc_trader_hello_played +esc_bring_habar_complete} mob_trader@new_hello %+esc_trader_hello_played%
+on_info7 = {-esc_actor_come_first -esc_trader_bye_played -esc_actor_inside_traders_dung} mob_trader@new_bye %+esc_trader_bye_played%
+on_info8 = {-esc_actor_come_first -esc_trader_bye_played +esc_actor_inside_traders_dung -esc_take_habar_complete} mob_trader@bye_search %+esc_trader_bye_played%
+on_info9 = {-esc_actor_come_first -esc_trader_bye_played +esc_take_habar_complete -esc_bring_habar_complete} mob_trader@bye_give_habar %+esc_trader_bye_played%
+on_info10 = {-esc_actor_come_first -esc_trader_bye_garbage_played +esc_bring_habar_complete} mob_trader@bye_garbage %+esc_trader_bye_garbage_played +esc_trader_bye_played%
+on_info11 = {-esc_actor_come_first -esc_trader_bye_played +esc_trader_bye_garbage_played +esc_bring_habar_complete} mob_trader@new_bye %+esc_trader_bye_played%
+on_game_timer = 100 | mob_trader@new_idle2
+
+[mob_trader@new_idle1_to_idle3]
+anim_global = desk_to_chair_hack
+on_signal = animation_end | mob_trader@new_idle3
+on_info = {-esc_in_sid_door_zone} mob_trader@inactive
+on_info2 = {+esc_actor_come_first -esc_trader_hello_first_played} mob_trader@hello_first %+esc_trader_hello_first_played +esc_trader_hello_played%
+on_info3 = {+esc_actor_come_first +esc_trader_hello_first_played -esc_trader_hello_played -esc_actor_inside_traders_dung} mob_trader@new_hello %+esc_trader_hello_played%
+on_info4 = {+esc_actor_come_first -esc_trader_hello_played +esc_actor_inside_traders_dung -esc_take_habar_complete} mob_trader@hello_search %+esc_trader_hello_played%
+on_info5 = {+esc_actor_come_first -esc_trader_hello_played +esc_take_habar_complete -esc_bring_habar_complete} mob_trader@hello_return %+esc_trader_hello_played%
+on_info6 = {+esc_actor_come_first -esc_trader_hello_played +esc_bring_habar_complete} mob_trader@new_hello %+esc_trader_hello_played%
+on_info7 = {-esc_actor_come_first -esc_trader_bye_played -esc_actor_inside_traders_dung} mob_trader@new_bye %+esc_trader_bye_played%
+on_info8 = {-esc_actor_come_first -esc_trader_bye_played +esc_actor_inside_traders_dung -esc_take_habar_complete} mob_trader@bye_search %+esc_trader_bye_played%
+on_info9 = {-esc_actor_come_first -esc_trader_bye_played +esc_take_habar_complete -esc_bring_habar_complete} mob_trader@bye_give_habar %+esc_trader_bye_played%
+on_info10 = {-esc_actor_come_first -esc_trader_bye_garbage_played +esc_bring_habar_complete} mob_trader@bye_garbage %+esc_trader_bye_garbage_played +esc_trader_bye_played%
+on_info11 = {-esc_actor_come_first -esc_trader_bye_played +esc_trader_bye_garbage_played +esc_bring_habar_complete} mob_trader@new_bye %+esc_trader_bye_played%
+on_game_timer = 100 | mob_trader@new_idle3
+
+[mob_trader@new_idle1_to_idle5]
+anim_global = desk_to_listen
+on_signal = animation_end | mob_trader@new_idle5
+on_info = {-esc_in_sid_door_zone} mob_trader@inactive
+on_info2 = {+esc_actor_come_first -esc_trader_hello_first_played} mob_trader@hello_first %+esc_trader_hello_first_played +esc_trader_hello_played%
+on_info3 = {+esc_actor_come_first +esc_trader_hello_first_played -esc_trader_hello_played -esc_actor_inside_traders_dung} mob_trader@new_hello %+esc_trader_hello_played%
+on_info4 = {+esc_actor_come_first -esc_trader_hello_played +esc_actor_inside_traders_dung -esc_take_habar_complete} mob_trader@hello_search %+esc_trader_hello_played%
+on_info5 = {+esc_actor_come_first -esc_trader_hello_played +esc_take_habar_complete -esc_bring_habar_complete} mob_trader@hello_return %+esc_trader_hello_played%
+on_info6 = {+esc_actor_come_first -esc_trader_hello_played +esc_bring_habar_complete} mob_trader@new_hello %+esc_trader_hello_played%
+on_info7 = {-esc_actor_come_first -esc_trader_bye_played -esc_actor_inside_traders_dung} mob_trader@new_bye %+esc_trader_bye_played%
+on_info8 = {-esc_actor_come_first -esc_trader_bye_played +esc_actor_inside_traders_dung -esc_take_habar_complete} mob_trader@bye_search %+esc_trader_bye_played%
+on_info9 = {-esc_actor_come_first -esc_trader_bye_played +esc_take_habar_complete -esc_bring_habar_complete} mob_trader@bye_give_habar %+esc_trader_bye_played%
+on_info10 = {-esc_actor_come_first -esc_trader_bye_garbage_played +esc_bring_habar_complete} mob_trader@bye_garbage %+esc_trader_bye_garbage_played +esc_trader_bye_played%
+on_info11 = {-esc_actor_come_first -esc_trader_bye_played +esc_trader_bye_garbage_played +esc_bring_habar_complete} mob_trader@new_bye %+esc_trader_bye_played%
+on_game_timer = 100 | mob_trader@new_idle5
+
+;---
+
+[mob_trader@new_idle2_to_idle1]
+anim_global = diagonal_to_desk
+on_signal = animation_end | mob_trader@new_idle1
+on_info = {-esc_in_sid_door_zone} mob_trader@inactive
+on_info2 = {+esc_actor_come_first -esc_trader_hello_first_played} mob_trader@hello_first %+esc_trader_hello_first_played +esc_trader_hello_played%
+on_info3 = {+esc_actor_come_first +esc_trader_hello_first_played -esc_trader_hello_played -esc_actor_inside_traders_dung} mob_trader@new_hello %+esc_trader_hello_played%
+on_info4 = {+esc_actor_come_first -esc_trader_hello_played +esc_actor_inside_traders_dung -esc_take_habar_complete} mob_trader@hello_search %+esc_trader_hello_played%
+on_info5 = {+esc_actor_come_first -esc_trader_hello_played +esc_take_habar_complete -esc_bring_habar_complete} mob_trader@hello_return %+esc_trader_hello_played%
+on_info6 = {+esc_actor_come_first -esc_trader_hello_played +esc_bring_habar_complete} mob_trader@new_hello %+esc_trader_hello_played%
+on_info7 = {-esc_actor_come_first -esc_trader_bye_played -esc_actor_inside_traders_dung} mob_trader@new_bye %+esc_trader_bye_played%
+on_info8 = {-esc_actor_come_first -esc_trader_bye_played +esc_actor_inside_traders_dung -esc_take_habar_complete} mob_trader@bye_search %+esc_trader_bye_played%
+on_info9 = {-esc_actor_come_first -esc_trader_bye_played +esc_take_habar_complete -esc_bring_habar_complete} mob_trader@bye_give_habar %+esc_trader_bye_played%
+on_info10 = {-esc_actor_come_first -esc_trader_bye_garbage_played +esc_bring_habar_complete} mob_trader@bye_garbage %+esc_trader_bye_garbage_played +esc_trader_bye_played%
+on_info11 = {-esc_actor_come_first -esc_trader_bye_played +esc_trader_bye_garbage_played +esc_bring_habar_complete} mob_trader@new_bye %+esc_trader_bye_played%
+on_game_timer = 100 | mob_trader@new_idle1
+
+[mob_trader@new_idle2_to_idle2]
+anim_global = diagonal_idle
+on_signal = animation_end | mob_trader@new_idle2
+on_info = {-esc_in_sid_door_zone} mob_trader@inactive
+on_info2 = {+esc_actor_come_first -esc_trader_hello_first_played} mob_trader@hello_first %+esc_trader_hello_first_played +esc_trader_hello_played%
+on_info3 = {+esc_actor_come_first +esc_trader_hello_first_played -esc_trader_hello_played -esc_actor_inside_traders_dung} mob_trader@new_hello %+esc_trader_hello_played%
+on_info4 = {+esc_actor_come_first -esc_trader_hello_played +esc_actor_inside_traders_dung -esc_take_habar_complete} mob_trader@hello_search %+esc_trader_hello_played%
+on_info5 = {+esc_actor_come_first -esc_trader_hello_played +esc_take_habar_complete -esc_bring_habar_complete} mob_trader@hello_return %+esc_trader_hello_played%
+on_info6 = {+esc_actor_come_first -esc_trader_hello_played +esc_bring_habar_complete} mob_trader@new_hello %+esc_trader_hello_played%
+on_info7 = {-esc_actor_come_first -esc_trader_bye_played -esc_actor_inside_traders_dung} mob_trader@new_bye %+esc_trader_bye_played%
+on_info8 = {-esc_actor_come_first -esc_trader_bye_played +esc_actor_inside_traders_dung -esc_take_habar_complete} mob_trader@bye_search %+esc_trader_bye_played%
+on_info9 = {-esc_actor_come_first -esc_trader_bye_played +esc_take_habar_complete -esc_bring_habar_complete} mob_trader@bye_give_habar %+esc_trader_bye_played%
+on_info10 = {-esc_actor_come_first -esc_trader_bye_garbage_played +esc_bring_habar_complete} mob_trader@bye_garbage %+esc_trader_bye_garbage_played +esc_trader_bye_played%
+on_info11 = {-esc_actor_come_first -esc_trader_bye_played +esc_trader_bye_garbage_played +esc_bring_habar_complete} mob_trader@new_bye %+esc_trader_bye_played%
+on_game_timer = 100 | mob_trader@new_idle2
+
+[mob_trader@new_idle2_to_idle3]
+anim_global = diagonal_to_chair_hack
+on_signal = animation_end | mob_trader@new_idle3
+on_info = {-esc_in_sid_door_zone} mob_trader@inactive
+on_info2 = {+esc_actor_come_first -esc_trader_hello_first_played} mob_trader@hello_first %+esc_trader_hello_first_played +esc_trader_hello_played%
+on_info3 = {+esc_actor_come_first +esc_trader_hello_first_played -esc_trader_hello_played -esc_actor_inside_traders_dung} mob_trader@new_hello %+esc_trader_hello_played%
+on_info4 = {+esc_actor_come_first -esc_trader_hello_played +esc_actor_inside_traders_dung -esc_take_habar_complete} mob_trader@hello_search %+esc_trader_hello_played%
+on_info5 = {+esc_actor_come_first -esc_trader_hello_played +esc_take_habar_complete -esc_bring_habar_complete} mob_trader@hello_return %+esc_trader_hello_played%
+on_info6 = {+esc_actor_come_first -esc_trader_hello_played +esc_bring_habar_complete} mob_trader@new_hello %+esc_trader_hello_played%
+on_info7 = {-esc_actor_come_first -esc_trader_bye_played -esc_actor_inside_traders_dung} mob_trader@new_bye %+esc_trader_bye_played%
+on_info8 = {-esc_actor_come_first -esc_trader_bye_played +esc_actor_inside_traders_dung -esc_take_habar_complete} mob_trader@bye_search %+esc_trader_bye_played%
+on_info9 = {-esc_actor_come_first -esc_trader_bye_played +esc_take_habar_complete -esc_bring_habar_complete} mob_trader@bye_give_habar %+esc_trader_bye_played%
+on_info10 = {-esc_actor_come_first -esc_trader_bye_garbage_played +esc_bring_habar_complete} mob_trader@bye_garbage %+esc_trader_bye_garbage_played +esc_trader_bye_played%
+on_info11 = {-esc_actor_come_first -esc_trader_bye_played +esc_trader_bye_garbage_played +esc_bring_habar_complete} mob_trader@new_bye %+esc_trader_bye_played%
+on_game_timer = 100 | mob_trader@new_idle3
+
+[mob_trader@new_idle2_to_idle4]
+anim_global = diagonal_to_compute
+on_signal = animation_end | mob_trader@new_idle4
+on_info = {-esc_in_sid_door_zone} mob_trader@inactive
+on_info2 = {+esc_actor_come_first -esc_trader_hello_first_played} mob_trader@hello_first %+esc_trader_hello_first_played +esc_trader_hello_played%
+on_info3 = {+esc_actor_come_first +esc_trader_hello_first_played -esc_trader_hello_played -esc_actor_inside_traders_dung} mob_trader@new_hello %+esc_trader_hello_played%
+on_info4 = {+esc_actor_come_first -esc_trader_hello_played +esc_actor_inside_traders_dung -esc_take_habar_complete} mob_trader@hello_search %+esc_trader_hello_played%
+on_info5 = {+esc_actor_come_first -esc_trader_hello_played +esc_take_habar_complete -esc_bring_habar_complete} mob_trader@hello_return %+esc_trader_hello_played%
+on_info6 = {+esc_actor_come_first -esc_trader_hello_played +esc_bring_habar_complete} mob_trader@new_hello %+esc_trader_hello_played%
+on_info7 = {-esc_actor_come_first -esc_trader_bye_played -esc_actor_inside_traders_dung} mob_trader@new_bye %+esc_trader_bye_played%
+on_info8 = {-esc_actor_come_first -esc_trader_bye_played +esc_actor_inside_traders_dung -esc_take_habar_complete} mob_trader@bye_search %+esc_trader_bye_played%
+on_info9 = {-esc_actor_come_first -esc_trader_bye_played +esc_take_habar_complete -esc_bring_habar_complete} mob_trader@bye_give_habar %+esc_trader_bye_played%
+on_info10 = {-esc_actor_come_first -esc_trader_bye_garbage_played +esc_bring_habar_complete} mob_trader@bye_garbage %+esc_trader_bye_garbage_played +esc_trader_bye_played%
+on_info11 = {-esc_actor_come_first -esc_trader_bye_played +esc_trader_bye_garbage_played +esc_bring_habar_complete} mob_trader@new_bye %+esc_trader_bye_played%
+on_game_timer = 100 | mob_trader@new_idle4
+
+;---
+
+[mob_trader@new_idle3_to_idle1]
+anim_global = chair_hack_to_desk
+on_signal = animation_end | mob_trader@new_idle1
+on_info = {-esc_in_sid_door_zone} mob_trader@inactive
+on_info2 = {+esc_actor_come_first -esc_trader_hello_first_played} mob_trader@hello_first %+esc_trader_hello_first_played +esc_trader_hello_played%
+on_info3 = {+esc_actor_come_first +esc_trader_hello_first_played -esc_trader_hello_played -esc_actor_inside_traders_dung} mob_trader@new_hello %+esc_trader_hello_played%
+on_info4 = {+esc_actor_come_first -esc_trader_hello_played +esc_actor_inside_traders_dung -esc_take_habar_complete} mob_trader@hello_search %+esc_trader_hello_played%
+on_info5 = {+esc_actor_come_first -esc_trader_hello_played +esc_take_habar_complete -esc_bring_habar_complete} mob_trader@hello_return %+esc_trader_hello_played%
+on_info6 = {+esc_actor_come_first -esc_trader_hello_played +esc_bring_habar_complete} mob_trader@new_hello %+esc_trader_hello_played%
+on_info7 = {-esc_actor_come_first -esc_trader_bye_played -esc_actor_inside_traders_dung} mob_trader@new_bye %+esc_trader_bye_played%
+on_info8 = {-esc_actor_come_first -esc_trader_bye_played +esc_actor_inside_traders_dung -esc_take_habar_complete} mob_trader@bye_search %+esc_trader_bye_played%
+on_info9 = {-esc_actor_come_first -esc_trader_bye_played +esc_take_habar_complete -esc_bring_habar_complete} mob_trader@bye_give_habar %+esc_trader_bye_played%
+on_info10 = {-esc_actor_come_first -esc_trader_bye_garbage_played +esc_bring_habar_complete} mob_trader@bye_garbage %+esc_trader_bye_garbage_played +esc_trader_bye_played%
+on_info11 = {-esc_actor_come_first -esc_trader_bye_played +esc_trader_bye_garbage_played +esc_bring_habar_complete} mob_trader@new_bye %+esc_trader_bye_played%
+on_game_timer = 100 | mob_trader@new_idle1
+
+[mob_trader@new_idle3_to_idle2]
+anim_global = chair_hack_to_diagonal
+on_signal = animation_end | mob_trader@new_idle2
+on_info = {-esc_in_sid_door_zone} mob_trader@inactive
+on_info2 = {+esc_actor_come_first -esc_trader_hello_first_played} mob_trader@hello_first %+esc_trader_hello_first_played +esc_trader_hello_played%
+on_info3 = {+esc_actor_come_first +esc_trader_hello_first_played -esc_trader_hello_played -esc_actor_inside_traders_dung} mob_trader@new_hello %+esc_trader_hello_played%
+on_info4 = {+esc_actor_come_first -esc_trader_hello_played +esc_actor_inside_traders_dung -esc_take_habar_complete} mob_trader@hello_search %+esc_trader_hello_played%
+on_info5 = {+esc_actor_come_first -esc_trader_hello_played +esc_take_habar_complete -esc_bring_habar_complete} mob_trader@hello_return %+esc_trader_hello_played%
+on_info6 = {+esc_actor_come_first -esc_trader_hello_played +esc_bring_habar_complete} mob_trader@new_hello %+esc_trader_hello_played%
+on_info7 = {-esc_actor_come_first -esc_trader_bye_played -esc_actor_inside_traders_dung} mob_trader@new_bye %+esc_trader_bye_played%
+on_info8 = {-esc_actor_come_first -esc_trader_bye_played +esc_actor_inside_traders_dung -esc_take_habar_complete} mob_trader@bye_search %+esc_trader_bye_played%
+on_info9 = {-esc_actor_come_first -esc_trader_bye_played +esc_take_habar_complete -esc_bring_habar_complete} mob_trader@bye_give_habar %+esc_trader_bye_played%
+on_info10 = {-esc_actor_come_first -esc_trader_bye_garbage_played +esc_bring_habar_complete} mob_trader@bye_garbage %+esc_trader_bye_garbage_played +esc_trader_bye_played%
+on_info11 = {-esc_actor_come_first -esc_trader_bye_played +esc_trader_bye_garbage_played +esc_bring_habar_complete} mob_trader@new_bye %+esc_trader_bye_played%
+on_game_timer = 100 | mob_trader@new_idle2
+
+[mob_trader@new_idle3_to_idle3]
+anim_global = chair_hack_idle
+on_signal = animation_end | mob_trader@new_idle3
+on_info = {-esc_in_sid_door_zone} mob_trader@inactive
+on_info2 = {+esc_actor_come_first -esc_trader_hello_first_played} mob_trader@hello_first %+esc_trader_hello_first_played +esc_trader_hello_played%
+on_info3 = {+esc_actor_come_first +esc_trader_hello_first_played -esc_trader_hello_played -esc_actor_inside_traders_dung} mob_trader@new_hello %+esc_trader_hello_played%
+on_info4 = {+esc_actor_come_first -esc_trader_hello_played +esc_actor_inside_traders_dung -esc_take_habar_complete} mob_trader@hello_search %+esc_trader_hello_played%
+on_info5 = {+esc_actor_come_first -esc_trader_hello_played +esc_take_habar_complete -esc_bring_habar_complete} mob_trader@hello_return %+esc_trader_hello_played%
+on_info6 = {+esc_actor_come_first -esc_trader_hello_played +esc_bring_habar_complete} mob_trader@new_hello %+esc_trader_hello_played%
+on_info7 = {-esc_actor_come_first -esc_trader_bye_played -esc_actor_inside_traders_dung} mob_trader@new_bye %+esc_trader_bye_played%
+on_info8 = {-esc_actor_come_first -esc_trader_bye_played +esc_actor_inside_traders_dung -esc_take_habar_complete} mob_trader@bye_search %+esc_trader_bye_played%
+on_info9 = {-esc_actor_come_first -esc_trader_bye_played +esc_take_habar_complete -esc_bring_habar_complete} mob_trader@bye_give_habar %+esc_trader_bye_played%
+on_info10 = {-esc_actor_come_first -esc_trader_bye_garbage_played +esc_bring_habar_complete} mob_trader@bye_garbage %+esc_trader_bye_garbage_played +esc_trader_bye_played%
+on_info11 = {-esc_actor_come_first -esc_trader_bye_played +esc_trader_bye_garbage_played +esc_bring_habar_complete} mob_trader@new_bye %+esc_trader_bye_played%
+on_game_timer = 100 | mob_trader@new_idle3
+
+;---
+
+[mob_trader@new_idle4_to_idle2]
+anim_global = compute_idle_to_diagonal
+on_signal = animation_end | mob_trader@new_idle2
+on_info = {-esc_in_sid_door_zone} mob_trader@inactive
+on_info2 = {+esc_actor_come_first -esc_trader_hello_first_played} mob_trader@hello_first %+esc_trader_hello_first_played +esc_trader_hello_played%
+on_info3 = {+esc_actor_come_first +esc_trader_hello_first_played -esc_trader_hello_played -esc_actor_inside_traders_dung} mob_trader@new_hello %+esc_trader_hello_played%
+on_info4 = {+esc_actor_come_first -esc_trader_hello_played +esc_actor_inside_traders_dung -esc_take_habar_complete} mob_trader@hello_search %+esc_trader_hello_played%
+on_info5 = {+esc_actor_come_first -esc_trader_hello_played +esc_take_habar_complete -esc_bring_habar_complete} mob_trader@hello_return %+esc_trader_hello_played%
+on_info6 = {+esc_actor_come_first -esc_trader_hello_played +esc_bring_habar_complete} mob_trader@new_hello %+esc_trader_hello_played%
+on_info7 = {-esc_actor_come_first -esc_trader_bye_played -esc_actor_inside_traders_dung} mob_trader@new_bye %+esc_trader_bye_played%
+on_info8 = {-esc_actor_come_first -esc_trader_bye_played +esc_actor_inside_traders_dung -esc_take_habar_complete} mob_trader@bye_search %+esc_trader_bye_played%
+on_info9 = {-esc_actor_come_first -esc_trader_bye_played +esc_take_habar_complete -esc_bring_habar_complete} mob_trader@bye_give_habar %+esc_trader_bye_played%
+on_info10 = {-esc_actor_come_first -esc_trader_bye_garbage_played +esc_bring_habar_complete} mob_trader@bye_garbage %+esc_trader_bye_garbage_played +esc_trader_bye_played%
+on_info11 = {-esc_actor_come_first -esc_trader_bye_played +esc_trader_bye_garbage_played +esc_bring_habar_complete} mob_trader@new_bye %+esc_trader_bye_played%
+on_game_timer = 100 | mob_trader@new_idle2
+
+[mob_trader@new_idle4_to_idle4]
+anim_global = compute_idle
+on_signal = animation_end | mob_trader@new_idle4
+on_info = {-esc_in_sid_door_zone} mob_trader@inactive
+on_info2 = {+esc_actor_come_first -esc_trader_hello_first_played} mob_trader@hello_first %+esc_trader_hello_first_played +esc_trader_hello_played%
+on_info3 = {+esc_actor_come_first +esc_trader_hello_first_played -esc_trader_hello_played -esc_actor_inside_traders_dung} mob_trader@new_hello %+esc_trader_hello_played%
+on_info4 = {+esc_actor_come_first -esc_trader_hello_played +esc_actor_inside_traders_dung -esc_take_habar_complete} mob_trader@hello_search %+esc_trader_hello_played%
+on_info5 = {+esc_actor_come_first -esc_trader_hello_played +esc_take_habar_complete -esc_bring_habar_complete} mob_trader@hello_return %+esc_trader_hello_played%
+on_info6 = {+esc_actor_come_first -esc_trader_hello_played +esc_bring_habar_complete} mob_trader@new_hello %+esc_trader_hello_played%
+on_info7 = {-esc_actor_come_first -esc_trader_bye_played -esc_actor_inside_traders_dung} mob_trader@new_bye %+esc_trader_bye_played%
+on_info8 = {-esc_actor_come_first -esc_trader_bye_played +esc_actor_inside_traders_dung -esc_take_habar_complete} mob_trader@bye_search %+esc_trader_bye_played%
+on_info9 = {-esc_actor_come_first -esc_trader_bye_played +esc_take_habar_complete -esc_bring_habar_complete} mob_trader@bye_give_habar %+esc_trader_bye_played%
+on_info10 = {-esc_actor_come_first -esc_trader_bye_garbage_played +esc_bring_habar_complete} mob_trader@bye_garbage %+esc_trader_bye_garbage_played +esc_trader_bye_played%
+on_info11 = {-esc_actor_come_first -esc_trader_bye_played +esc_trader_bye_garbage_played +esc_bring_habar_complete} mob_trader@new_bye %+esc_trader_bye_played%
+on_game_timer = 100 | mob_trader@new_idle4
+
+;---
+
+[mob_trader@new_idle5_to_idle1]
+anim_global = listen_to_desk
+on_signal = animation_end | mob_trader@new_idle1
+on_info = {-esc_in_sid_door_zone} mob_trader@inactive
+on_info2 = {+esc_actor_come_first -esc_trader_hello_first_played} mob_trader@hello_first %+esc_trader_hello_first_played +esc_trader_hello_played%
+on_info3 = {+esc_actor_come_first +esc_trader_hello_first_played -esc_trader_hello_played -esc_actor_inside_traders_dung} mob_trader@new_hello %+esc_trader_hello_played%
+on_info4 = {+esc_actor_come_first -esc_trader_hello_played +esc_actor_inside_traders_dung -esc_take_habar_complete} mob_trader@hello_search %+esc_trader_hello_played%
+on_info5 = {+esc_actor_come_first -esc_trader_hello_played +esc_take_habar_complete -esc_bring_habar_complete} mob_trader@hello_return %+esc_trader_hello_played%
+on_info6 = {+esc_actor_come_first -esc_trader_hello_played +esc_bring_habar_complete} mob_trader@new_hello %+esc_trader_hello_played%
+on_info7 = {-esc_actor_come_first -esc_trader_bye_played -esc_actor_inside_traders_dung} mob_trader@new_bye %+esc_trader_bye_played%
+on_info8 = {-esc_actor_come_first -esc_trader_bye_played +esc_actor_inside_traders_dung -esc_take_habar_complete} mob_trader@bye_search %+esc_trader_bye_played%
+on_info9 = {-esc_actor_come_first -esc_trader_bye_played +esc_take_habar_complete -esc_bring_habar_complete} mob_trader@bye_give_habar %+esc_trader_bye_played%
+on_info10 = {-esc_actor_come_first -esc_trader_bye_garbage_played +esc_bring_habar_complete} mob_trader@bye_garbage %+esc_trader_bye_garbage_played +esc_trader_bye_played%
+on_info11 = {-esc_actor_come_first -esc_trader_bye_played +esc_trader_bye_garbage_played +esc_bring_habar_complete} mob_trader@new_bye %+esc_trader_bye_played%
+on_game_timer = 100 | mob_trader@new_idle1
+
+[mob_trader@new_idle5_to_idle5]
+anim_global = listen_idle
+on_signal = animation_end | mob_trader@new_idle5
+on_info = {-esc_in_sid_door_zone} mob_trader@inactive
+on_info2 = {+esc_actor_come_first -esc_trader_hello_first_played} mob_trader@hello_first %+esc_trader_hello_first_played +esc_trader_hello_played%
+on_info3 = {+esc_actor_come_first +esc_trader_hello_first_played -esc_trader_hello_played -esc_actor_inside_traders_dung} mob_trader@new_hello %+esc_trader_hello_played%
+on_info4 = {+esc_actor_come_first -esc_trader_hello_played +esc_actor_inside_traders_dung -esc_take_habar_complete} mob_trader@hello_search %+esc_trader_hello_played%
+on_info5 = {+esc_actor_come_first -esc_trader_hello_played +esc_take_habar_complete -esc_bring_habar_complete} mob_trader@hello_return %+esc_trader_hello_played%
+on_info6 = {+esc_actor_come_first -esc_trader_hello_played +esc_bring_habar_complete} mob_trader@new_hello %+esc_trader_hello_played%
+on_info7 = {-esc_actor_come_first -esc_trader_bye_played -esc_actor_inside_traders_dung} mob_trader@new_bye %+esc_trader_bye_played%
+on_info8 = {-esc_actor_come_first -esc_trader_bye_played +esc_actor_inside_traders_dung -esc_take_habar_complete} mob_trader@bye_search %+esc_trader_bye_played%
+on_info9 = {-esc_actor_come_first -esc_trader_bye_played +esc_take_habar_complete -esc_bring_habar_complete} mob_trader@bye_give_habar %+esc_trader_bye_played%
+on_info10 = {-esc_actor_come_first -esc_trader_bye_garbage_played +esc_bring_habar_complete} mob_trader@bye_garbage %+esc_trader_bye_garbage_played +esc_trader_bye_played%
+on_info11 = {-esc_actor_come_first -esc_trader_bye_played +esc_trader_bye_garbage_played +esc_bring_habar_complete} mob_trader@new_bye %+esc_trader_bye_played%
+on_game_timer = 100 | mob_trader@new_idle5
+
+;---------------- Wait logic
+
+[mob_trader@angry_1]
+anim_global = desk_idle
+anim_head = angry
+sound_phrase = trader_wait
+on_signal = sound_phrase_end | {~25} mob_trader@new_idle1_to_idle3, {~50} mob_trader@new_idle1_to_idle5, {~75} mob_trader@new_idle1_to_idle2, mob_trader@new_idle1_to_idle1
+on_game_timer = 50 | mob_trader@new_idle1_to_idle3
+
+[mob_trader@angry_2]
+anim_global = diagonal_idle
+anim_head = angry
+sound_phrase = trader_wait
+on_signal = sound_phrase_end | {~25} mob_trader@new_idle2_to_idle3, {~50} mob_trader@new_idle2_to_idle4, {~75} mob_trader@new_idle2_to_idle1, mob_trader@new_idle2_to_idle2
+on_game_timer = 50 | mob_trader@new_idle2_to_idle3
+
+[mob_trader@angry_3]
+anim_global = chair_hack_idle
+anim_head = angry
+sound_phrase = trader_wait
+on_signal = sound_phrase_end | {~30} mob_trader@new_idle3_to_idle2, {~70} mob_trader@new_idle3_to_idle1, mob_trader@new_idle3_to_idle3
+on_game_timer = 50 | mob_trader@new_idle3_to_idle2
+
+[mob_trader@angry_4]
+anim_global = compute_idle
+anim_head = angry
+sound_phrase = trader_wait
+on_signal = sound_phrase_end | {~40} mob_trader@new_idle4_to_idle2, mob_trader@new_idle4_to_idle4
+on_game_timer = 50 | mob_trader@new_idle4_to_idle2
+
+[mob_trader@angry_5]
+anim_global = listen_idle
+anim_head = angry
+sound_phrase = trader_wait
+on_signal = sound_phrase_end | {~45} mob_trader@new_idle5_to_idle1, mob_trader@new_idle5_to_idle5
+on_game_timer = 50 | mob_trader@new_idle5_to_idle1

@@ -1,0 +1,86 @@
+[mounted_weapon]
+GroupControlSection			= spawn_group
+class					= W_MOUNTD
+$spawn					= "weapons\mounted_weapon"
+cform					= skeleton
+visual					= dynamics\weapons\wpn_mounted\wpn_mounted_pkm_trenoga.ogf
+
+;-------------------------------------------------------------------------------
+
+fire_dispersion_base			= 0.12
+
+cam_relax_speed				= 5
+cam_dispersion				= 0.2
+cam_max_angle				= 8
+cam_max_angle_horz			= 9
+cam_step_angle_horz			= 1.8
+
+fire_dispersion_condition_factor	= 5
+misfire_probability			= 0.0001
+condition_shot_dec			= 0.00003
+
+;-------------------------------------------------------------------------------
+
+hit_power				= 0
+hit_impulse				= 1
+hit_type				= fire_wound
+
+fire_distance				= 1000
+bullet_speed				= 825
+rpm					= 650
+
+light_color				= 0.9, 0.9, 0.5
+light_range				= 6
+light_var_color				= 0.05
+light_var_range				= 0.5
+light_time				= 0.3
+
+flame_particles				= weapons\generic_weapon08
+smoke_particles				= weapons\generic_shoot_00
+
+shell_point				= 0, 0, 0
+shell_particles				= weapons\generic_shells00
+
+snd_shoot				= weapons\pkm_shot
+
+ammo_class				= ammo_pkm_100
+
+[stationary_mgun]:identity_immunities,weapon_probability,default_weapon_params
+GroupControlSection			= spawn_group
+class					= W_STMGUN
+$spawn					= "weapons\stationary_mgun"
+cform					= skeleton
+visual					= dynamics\weapons\wpn_mounted\wpn_mounted_pkm_trenoga.ogf
+
+cam_relax_speed				= 3
+cam_max_angle				= 8
+snd_shoot				= weapons\pkm_shot
+use_aim_bullet				= false
+
+ammo_class				= ammo_pkm_100
+fire_dispersion_base			= 2						; 0.5
+fire_dispersion_null			= 2						; 0.5
+rpm					= 650
+
+hit_power				= 0.6
+hit_impulse				= 1
+fire_distance				= 1000
+bullet_speed				= 825
+
+light_color				= 0.9, 0.9, 0.5
+light_range				= 6
+light_var_color				= 0.05
+light_var_range				= 0.5
+light_time				= 0.3
+
+flame_particles				= weapons\generic_weapon_btr
+smoke_particles				= weapons\generic_shoot_00
+shell_point				= 0, 0, 0
+shell_particles				= weapons\generic_shells00
+
+tracer_trail_scale			= 0.15
+tracer_start_length			= 2
+tracer_width				= 0.07
+
+inv_name				= Mounted Weapon
+inv_name_short				= Mounted Weapon

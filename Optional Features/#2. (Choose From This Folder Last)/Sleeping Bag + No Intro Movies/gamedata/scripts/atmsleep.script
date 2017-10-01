@@ -1,0 +1,411 @@
+----------------------------------------------------
+-- file : atmsleep
+-- copyright (c) 2009 Atempad  (atem.pad@mail.ru)
+-- "Sleep for ClearSky" v 1.0
+----------------------------------------------------
+
+local sleep_activ	= false
+local sleep_time	= 1		-- Time of sleep.
+local min_sleep_time	= 1		-- Min value of time.
+local max_sleep_time	= 12		-- Max value of time.
+
+local best_enemy	= nil		-- Best enamy.
+local danger		= 0		-- Danger value.
+
+local mutants = {
+
+	[clsid.bloodsucker_s]	= 1,
+	[clsid.boar_s]		= 2,
+	[clsid.dog_s]		= 4,
+	[clsid.flesh_s]		= 2,
+	[clsid.pseudodog_s]	= 3,
+--	[clsid.burer_s]		= 1,
+--	[clsid.cat_s]		= 2,
+--	[clsid.chimera_s]	= 1,
+--	[clsid.fracture_s]	= 2,
+	[clsid.gigant_s]	= 1,
+--	[clsid.zombie_s]	= 3,
+	[clsid.snork_s]		= 3,
+	[clsid.tushkano_s]	= 5,
+	[clsid.psy_dog_s]	= 4
+}
+
+------------------------------------------------------------------------------------------------
+-- Func: Creating of npc or a mutant.
+------------------------------------------------------------------------------------------------
+
+function sim_create(section, position, lvid, gvid)
+	local sim = alife()
+	local sobj = sim:create(section, position, lvid, gvid)
+	local sobj_id = sobj.id
+	sim:set_switch_online(sobj_id, true)
+	sim:set_switch_offline(sobj_id, false)
+	return sobj
+end
+
+------------------------------------------------------------------------------------------------
+-- Func: Actor update.
+------------------------------------------------------------------------------------------------
+
+function update()
+	if sleep_activ == true then
+		if db.actor.health < 0.1 then
+			sleep_stop()
+		end
+	end
+end
+
+------------------------------------------------------------------------------------------------
+-- Func: Maintenance of health.
+------------------------------------------------------------------------------------------------
+
+function health_cr(slptime)
+	local koef = slptime / 6
+	local actor = db.actor
+	if actor.health < 1 then
+		local health = actor.health + koef
+		if health >= 1 then
+			actor.health = 1
+		else
+			actor.health = health
+		end
+	end
+end
+
+------------------------------------------------------------------------------------------------
+-- Func: Activation of sleep.
+------------------------------------------------------------------------------------------------
+
+function sleep_stop()
+	sleep_activ = false
+	surprise()
+	level.set_time_factor(system_ini():r_float("alife", "time_factor"))
+	local weather_manager = level_weathers.get_weather_manager()
+	weather_manager:reset()								-- reset weather
+	level.add_cam_effector("camera_effects\\prison_1.anm", 25, false, "")
+	level.add_cam_effector("camera_effects\\hit_back_left.anm", 26, false, "")
+end
+
+------------------------------------------------------------------------------------------------
+-- Func: Deactivation of sleep.
+------------------------------------------------------------------------------------------------
+
+function sleep_start(slptime)
+	game.start_tutorial("atmdream")
+	db.actor:stop_talk()
+	level.set_time_factor(slptime * 480)
+	health_cr(slptime)
+	sleep_activ = true
+end
+
+------------------------------------------------------------------------------------------------
+-- Func: Surprise.
+------------------------------------------------------------------------------------------------
+
+function surprise()
+	local dirs = {
+		vector():set(1,  0,  0),
+		vector():set(1,  0,  1),
+		vector():set(0,  0,  1),
+		vector():set(-1, 0,  1),
+		vector():set(-1, 0,  0),
+		vector():set(-1, 0, -1),
+		vector():set(0,  0, -1),
+		vector():set(1,  0, -1)
+	}
+	local lvid = db.actor:level_vertex_id()
+	local gvid = db.actor:game_vertex_id()
+	level.add_pp_effector("teleport.ppe", 2006, false)
+	if danger > 100 then									-- actor death
+		if best_enemy == nil then
+			sim_create("bloodsucker_redhunter", db.actor:position(), lvid, gvid)	-- spawn default mutant
+		else
+			sim_create(best_enemy:section(), db.actor:position(), lvid, gvid)	-- spawn the nearest enemy
+		end
+		db.actor:kill(db.actor)
+		return
+	end
+	if danger * 10 >= math.random(1, 1000) then		-- mutants spawn
+		if best_enemy == nil then			-- mutants not near actor
+			for i = 1, 2 do
+				local dir = dirs[math.random(1, #dirs)]
+				local start_point_id = level.vertex_in_direction(lvid, dir, math.random(15, 20))
+				local sobj = sim_create("bloodsucker_redhunter", level.vertex_position(start_point_id), start_point_id, gvid)
+			end
+		elseif best_enemy:alive() then			-- nearby to actor
+			local amount = math.random(1, 2)
+			if mutants[get_clsid(best_enemy)] then
+				amount = mutants[get_clsid(best_enemy)]
+			end		
+			for i = 1, amount do
+				local dir = dirs[math.random(1, #dirs)]
+				local start_point_id = level.vertex_in_direction(lvid, dir, math.random(15, 20))
+				local sobj = sim_create(best_enemy:section(), level.vertex_position(start_point_id), start_point_id, gvid)
+			end
+		else						-- corpse
+			local amount = 2
+			local mutant = "bloodsucker_redhunter"		-- default mutant
+			if mutants[get_clsid(best_enemy)] then
+				mutant = best_enemy:section()			-- the nearest enemy
+				amount = mutants[get_clsid(best_enemy)]
+			end
+			for i = 1, amount do
+				local dir = dirs[math.random(1, #dirs)]
+				local start_point_id = level.vertex_in_direction(lvid, dir, math.random(15, 20))
+				local sobj = sim_create(mutant, level.vertex_position(start_point_id), start_point_id, gvid)
+			end
+		end
+	end
+end
+
+------------------------------------------------------------------------------------------------
+-- Class: UI interface for sleep.
+------------------------------------------------------------------------------------------------
+
+class "UISleep" (CUIScriptWnd)
+
+function UISleep:__init() super()
+	self.mbox_mode = 0
+	best_enemy = nil
+	danger = 0
+	self:init_interface()
+	self:init_callbacks()
+end
+
+function UISleep:__finalize()
+end
+
+------------------------------------------------------------------------------------------------
+-- Func: Initialize UI interface.
+------------------------------------------------------------------------------------------------
+
+function UISleep:init_interface()
+
+	local xml = CScriptXmlInit()
+	xml:ParseFile("ui_sleep.xml")
+
+	self.message_box = CUIMessageBoxEx()
+	self:Register(self.message_box, "message_box")
+
+	-- Background.
+
+	self.background = xml:InitStatic("background", self)
+	self:SetWndPos(vector2():set(100, 100))
+	self:SetWndSize(vector2():set(self.background:GetWidth(), self.background:GetHeight()))
+	self.background:SetWndPos(vector2():set(0, 0))
+
+	-- Indicator.
+
+	self.safetybar = xml:InitStatic("safetybar", self)
+	self.fearbar = xml:InitStatic("fearbar", self)
+	self:set_level_danger()
+
+	-- Display for show hours of sleeping.
+
+	self.display = xml:InitStatic("display", self)
+	self.display:SetTextX(44)
+
+	-- Button for activation of sleeping.
+
+	self.button_sleep = xml:InitButton("button_sleep", self)
+	self:Register(self.button_sleep, "button_sleep")
+
+	-- Button for quit.
+
+	self.button_quit = xml:InitButton("button_quit", self)
+	self:Register(self.button_quit, "button_quit")
+
+	-- Button for add of hour.
+
+	self.button_left = xml:InitButton("button_left", self)
+	self:Register(self.button_left, "button_left")
+
+	-- Button for sub of hour.
+
+	self.button_right = xml:InitButton("button_right", self)
+	self:Register(self.button_right, "button_right")
+
+	-- Text for safety.
+
+	self.text_safety = xml:InitStatic("text_safety", self)
+
+	-- Text for duration.
+
+	self.text_duration = xml:InitStatic("text_duration", self)
+end
+
+------------------------------------------------------------------------------------------------
+-- Func: Set level of danger for indicator.
+------------------------------------------------------------------------------------------------
+
+function UISleep:set_level_danger()
+	danger = analyzer():evaluation()
+	if danger <= 0 then
+		self.fearbar:SetOriginalRect(Frect():set(0,0,0,0))	-- empty
+	else
+		local c = 21	-- rectangle (x1, y1, x2, y2)
+		local i = 195
+		local j = 206
+		local k = 203
+		local j2 = c + (j - c) * (danger / 100)
+		if j2 > j then 
+			j2 = j
+		end
+		self.fearbar:SetOriginalRect(Frect():set(c,i,j2,k))
+	end
+end
+
+------------------------------------------------------------------------------------------------
+-- Func: Quit menu.
+------------------------------------------------------------------------------------------------
+
+function UISleep:Quit()
+	self:GetHolder():start_stop_menu(self, true)
+end
+
+------------------------------------------------------------------------------------------------
+-- Func: On press OK.
+------------------------------------------------------------------------------------------------
+
+function UISleep:OnMsgOk()
+	self.mbox_mode = 0
+end
+
+------------------------------------------------------------------------------------------------
+-- Func: Set callbacks for buttons.
+------------------------------------------------------------------------------------------------
+
+function UISleep:init_callbacks()
+	self:AddCallback("button_sleep",	ui_events.BUTTON_CLICKED,		self.sleep,		self)
+	self:AddCallback("button_quit",		ui_events.BUTTON_CLICKED,		self.ui_quit,		self)
+	self:AddCallback("button_right",	ui_events.BUTTON_CLICKED,		self.add_to_time,	self)
+	self:AddCallback("button_left",		ui_events.BUTTON_CLICKED,		self.sub_to_time,	self)
+	self:AddCallback("message_box",		ui_events.MESSAGE_BOX_OK_CLICKED,	self.OnMsgOk,		self)
+end
+
+------------------------------------------------------------------------------------------------
+-- Func: Activation of sleep and exit.
+------------------------------------------------------------------------------------------------
+
+function UISleep:sleep()
+	if not xr_surge_hide.surge_activated then
+		sleep_start(sleep_time)
+		self:ui_quit()
+	else
+		self.message_box:InitMessageBox("message_box_no_sleep")
+		self:GetHolder():start_stop_menu(self.message_box, true)
+	end
+end
+
+------------------------------------------------------------------------------------------------
+-- Func: Add hour to time of sleep.
+------------------------------------------------------------------------------------------------
+
+function UISleep:add_to_time()
+	if sleep_time < max_sleep_time then
+		sleep_time = sleep_time + 1
+		self.display:SetText(sleep_time.."h")
+		self.display:SetTextX(44)
+	end
+end
+
+------------------------------------------------------------------------------------------------
+-- Func: Sub hour to time of sleep.
+------------------------------------------------------------------------------------------------
+
+function UISleep:sub_to_time()
+	if sleep_time > min_sleep_time then
+		sleep_time = sleep_time - 1
+		self.display:SetText(sleep_time.."h")
+		self.display:SetTextX(44)
+	end
+end
+
+------------------------------------------------------------------------------------------------
+-- Func: Binding for keyboard.
+------------------------------------------------------------------------------------------------
+
+function UISleep:OnKeyboard(DIK, KeyboardAction)
+	CUIScriptWnd.OnKeyboard(self, DIK, KeyboardAction)
+	if KeyboardAction == ui_events.WINDOW_KEY_PRESSED then
+		if DIK == DIK_keys.DIK_ESCAPE then
+			self:ui_quit()
+		end
+	end
+	return true
+end
+
+------------------------------------------------------------------------------------------------
+-- Func: Exit.
+------------------------------------------------------------------------------------------------
+
+function UISleep:ui_quit()
+	sleep_time = 1
+	self:GetHolder():start_stop_menu(self, true)
+end
+
+------------------------------------------------------------------------------------------------
+-- Class: Analyzer of danger for UI indicator.
+------------------------------------------------------------------------------------------------
+
+class "analyzer"
+
+function analyzer:__init()
+	self.danger	= 0
+	self.objects	= {}
+	self.actorpos	= db.actor:position()
+end
+
+------------------------------------------------------------------------------------------------
+-- Func: Evaluate danger.
+------------------------------------------------------------------------------------------------
+
+function analyzer:evaluation()
+	local min_dist = 300
+	local object_by_id = level.object_by_id
+	local actor_pos = self.actorpos
+	local T = self.objects
+	local obj_count = #T
+	for key, val in pairs (db.storage) do		-- search for enemies
+		local obj = object_by_id(key)
+		if obj and (IsStalker(obj) or IsMonster(obj)) then
+			local dist_to_actor = obj:position():distance_to(actor_pos)
+			if dist_to_actor <= 150 then
+				if dist_to_actor < min_dist and IsMonster(obj) then
+					min_dist = dist_to_actor
+					best_enemy = obj
+				end
+				obj_count = obj_count + 1
+				T[obj_count] = obj
+--				table.insert(T, obj)
+			end
+		end
+	end
+	if #T < 1 then
+		return 0
+	end
+	for key, obj in pairs (T) do					-- evaluate danger
+		local dist = obj:position():distance_to(actor_pos)
+		if IsStalker(obj) then
+			if obj:alive() then
+				if obj:relation(db.actor) == game_object.enemy then
+					self.danger = self.danger + (70 / (dist / 10))		-- human enemy
+				elseif dist <= 30 then
+					self.danger = self.danger - 12				-- human non-enemy closeby
+				end
+			else
+				self.danger = self.danger + (30 / (dist / 10))			-- human corpse
+			end
+		else										-- elseif IsMonster(obj) then
+			if obj:alive() then
+				self.danger = self.danger + (70 / (dist / 10))			-- mutant
+			else
+				self.danger = self.danger + (30 / (dist / 10))			-- mutant corpse
+			end
+		end
+	end
+	if self.danger < 0 then
+		return 0
+	end
+	return self.danger
+end

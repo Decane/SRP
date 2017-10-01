@@ -1,0 +1,333 @@
+local def_ignore_distance		= 150
+local def_ignore_distance_grenade	= 15
+local def_ignore_distance_corpse	= 10
+local def_ignore_distance_hit		= 150
+local def_ignore_distance_sound		= 50
+
+local def_danger_inertion_time_grenade	= 20000
+local def_danger_inertion_time_corpse	= 0
+local def_danger_inertion_time_hit	= 60000
+local def_danger_inertion_time_sound	= 15000
+local def_danger_inertion_time_ricochet	= 30000
+
+local always_ignore_danger_from = {m_car = "true"}
+
+----------------------------------------------------------------------------------------------------------------------
+-- EVALUATORS
+----------------------------------------------------------------------------------------------------------------------
+
+class "evaluator_danger" (property_evaluator)
+
+function evaluator_danger:__init(name, storage, npc) super (nil, name)
+	self.a = storage
+end
+
+function evaluator_danger:evaluate()
+
+	local sobj = self.object
+
+	if self.mgr == nil then
+		self.mgr = sobj:motivation_action_manager()
+	end
+
+	local best_danger = sobj:best_danger()
+
+	if best_danger == nil then
+		self.danger_time = nil
+		return false
+	end
+
+	local best_danger_object
+	local bd_type = best_danger:type()
+	local danger_object_grenade = danger_object.grenade
+
+	if bd_type ~= danger_object_grenade then
+		local best_danger_dependent_object = best_danger:dependent_object()
+		if best_danger_dependent_object ~= nil then
+			best_danger_object = best_danger_dependent_object
+		else
+			best_danger_object = best_danger:object()
+		end
+	else
+		best_danger_object = best_danger:object()
+	end
+
+	if best_danger_object == nil then
+		return false
+	end
+
+	if always_ignore_danger_from[best_danger_object:section()] == "true" then
+		return false
+	end
+
+	local actor = db.actor
+	local actor_id = actor:id()
+
+	if best_danger_object:id() == actor_id and (bd_type == danger_object.attack_sound or bd_type == danger_object.bullet_ricochet) then
+		if sobj:best_enemy() == nil and sobj:relation(actor) ~= game_object.enemy then
+			return false
+		end
+	end
+
+	local BDO_community = best_danger_object:character_community()
+	local sobj_community = sobj:character_community()
+
+	if BDO_community == sobj_community then
+		if not (best_danger_object:id() == actor_id and sobj:relation(actor) == game_object.enemy) then
+			return false
+		end
+	elseif BDO_community ~= nil and BDO_community ~= "" and BDO_community ~= "nil" and BDO_community ~= "none" then
+		if not best_danger_object:alive() then
+			return false				-- no danger if best_danger_object is a dead creature
+		end
+	end
+
+	if bd_type == danger_object_grenade then
+		if sobj_community == "zombied" then
+			return false
+		end
+--		if self.a.ignore_types["grenade"] == true then	-- use the ignore_distance parameters instead of 'ignore_types' for danger ignorance via NPC script logic
+--			return false
+--		end
+	elseif bd_type == danger_object.entity_corpse then
+		return false
+	end
+--[[
+	if bd_type == danger_object.entity_attacked or bd_type == danger_object.attacked then
+		if self.a.ignore_types["hit"] == true then
+			return false
+		end
+	elseif bd_type == danger_object.enemy_sound or
+		bd_type == danger_object.bullet_ricochet or	-- SRP addition: ignore bullet ricochets if set to ignore sounds
+		bd_type == danger_object.attack_sound or
+		bd_type == danger_object.entity_death then
+		if self.a.ignore_types["sound"] == true then
+			return false
+		end
+	end
+]]
+	local sobj_id = sobj:id()
+	local sobj_st = db.storage[sobj_id]
+
+	if not xr_combat_ignore.is_enemy(sobj, best_danger_object, sobj_st.combat_ignore, true) then
+		return false
+	end
+
+	if self.danger_time then
+		self.danger_time = best_danger:time()
+		local passed_time = time_global() - self.danger_time
+		return check_danger_inertion_time(sobj, best_danger, passed_time) == true
+	end
+
+	if check_danger_distance(sobj, best_danger) == false then
+		return false
+	end
+
+	local active_sector = sobj_st.active_sector
+
+	if active_sector ~= nil then
+		if sr_danger.check_danger_position(best_danger:position(), active_sector) == false then
+			return false
+		end
+	end
+
+--	if xr_gulag.is_info_restricted(sobj_id, best_danger:position()) then	-- nv130303 test is never true in vanilla
+--		return false
+--	end
+
+	if xr_wounded.is_heavy_wounded_by_id(sobj_id) then
+		return false
+	end
+
+	local active_scheme = sobj_st.active_scheme
+
+	if active_scheme == "camper" then
+		if bd_type == danger_object_grenade then
+			self.danger_time = best_danger:time()
+			return true
+		end
+		return false
+	else
+		self.danger_time = best_danger:time()
+		return true
+	end
+
+--	return false
+end
+
+----------------------------------------------------------------------------------------------------------------------
+-- BINDER
+----------------------------------------------------------------------------------------------------------------------
+
+function add_to_binder(object, ini, scheme, section, storage)
+--	local operators = {}
+--	local properties = {}
+	local manager = object:motivation_action_manager()
+	manager:remove_evaluator(stalker_ids.property_danger)
+	manager:add_evaluator(stalker_ids.property_danger, this.evaluator_danger("danger", storage, object))
+end
+
+function set_danger(npc, ini, scheme, section)
+	local st = xr_logic.assign_storage_and_bind(npc, ini, scheme, section)
+end
+
+function reset_danger(npc, scheme, st, section)
+
+	local st_ini = st.ini
+	local st_danger = st.danger
+
+	local danger_section
+	if scheme ~= nil and scheme ~= "nil" then
+		danger_section = utils.cfg_get_string(st_ini, section, "danger", npc, false, "")
+	end
+--[[
+	st_danger.ignore_types = {}	-- define an appropriate ignore_distance parameter with value 0 in NPC logic if you want full danger ignorance - don't use the 'ignore_types' parameter
+	if danger_section then
+		local t = parse_names(utils.cfg_get_string(st_ini, danger_section, "ignore_types", npc, false, "", ""))
+		for k, v in pairs (t) do
+			st_danger.ignore_types[v] = true
+		end
+	end
+]]
+	local get_number = utils.cfg_get_number
+
+	-- nv130412 also changed in check_danger_distance()
+--	st_danger.ignore_distance		= math.pow(get_number(st_ini, danger_section, "ignore_distance", npc, false, def_ignore_distance), 2)
+--	st_danger.ignore_distance_grenade	= math.pow(get_number(st_ini, danger_section, "ignore_distance_grenade", npc, false, def_ignore_distance_grenade), 2)
+--	st_danger.ignore_distance_corpse	= math.pow(get_number(st_ini, danger_section, "ignore_distance_corpse", npc, false, def_ignore_distance_corpse), 2)
+--	st_danger.ignore_distance_hit		= math.pow(get_number(st_ini, danger_section, "ignore_distance_hit", npc, false, def_ignore_distance_hit), 2)
+--	st_danger.ignore_distance_sound		= math.pow(get_number(st_ini, danger_section, "ignore_distance_sound", npc, false, def_ignore_distance_sound), 2)
+
+	st_danger.ignore_distance		= get_number(st_ini, danger_section, "ignore_distance", npc, false, def_ignore_distance)
+	st_danger.ignore_distance_grenade	= get_number(st_ini, danger_section, "ignore_distance_grenade", npc, false, def_ignore_distance_grenade)
+	st_danger.ignore_distance_corpse	= get_number(st_ini, danger_section, "ignore_distance_corpse", npc, false, def_ignore_distance_corpse)
+	st_danger.ignore_distance_hit		= get_number(st_ini, danger_section, "ignore_distance_hit", npc, false, def_ignore_distance_hit)
+	st_danger.ignore_distance_sound		= get_number(st_ini, danger_section, "ignore_distance_sound", npc, false, def_ignore_distance_sound)
+
+	st_danger.danger_inertion_time_grenade	= get_number(st_ini, danger_section, "danger_inertion_time_grenade", npc, false, def_danger_inertion_time_grenade)
+	st_danger.danger_inertion_time_corpse	= get_number(st_ini, danger_section, "danger_inertion_time_corpse", npc, false, def_danger_inertion_time_corpse)
+	st_danger.danger_inertion_time_hit	= get_number(st_ini, danger_section, "danger_inertion_time_hit", npc, false, def_danger_inertion_time_hit)
+	st_danger.danger_inertion_time_sound	= get_number(st_ini, danger_section, "danger_inertion_time_sound", npc, false, def_danger_inertion_time_sound)
+	st_danger.danger_inertion_time_ricochet	= get_number(st_ini, danger_section, "danger_inertion_time_ricochet", npc, false, def_danger_inertion_time_ricochet)
+end
+
+function check_danger_inertion_time(npc, danger, passed_time)
+
+	local danger_settings = db.storage[npc:id()].danger
+	local bd_type = danger:type()
+
+	if danger_settings ~= nil then
+		if bd_type == danger_object.grenade then
+			if danger_settings.danger_inertion_time_grenade <= passed_time then
+				return false
+			end
+		elseif bd_type == danger_object.entity_corpse then
+			if danger_settings.danger_inertion_time_corpse <= passed_time then
+				return false
+			end
+		elseif bd_type == danger_object.entity_attacked or
+			bd_type == danger_object.attacked then
+			if danger_settings.danger_inertion_time_hit <= passed_time then
+				return false
+			end
+		elseif bd_type == danger_object.enemy_sound or
+			bd_type == danger_object.attack_sound or
+			bd_type == danger_object.entity_death then
+			if danger_settings.danger_inertion_time_sound <= passed_time then
+				return false
+			end
+		elseif bd_type == danger_object.bullet_ricochet then
+			if danger_settings.danger_inertion_time_ricochet <= passed_time then
+				return false
+			end
+		end
+	else
+		if bd_type == danger_object.grenade then
+			if def_danger_inertion_time_grenade <= passed_time then
+				return false
+			end
+		elseif bd_type == danger_object.entity_corpse then
+			if def_danger_inertion_time_corpse <= passed_time then
+				return false
+			end
+		elseif bd_type == danger_object.entity_attacked or
+			bd_type == danger_object.attacked then
+			if def_danger_inertion_time_hit <= passed_time then
+				return false
+			end
+		elseif bd_type == danger_object.enemy_sound or
+			bd_type == danger_object.attack_sound or
+			bd_type == danger_object.entity_death then
+			if def_danger_inertion_time_sound <= passed_time then
+				return false
+			end
+		elseif bd_type == danger_object.bullet_ricochet then
+			if def_danger_inertion_time_ricochet <= passed_time then
+				return false
+			end
+		end
+	end
+	return true
+end
+
+function check_danger_distance(npc, danger)
+
+	local danger_settings = db.storage[npc:id()].danger
+--	local danger_distance_sqr = danger:position():distance_to_sqr(npc:position())
+	local danger_distance_sqr = danger:position():distance_to(npc:position())	-- nv130412 also changed in reset_danger()
+
+	if danger_settings ~= nil then
+		if danger_distance_sqr >= danger_settings.ignore_distance then
+			return false
+		end
+		local bd_type = danger:type()
+		if bd_type == danger_object.grenade then
+			if danger_distance_sqr >= danger_settings.ignore_distance_grenade then
+				return false
+			end
+		elseif bd_type == danger_object.entity_corpse then
+			if danger_distance_sqr >= danger_settings.ignore_distance_corpse then
+				return false
+			end
+		elseif bd_type == danger_object.entity_attacked or
+			bd_type == danger_object.attacked then
+			if danger_distance_sqr >= danger_settings.ignore_distance_hit then
+				return false
+			end
+		elseif bd_type == danger_object.enemy_sound or
+			bd_type == danger_object.attack_sound or
+			bd_type == danger_object.bullet_ricochet or		-- SRP addition
+			bd_type == danger_object.entity_death then
+			if danger_distance_sqr >= danger_settings.ignore_distance_sound then
+				return false
+			end
+		end
+	else
+		if danger_distance_sqr >= def_ignore_distance then
+			return false
+		end
+		local bd_type = danger:type()
+		if bd_type == danger_object.grenade then
+			if danger_distance_sqr >= def_ignore_distance_grenade then
+				return false
+			end
+		elseif bd_type == danger_object.entity_corpse then
+			if danger_distance_sqr >= def_ignore_distance_corpse then
+				return false
+			end
+		elseif bd_type == danger_object.entity_attacked or
+			bd_type == danger_object.attacked then
+			if danger_distance_sqr >= def_ignore_distance_hit then
+				return false
+			end
+		elseif bd_type == danger_object.enemy_sound or
+			bd_type == danger_object.attack_sound or
+			bd_type == danger_object.bullet_ricochet or		-- SRP addition
+			bd_type == danger_object.entity_death then
+			if danger_distance_sqr >= def_ignore_distance_sound then
+				return false
+			end
+		end
+	end
+	return true
+end

@@ -1,0 +1,220 @@
+[wpn_hpsa]:identity_immunities,weapon_probability,default_weapon_params
+GroupControlSection			= spawn_group
+discovery_dependency			=
+$spawn					= "weapons\hpsa"
+$npc					= on			
+$prefetch				= 8
+scheduled				= off
+cform					= skeleton
+class					= WP_HPSA
+min_radius				= 0
+max_radius				= 30
+description				= st_wpn_hpsa_descr
+
+ef_weapon_type				= 5
+
+default_to_ruck				= false
+sprint_allowed				= true
+
+;---DOF-------------------------------------------------------------------------
+;zoom_dof				= -1000, 1, 1000 
+reload_dof				= 0, 0.5, 5, 2.25
+;-------------------------------------------------------------------------------
+
+;--- scope weapons -------------------------------------------------------------
+holder_range_modifier			= 1
+holder_fov_modifier			= 1
+;-------------------------------------------------------------------------------
+
+upgrades				= up_gr_ab_hpsa, up_gr_cd_hpsa, up_gr_e_hpsa, up_gr_f_hpsa, up_gr_g_hpsa, up_gr_h_hpsa
+installed_upgrades			=
+upgrade_scheme				= upgrade_scheme_u10a
+
+cost					= 600
+
+;ammo_limit				= 120
+;ammo_current				= 0
+ammo_elapsed				= 0
+
+ammo_mag_size				= 13
+ammo_class				= ammo_9x19_fmj, ammo_9x19_pbp
+fire_modes				= 1
+
+hand_dependence				= 1
+single_handed				= 1
+
+slot					= 1
+animation_slot				= 1
+
+inv_name				= st_wpn_hpsa
+inv_name_short				= st_wpn_hpsa
+inv_weight				= 0.88
+
+inv_grid_width				= 2
+inv_grid_height				= 1
+inv_grid_x				= 16
+inv_grid_y				= 7
+
+kill_msg_x				= 126
+kill_msg_y				= 154
+kill_msg_width				= 35
+kill_msg_height				= 23
+
+;-------------------------------------------------------------------------------
+
+fire_dispersion_base			= 0.8
+control_inertion_factor			= 1
+
+cam_relax_speed				= 8
+cam_relax_speed_ai			= 360
+cam_dispersion				= 0.6
+cam_dispersion_inc			= 0.6
+cam_dispersion_frac			= 1
+cam_max_angle				= 5
+cam_max_angle_horz			= 5
+cam_step_angle_horz			= 1
+
+fire_dispersion_condition_factor	= 5
+misfire_probability			= 0.005
+misfire_condition_k			= 0.05						; decane: missing by default
+condition_shot_dec			= 0.001
+
+;-------------------------------------------------------------------------------
+
+position				= -0.021, -0.085, 0
+orientation				= 0, 0, 0
+
+fire_point				= 0, 0.133, 0.179
+
+flame_particles				= weapons\generic_weapon03
+smoke_particles				= weapons\generic_shoot_00
+
+shell_point				= 0, 0.133, 0.047
+shell_dir				= 0, 0, 0.4
+shell_particles				= weapons\generic_shells
+
+PDM_disp_base				= 1
+PDM_disp_vel_factor			= 0.8
+PDM_disp_accel_factor			= 0.8
+PDM_disp_crouch				= 1
+PDM_disp_crouch_no_acc			= 1
+
+hit_power				= 0.4						; 0.5, 0.5, 0.5, 0.5
+hit_impulse				= 1						; 75
+hit_type				= fire_wound
+
+silencer_hit_power			= 0.4						; 0.7
+silencer_hit_impulse			= 1						; 60
+silencer_fire_distance			= 700						; 100
+silencer_bullet_speed			= 335						; 230
+
+hit_probability_gd_novice		= 1
+hit_probability_gd_stalker		= 1
+hit_probability_gd_veteran		= 1
+hit_probability_gd_master		= 1
+
+fire_distance				= 700						; 50
+bullet_speed				= 335						; 200
+rpm					= 250
+;rpm_empty_click			= 200
+
+use_aim_bullet				= true
+time_to_aim				= 1
+
+hud					= wpn_hpsa_hud
+
+;--STRAP PARAMETERS-----------------------------------------------------------------
+
+visual					= dynamics\weapons\wpn_hpsa\wpn_hpsa.ogf
+
+light_color				= 0.6, 0.5, 0.3
+light_range				= 2
+light_var_color				= 0.05
+light_var_range				= 0.5
+light_time				= 0.2
+
+ph_mass					= 0.88						; 1
+
+scope_status				= 0
+silencer_status				= 2						; 0
+grenade_launcher_status			= 0
+
+zoom_enabled				= true
+;zoom_rotate_time			= 0.25
+scope_zoom_factor			= 75						; 55
+
+silencer_name				= wpn_addon_silencer
+silencer_x				= 54						; 69
+silencer_y				= -17
+
+snd_draw				= weapons\pm_draw
+snd_holster				= weapons\generic_holster
+snd_shoot				= weapons\n_hpsa_shot
+snd_silncer_shot			= weapons\n_pb_shot
+
+snd_empty				= weapons\pistol_empty
+snd_reload				= weapons\pistol_reload
+;snd_close				= weapons\generic_close
+
+;silencer_flame_particles		= weapons\generic_weapon01
+silencer_smoke_particles		= weapons\generic_shoot_00
+
+silencer_light_color			= 0.6, 0.5, 0.3
+silencer_light_range			= 0.01
+silencer_light_var_color		= 0.05
+silencer_light_var_range		= 0.5
+silencer_light_time			= 0.2
+
+[wpn_hpsa_hud]:hud_base
+
+;zoom_hide_crosshair			= false
+attach_place_idx			= 0
+item_visual				= dynamics\weapons\wpn_hpsa\wpn_hpsa_hud.ogf
+
+hands_position				= -0.021, -0.16, 0.0025
+hands_orientation			= -0.5, 1, 1.149999
+
+hands_position_16x9			= 0.033, -0.1895, 0.039
+hands_orientation_16x9			= 2.349998, 2.749999, 2.849998
+
+item_position				= 0.000746, -0.000321, 0.003479
+item_orientation			= 1.239378, -0.134046, -2.052052
+
+shell_point				= 0.012, 0.038, 0.473
+shell_bone				= wpn_body
+
+fire_point				= 0, 0.038, 0.177
+fire_bone				= wpn_body
+
+anm_show				= hpsa_draw
+anm_show_empty				= hpsa_draw, hpsa_opened
+
+anm_hide				= hpsa_holster
+anm_hide_empty				= hpsa_holster, hpsa_opened
+
+anm_idle				= hpsa_idle
+anm_idle_empty				= hpsa_idle, hpsa_opened
+
+anm_shots				= hpsa_shoot
+anm_shot_l				= hpsa_shoot, hpsa_open
+
+anm_idle_aim				= hpsa_idle_aim
+anm_idle_aim_empty			= hpsa_idle_aim, hpsa_opened
+
+anm_reload				= hpsa_reload
+anm_reload_empty			= hpsa_reload, hpsa_close
+
+anm_idle_moving				= hpsa_idle_moving
+anm_idle_moving_empty			= hpsa_idle_moving, hpsa_opened
+
+anm_idle_sprint				= hpsa_idle_sprint
+anm_idle_sprint_empty			= hpsa_idle_sprint, hpsa_opened
+
+anm_bore				= hpsa_idle_bore
+anm_bore_empty				= hpsa_idle_bore, hpsa_opened
+
+aim_hud_offset_pos			= -0.10495, 0.0471, 0.003
+aim_hud_offset_rot			= 0.005, 0.005, -0.0375
+
+aim_hud_offset_pos_16x9			= -0.1658, 0.0786, 0
+aim_hud_offset_rot_16x9			= 0.037, 0.055, 0

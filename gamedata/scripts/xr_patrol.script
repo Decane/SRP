@@ -1,0 +1,603 @@
+local patrols = {}
+local formations = {}
+
+formations["line"] = {
+
+	{dir = vector():set(-1, 0, 0), dist = 2},
+	{dir = vector():set(-1, 0, 0), dist = 4},
+	{dir = vector():set(-1, 0, 0), dist = 6},
+	{dir = vector():set(1, 0, 0), dist = 2},
+	{dir = vector():set(1, 0, 0), dist = 4},
+	{dir = vector():set(1, 0, 0), dist = 6}
+}
+
+formations["back"] = {
+
+	{dir = vector():set(0.3, 0, -1), dist = 1.2},
+	{dir = vector():set(-0.3, 0, -1), dist = 2.4},
+	{dir = vector():set(0.3, 0, -1), dist = 3.6},
+	{dir = vector():set(-0.3, 0, -1), dist = 4.8},
+	{dir = vector():set(0.3, 0, -1), dist = 6},
+	{dir = vector():set(-0.3, 0, -1), dist = 7.2}
+}
+
+formations["around"] = {
+
+	{dir = vector():set(0.44721359, 0, -0.89442718), dist = 2.2360680},
+	{dir = vector():set(-0.44721359, 0, -0.89442718), dist = 2.2360680},
+	{dir = vector():set(1.0000000, 0, 0), dist = 2},
+	{dir = vector():set(-1, 0, 0), dist = 2},
+	{dir = vector():set(0.44721359, 0, 0.89442718), dist = 2.2360680},
+	{dir = vector():set(-0.44721359, 0, 0.89442718), dist = 2.2360680}
+}
+
+local accel_by_curtype = {
+
+	walk		=	"run",
+	patrol		=	"rush",
+	raid		=	"assault",
+	sneak		=	"sneak_run",
+	sneak_run	=	"assault"
+}
+
+class "PatrolManager"
+
+function PatrolManager:__init(path_name)
+	self.path_name = path_name
+	self.npc_list = {}
+	self.current_state = "patrol"
+	self.commander_id = -1
+	self.formation = "back"
+--	self.commander_lid = -1
+--	self.commander_dir = vector():set(0, 0, 1)
+	self.npc_count = 0
+--	self.scripted_commander_id = -1
+--	self.squad_and_patrol_commander_id = -1
+end
+
+function PatrolManager:add_npc(npc, npc_is_leader)
+
+	local npc_id = npc:id()		-- npc cannot be nil here since we already executed npc:id() in set_scheme() without crashing
+
+	if npc:alive() == false or self.npc_list[npc_id] ~= nil then
+		return
+	end
+
+	if self.npc_count == 7 then
+		abort("[xr_patrol.PatrolManager:add_npc]: Attempted to add more than 7 NPCs in PatrolManager('%s') class instance.", self.path_name)
+		return
+	end
+
+	self.npc_list[npc_id] = {soldier = npc, dir = vector():set(1, 0, 0), dist = 0}
+	self.npc_count = self.npc_count + 1
+
+	if self.npc_count == 1 or npc_is_leader == true then
+		self.commander_id = npc_id
+--		self.scripted_commander_id = npc_id
+	end
+
+	self:reset_positions()
+end
+
+function PatrolManager:remove_npc(npc)
+
+	if npc == nil then
+		return
+	end
+
+	local npc_id = npc:id()
+	local npc_list = self.npc_list
+
+	if npc_list[npc_id] == nil then
+		return
+	end
+
+	npc_list[npc_id] = nil
+	self.npc_count = self.npc_count - 1
+
+	if npc_id == self.commander_id then
+		self.commander_id = -1
+--		self.scripted_commander_id = -1
+--		self.squad_and_patrol_commander_id = -1
+		self:reset_positions()
+	end
+end
+
+function PatrolManager:reset_positions()
+	local form_ = formations[self.formation]
+	local index = 1
+	local commander_id = self.commander_id
+--[[
+	if self.squad_and_patrol_commander_id == -1 and self.scripted_commander_id == -1 then
+		local st = db.storage
+		for npc_id in pairs (self.npc_list) do
+			local squad = st[npc_id].squad_obj
+			if squad and squad.commander_id == npc_id then
+				commander_id = npc_id
+				self.commander_id = npc_id
+				self.squad_and_patrol_commander_id = npc_id
+				break
+			end
+		end
+	end
+]]
+	for npc_id, npc_data in pairs (self.npc_list) do
+		if commander_id == -1 then
+			commander_id = npc_id			-- npc_data.soldier:id()
+			self.commander_id = npc_id
+		end
+		if commander_id ~= npc_id then			-- self.npc_list[npc_id].soldier:id()
+			npc_data.dir = form_[index].dir
+			npc_data.dist = form_[index].dist
+--			npc_data.vertex_id = -1
+--			npc_data.accepted = true
+			index = index + 1
+		end
+	end
+end
+
+function PatrolManager:set_formation(formation)
+	if formation == nil then
+		abort("[xr_patrol.PatrolManager:set_formation]: Invalid formation (nil) for %s.", self.path_name)
+	end
+	if formation ~= "around" and formation ~= "back" and formation ~= "line" then
+		abort("[xr_patrol.PatrolManager:set_formation]: Invalid formation ('%s') for %s.", formation, self.path_name)
+	end
+	self.formation = formation
+	self:reset_positions()
+end
+--[[
+function PatrolManager:get_commander(npc)
+
+	if npc == nil then
+		abort("[xr_patrol.PatrolManager:get_commander]: Invalid NPC on call for PatrolManager('%s') class instance.", self.path_name)
+	end
+
+	local npc_id = npc:id()
+
+	if self.npc_list[npc_id] == nil then
+		abort("[xr_patrol.PatrolManager:get_commander]: NPC %s is missing from NPC list for PatrolManager('%s') class instance.", sobj:name(), self.path_name)
+	end
+
+	if npc_id == self.commander_id then
+		abort("[xr_patrol.PatrolManager:get_commander]: This function is not supposed to be called for patrol commander in PatrolManager('%s') class instance.", self.path_name)
+	end
+
+	local commander = self.npc_list[self.commander_id].soldier
+
+	if commander == nil then
+		abort("[xr_patrol.PatrolManager:get_commander]: Patrol commander not present in PatrolManager('%s') class instance.", self.path_name)
+	end
+
+	return commander
+end
+]]
+function PatrolManager:get_next_follower_state(npc)
+
+	if npc == nil then
+		abort("[xr_patrol.PatrolManager:get_next_follower_state]: Invalid NPC on call for PatrolManager('%s') class instance.", self.path_name)
+	end
+
+	local npc_id = npc:id()
+	local npc_data = self.npc_list[npc_id]
+
+	if npc_data == nil then
+		abort("[xr_patrol.PatrolManager:get_next_follower_state]: NPC %s is missing from NPC list for PatrolManager('%s') class instance.", sobj:name(), self.path_name)
+	end
+
+	if npc_id == self.commander_id then
+		abort("[xr_patrol.PatrolManager:get_next_follower_state]: This function is not supposed to be called for patrol commander in PatrolManager('%s') class instance.", self.path_name)
+	end
+
+	local commander = self.npc_list[self.commander_id].soldier
+
+	local dir = commander:direction()
+	local pos = vector():set(0, 0, 0)
+	local vertex_id = commander:location_on_path(5, pos)
+
+	if level.vertex_position(vertex_id):distance_to(npc:position()) > 5 then
+		vertex_id = commander:level_vertex_id()
+	end
+
+	dir.y = 0
+	dir:normalize()
+
+	local dir_s = npc_data.dir
+	local dist_s = npc_data.dist
+
+	local angle = yaw_degree(dir_s, vector():set(0, 0, 1))
+	local vvv = vector_cross(dir_s, vector():set(0, 0, 1))
+
+	if vvv.y < 0 then
+		angle = -angle
+	end
+
+	dir_s = vector_rotate_y(dir, angle)
+
+	local d = 2
+	local vertex = level.vertex_in_direction(level.vertex_in_direction(vertex_id, dir_s, dist_s), dir, d)
+--	npc_data.vertex_id = vertex
+
+	local distance = commander:position():distance_to(npc:position())
+
+	if distance > dist_s + 2 then
+		local new_state = accel_by_curtype[self.current_state]
+		if new_state ~= nil then
+			return vertex, dir, new_state
+		end
+	end
+
+	return vertex, dir, self.current_state
+end
+
+function PatrolManager:set_patrol_attributes(npc, command, formation)
+	if npc == nil or npc:alive() == false then
+		abort("[xr_patrol.PatrolManager:set_patrol_attributes]: Commander is nil or dead in PatrolManager('%s') class instance.", self.path_name)
+	end
+	if npc:id() ~= self.commander_id then
+		return
+	end
+	self.current_state = command
+	if self.formation ~= formation then
+		self.formation = formation
+		self:set_formation(formation)
+	end
+--	self.commander_lid = npc:level_vertex_id()
+--	self.commander_dir = npc:direction()
+--	self:update()
+end
+
+function PatrolManager:is_commander(npc_id)
+	return npc_id == self.commander_id
+end
+--[[
+function PatrolManager:is_commander_in_meet()
+	if self.commander_id == -1 then
+		return false
+	end
+	local npc = self.npc_list[self.commander_id].soldier
+	if npc ~= nil and npc:alive() == true then
+		return xr_meet.is_meet(npc)
+	end
+	return false
+end
+
+function PatrolManager:update()
+	if tm_enabled == true then
+		self.tm:update()
+	end
+end
+]]
+--'-------------------------------------------------------------------------------------------------------------------
+--'Evaluators
+--'-------------------------------------------------------------------------------------------------------------------
+
+class "evaluator_patrol_end" (property_evaluator)
+
+function evaluator_patrol_end:__init(name, storage) super (nil, name)
+	self.st = storage
+end
+
+function evaluator_patrol_end:evaluate()
+	return not xr_logic.is_active(self.object, self.st)
+end
+
+class "evaluator_patrol_comm" (property_evaluator)
+
+function evaluator_patrol_comm:__init(name, storage) super (nil, name)
+	self.st = storage
+end
+
+function evaluator_patrol_comm:evaluate()
+	return patrols[self.st.patrol_key]:is_commander(self.object:id())
+end
+
+--'-------------------------------------------------------------------------------------------------------------------
+--' Actions
+--'-------------------------------------------------------------------------------------------------------------------
+
+class "action_commander" (action_base)	-- for the commander NPC
+
+function action_commander:__init(npc, action_name, storage) super(nil, action_name)
+	self.st = storage
+	self.move_mgr = db.storage[npc:id()].move_mgr
+--	self.was_reset = false
+	self.cur_state = "patrol"
+end
+
+function action_commander:initialize()
+	action_base.initialize(self)
+	local sobj = self.object
+	sobj:set_desired_position()
+	sobj:set_desired_direction()
+	self:activate_scheme()
+end
+
+function action_commander:activate_scheme()
+
+	local self_st = self.st
+
+	self_st.signals = {}
+
+	if self_st.path_walk_info == nil then
+		self_st.path_walk_info = utils.path_parse_waypoints(self_st.path_walk)
+	end
+
+	if self_st.path_look_info == nil then
+		self_st.path_look_info = utils.path_parse_waypoints(self_st.path_look)
+	end
+
+	self.move_mgr:reset(self_st.path_walk, self_st.path_walk_info, self_st.path_look, self_st.path_look_info, self_st.team, self_st.suggested_state, {obj = self, func = self.formation_callback})
+
+	patrols[self_st.patrol_key]:set_patrol_attributes(self.object, self.cur_state, self_st.formation)
+end
+
+function action_commander:execute()
+
+	action_base.execute(self)
+	self.move_mgr:update()
+
+	local sobj = self.object
+	local new_state = state_mgr.get_state(sobj)
+	local old_state = self.old_state
+
+	if old_state ~= new_state then
+		if sobj:character_community() ~= "zombied" then
+			if new_state == "sneak" then
+				xr_sound.set_sound_play(sobj:id(), "patrol_sneak")
+			elseif new_state == "sneak_run" then
+				xr_sound.set_sound_play(sobj:id(), "patrol_run")
+			elseif new_state == "run" then
+				xr_sound.set_sound_play(sobj:id(), "patrol_run")
+			elseif new_state == "assault" then
+				xr_sound.set_sound_play(sobj:id(), "patrol_run")
+			elseif new_state == "rush" then
+				xr_sound.set_sound_play(sobj:id(), "patrol_run")
+			else
+				if old_state == "sneak" or old_state == "sneak_run" or old_state == "run" or old_state == "assault" or old_state == "rush" then
+					xr_sound.set_sound_play(sobj:id(), "patrol_walk")
+				end
+			end
+		end
+		self.old_state = new_state
+	end
+
+	local self_st = self.st
+	patrols[self_st.patrol_key]:set_patrol_attributes(sobj, new_state, self_st.formation)
+end
+
+function action_commander:finalize()
+	local sobj = self.object
+	if sobj:alive() == true then
+		local self_st = self.st
+		patrols[self_st.patrol_key]:set_patrol_attributes(sobj, "guard", self_st.formation)
+		self.move_mgr:finalize()
+	end
+	action_base.finalize(self)
+end
+
+function action_commander:deactivate(npc)
+	patrols[self.st.patrol_key]:remove_npc(npc)
+end
+
+function action_commander:death_callback(npc)
+	patrols[self.st.patrol_key]:remove_npc(npc)
+end
+
+function action_commander:net_destroy(npc)
+	self:deactivate(npc)
+end
+
+function action_commander:formation_callback(mode, number, index)
+	if number == 0 then
+		self.st.formation = "line"
+	elseif number == 1 then
+		self.st.formation = "around"
+	elseif number == 2 then
+		self.st.formation = "back"
+	end
+end
+
+----------------------
+
+class "action_patrol" (action_base)	-- for follower NPCs
+
+function action_patrol:__init (npc, action_name, storage) super (nil, action_name)
+	self.st = storage
+	self.move_mgr = db.storage[npc:id()].move_mgr
+	self.l_vid = -1
+	self.dist = 0
+	self.dir = vector():set(0, 0, 1)
+	self.cur_state = "patrol"
+--	self.on_point = false
+--	self.was_reset = false
+	self.time_to_update = time_global() + 1000
+end
+
+function action_patrol:initialize()
+	action_base.initialize(self)
+	local sobj = self.object
+	sobj:set_desired_position()
+	sobj:set_desired_direction()
+--	self.on_point = false
+end
+
+function action_patrol:activate_scheme()
+	local self_st = self.st
+	self_st.signals = {}
+	if self_st.path_walk_info == nil then
+		self_st.path_walk_info = utils.path_parse_waypoints(self_st.path_walk)
+	end
+	if self_st.path_look_info == nil then
+		self_st.path_look_info = utils.path_parse_waypoints(self_st.path_look)
+	end
+	self.move_mgr:reset(self_st.path_walk, self_st.path_walk_info, self_st.path_look, self_st.path_look_info, self_st.team, self_st.suggested_state, {obj = self, func = self.formation_callback})
+end
+
+function action_patrol:execute()
+
+	action_base.execute(self)
+
+	local TG = time_global()
+
+	if self.time_to_update - TG > 0 then
+		return
+	end
+
+	self.time_to_update = TG + 1000
+
+	local sobj = self.object
+	local patrol_class = patrols[self.st.patrol_key]
+
+	if patrol_class.npc_list[sobj:id()] == nil then
+		dbglog("[xr_patrol.action_patrol:execute]: NPC %s is missing from NPC list for PatrolManager('%s') class instance with key %s.", sobj:name(), self.st.path_walk, self.st.patrol_key)
+		return
+	end
+
+	self.l_vid, self.dir, self.cur_state = patrol_class:get_next_follower_state(sobj)
+	self.l_vid = utils.send_to_nearest_accessible_vertex(sobj, self.l_vid)
+
+	local desired_direction = self.dir
+
+	if desired_direction ~= nil and not utils.vector_cmp(desired_direction, vector():set(0,0,0)) then
+		desired_direction:normalize()
+		sobj:set_desired_direction(desired_direction)
+	end
+
+	sobj:set_path_type(game_object.level_path)
+	state_mgr.set_state(sobj, self.cur_state)
+end
+
+function action_patrol:finalize()
+	if self.object:alive() == true then
+		self.move_mgr:finalize()
+	end
+	action_base.finalize(self)
+end
+
+function action_patrol:formation_callback(mode, number, index)
+end
+
+function action_patrol:death_callback(npc)
+	patrols[self.st.patrol_key]:remove_npc(npc)
+end
+
+function action_patrol:deactivate(npc)
+	patrols[self.st.patrol_key]:remove_npc(npc)
+end
+
+function action_patrol:net_destroy(npc)
+	self:deactivate(npc)
+end
+
+--'--------------------------------------------------------------------------------------------------------------------
+--' Patrol binder
+--'--------------------------------------------------------------------------------------------------------------------
+
+function add_to_binder(object, ini, scheme, section, storage)
+
+	local operators			= {}
+	local properties		= {}
+
+	local manager			= object:motivation_action_manager()
+
+	properties["event"]		= xr_evaluators_id.reaction
+	properties["patrol_end"]	= xr_evaluators_id.sidor_patrol_base + 0
+	properties["patrol_comm"]	= xr_evaluators_id.sidor_patrol_base + 1
+
+	operators["action_patrol"]	= xr_actions_id.sidor_act_patrol
+	operators["action_commander"]	= xr_actions_id.sidor_act_patrol + 1
+
+	-- Evaluators
+
+	manager:add_evaluator		(properties["patrol_end"], this.evaluator_patrol_end("patrol_end", storage, "patrol_end"))
+	manager:add_evaluator		(properties["patrol_comm"], this.evaluator_patrol_comm("patrol_comm", storage, "patrol_comm"))
+
+	-- Actions
+
+	local action			= this.action_commander(object, "action_commander", storage)
+
+	action:add_precondition		(world_property(stalker_ids.property_alive,		true))
+	action:add_precondition		(world_property(stalker_ids.property_danger,		false))
+	action:add_precondition		(world_property(stalker_ids.property_enemy,		false))
+	action:add_precondition		(world_property(stalker_ids.property_anomaly,		false))
+	action:add_precondition		(world_property(xr_evaluators_id.smartcover_action + 3,	false))
+
+	xr_motivator.addCommonPrecondition(action)
+
+	action:add_precondition		(world_property(properties["patrol_end"],		false))
+	action:add_precondition		(world_property(properties["patrol_comm"],		true))
+	action:add_effect		(world_property(properties["patrol_end"],		true))
+	manager:add_action		(operators["action_commander"],				action)
+
+	xr_logic.subscribe_action_for_events(object, storage, action)
+
+	action				= this.action_patrol(object, "action_patrol", storage)
+
+	action:add_precondition		(world_property(stalker_ids.property_alive,		true))
+	action:add_precondition		(world_property(stalker_ids.property_danger,		false))
+	action:add_precondition		(world_property(stalker_ids.property_enemy,		false))
+	action:add_precondition		(world_property(stalker_ids.property_anomaly,		false))
+	action:add_precondition		(world_property(xr_evaluators_id.smartcover_action + 3,	false))
+
+	xr_motivator.addCommonPrecondition(action)
+
+	action:add_precondition		(world_property(properties["patrol_end"],		false))
+	action:add_precondition		(world_property(properties["patrol_comm"],		false))
+	action:add_effect		(world_property(properties["patrol_end"],		true))
+	manager:add_action		(operators["action_patrol"],				action)
+
+	xr_logic.subscribe_action_for_events(object, storage, action)
+
+	action				= manager:action(xr_actions_id.alife)
+
+	action:add_precondition		(world_property(properties["patrol_end"],		true))
+end
+
+function set_scheme(npc, ini, scheme, section, gulag_name)
+
+	local cfg_get_string		= utils.cfg_get_string
+	local st			= xr_logic.assign_storage_and_bind(npc, ini, scheme, section)
+	st.logic			= xr_logic.cfg_get_switch_conditions(ini, section, npc)
+	local path_name			= cfg_get_string(ini, section, "path_walk", npc, true,	gulag_name)
+	st.path_name			= path_name
+	st.path_walk			= path_name
+	st.path_look			= cfg_get_string(ini, section, "path_look", npc, false, gulag_name)
+	st.formation			= cfg_get_string(ini, section, "formation", npc, false, "")
+
+	if st.formation == nil then
+		st.formation		= "back"
+	end
+
+	st.move_type			= cfg_get_string(ini, section, "move_type", npc, false, "")
+
+	if st.move_type == nil then
+		st.move_type		= "patrol"
+	end
+
+	local T				= {}
+	st.suggested_state		= T
+	T.standing			= cfg_get_string(ini, section, "def_state_standing", npc, false, "")
+	T.moving			= cfg_get_string(ini, section, "def_state_moving1", npc, false, "")
+	T.moving			= cfg_get_string(ini, section, "def_state_moving", npc, false, "", T.moving)
+--'	st.animation			= cfg_get_string(ini, section, "animation", npc, false, "")
+
+	st.path_walk_info		= nil
+	st.path_look_info		= nil
+
+	st.commander			= utils.cfg_get_bool(ini, section, "commander", npc, false, false)
+	local patrol_key		= path_name
+
+	local squad			= db.storage[npc:id()].squad_obj
+	if squad ~= nil then
+		patrol_key		= patrol_key .. tostring(squad.squad_id)
+	end
+
+	if patrols[patrol_key] == nil then
+		patrols[patrol_key]	= PatrolManager(path_name)
+	end
+
+	patrols[patrol_key]:add_npc(npc, st.commander)
+
+	st.patrol_key			= patrol_key
+end

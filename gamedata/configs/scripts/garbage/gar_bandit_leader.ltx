@@ -1,0 +1,53 @@
+[logic]
+active = walker@start_leader
+level_spot = quest_npc
+
+[walker@start_leader]
+path_walk = gar_smart_terrain_3_5_bandit_leader_walk
+path_look = gar_smart_terrain_3_5_bandit_leader_look
+on_info = {+gar_bandit_join_invited} walker@main_leader
+on_info2 = {+yoga_called_stringov_once} walker@wait_leader
+on_info3 = {+gar_quest_kill_digger_traitor_call} remark@talk_with_traitor_leader %+gar_flea_market_stop_quest_line +yoga_called_stringov_once%
+combat_ignore_cond = true
+meet = meet@a
+
+[remark@talk_with_traitor_leader]
+target = gar_smart_terrain_3_5_bandit_leader_look, 0
+anim = wait_rac_noweap
+snd = gar_bandit_leader_kill_digger_traitor_call
+on_signal = sound_end | walker@wait_leader
+combat_ignore_cond = true
+meet = no_meet
+
+[walker@wait_leader]
+path_walk = gar_smart_terrain_3_5_bandit_leader_walk
+path_look = gar_smart_terrain_3_5_bandit_leader_look
+on_info = {+gar_bandit_join_enemy_wait +agru_open_story_door +gar_quest_destroy_flea_market_done !is_faction_enemy_to_actor(bandit)} walker@main_leader %=play_sound(gar_bandit_leader_join_message:bandit:gar_bandit_leader_name) +gar_bandit_join_invited%
+combat_ignore_cond = true
+meet = meet@a
+
+[walker@main_leader]
+path_walk = gar_smart_terrain_3_5_bandit_leader_walk
+path_look = gar_smart_terrain_3_5_bandit_leader_look
+combat_ignore_cond = true
+meet = meet@b
+
+[meet@a]
+meet_state = 3 | nil@nil
+sound_start = gar_bandit_leader_meet_a
+sound_stop = gar_bandit_leader_meet_bye_a
+use_wpn = true
+use = true
+allow_break = false
+trade_enable = false
+quest_npc = true
+
+[meet@b]
+meet_state = 3 | nil@nil
+sound_start = gar_bandit_leader_meet_b
+sound_stop = gar_bandit_leader_meet_bye_b
+use_wpn = true
+use = true
+allow_break = false
+trade_enable = false
+quest_npc = true

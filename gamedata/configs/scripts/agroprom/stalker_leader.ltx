@@ -1,0 +1,23 @@
+; Vandal 09.11.2008: made orest invulnerable
+; decane 26.02.2013: made orest ignore all possible dangers to prevent him from ever leaving his spot
+;	 14.08.2013: disabled orest's out restrictor until (if ever) it is properly configured in the all.spawn to contain his patrol path
+
+[logic]
+active = walker
+level_spot = quest_npc
+
+[walker]
+invulnerable = true
+danger = danger_condition
+path_walk = agr_stalker_leader_walk
+path_look = agr_stalker_leader_look
+;out_restr = agr_stalker_leader_restr
+combat_ignore_cond = always
+combat_ignore_keep_when_attacked = true
+
+[danger_condition]
+ignore_distance = 0
+ignore_distance_grenade = 0
+ignore_distance_corpse = 0
+ignore_distance_hit = 0
+ignore_distance_sound = 0

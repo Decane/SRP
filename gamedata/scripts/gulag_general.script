@@ -1,0 +1,1721 @@
+-- Decane 30.11.2014: Optimized this and fixed (i) squads sometimes moving to their targets sluggishly and (ii) the excessively low guide job priority.
+
+local ltx
+
+function load_job(smart)
+
+	ltx = {
+
+	-- 130 empty strings to minimize table rehash overhead - ltx always ends up containing at least 130 non-empty strings in vanilla so this never wastes memory:
+
+	"", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",
+	"", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",
+	"", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",
+	"", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",
+	"", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",
+	"", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",
+	"", "", "", "", "", "", "", "", "", ""
+
+	}
+
+	local gname = smart:name()
+--	local danger_ltx = "danger = danger@ignore_day\n"	-- not needed; see below
+	local board = sim_board.get_sim_board()
+	local format = string.format
+	local job_table = {"", ""}
+	local t
+--[[
+	ltx =	"[meet@generic_lager_comander]\n"..
+		"meet_state		= 30|hello_wpn|5|talk_default@meet_comander_wait\n"..
+		"meet_state_wpn		= 30|hello_wpn|5|threat@meet_weapon_wait\n"..
+		"victim			= 30|actor\n"..
+		"victim_wpn		= 30|actor\n"..
+		"sound_start		= meet_comander_start\n"..
+		"sound_start_wpn	= meet_weapon_start\n"..
+		"sound_stop		= meet_comander_stop\n"..
+		"use			= true\n"..
+		"use_wpn		= true\n"..
+		"precond		= visibility\n"..
+		"meet_only_at_path	= true\n"..
+
+		"[meet@generic_lager_conductor]\n"..
+		"meet_state		= 10|hello_wpn|5|talk_default@meet_general_wait\n"..
+		"meet_state_wpn		= 10|hello_wpn|5|threat@meet_weapon_wait\n"..
+		"victim			= 10|actor\n"..
+		"victim_wpn		= 10|actor\n"..
+		"sound_start		= meet_general_start\n"..
+		"sound_start_wpn	= meet_weapon_start\n"..
+		"sound_stop		= meet_general_stop\n"..
+		"use			= true\n"..
+		"use_wpn		= true\n"..
+		"precond		= visibility\n"..
+		"meet_only_at_path	= true\n"..
+
+		"[meet@generic_lager_guard]\n"..
+		"meet_state		= 3|guard@meet_general_wait\n"..
+		"meet_state_wpn		= 3|threat@meet_weapon_wait\n"..
+		"victim			= 3|actor\n"..
+		"victim_wpn		= 3|actor\n"..
+		"sound_start		= meet_general_start\n"..
+		"sound_start_wpn	= meet_weapon_start\n"..
+		"sound_stop		= meet_general_stop\n"..
+		"use			= true\n"..
+		"use_wpn		= false\n"..
+		"precond		= visibility\n"..
+		"meet_only_at_path	= true\n"..
+
+		"[meet@generic_lager_patrol]\n"..
+		"meet_state		= 2|guard@meet_general_wait\n"..
+		"meet_state_wpn		= 2|threat@meet_weapon_wait\n"..
+		"victim			= 2|actor\n"..
+		"victim_wpn		= 2|actor\n"..
+		"sound_start		= \n"..
+		"sound_start_wpn	= \n"..
+		"sound_stop		= \n"..
+		"use			= true\n"..
+		"use_wpn		= false\n"..
+		"precond		= visibility\n"..
+
+		"[meet@generic_lager]\n"..
+		"meet_state		= 2|guard@meet_general_wait\n"..
+		"meet_state_wpn		= 2|threat@meet_weapon_wait\n"..
+		"victim			= 2|actor\n"..
+		"victim_wpn		= 2|actor\n"..
+		"sound_start		= \n"..
+		"sound_start_wpn	= \n"..
+		"sound_stop		= \n"..
+		"use			= true\n"..
+		"use_wpn		= false\n"..
+		"precond		= visibility\n"..
+
+		"[meet@attack]\n"..
+		"meet_state		= 2|talk_default@meet_general_wait\n"..
+		"meet_state_wpn		= 2|talk_default@meet_weapon_wait\n"..
+		"victim			= 2|actor\n"..
+		"victim_wpn		= 2|actor\n"..
+		"sound_start		= meet_general_start\n"..
+		"sound_start_wpn	= meet_weapon_start\n"..
+		"sound_stop		= meet_general_stop\n"..
+		"use			= true\n"..
+		"use_wpn		= true\n"..
+		"precond		= usability\n"..
+
+		"[danger@ignore_day]\n"..
+		"ignore_distance_corpse = 10\n"..	-- 10 is anyway the default if this section is missing, so pointless to include it explicitly - see xr_danger.script
+
+		"[danger@ignore_night]\n"..		-- unused
+		"ignore_distance_corpse = 10\n"..
+
+		"[danger@attack]\n"..			-- ditto
+		"ignore_distance_corpse = 10\n"..
+
+		"[danger@defense]\n"..			-- ditto
+		"ignore_distance_corpse = 10\n"
+]]
+	ltx[1] = "[meet@generic_lager_comander]\nmeet_state=30|hello_wpn|5|talk_default@meet_comander_wait\nmeet_state_wpn=30|hello_wpn|5|threat@meet_weapon_wait\nvictim=30|actor\nvictim_wpn=30|actor\nsound_start=meet_comander_start\nsound_start_wpn=meet_weapon_start\nsound_stop=meet_comander_stop\nuse=true\nuse_wpn=true\nprecond=visibility\nmeet_only_at_path=true\n[meet@generic_lager_conductor]\nmeet_state=10|hello_wpn|5|talk_default@meet_general_wait\nmeet_state_wpn=10|hello_wpn|5|threat@meet_weapon_wait\nvictim=10|actor\nvictim_wpn=10|actor\nsound_start=meet_general_start\nsound_start_wpn=meet_weapon_start\nsound_stop=meet_general_stop\nuse=true\nuse_wpn=true\nprecond=visibility\nmeet_only_at_path=true\n[meet@generic_lager_guard]\nmeet_state=3|guard@meet_general_wait\nmeet_state_wpn=3|threat@meet_weapon_wait\nvictim=3|actor\nvictim_wpn=3|actor\nsound_start=meet_general_start\nsound_start_wpn=meet_weapon_start\nsound_stop=meet_general_stop\nuse=true\nuse_wpn=false\nprecond=visibility\nmeet_only_at_path=true\n[meet@generic_lager_patrol]\nmeet_state=2|guard@meet_general_wait\nmeet_state_wpn=2|threat@meet_weapon_wait\nvictim=2|actor\nvictim_wpn=2|actor\nsound_start=\nsound_start_wpn=\nsound_stop=\nuse=true\nuse_wpn=false\nprecond=visibility\n[meet@generic_lager]\nmeet_state=2|guard@meet_general_wait\nmeet_state_wpn=2|threat@meet_weapon_wait\nvictim=2|actor\nvictim_wpn=2|actor\nsound_start=\nsound_start_wpn=\nsound_stop=\nuse=true\nuse_wpn=false\nprecond=visibility\n[meet@attack]\nmeet_state=2|talk_default@meet_general_wait\nmeet_state_wpn=2|talk_default@meet_weapon_wait\nvictim=2|actor\nvictim_wpn=2|actor\nsound_start=meet_general_start\nsound_start_wpn=meet_weapon_start\nsound_stop=meet_general_stop\nuse=true\nuse_wpn=true\nprecond=usability\n"
+
+--'------------------------------------------------------------------------
+--'				Stalker jobs
+--'------------------------------------------------------------------------
+
+	local stalker_jobs = {_precondition_is_monster = false, _prior = 60, jobs = {"", "", ""}}
+
+   --'------------------------------------------------------------------------
+   --'				   General jobs
+   --'------------------------------------------------------------------------
+
+	local stalker_general_jobs = {_prior = 40, jobs = {}}
+
+	--'------------------------------------------------------------------------
+	--'				KAMP
+	--'------------------------------------------------------------------------
+
+	local it = 1
+	local num = 0 -- #stalker_general_jobs.jobs
+	local ltx_num = 1
+	local smart_def_restr = smart.def_restr
+	local smart_def_string
+	local string
+
+	if smart_def_restr then
+		smart_def_string = format("out_restr=%s\n", smart_def_restr)
+	end
+
+	local way_name = format("%s_kamp_%d", gname, it)
+
+	while level.patrol_path_exists(way_name) do
+
+		local ptr = patrol(way_name)
+		local wp_prop = utils.parse_waypoint_data(way_name, ptr:flags(0), ptr:name(0))
+		local job_count = 5
+		local def_prior = 5
+		local wp_prop_count = wp_prop.count
+
+		if wp_prop_count ~= nil then
+			job_count = wp_prop_count
+		end
+
+		local logic_way_name = format("logic@%s", way_name)
+		local priority = def_prior - (it - 1)
+
+		for i = 1, job_count do
+			t = {_prior = priority, job_id = {section = logic_way_name, reserve_job = true, campfire = way_name}}
+--			table.insert(stalker_general_jobs.jobs, t)
+			stalker_general_jobs.jobs[num + i] = t
+		end
+
+		num = num + job_count
+--[[
+		local job_ltx = "[logic@"..way_name.."]\n"..
+				"active = kamp@"..way_name.."\n"..
+
+				"[kamp@"..way_name.."]\n"..
+				"center_point = kamp_"..it.."\n"..
+				"soundgroup = "..way_name.."\n"
+]]
+		ltx[ltx_num + 1] = "[logic@"
+		ltx[ltx_num + 2] = way_name
+		ltx[ltx_num + 3] = "]\nactive=kamp@"
+		ltx[ltx_num + 4] = way_name
+		ltx[ltx_num + 5] = "\n[kamp@"
+		ltx[ltx_num + 6] = way_name
+		ltx[ltx_num + 7] = "]\ncenter_point=kamp_"
+		ltx[ltx_num + 8] = it
+		ltx[ltx_num + 9] = "\nsoundgroup="
+		ltx[ltx_num + 10] = way_name
+		ltx_num = ltx_num + 11
+		ltx[ltx_num] = "\n"
+
+		if smart_def_restr then
+			ltx_num = ltx_num + 1
+			ltx[ltx_num] = smart_def_string
+		end
+
+		it = it + 1
+
+		way_name = format("%s_kamp_%d", gname, it)
+	end
+
+	if it == 1 then
+		abort("[gulag_general.load_job]: There is no 'kamp' path on smart with name '%s'.", tostring(gname))
+	end
+
+	--'------------------------------------------------------------------------
+	--'				SLEEP
+	--'------------------------------------------------------------------------
+
+	it = 1
+	way_name = format("%s_sleep_%d", gname, it)
+
+	while level.patrol_path_exists(way_name) do
+
+		t = {_prior = 10, job_id = {section = format("logic@%s", way_name)}}
+
+		num = num + 1
+		stalker_general_jobs.jobs[num] = t
+--[[
+		table.insert(stalker_general_jobs.jobs, t)
+
+		local job_ltx = "[logic@"..way_name.."]\n"..
+				"active = sleeper@"..way_name.."\n"..
+
+				"[sleeper@"..way_name.."]\n"..
+				"path_main = sleep_"..it.."\n"
+]]
+		ltx[ltx_num + 1] = "[logic@"
+		ltx[ltx_num + 2] = way_name
+		ltx[ltx_num + 3] = "]\nactive=sleeper@"
+		ltx[ltx_num + 4] = way_name
+		ltx[ltx_num + 5] = "\n[sleeper@"
+		ltx[ltx_num + 6] = way_name
+		ltx[ltx_num + 7] = "]\npath_main=sleep_"
+		ltx[ltx_num + 8] = it
+		ltx_num = ltx_num + 9
+		ltx[ltx_num] = "\n"
+
+		if smart_def_restr then
+			ltx_num = ltx_num + 1
+			ltx[ltx_num] = smart_def_string
+		end
+
+		it = it + 1
+
+		way_name = format("%s_sleep_%d", gname, it)
+	end
+
+	--'------------------------------------------------------------------------
+	--'				WALKER
+	--'------------------------------------------------------------------------
+
+	it = 1
+	way_name = format("%s_walker_%d_walk", gname, it)
+
+	while level.patrol_path_exists(way_name) do
+
+		t = {_prior = 15, job_id = {section = format("logic@%s", way_name)}}
+
+		num = num + 1
+		stalker_general_jobs.jobs[num] = t
+--[[
+		table.insert(stalker_general_jobs.jobs, t)
+
+		local job_ltx = "[logic@"..way_name.."]\n"..
+				"active = walker@"..way_name.."\n"..
+
+				"[walker@"..way_name.."]\n"..
+				"sound_idle = state\n"..
+				"meet = meet@generic_lager\n"..
+				"path_walk = walker_"..it.."_walk\n"..
+				"def_state_standing = guard\n"..
+				"def_state_moving = patrol\n"
+]]
+		ltx[ltx_num + 1] = "[logic@"
+		ltx[ltx_num + 2] = way_name
+		ltx[ltx_num + 3] = "]\nactive=walker@"
+		ltx[ltx_num + 4] = way_name
+		ltx[ltx_num + 5] = "\n[walker@"
+		ltx[ltx_num + 6] = way_name
+		ltx[ltx_num + 7] = "]\nsound_idle=state\nmeet=meet@generic_lager\npath_walk=walker_"
+		ltx[ltx_num + 8] = it
+		ltx_num = ltx_num + 9
+		ltx[ltx_num] = "_walk\ndef_state_standing=guard\ndef_state_moving=patrol\n"
+
+		if level.patrol_path_exists(format("%s_walker_%d_look", gname, it)) then
+			ltx[ltx_num + 1] = "path_look=walker_"
+			ltx[ltx_num + 2] = it
+			ltx_num = ltx_num + 3
+			ltx[ltx_num] = "_look\n"
+		end
+
+		if smart_def_restr then
+			ltx_num = ltx_num + 1
+			ltx[ltx_num] = smart_def_string
+		end
+
+		it = it + 1
+
+		way_name = format("%s_walker_%d_walk", gname, it)
+	end
+
+	--'------------------------------------------------------------------------
+	--'				PATROL
+	--'------------------------------------------------------------------------
+
+	it = 1
+	way_name = format("%s_patrol_%d_walk", gname, it)
+
+	while level.patrol_path_exists(way_name) do
+
+		local ptr = patrol(way_name)
+		local wp_prop = utils.parse_waypoint_data(way_name, ptr:flags(0), ptr:name(0))
+		local job_count = 3
+		local wp_prop_count = wp_prop.count
+
+		if wp_prop_count ~= nil then
+			job_count = wp_prop_count
+		end
+
+		local logic_way_name = format("logic@%s", way_name)
+
+		for i = 1, job_count do
+			t = {_prior = 20, job_id = {section = logic_way_name}}
+--			table.insert(stalker_general_jobs.jobs, t)
+			stalker_general_jobs.jobs[num + i] = t
+		end
+
+		num = num + job_count
+--[[
+		local job_ltx = "[logic@"..way_name.."]\n"..
+				"active = patrol@"..way_name.."\n"..
+
+				"[patrol@"..way_name.."]\n"..
+				"meet = meet@generic_lager_patrol\n"..
+				"formation = back\n"..
+				"path_walk = patrol_"..it.."_walk\n"..
+				"on_signal = end| %=search_gulag_job%\n"
+]]
+		ltx[ltx_num + 1] = "[logic@"
+		ltx[ltx_num + 2] = way_name
+		ltx[ltx_num + 3] = "]\nactive=patrol@"
+		ltx[ltx_num + 4] = way_name
+		ltx[ltx_num + 5] = "\n[patrol@"
+		ltx[ltx_num + 6] = way_name
+		ltx[ltx_num + 7] = "]\nmeet=meet@generic_lager_patrol\nformation=back\npath_walk=patrol_"
+		ltx[ltx_num + 8] = it
+		ltx_num = ltx_num + 9
+		ltx[ltx_num] = "_walk\non_signal=end|%=search_gulag_job%\n"
+
+		if level.patrol_path_exists(format("%s_patrol_%d_look", gname, it)) then
+			ltx[ltx_num + 1] = "path_look=patrol_"
+			ltx[ltx_num + 2] = it
+			ltx_num = ltx_num + 3
+			ltx[ltx_num] = "_look\n"
+		end
+
+		if smart_def_restr then
+			ltx_num = ltx_num + 1
+			ltx[ltx_num] = smart_def_string
+		end
+
+		it = it + 1
+
+		way_name = format("%s_patrol_%d_walk", gname, it)
+	end
+
+	--'------------------------------------------------------------------------
+	--'				COMMANDER
+	--'------------------------------------------------------------------------
+
+	way_name = format("%s_comander_walk", gname)
+
+	if level.patrol_path_exists(way_name) then
+
+		t = {	_prior = 39,
+			job_id = {section = format("logic@%s", way_name)},
+			_precondition_function =
+
+			function(se_obj, smart)
+				if se_obj.squad_id == nil then
+					return false
+				end
+				local sim_board = smart.board
+				local squad = sim_board.squads[se_obj.squad_id]
+				return (squad ~= nil) and (squad.commander_id == se_obj.id) and task_manager.is_more_suitable(squad)
+			end
+		}
+
+		num = num + 1
+		stalker_general_jobs.jobs[num] = t
+--[[
+		table.insert(stalker_general_jobs.jobs, t)
+
+		local job_ltx = "[logic@"..way_name.."]\n"..
+				"active = walker@"..way_name.."\n"..
+
+				"[walker@"..way_name.."]\n"..
+				"meet = meet@generic_lager_comander\n"..
+				"path_walk = comander_walk\n"
+]]
+		ltx[ltx_num + 1] = "[logic@"
+		ltx[ltx_num + 2] = way_name
+		ltx[ltx_num + 3] = "]\nactive=walker@"
+		ltx[ltx_num + 4] = way_name
+		ltx[ltx_num + 5] = "\n[walker@"
+		ltx[ltx_num + 6] = way_name
+		ltx_num = ltx_num + 7
+		ltx[ltx_num] = "]\nmeet=meet@generic_lager_comander\npath_walk=comander_walk\n"
+
+		if level.patrol_path_exists(format("%s_comander_look", gname)) then
+			ltx_num = ltx_num + 1
+			ltx[ltx_num] = "path_look=comander_look\n"
+		end
+
+		if smart_def_restr then
+			ltx_num = ltx_num + 1
+			ltx[ltx_num] = smart_def_string
+		end
+	end
+
+	--'------------------------------------------------------------------------
+	--'				GUIDE
+	--'------------------------------------------------------------------------
+
+	way_name = format("%s_conductor_walk", gname)
+
+	if level.patrol_path_exists(way_name) then
+
+		t = {_prior = 40, job_id = {section = format("logic@%s", way_name)}}
+
+		num = num + 1
+		stalker_general_jobs.jobs[num] = t
+--[[
+		table.insert(stalker_general_jobs.jobs, t)
+
+		local job_ltx = "[logic@"..way_name.."]\n"..
+				"active = walker@"..way_name.."\n"..
+				"level_spot = guider\n"..
+
+				"[walker@"..way_name.."]\n"..
+				"meet = meet@generic_lager_conductor\n"..
+				"path_walk = conductor_walk\n"
+]]
+		ltx[ltx_num + 1] = "[logic@"
+		ltx[ltx_num + 2] = way_name
+		ltx[ltx_num + 3] = "]\nactive=walker@"
+		ltx[ltx_num + 4] = way_name
+		ltx[ltx_num + 5] = "\nlevel_spot=guider\n[walker@"
+		ltx[ltx_num + 6] = way_name
+		ltx_num = ltx_num + 7
+		ltx[ltx_num] = "]\nmeet=meet@generic_lager_conductor\npath_walk=conductor_walk\n"
+
+		if level.patrol_path_exists(format("%s_conductor_look", gname)) then
+			ltx_num = ltx_num + 1
+			ltx[ltx_num] = "path_look=conductor_look\n"
+		end
+
+		if smart_def_restr then
+			ltx_num = ltx_num + 1
+			ltx[ltx_num] = smart_def_string
+		end
+	end
+
+	--'------------------------------------------------------------------------
+	--'				GUARD
+	--'------------------------------------------------------------------------
+
+	it = 1
+	way_name = format("%s_guard_%d_walk", gname, it)
+
+	while level.patrol_path_exists(way_name) do
+
+--		local guard_timeout = tostring(math.random(20, 21)) * 1000	-- probably not a good idea to multiply a string by 1000
+		local guard_timeout = 20000					-- also, coercion is unnecessary here since concatenation coerces automatically, and randomizing between 20,000 and 21,000 is a waste
+
+		t = {_prior = 25, job_id = {section = format("logic@%s", way_name)}}
+
+		stalker_general_jobs.jobs[num + 1] = t
+--[[
+		table.insert(stalker_general_jobs.jobs, t)
+
+		local job_ltx = "[logic@"..way_name.."]\n"..
+				"active = walker@"..way_name.."\n"..
+
+				"[walker@"..way_name.."]\n"..
+				"meet = meet@generic_lager_guard\n"..
+				"path_walk = guard_"..it.."_walk\n"..
+				"path_look = guard_"..it.."_look\n"..
+				"on_timer = "..guard_timeout.." | {!is_current_action_robbery} walker1@"..way_name.." %=get_stalker_for_new_job(logic@"..way_name..")%\n"
+
+		if smart_def_restr then
+			job_ltx = job_ltx .. smart_def_string
+		end
+
+		job_ltx = job_ltx .. danger_ltx
+
+		local job1_ltx ="[walker1@"..way_name.."]\n"..
+				"meet = meet@generic_lager_guard\n"..
+				"path_walk = guard_"..it.."_walk\n"..
+				"path_look = guard_"..it.."_look\n"..
+				"def_state_standing = wait_na\n"..
+				danger_ltx..
+				"on_info = {!is_obj_on_job(logic@follower_"..way_name..":3)} walker@"..way_name.."\n"..
+				"on_info2 = {=distance_to_obj_on_job_le(logic@follower_"..way_name..":3)} remark@"..way_name.."\n"
+
+		if smart_def_restr then
+			job1_ltx = job1_ltx .. smart_def_string
+		end
+
+		job1_ltx = job1_ltx .. danger_ltx	-- danger_ltx has already been added to [walker1@"..way_name.."] in the local declaration for job1_ltx above - no need to do it again
+
+		job1_ltx = job1_ltx ..	"[remark@"..way_name.."]\n"..
+					"anim = wait_na\n"..
+					"target = logic@follower_"..way_name.."\n"
+]]
+		ltx[ltx_num + 1] = "[logic@"
+		ltx[ltx_num + 2] = way_name
+		ltx[ltx_num + 3] = "]\nactive=walker@"
+		ltx[ltx_num + 4] = way_name
+		ltx[ltx_num + 5] = "\n[walker@"
+		ltx[ltx_num + 6] = way_name
+		ltx[ltx_num + 7] = "]\nmeet=meet@generic_lager_guard\npath_walk=guard_"
+		ltx[ltx_num + 8] = it
+		ltx[ltx_num + 9] = "_walk\npath_look=guard_"
+		ltx[ltx_num + 10] = it
+		ltx[ltx_num + 11] = "_look\non_timer="
+		ltx[ltx_num + 12] = guard_timeout
+		ltx[ltx_num + 13] = "|{!is_current_action_robbery}walker1@"
+		ltx[ltx_num + 14] = way_name
+		ltx[ltx_num + 15] = "%=get_stalker_for_new_job(logic@"
+		ltx[ltx_num + 16] = way_name
+		ltx_num = ltx_num + 17
+		ltx[ltx_num] = ")%\n"
+
+		if smart_def_restr then
+			ltx_num = ltx_num + 1
+			ltx[ltx_num] = smart_def_string
+		end
+
+		ltx[ltx_num + 1] = "[walker1@"
+		ltx[ltx_num + 2] = way_name
+		ltx[ltx_num + 3] = "]\nmeet=meet@generic_lager_guard\npath_walk=guard_"
+		ltx[ltx_num + 4] = it
+		ltx[ltx_num + 5] = "_walk\npath_look=guard_"
+		ltx[ltx_num + 6] = it
+		ltx[ltx_num + 7] = "_look\ndef_state_standing=wait_na\non_info={!is_obj_on_job(logic@follower_"
+		ltx[ltx_num + 8] = way_name
+		ltx[ltx_num + 9] = ":3)}walker@"
+		ltx[ltx_num + 10] = way_name
+		ltx[ltx_num + 11] = "\non_info2={=distance_to_obj_on_job_le(logic@follower_"
+		ltx[ltx_num + 12] = way_name
+		ltx[ltx_num + 13] = ":3)}remark@"
+		ltx[ltx_num + 14] = way_name
+		ltx_num = ltx_num + 15
+		ltx[ltx_num] = "\n"
+
+		if smart_def_restr then
+			ltx_num = ltx_num + 1
+			ltx[ltx_num] = smart_def_string
+		end
+
+		ltx[ltx_num + 1] = "[remark@"
+		ltx[ltx_num + 2] = way_name
+		ltx[ltx_num + 3] = "]\nanim=wait_na\ntarget=logic@follower_"
+		ltx[ltx_num + 4] = way_name
+		ltx_num = ltx_num + 5
+		ltx[ltx_num] = "\n"
+
+		if smart_def_restr then
+			ltx_num = ltx_num + 1
+			ltx[ltx_num] = smart_def_string
+		end
+
+		t = {	_prior = 24,
+			job_id = {section = format("logic@follower_%s", way_name)},
+			_precondition_params = {changing_job = format("logic@%s", way_name)},
+			_precondition_function =
+
+			function(se_obj, smart, precond_params, npc_info)
+				return npc_info.need_job == precond_params.changing_job
+			end
+		}
+
+		num = num + 2
+		stalker_general_jobs.jobs[num] = t
+--[[
+		table.insert(stalker_general_jobs.jobs, t)
+
+		local follower_ltx =	"[logic@follower_"..way_name.."]\n"..
+					"active = walker@follow_"..way_name.."\n"..
+
+					"[walker@follow_"..way_name.."]\n"..
+					"meet = meet@generic_lager\n"..
+					"path_walk = guard_"..it.."_walk\n"..
+					"path_look = guard_"..it.."_look\n"..
+					"on_info = {=distance_to_obj_on_job_le(logic@"..way_name..":3)} remark@follower_"..way_name.."\n"
+]]
+		ltx[ltx_num + 1] = "[logic@follower_"
+		ltx[ltx_num + 2] = way_name
+		ltx[ltx_num + 3] = "]\nactive=walker@follow_"
+		ltx[ltx_num + 4] = way_name
+		ltx[ltx_num + 5] = "\n[walker@follow_"
+		ltx[ltx_num + 6] = way_name
+		ltx[ltx_num + 7] = "]\nmeet=meet@generic_lager\npath_walk=guard_"
+		ltx[ltx_num + 8] = it
+		ltx[ltx_num + 9] = "_walk\npath_look=guard_"
+		ltx[ltx_num + 10] = it
+		ltx[ltx_num + 11] = "_look\non_info={=distance_to_obj_on_job_le(logic@"
+		ltx[ltx_num + 12] = way_name
+		ltx[ltx_num + 13] = ":3)}remark@follower_"
+		ltx[ltx_num + 14] = way_name
+		ltx_num = ltx_num + 15
+		ltx[ltx_num] = "\n"
+
+		if smart_def_restr then
+			ltx_num = ltx_num + 1
+			ltx[ltx_num] = smart_def_string
+		end
+--[[
+		follower_ltx = follower_ltx .. danger_ltx
+
+		follower_ltx = follower_ltx ..	"[remark@follower_"..way_name.."]\n"..
+						"anim = wait_na\n"..
+						"target = logic@"..way_name.."\n"..
+						"on_timer = 2000 | %=switch_to_desired_job%\n"
+]]
+		ltx[ltx_num + 1] = "[remark@follower_"
+		ltx[ltx_num + 2] = way_name
+		ltx[ltx_num + 3] = "]\nanim=wait_na\ntarget=logic@"
+		ltx[ltx_num + 4] = way_name
+		ltx_num = ltx_num + 5
+		ltx[ltx_num] = "\non_timer=2000|%=switch_to_desired_job%\n"
+
+		if smart_def_restr then
+			ltx_num = ltx_num + 1
+			ltx[ltx_num] = smart_def_string
+		end
+
+		it = it + 1
+
+		way_name = format("%s_guard_%d_walk", gname, it)
+	end
+
+--	table.insert(stalker_jobs.jobs, stalker_general_jobs)
+	stalker_jobs.jobs[1] = stalker_general_jobs		-- #stalker_jobs.jobs + 1 = 1
+
+   --'------------------------------------------------------------------------
+   --'				Attack jobs
+   --'------------------------------------------------------------------------
+
+	local stalker_attack_jobs = {_prior = 60, jobs = {}, _current_squad_action = "attack_point"}
+	local attack_jobs_num = 0
+	local str
+	local str2
+
+	for k, v in pairs (board:get_nearest_smarts(smart)) do
+
+		local target_smart = v:name()
+		local target_smart_obj = v
+		local stalker_attack_smart_jobs = {_prior = 60, jobs = {}, _current_squad_action = "attack_point", _squad_attack_point = target_smart}
+
+	--'------------------------------------------------------------------------
+	--'				RANGER
+	--'------------------------------------------------------------------------
+
+	-- There are no patrol paths in the game whose name contains "ranger", so the corresponding code has been removed.
+
+	--'------------------------------------------------------------------------
+	--'				GROUP ATTACK
+	--'------------------------------------------------------------------------
+
+		local att_restr = target_smart_obj.att_restr
+		local def_restr = target_smart_obj.def_restr
+		local att_string
+		local def_string
+
+		if att_restr then
+			att_string = format("out_restr=%s\n", att_restr)
+		end
+
+		if def_restr then
+			def_string = format("out_restr=%s\n", def_restr)
+		end
+
+		it = 1
+		num = 0	-- #stalker_attack_smart_jobs.jobs
+
+		str2 = format("to_%s_patrol_", target_smart)
+		string = format("%s_to_%s_patrol_", gname, target_smart)
+		way_name = format("%s_to_%s_patrol_%d_walk", gname, target_smart, it)
+
+		while level.patrol_path_exists(way_name) do
+
+			local ptr = patrol(way_name)
+			local wp_prop = utils.parse_waypoint_data(way_name, ptr:flags(0), ptr:name(0))
+			local job_count = 5
+			local wp_prop_count = wp_prop.count
+
+			if wp_prop_count ~= nil then
+				job_count = wp_prop_count
+			end
+
+			for i = 1, job_count do
+
+				local sect_name = format("%s_to_%s_patrol%d_%d_walk", gname, target_smart, i, it)
+
+				t = {_prior = 55, _attack_job = true, job_id = {section = format("logic@%s", sect_name)}}
+
+				stalker_attack_smart_jobs.jobs[num + i] = t
+--[[
+				table.insert(stalker_attack_smart_jobs.jobs, t)
+
+				local job_ltx = "[logic@"..sect_name.."]\n"..
+						"active = patrol@"..sect_name.."\n"..
+
+						"[patrol@"..sect_name.."]\n"..
+						"meet = meet@attack\n"..
+						"formation = around\n"..
+						"def_state_moving = {=attacking_smart_captured} raid, rush\n"..
+						"on_signal = arrive_to_wait|%=request_current_squad_stage(prepare)%\n"..
+						"on_info = {=current_squad_stage(combat)} cover@"..sect_name.."_attack\n"..
+						"path_walk = "..str2..it.."_walk\n"
+						..danger_ltx
+]]
+				ltx[ltx_num + 1] = "[logic@"
+				ltx[ltx_num + 2] = sect_name
+				ltx[ltx_num + 3] = "]\nactive=patrol@"
+				ltx[ltx_num + 4] = sect_name
+				ltx[ltx_num + 5] = "\n[patrol@"
+				ltx[ltx_num + 6] = sect_name
+				ltx[ltx_num + 7] = "]\nmeet=meet@attack\nformation=around\ndef_state_moving={=attacking_smart_captured}raid,rush\non_signal=arrive_to_wait|%=request_current_squad_stage(prepare)%\non_info={=current_squad_stage(combat)}cover@"
+				ltx[ltx_num + 8] = sect_name
+				ltx[ltx_num + 9] = "_attack\npath_walk="
+				ltx[ltx_num + 10] = str2
+				ltx[ltx_num + 11] = it
+				ltx_num = ltx_num + 12
+				ltx[ltx_num] = "_walk\n"
+
+				if level.patrol_path_exists(format("%s_to_%s_patrol_%d_look", gname, target_smart, it)) then
+					ltx_num = ltx_num + 1
+					ltx[ltx_num] = format("path_look=%s%d_look\n", str2, it)
+				end
+
+				if se_smart_cover.registered_smartcovers[format("%s_to_%s_patrol_%d_wait_%d_smartcover", gname, target_smart, it, i)] ~= nil then
+--[[
+					job_ltx = job_ltx ..	"on_info2 = {=current_squad_stage(prepare:wait) =smart_cover_suitable("..string..it.."_wait_"..i.."_smartcover)} smartcover@"..sect_name.."\n"..
+								"on_info3 = {=current_squad_stage(prepare:wait)} remark@"..sect_name.."\n"
+
+					job_ltx = job_ltx ..	"[smartcover@"..sect_name.."]\n"..
+								"meet = no_meet\n"..
+								danger_ltx..
+								"on_info = {=current_squad_stage(combat:post_combat:idle)} cover@"..sect_name.."_attack\n"..
+								"cover_state = default_behaviour\n"..
+								"def_state_moving = sneak_run\n"..
+								"cover_name = "..string..it.."_wait_"..i.."_smartcover\n"..
+								"target_path = {=cover_attack} "..target_smart.."_kamp_1\n"..
+
+								"[remark@"..sect_name.."]\n"..
+								"meet = no_meet\n"..
+								"on_info = {=current_squad_stage(combat:post_combat:idle)} cover@"..sect_name.."_attack\n"..
+								"target = "..target_smart.."_kamp_1\n"..
+								"anim = hide\n"
+								..danger_ltx
+]]
+					ltx[ltx_num + 1] = "on_info2={=current_squad_stage(prepare:wait)=smart_cover_suitable("
+					ltx[ltx_num + 2] = string
+					ltx[ltx_num + 3] = it
+					ltx[ltx_num + 4] = "_wait_"
+					ltx[ltx_num + 5] = i
+					ltx[ltx_num + 6] = "_smartcover)}smartcover@"
+					ltx[ltx_num + 7] = sect_name
+					ltx[ltx_num + 8] = "\non_info3={=current_squad_stage(prepare:wait)}remark@"
+					ltx[ltx_num + 9] = sect_name
+					ltx[ltx_num + 10] = "\n[smartcover@"
+					ltx[ltx_num + 11] = sect_name
+					ltx[ltx_num + 12] = "]\nmeet=no_meet\non_info={=current_squad_stage(combat:post_combat:idle)}cover@"
+					ltx[ltx_num + 13] = sect_name
+					ltx[ltx_num + 14] = "_attack\ncover_state=default_behaviour\ndef_state_moving=sneak_run\ncover_name="
+					ltx[ltx_num + 15] = string
+					ltx[ltx_num + 16] = it
+					ltx[ltx_num + 17] = "_wait_"
+					ltx[ltx_num + 18] = i
+					ltx[ltx_num + 19] = "_smartcover\ntarget_path={=cover_attack}"
+					ltx[ltx_num + 20] = target_smart
+					ltx[ltx_num + 21] = "_kamp_1\n[remark@"
+					ltx[ltx_num + 22] = sect_name
+					ltx[ltx_num + 23] = "]\nmeet=no_meet\non_info={=current_squad_stage(combat:post_combat:idle)}cover@"
+					ltx[ltx_num + 24] = sect_name
+					ltx[ltx_num + 25] = "_attack\ntarget="
+					ltx[ltx_num + 26] = target_smart
+					ltx_num = ltx_num + 27
+					ltx[ltx_num] = "_kamp_1\nanim=hide\n"
+				else
+--[[
+					job_ltx = job_ltx ..	"on_info2 = {=current_squad_stage(prepare:wait)} remark@"..sect_name.."\n"..
+								"[remark@"..sect_name.."]\n"..
+								"meet = no_meet\n"..
+								"on_info = {=current_squad_stage(combat:post_combat:idle)} cover@"..sect_name.."_attack\n"..
+								"target = "..target_smart.."_kamp_1\n"..
+								"anim = hide\n"
+								..danger_ltx
+]]
+					ltx[ltx_num + 1] = "on_info2={=current_squad_stage(prepare:wait)}remark@"
+					ltx[ltx_num + 2] = sect_name
+					ltx[ltx_num + 3] = "\n[remark@"
+					ltx[ltx_num + 4] = sect_name
+					ltx[ltx_num + 5] = "]\nmeet=no_meet\non_info={=current_squad_stage(combat:post_combat:idle)}cover@"
+					ltx[ltx_num + 6] = sect_name
+					ltx[ltx_num + 7] = "_attack\ntarget="
+					ltx[ltx_num + 8] = target_smart
+					ltx_num = ltx_num + 9
+					ltx[ltx_num] = "_kamp_1\nanim=hide\n"
+				end
+--[[
+				job_ltx = job_ltx ..	"[cover@"..sect_name.."_attack]\n"..
+							"use_attack_direction = false\n"..
+							"on_info = {!current_squad_stage(combat)} cover@"..sect_name.."_after_attack\n"..
+							"smart = "..target_smart.."\n"
+							..danger_ltx
+]]
+				ltx[ltx_num + 1] = "[cover@"
+				ltx[ltx_num + 2] = sect_name
+				ltx[ltx_num + 3] = "_attack]\nuse_attack_direction=false\non_info={!current_squad_stage(combat)}cover@"
+				ltx[ltx_num + 4] = sect_name
+				ltx[ltx_num + 5] = "_after_attack\nsmart="
+				ltx[ltx_num + 6] = target_smart
+				ltx_num = ltx_num + 7
+				ltx[ltx_num] = "\n"
+
+				if att_restr ~= nil then
+					ltx_num = ltx_num + 1
+					ltx[ltx_num] = att_string
+				end
+--[[
+				job_ltx = job_ltx ..	"[cover@"..sect_name.."_after_attack]\n"..
+							"use_attack_direction = false\n"..
+							"smart = "..target_smart.."\n"
+							..danger_ltx
+]]
+				ltx[ltx_num + 1] = "[cover@"
+				ltx[ltx_num + 2] = sect_name
+				ltx[ltx_num + 3] = "_after_attack]\nuse_attack_direction=false\nsmart="
+				ltx[ltx_num + 4] = target_smart
+				ltx_num = ltx_num + 5
+				ltx[ltx_num] = "\n"
+
+				if def_restr ~= nil then
+					ltx_num = ltx_num + 1
+					ltx[ltx_num] = def_string
+				end
+			end
+
+			num = num + job_count
+			it = it + 1
+
+			way_name = format("%s_to_%s_patrol_%d_walk", gname, target_smart, it)
+		end
+
+	--'------------------------------------------------------------------------
+	--'				AutoGenerated Attack
+	--'------------------------------------------------------------------------
+
+		it = 1
+
+		while level.patrol_path_exists(format("%s_kamp_%d_task", target_smart, it)) do
+
+			local job_count = 5
+
+			for i = 1, job_count do
+
+				local sect_name = format("%s_to_%s_kamp%d_%d", gname, target_smart, i, it)
+
+				t = {_prior = 50, _attack_job = true, job_id = {section = format("logic@%s", sect_name), prefix_name = target_smart}}
+
+				stalker_attack_smart_jobs.jobs[num + i] = t
+--[[
+				table.insert(stalker_attack_smart_jobs.jobs, t)
+
+				local job_ltx =	"[logic@"..sect_name.."]\n"..
+						"active = patrol@"..sect_name.."\n"..
+
+						"[patrol@"..sect_name.."]\n"..
+						"formation = around\n"..
+--						"def_state_moving = {=attacking_smart_captured} raid, patrol\n"..	-- use 'rush' instead of 'patrol' if target smart not captured by enemies to prevent sluggish movement to it
+						"def_state_moving = {=attacking_smart_captured} raid, rush\n"..
+						"on_info = {!current_squad_stage(move:prepare:wait)} cover@"..sect_name.."_attack, {=npc_to_smart_dist("..target_smart..":30)} %=request_current_squad_stage(prepare)%\n"..
+						"path_walk = kamp_"..it.."_task\n"
+						..danger_ltx
+]]
+				ltx[ltx_num + 1] = "[logic@"
+				ltx[ltx_num + 2] = sect_name
+				ltx[ltx_num + 3] = "]\nactive=patrol@"
+				ltx[ltx_num + 4] = sect_name
+				ltx[ltx_num + 5] = "\n[patrol@"
+				ltx[ltx_num + 6] = sect_name
+				ltx[ltx_num + 7] = "]\nformation=around\ndef_state_moving={=attacking_smart_captured}raid,rush\non_info={!current_squad_stage(move:prepare:wait)}cover@"
+				ltx[ltx_num + 8] = sect_name
+				ltx[ltx_num + 9] = "_attack,{=npc_to_smart_dist("
+				ltx[ltx_num + 10] = target_smart
+				ltx[ltx_num + 11] = ":30)}%=request_current_squad_stage(prepare)%\npath_walk=kamp_"
+				ltx[ltx_num + 12] = it
+				ltx_num = ltx_num + 13
+				ltx[ltx_num] = "_task\n"
+
+				if level.patrol_path_exists(format("%s_wait_%d_walk", target_smart, i)) then
+--[[
+					job_ltx = job_ltx ..	"on_info2 = {=current_squad_stage(prepare:wait)} walker@"..sect_name.."\n"..
+
+								"[walker@"..sect_name.."]\n"..
+								"meet = no_meet\n"..
+								danger_ltx..
+								"on_info = {=current_squad_stage(combat:post_combat:idle)} cover@"..sect_name.."_attack\n"..
+								"def_state_standing = {=cover_attack} hide_fire, hide\n"..
+								"def_state_moving = sneak\n"..
+								"path_walk = wait_"..i.."_walk\n"
+]]
+					ltx[ltx_num + 1] = "on_info2={=current_squad_stage(prepare:wait)}walker@"
+					ltx[ltx_num + 2] = sect_name
+					ltx[ltx_num + 3] = "\n[walker@"
+					ltx[ltx_num + 4] = sect_name
+					ltx[ltx_num + 5] = "]\nmeet=no_meet\non_info={=current_squad_stage(combat:post_combat:idle)}cover@"
+					ltx[ltx_num + 6] = sect_name
+					ltx[ltx_num + 7] = "_attack\ndef_state_standing={=cover_attack}hide_fire,hide\ndef_state_moving=sneak\npath_walk=wait_"
+					ltx[ltx_num + 8] = i
+					ltx_num = ltx_num + 9
+					ltx[ltx_num] = "_walk\n"
+
+					if level.patrol_path_exists(format("%s_wait_%d_look", target_smart, i)) then
+						ltx[ltx_num + 1] = "path_look=wait_"
+						ltx[ltx_num + 2] = i
+						ltx_num = ltx_num + 3
+						ltx[ltx_num] = "_look\n"
+					end
+				else
+--[[
+					job_ltx = job_ltx ..	"on_info2 = {=current_squad_stage(prepare:wait)} remark@"..sect_name.."\n"..
+
+								"[remark@"..sect_name.."]\n"..
+								"meet = no_meet\n"..
+								"on_info = {=current_squad_stage(combat:post_combat:idle)} cover@"..sect_name.."_attack\n"..
+								"anim = hide\n"
+								..danger_ltx
+]]
+					ltx[ltx_num + 1] = "on_info2={=current_squad_stage(prepare:wait)}remark@"
+					ltx[ltx_num + 2] = sect_name
+					ltx[ltx_num + 3] = "\n[remark@"
+					ltx[ltx_num + 4] = sect_name
+					ltx[ltx_num + 5] = "]\nmeet=no_meet\non_info={=current_squad_stage(combat:post_combat:idle)}cover@"
+					ltx[ltx_num + 6] = sect_name
+					ltx_num = ltx_num + 7
+					ltx[ltx_num] = "_attack\nanim=hide\n"
+				end
+--[[
+				job_ltx = job_ltx ..	"[cover@"..sect_name.."_attack]\n"..
+							"meet = no_meet\n"..
+							"use_attack_direction = false\n"..
+							"smart = "..target_smart.."\n"
+							..danger_ltx
+]]
+				ltx[ltx_num + 1] = "[cover@"
+				ltx[ltx_num + 2] = sect_name
+				ltx[ltx_num + 3] = "_attack]\nmeet=no_meet\nuse_attack_direction=false\nsmart="
+				ltx[ltx_num + 4] = target_smart
+				ltx_num = ltx_num + 5
+				ltx[ltx_num] = "\n"
+
+				if att_restr ~= nil then
+					ltx_num = ltx_num + 1
+					ltx[ltx_num] = att_string
+				end
+			end
+
+			num = num + job_count
+			it = it + 1
+		end
+
+--		table.insert(stalker_attack_jobs.jobs, stalker_attack_smart_jobs)
+		attack_jobs_num = attack_jobs_num + 1
+		stalker_attack_jobs.jobs[attack_jobs_num] = stalker_attack_smart_jobs
+	end
+
+--	table.insert(stalker_jobs.jobs, stalker_attack_jobs)
+	stalker_jobs.jobs[2] = stalker_attack_jobs		-- #stalker_jobs.jobs + 1 = 2
+
+   --'------------------------------------------------------------------------
+   --'				Defense jobs
+   --'------------------------------------------------------------------------
+
+	local stalker_defence_jobs = {	_prior = 45, jobs = {},
+					_precondition_function =
+
+					function(se_obj, smart)
+						return xr_gulag.defending_smart(se_obj, smart)
+					end
+	}
+
+	--'------------------------------------------------------------------------
+	--'				SNIPER
+	--'------------------------------------------------------------------------
+
+	it = 1
+	num = 0	-- #stalker_defence_jobs.jobs
+
+	if smart_def_restr then
+		str = format("out_restr=%s,", smart_def_restr)
+	end
+
+	way_name = format("%s_sniper_%d_walk", gname, it)
+
+	while level.patrol_path_exists(way_name) do
+
+		local ptr = patrol(way_name)
+		local wp_prop = utils.parse_waypoint_data(way_name, ptr:flags(0), ptr:name(0))
+		local state = "hide"
+		local wp_prop_state = wp_prop.state
+
+		if wp_prop_state ~= nil then
+			if wp_prop_state == "stand" then
+				state = "threat"
+			end
+		end
+
+		t = {	_prior = 30,
+			job_id = {section = format("logic@%s", way_name)},
+			_precondition_params = {way_name = way_name},
+			_precondition_function =
+
+			function(se_obj, smart, precond_params)
+				return combat_restrictor.accessible_job(se_obj, precond_params.way_name)
+			end
+		}
+
+		num = num + 1
+		stalker_defence_jobs.jobs[num] = t
+--[[
+		table.insert(stalker_defence_jobs.jobs, t)
+
+		local job_ltx = "[logic@"..way_name.."]\n"..
+				"active = camper@"..way_name.."\n"..
+
+				"[camper@"..way_name.."]\n"..
+				"meet = meet@generic_lager\n"..
+				"path_walk = sniper_"..it.."_walk\n"..
+				"path_look = sniper_"..it.."_look\n"..
+				"sniper = true\n"..
+				"def_state_campering ="..state.."\n"..
+				"def_state_campering_fire ="..state.."_fire\n"
+]]
+		ltx[ltx_num + 1] = "[logic@"
+		ltx[ltx_num + 2] = way_name
+		ltx[ltx_num + 3] = "]\nactive=camper@"
+		ltx[ltx_num + 4] = way_name
+		ltx[ltx_num + 5] = "\n[camper@"
+		ltx[ltx_num + 6] = way_name
+		ltx[ltx_num + 7] = "]\nmeet=meet@generic_lager\npath_walk=sniper_"
+		ltx[ltx_num + 8] = it
+		ltx[ltx_num + 9] = "_walk\npath_look=sniper_"
+		ltx[ltx_num + 10] = it
+		ltx[ltx_num + 11] = "_look\nsniper=true\ndef_state_campering="
+		ltx[ltx_num + 12] = state
+		ltx[ltx_num + 13] = "\ndef_state_campering_fire="
+		ltx[ltx_num + 14] = state
+		ltx_num = ltx_num + 15
+		ltx[ltx_num] = "_fire\n"
+
+		if smart_def_restr then
+			ltx[ltx_num + 1] = str
+			ltx[ltx_num + 2] = combat_restrictor.get_job_restrictor(way_name)
+			ltx_num = ltx_num + 3
+			ltx[ltx_num] = "\n"
+		end
+
+		it = it + 1
+
+		way_name = format("%s_sniper_%d_walk", gname, it)
+	end
+
+	--'------------------------------------------------------------------------
+	--'				CAMPER
+	--'------------------------------------------------------------------------
+
+	it = 1
+	way_name = format("%s_camper_%d_walk", gname, it)
+
+	while level.patrol_path_exists(way_name) do
+
+		local ptr = patrol(way_name)
+		local wp_prop = utils.parse_waypoint_data(way_name, ptr:flags(0), ptr:name(0))
+		local state = "hide"
+		local radius = 0
+		local wp_prop_state = wp_prop.state
+		local wp_prop_radius = wp_prop.radius
+
+		if wp_prop_state ~= nil then
+			if wp_prop_state == "stand" then
+				state = "threat"
+			end
+		end
+
+		if wp_prop_radius ~= nil then
+			radius = wp_prop_radius
+		end
+
+		t = {	_prior = 45,
+			job_id = {section = format("logic@%s", way_name)},
+			_precondition_params = {way_name = way_name},
+			_precondition_function =
+
+			function(se_obj, smart, precond_params)
+				return combat_restrictor.accessible_job(se_obj, precond_params.way_name)
+			end
+		}
+
+		num = num + 1
+		stalker_defence_jobs.jobs[num] = t
+--[[
+		table.insert(stalker_defence_jobs.jobs, t)
+
+		local job_ltx = "[logic@"..way_name.."]\n"..
+				"active = camper@"..way_name.."\n"..
+
+				"[camper@"..way_name.."]\n"..
+				"meet = meet@generic_lager\n"..
+				"radius = "..tostring(radius).."\n"..
+				"path_walk = camper_"..it.."_walk\n"..
+				"def_state_moving = rush\n"..
+				"def_state_campering ="..state.."\n"..
+				"def_state_campering_fire ="..state.."_fire\n"
+				..danger_ltx
+]]
+		ltx[ltx_num + 1] = "[logic@"
+		ltx[ltx_num + 2] = way_name
+		ltx[ltx_num + 3] = "]\nactive=camper@"
+		ltx[ltx_num + 4] = way_name
+		ltx[ltx_num + 5] = "\n[camper@"
+		ltx[ltx_num + 6] = way_name
+		ltx[ltx_num + 7] = "]\nmeet=meet@generic_lager\nradius="
+		ltx[ltx_num + 8] = radius
+		ltx[ltx_num + 9] = "\npath_walk=camper_"
+		ltx[ltx_num + 10] = it
+		ltx[ltx_num + 11] = "_walk\ndef_state_moving=rush\ndef_state_campering="
+		ltx[ltx_num + 12] = state
+		ltx[ltx_num + 13] = "\ndef_state_campering_fire="
+		ltx[ltx_num + 14] = state
+		ltx_num = ltx_num + 15
+		ltx[ltx_num] = "_fire\n"
+
+		if level.patrol_path_exists(format("%s_camper_%d_look", gname, it)) then
+			ltx[ltx_num + 1] = "path_look=camper_"
+			ltx[ltx_num + 2] = it
+			ltx_num = ltx_num + 3
+			ltx[ltx_num] = "_look\n"
+		end
+
+		if smart_def_restr then
+			ltx[ltx_num + 1] = str
+			ltx[ltx_num + 2] = combat_restrictor.get_job_restrictor(way_name)
+			ltx_num = ltx_num + 3
+			ltx[ltx_num] = "\n"
+		end
+
+		it = it + 1
+
+		way_name = format("%s_camper_%d_walk", gname, it)
+	end
+
+	--'------------------------------------------------------------------------
+	--'				GENERIC COVERS
+	--'------------------------------------------------------------------------
+
+	it = 1
+	string = format("%s_kamp_%d", gname, it)
+
+	while level.patrol_path_exists(string) do
+
+		way_name = format("%s_kamp_%d_task", gname, it)
+		local ptr = patrol(way_name)
+		local wp_prop = utils.parse_waypoint_data(way_name, ptr:flags(0), ptr:name(0))
+		local job_count = 5
+		local wp_prop_count = wp_prop.count
+
+		if wp_prop_count ~= nil then
+			job_count = wp_prop_count
+		end
+
+		local log_gen_def_smrtcov = format("logic@general_defend_smartcover_%s", way_name)
+		local log_gen_def_cov = format("logic@general_defend_cover_%s", way_name)
+
+		for i = 1, job_count do
+
+			t = {	_prior = 43,
+				job_id = {section = log_gen_def_smrtcov},
+				_precondition_params = {way_name = way_name},
+				_precondition_function =
+
+				function(se_obj, smart, precond_params)
+					return combat_restrictor.accessible_job(se_obj, precond_params.way_name) and cover_manager.has_smart_cover(se_obj, smart)
+				end
+			}
+
+--			table.insert(stalker_defence_jobs.jobs, t)
+
+			num = num + 1
+			stalker_defence_jobs.jobs[num] = t
+
+			t = {	_prior = 43,
+				job_id = {section = log_gen_def_cov},
+				_precondition_params = {way_name = way_name},
+				_precondition_function =
+
+				function(se_obj, smart, precond_params)
+					return combat_restrictor.accessible_job(se_obj, precond_params.way_name) and cover_manager.has_cover(se_obj, smart)
+				end
+			}
+
+--			table.insert(stalker_defence_jobs.jobs, t)
+
+			num = num + 1
+			stalker_defence_jobs.jobs[num] = t
+		end
+--[[
+		local job_ltx = "[logic@general_defend_smartcover_"..way_name.."]\n"..
+				"active = smartcover@"..way_name.."\n"..
+
+				"[smartcover@"..way_name.."]\n"..
+				"path_walk = kamp_"..it.."_task\n"..
+				"meet = no_meet\n"..
+				"cover_state = {=cover_attack ~50} fire_target,{=cover_attack} fire_no_lookout_target, default_behaviour\n"..
+				"def_state_moving = sneak_run\n"..
+				"sound_idle = post_combat_wait_long\n"..
+				"use_precalc_cover = true\n"
+				..danger_ltx	-- we need a danger section reference for this section, too
+
+		job_ltx = job_ltx ..	"[logic@general_defend_cover_"..way_name.."]\n"..
+					"active = cover@"..way_name.."\n"..
+
+					"[cover@"..way_name.."]\n"..
+					"path_walk = kamp_"..it.."_task\n"..
+					"meet = no_meet\n"..
+					"anim = {=cover_attack} hide_fire, hide\n"..
+					"smart = "..gname.."\n"..
+					"sound_idle = post_combat_wait_long\n"..
+					"use_attack_direction = false\n"..
+					"use_precalc_cover = true\n"
+					..danger_ltx
+]]
+		ltx[ltx_num + 1] = "[logic@general_defend_smartcover_"
+		ltx[ltx_num + 2] = way_name
+		ltx[ltx_num + 3] = "]\nactive=smartcover@"
+		ltx[ltx_num + 4] = way_name
+		ltx[ltx_num + 5] = "\n[smartcover@"
+		ltx[ltx_num + 6] = way_name
+		ltx[ltx_num + 7] = "]\npath_walk=kamp_"
+		ltx[ltx_num + 8] = it
+		ltx[ltx_num + 9] = "_task\nmeet=no_meet\ncover_state={=cover_attack~50}fire_target,{=cover_attack}fire_no_lookout_target,default_behaviour\ndef_state_moving=sneak_run\nsound_idle=post_combat_wait_long\nuse_precalc_cover=true\n[logic@general_defend_cover_"
+		ltx[ltx_num + 10] = way_name
+		ltx[ltx_num + 11] = "]\nactive=cover@"
+		ltx[ltx_num + 12] = way_name
+		ltx[ltx_num + 13] = "\n[cover@"
+		ltx[ltx_num + 14] = way_name
+		ltx[ltx_num + 15] = "]\npath_walk=kamp_"
+		ltx[ltx_num + 16] = it
+		ltx[ltx_num + 17] = "_task\nmeet=no_meet\nanim={=cover_attack}hide_fire,hide\nsmart="
+		ltx[ltx_num + 18] = gname
+		ltx_num = ltx_num + 19
+		ltx[ltx_num] = "\nsound_idle=post_combat_wait_long\nuse_attack_direction=false\nuse_precalc_cover=true\n"
+
+		if smart_def_restr then
+			ltx[ltx_num + 1] = str
+			ltx[ltx_num + 2] = combat_restrictor.get_job_restrictor(way_name)
+			ltx_num = ltx_num + 3
+			ltx[ltx_num] = "\n"
+		end
+
+		it = it + 1
+
+		string = format("%s_kamp_%d", gname, it)
+	end
+
+--	table.insert(stalker_jobs.jobs, stalker_defence_jobs)
+	stalker_jobs.jobs[3] = stalker_defence_jobs		-- #stalker_jobs.jobs + 1 = 3
+
+   --'------------------------------------------------------------------------
+   --'				Emission jobs
+   --'------------------------------------------------------------------------
+
+	local stalker_surge_jobs = {	_prior = 100, jobs = {},
+					_precondition_function =
+
+					function()
+						return xr_conditions.is_surge_activated()
+					end
+	}
+
+	--'------------------------------------------------------------------------
+	--'				HIDE FROM SURGE
+	--'------------------------------------------------------------------------
+
+	if smart.surge_hide_avaliable then
+
+		it = 1
+		num = 0	-- #stalker_surge_jobs.jobs
+		way_name = format("%s_surge_hide_%d", gname, it)
+
+		while level.patrol_path_exists(way_name) do
+
+			local ptr = patrol(way_name)
+			local wp_prop = utils.parse_waypoint_data(way_name, ptr:flags(0), ptr:name(0))
+			local job_count = 5
+			local def_prior = 100
+			local wp_prop_count = wp_prop.count
+
+			if wp_prop_count ~= nil then
+				job_count = wp_prop_count
+			end
+
+			local logic_way_name = format("logic@%s", way_name)
+			local priority = def_prior - (it - 1)
+
+			for i = 1, job_count do
+				t = {_prior = priority, job_id = {section = logic_way_name}}
+--				table.insert(stalker_surge_jobs.jobs, t)
+				stalker_surge_jobs.jobs[num + i] = t
+			end
+
+			num = num + job_count
+--[[
+			local job_ltx = "[logic@"..way_name.."]\n"..
+					"active = surge_hide@"..way_name.."\n"..
+
+					"[surge_hide@"..way_name.."]\n"..
+					"path_walk = surge_hide_"..it.."\n"..
+					"on_info = {=is_surge_complete} walker@"..way_name.."\n"..
+
+					"[walker@"..way_name.."]\n"..
+					"path_walk = surge_hide_"..it.."\n"
+]]
+			ltx[ltx_num + 1] = "[logic@"
+			ltx[ltx_num + 2] = way_name
+			ltx[ltx_num + 3] = "]\nactive=surge_hide@"
+			ltx[ltx_num + 4] = way_name
+			ltx[ltx_num + 5] = "\n[surge_hide@"
+			ltx[ltx_num + 6] = way_name
+			ltx[ltx_num + 7] = "]\npath_walk=surge_hide_"
+			ltx[ltx_num + 8] = it
+			ltx[ltx_num + 9] = "\non_info={=is_surge_complete}walker@"
+			ltx[ltx_num + 10] = way_name
+			ltx[ltx_num + 11] = "\n[walker@"
+			ltx[ltx_num + 12] = way_name
+			ltx[ltx_num + 13] = "]\npath_walk=surge_hide_"
+			ltx[ltx_num + 14] = it
+			ltx_num = ltx_num + 15
+			ltx[ltx_num] = "\n"
+
+			it = it + 1
+
+			way_name = format("%s_surge_hide_%d", gname, it)
+		end
+
+		if it <= smart.squad_capacity then
+
+			way_name = format("%s_kamp_%d", gname, it)
+
+			while level.patrol_path_exists(way_name) do
+
+				local ptr = patrol(way_name)
+				local wp_prop = utils.parse_waypoint_data(way_name, ptr:flags(0), ptr:name(0))
+				local job_count = 5
+				local def_prior = 100
+				local wp_prop_count = wp_prop.count
+
+				if wp_prop_count ~= nil then
+					job_count = wp_prop_count
+				end
+
+				local log_surge_hide_way = format("logic@surge_hide_%s", way_name)
+				local priority = def_prior - (it - 1)
+
+				for i = 1, job_count do
+					t = {_prior = priority, job_id = {section = log_surge_hide_way}}
+--					table.insert(stalker_surge_jobs.jobs, t)
+					stalker_surge_jobs.jobs[num + i] = t
+				end
+
+				num = num + job_count
+--[[
+				local job_ltx = "[logic@surge_hide_"..way_name.."]\n"..
+						"active = surge_hide@"..way_name.."\n"..
+
+						"[surge_hide@"..way_name.."]\n"..
+						"path_walk = kamp_"..it.."_task\n"..
+						"on_info = {=is_surge_complete} walker@"..way_name.."\n"..
+
+						"[walker@"..way_name.."]\n"..
+						"path_walk = kamp_"..it.."_task\n"
+]]
+				ltx[ltx_num + 1] = "[logic@surge_hide_"
+				ltx[ltx_num + 2] = way_name
+				ltx[ltx_num + 3] = "]\nactive=surge_hide@"
+				ltx[ltx_num + 4] = way_name
+				ltx[ltx_num + 5] = "\n[surge_hide@"
+				ltx[ltx_num + 6] = way_name
+				ltx[ltx_num + 7] = "]\npath_walk=kamp_"
+				ltx[ltx_num + 8] = it
+				ltx[ltx_num + 9] = "_task\non_info={=is_surge_complete}walker@"
+				ltx[ltx_num + 10] = way_name
+				ltx[ltx_num + 11] = "\n[walker@"
+				ltx[ltx_num + 12] = way_name
+				ltx[ltx_num + 13] = "]\npath_walk=kamp_"
+				ltx[ltx_num + 14] = it
+				ltx_num = ltx_num + 15
+				ltx[ltx_num] = "_task\n"
+
+				it = it + 1
+
+				way_name = format("%s_kamp_%d", gname, it)
+			end
+		end
+
+--		table.insert(stalker_jobs.jobs, stalker_surge_jobs)
+		stalker_jobs.jobs[4] = stalker_surge_jobs		-- #stalker_jobs.jobs + 1 = 4
+	end
+
+--	table.insert(job_table, stalker_jobs)
+	job_table[1] = stalker_jobs		-- #job_table + 1 = 1
+
+--'------------------------------------------------------------------------
+--'				Monster jobs
+--'------------------------------------------------------------------------
+
+	local monster_jobs = {_precondition_is_monster = true, _prior = 50, jobs = {"", ""}}
+
+   --'------------------------------------------------------------------------
+   --'				   General jobs
+   --'------------------------------------------------------------------------
+
+	local monster_general_jobs = {_prior = 40, jobs = {}}
+
+	--'------------------------------------------------------------------------
+	--'				MOB HOME
+	--'------------------------------------------------------------------------
+
+	it = 1
+	num = 0 -- #monster_general_jobs.jobs
+	way_name = format("%s_kamp_%d_task", gname, it)
+
+	while level.patrol_path_exists(way_name) do
+
+		local ptr = patrol(way_name)
+		local wp_prop = utils.parse_waypoint_data(way_name, ptr:flags(0), ptr:name(0))
+		local job_count = 10
+		local home_min_radius = 15
+		local home_max_radius = 30
+		local wp_prop_m_count = wp_prop.m_count
+		local wp_prop_min = wp_prop.min
+		local wp_prop_max = wp_prop.max
+
+		if wp_prop_m_count ~= nil then
+			job_count = wp_prop_m_count
+		end
+
+		if wp_prop_min ~= nil then
+			home_min_radius = wp_prop_min
+		end
+
+		if wp_prop_max ~= nil then
+			home_max_radius = wp_prop_max
+		end
+
+		local gname_home_it = format("%s_home_%d", gname, it)
+		local log_gname_home_it = format("logic@%s", gname_home_it)
+
+		for i = 1, job_count do
+			t = {_prior = 40, job_id = {section = log_gname_home_it}}
+--			table.insert(monster_general_jobs.jobs, t)
+			monster_general_jobs.jobs[num + i] = t
+		end
+
+		num = num + job_count
+--[[
+		local job_ltx = "["..log_gname_home_it.."]\n"..
+				"active = mob_home@"..gname_home_it.."\n"..
+
+				"[mob_home@"..gname_home_it.."]\n"..
+				"path_home = kamp_"..it.."_task\n"..
+				"home_min_radius = "..home_min_radius.."\n"..
+				"home_max_radius = "..home_max_radius.."\n"
+]]
+		ltx[ltx_num + 1] = "["
+		ltx[ltx_num + 2] = log_gname_home_it
+		ltx[ltx_num + 3] = "]\nactive=mob_home@"
+		ltx[ltx_num + 4] = gname_home_it
+		ltx[ltx_num + 5] = "\n[mob_home@"
+		ltx[ltx_num + 6] = gname_home_it
+		ltx[ltx_num + 7] = "]\npath_home=kamp_"
+		ltx[ltx_num + 8] = it
+		ltx[ltx_num + 9] = "_task\nhome_min_radius="
+		ltx[ltx_num + 10] = home_min_radius
+		ltx[ltx_num + 11] = "\nhome_max_radius="
+		ltx[ltx_num + 12] = home_max_radius
+		ltx_num = ltx_num + 13
+		ltx[ltx_num] = "\n"
+
+		if smart_def_restr then
+			ltx_num = ltx_num + 1
+			ltx[ltx_num] = smart_def_string
+		end
+
+		it = it + 1
+
+		way_name = format("%s_kamp_%d_task", gname, it)
+	end
+
+--	table.insert(monster_jobs.jobs, monster_general_jobs)
+	monster_jobs.jobs[1] = monster_general_jobs		-- #monster_jobs.jobs + 1 = 1
+
+   --'------------------------------------------------------------------------
+   --'				Attack smart
+   --'------------------------------------------------------------------------
+
+	local monster_attack_jobs = {_prior = 50, jobs = {}, _current_squad_action = "attack_point"}
+
+	for k, v in pairs (board:get_nearest_smarts(smart)) do
+
+		local target_smart = v:name()
+		local target_smart_obj = v
+		local monster_attack_smart_jobs = {_prior = 50, jobs = {}, _current_squad_action = "attack_point", _squad_attack_point = target_smart}
+
+	--'------------------------------------------------------------------------
+	--'				MONSTER ATTACK
+	--'------------------------------------------------------------------------
+
+		local att_restr = target_smart_obj.att_restr
+
+		if att_restr then
+			str = format("out_restr=%s\n", att_restr)
+		end
+
+		it = 1
+		num = 0 -- #monster_attack_smart_jobs.jobs
+
+		while level.patrol_path_exists(format("%s_kamp_%d_task", target_smart, it)) do
+
+			local job_count = 10
+			local home_min_radius = 15
+			local home_max_radius = 30
+
+			for i = 1, job_count do
+
+				local sect_name = format("%s_to_%s_monster_attack_%d_%d", gname, target_smart, i, it)
+
+				t = {_prior = 50, _attack_job = true, job_id = {section = format("logic@%s", sect_name), prefix_name = target_smart}}
+
+				monster_attack_smart_jobs.jobs[num + i] = t
+--[[
+				table.insert(monster_attack_smart_jobs.jobs, t)
+
+				local job_ltx = "[logic@"..sect_name.."]\n"..
+						"active = mob_home@"..sect_name.."\n"..
+
+						"[mob_home@"..sect_name.."]\n"..
+						"agressive = true\n"..
+						"path_home = kamp_"..it.."_task\n"..
+						"home_min_radius = "..home_min_radius.."\n"..
+						"home_max_radius = "..home_max_radius.."\n"..
+						"on_info = {=npc_to_smart_dist("..target_smart..":50)} mob_home@"..sect_name.."_arrived %=request_current_squad_stage(combat)%\n"..
+
+						"[mob_home@"..sect_name.."_arrived]\n"..
+						"agressive = true\n"..
+						"path_home = kamp_"..it.."_task\n"..
+						"home_min_radius = "..home_min_radius.."\n"..
+						"home_max_radius = "..home_max_radius.."\n"
+]]
+				ltx[ltx_num + 1] = "[logic@"
+				ltx[ltx_num + 2] = sect_name
+				ltx[ltx_num + 3] = "]\nactive=mob_home@"
+				ltx[ltx_num + 4] = sect_name
+				ltx[ltx_num + 5] = "\n[mob_home@"
+				ltx[ltx_num + 6] = sect_name
+				ltx[ltx_num + 7] = "]\nagressive=true\npath_home=kamp_"
+				ltx[ltx_num + 8] = it
+				ltx[ltx_num + 9] = "_task\nhome_min_radius="
+				ltx[ltx_num + 10] = home_min_radius
+				ltx[ltx_num + 11] = "\nhome_max_radius="
+				ltx[ltx_num + 12] = home_max_radius
+				ltx[ltx_num + 13] = "\non_info={=npc_to_smart_dist("
+				ltx[ltx_num + 14] = target_smart
+				ltx[ltx_num + 15] = ":50)}mob_home@"
+				ltx[ltx_num + 16] = sect_name
+				ltx[ltx_num + 17] = "_arrived%=request_current_squad_stage(combat)%\n[mob_home@"
+				ltx[ltx_num + 18] = sect_name
+				ltx[ltx_num + 19] = "_arrived]\nagressive=true\npath_home=kamp_"
+				ltx[ltx_num + 20] = it
+				ltx[ltx_num + 21] = "_task\nhome_min_radius="
+				ltx[ltx_num + 22] = home_min_radius
+				ltx[ltx_num + 23] = "\nhome_max_radius="
+				ltx[ltx_num + 24] = home_max_radius
+				ltx_num = ltx_num + 25
+				ltx[ltx_num] = "\n"
+
+				if att_restr ~= nil then
+					ltx_num = ltx_num + 1
+					ltx[ltx_num] = str
+				end
+			end
+
+			num = num + job_count
+			it = it + 1
+		end
+
+--		table.insert(monster_attack_jobs.jobs, monster_attack_smart_jobs)
+		monster_attack_jobs.jobs[#monster_attack_jobs.jobs + 1] = monster_attack_smart_jobs
+	end
+
+--	table.insert(monster_jobs.jobs, monster_attack_jobs)
+	monster_jobs.jobs[2] = monster_attack_jobs		-- #monster_jobs.jobs + 1 = 2
+
+--	table.insert(job_table, monster_jobs)
+	job_table[2] = monster_jobs		-- #job_table + 1 = 2
+
+--'------------------------------------------------------------------------
+--'				Exclusive jobs
+--'------------------------------------------------------------------------
+
+	local smart_ini = smart:spawn_ini()
+	if smart_ini:section_exist("smart_terrain") then
+		if smart_ini:section_exist("exclusive") then
+			local n = smart_ini:line_count("exclusive")
+			local result, id = "", ""
+			for i = 0, n - 1 do
+				result, id = smart_ini:r_line("exclusive", i, "", "")
+				add_exclusive_job("exclusive", id, smart_ini, job_table)
+			end
+		else
+			num = 1
+			string = format("work%d", num)
+			while smart_ini:line_exist("smart_terrain", string) do
+				add_exclusive_job("smart_terrain", string, smart_ini, job_table)
+				num = num + 1
+				string = format("work%d", num)
+			end
+		end
+	end
+
+	return job_table
+end
+
+function add_exclusive_job(sect, work_field, smart_ini, job_table)
+
+	local work = utils.cfg_get_string(smart_ini, sect, work_field, nil, false, "")
+	if work == nil then
+		return
+	end
+
+	local format = string.format
+
+	local ini_path = format("scripts\\%s", work)		-- "\scripts\\"..work
+	local fs = getFS()
+
+	if fs:exist("$game_config$", ini_path) == nil then
+		abort("[gulag_general.add_exclusive_job]: There is no such configuration file: '%s'.", tostring(ini_path))
+	end
+
+	local logic_work_field = format("logic@%s", work_field)
+
+	local job_ini_file = ini_file(ini_path)
+	local job_online = utils.cfg_get_string(job_ini_file, logic_work_field, "job_online", db.actor, false , "", nil)
+	local new_prior = utils.cfg_get_number(job_ini_file, logic_work_field, "prior", nil, false, 45)
+	local job_suitable = utils.cfg_get_string(job_ini_file, logic_work_field, "suitable", smart, false, "")
+	local is_monster = utils.cfg_get_bool(job_ini_file, logic_work_field, "monster_job", smart, false, false)
+
+	if job_suitable == nil then
+		local t = {_prior = new_prior, _precondition_is_monster = is_monster, job_id = {section = logic_work_field, ini_path = ini_path, online = job_online, ini_file = job_ini_file}}
+--		table.insert(job_table, t)
+		job_table[#job_table + 1] = t
+		return
+	end
+
+	local condlist = xr_logic.parse_condlist(smart, logic_work_field, "suitable", job_suitable)
+
+	local t = {	_prior = new_prior,
+			_precondition_is_monster = is_monster,
+			job_id = {section = logic_work_field, ini_path = ini_path, ini_file = job_ini_file, online = job_online},
+			_precondition_params = {condlist = condlist},
+			_precondition_function =
+
+			function(se_obj, smart, precond_params)
+				return xr_logic.pick_section_from_condlist(db.actor, se_obj, precond_params.condlist) ~= nil
+			end
+	}
+
+--	table.insert(job_table, t)
+	local num = #job_table
+	job_table[num + 1] = t
+
+	t = {_prior = -1, _precondition_is_monster = is_monster, job_id = {section = logic_work_field, ini_file = job_ini_file}}
+
+--	table.insert(job_table, t)
+	job_table[num + 2] = t
+end
+
+--------------------------------------------------------------------------
+-- Dynamic ltx
+--------------------------------------------------------------------------
+
+function load_ltx()
+--	dbglog(ltx and #ltx)
+	local dyn_ltx = ltx and table.concat(ltx)
+	ltx = nil
+--[[
+	local a, b = 1, 1800
+	local sub = string.sub
+	local substring = sub(dyn_ltx, a, b)
+	while (substring ~= "") do
+		error_log("\n"..substring)
+		a = b + 1
+		b = b + 1800
+		substring = sub(dyn_ltx, a, b)
+	end
+--	get_console():execute("flush")
+]]
+	return dyn_ltx
+end

@@ -1,0 +1,13 @@
+[logic]
+active = sr_idle@1
+
+[sr_idle@1]
+on_info = {+yan_ready_actor_cut2} sr_idle@spawn1
+
+[sr_idle@spawn1]
+on_info = %=clear_smart_terrain(yan_smart_terrain_5_3) =create_squad(yan_squad_zombi_in_sci_base7:yan_smart_terrain_5_3)% sr_idle@spawn2
+
+[sr_idle@spawn2]
+on_info = %=clear_smart_terrain(yan_smart_terrain_zombi_spawn) =create_squad(yan_squad_zombi_in_sci_base2:yan_smart_terrain_zombi_spawn)% sr_idle@end
+
+[sr_idle@end]

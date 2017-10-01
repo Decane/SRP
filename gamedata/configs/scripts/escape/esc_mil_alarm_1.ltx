@@ -1,0 +1,21 @@
+[logic]
+active = sr_idle@alarm
+
+[sr_idle@alarm]
+on_info = {+esc_actor_target} sr_idle@alarms %=play_sound(esc_mil_target_detected)%
+on_info2 = {=dist_to_actor_le(100) +esc_came_from_north +esc_minigunner} sr_idle@alarms %=play_sound(esc_mil_target_detected)%
+
+[sr_idle@alarms]
+on_signal = sound_end | sr_idle@sirena %=play_sound(alarm) +esc_fire +esc_alarm -esc_came_from_north -esc_actor_target%
+
+[sr_idle@wait]
+on_info = {+esc_dead_megafon} nil %=stop_sound -esc_alarm%
+on_info2 = {=dist_to_actor_le(150)} sr_idle@sirena %=play_sound(alarm) +esc_alarm%, sr_idle@wait_new
+
+[sr_idle@sirena]
+on_signal = sound_end | sr_idle@wait
+on_info = {+esc_dead_megafon} nil %=stop_sound -esc_alarm%
+
+[sr_idle@wait_new]
+on_info = {+esc_dead_megafon} nil %=stop_sound -esc_alarm%
+on_info2 = {=is_smart_in_combat(esc_smart_terrain_3_16)} sr_idle@sirena %=play_sound(alarm) +esc_alarm%

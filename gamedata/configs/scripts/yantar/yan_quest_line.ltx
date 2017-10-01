@@ -1,0 +1,33 @@
+[logic]
+active = sr_idle@yan_actor_go_base_science
+
+[sr_idle@yan_actor_go_base_science]
+on_info = {+yan_ready_actor_cut2} sr_idle@yan_quest_doc
+
+[sr_idle@yan_quest_doc]
+on_info = {+yan_quest_doc} sr_idle@yan_otnesti_doc_saharavy %=give_inited_task(storyline:yan_quest_doc:stalker)%
+
+[sr_idle@yan_otnesti_doc_saharavy]
+on_info = {+yan_otnesti_doc_saharavy} sr_idle@yan_quest_levsha %=give_inited_task(storyline:yan_otnesti_doc_saharavy:stalker)%
+
+[sr_idle@yan_quest_levsha]
+on_info = {+yan_quest_levsha} sr_idle@yan_ystanovka %=give_inited_task(storyline:yan_quest_levsha:stalker)%
+
+[sr_idle@yan_ystanovka]
+on_info = {+yan_proriv_k_ystanovke} sr_idle@yan_actor_start_to_go %=give_inited_task(storyline:yan_proriv_k_ystanovke:stalker)%
+
+[sr_idle@yan_actor_start_to_go]
+on_info = {+yan_actor_start_to_go} sr_idle@yan_actor_destroy_wave1 %=give_inited_task(storyline:yan_repair_defend:stalker)%
+on_info2 = {+yan_stop_spawn_cut6} sr_idle@yan_actor_go_to_red_forest
+
+[sr_idle@yan_actor_destroy_wave1]
+on_info = {+yan_hold_position_cut6} sr_idle@yan_actor_destroy_wave2 %=give_inited_task(storyline:yan_actor_destroy_wave1:stalker)%
+on_info2 = {+yan_stop_spawn_cut6} sr_idle@yan_actor_go_to_red_forest
+
+[sr_idle@yan_actor_destroy_wave2]
+on_info = {+yan_stop_spawn_cut6} sr_idle@yan_actor_go_to_red_forest
+
+[sr_idle@yan_actor_go_to_red_forest]
+on_info = {+yan_go_to_red_forest_cut6} sr_idle@stop %=give_inited_task(storyline:yan_actor_go_to_red_forest:stalker)%
+
+[sr_idle@stop]

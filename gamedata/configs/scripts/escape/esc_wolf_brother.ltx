@@ -1,0 +1,66 @@
+; Decane 22.01.2013: optimized script and fixed sticky condition which caused hound to die if distance to player >= 100 even after escort quest complete
+; Decane 06.02.2013: added proximity meet ignore condition while hound is prisoner
+; Decane 13.09.2015: made it possible to talk to hound with a weapon drawn even if not friendly
+; esc_wolf_brother_2: killed bandits
+; esc_wolf_brother_3: escorted hound
+
+[logic]
+active = walker@prisoner
+meet = meet
+on_death = death
+wounded = wounded
+
+[meet]
+meet_state = 150 | nil@nil									; hound does not get up when player approaches without weapon
+meet_state_wpn = 150 | nil@nil									; hound does not get up when player approaches with weapon
+abuse = false											; hound does not try to ninja the player on 'use' button spam
+use = true
+use_wpn = true											; Scar can talk to hound even if weapon drawn
+
+[walker@prisoner]
+path_walk = esc_wolf_brother_walk_1
+path_look = esc_wolf_brother_look_1
+on_info = {+esc_wolf_brother_3} walker@death																						; if escorted hound, go directly to idle logic
+on_info2 = {-esc_wolf_brother_info =squad_exist(esc_smart_terrain_9_10_bandit_other_squad)} walker@prisoner %=set_squad_goodwill_to_npc(esc_smart_terrain_9_10_bandit_other_squad:friend) +esc_wolf_brother_info%	; set bandit squad to befriend hound once
+on_info3 = {-esc_wolf_brother_3 +esc_wolf_brother_2} walker@timer;walker@run																		; if not escorted hound but killed bandits then walker@run
+def_state_standing = prisoner
+meet = meet
+combat_ignore_cond = true
+
+[walker@timer]
+path_walk = esc_wolf_brother_walk_1
+path_look = esc_wolf_brother_look_2
+on_game_timer = 40 | walker@run
+meet = no_meet
+combat_ignore_cond = true
+
+[walker@run]
+path_walk = esc_wolf_brother_walk_2
+path_look = esc_wolf_brother_look_2
+def_state_moving = run
+meet = no_meet
+on_npc_in_zone = 429 | esc_space_restrictors_2_12_sr_defense | walker@death %=restore_health +esc_wolf_brother_3%	; restore full health at rookie camp and walker@death
+on_actor_dist_ge_nvis = 100 | %+esc_wolf_brother_fail =kill_npc%							; kill hound if player distance >= 100 iff not escorted hound
+
+;[walker@walk]
+;path_walk = esc_wolf_brother_walk_3
+;path_look = esc_wolf_brother_look_3
+;meet = meet
+;def_state_moving = walk
+;on_info = %+esc_wolf_brother_3%
+
+[walker@death]											; idle logic - ignore 'death' header: section has nothing to do with death
+path_walk = esc_wolf_brother_walk_3
+path_look = esc_wolf_brother_look_3
+;meet = meet
+def_state_moving = walk
+
+[death]
+on_info = %+esc_wolf_brother_fail%
+
+[wounded]
+hp_state        = 0 | wounded_heavy@help_heavy
+hp_state_see    = 0 | wounded_heavy@help_heavy
+hp_victim       = 0 | nil
+hp_fight        = 0 | false
+hp_cover        = 0 | false

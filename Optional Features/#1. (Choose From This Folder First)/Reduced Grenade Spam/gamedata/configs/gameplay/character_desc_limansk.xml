@@ -1,0 +1,268 @@
+<?xml version='1.0' encoding="windows-1251"?>
+
+<xml>
+	<specific_character id="lim_cs_commander_default" team_default = "1">
+
+		<name>GENERATE_NAME_stalker</name>
+		<icon>ui_npc_u_nebo_1</icon>
+
+		<class>lim_cs_commander</class>
+		<community>csky</community> <terrain_sect>stalker_terrain</terrain_sect>
+
+		<rank>900</rank>
+		<reputation>0</reputation>
+
+		<money min="5000" max="7000" infinitive="0"/>
+
+		<visual>actors\stalker_nebo\stalker_nebo_1</visual>
+		<snd_config>characters_voice\human_02\csky\</snd_config>
+
+		<supplies>
+			[spawn] \n
+			device_torch \n
+			hand_radio \n
+			wpn_ak74_up2 = 1, scope, launcher \n
+			ammo_5.45x39_ap \n
+			grenade_f1 = 3 \n
+		</supplies>
+
+		<mechanic_mode>1</mechanic_mode>
+
+		<start_dialog>hello_dialog</start_dialog>
+
+#include "gameplay\character_criticals_1.xml"
+
+	</specific_character>
+
+	<specific_character id="lim_enemy_sniper_stalker" team_default = "1">
+
+		<name>GENERATE_NAME_stalker</name>
+		<icon>ui_npc_u_monolith_2</icon>
+
+		<class>lim_enemy_sniper_stalker</class>
+		<community>monolith</community> <terrain_sect>stalker_terrain</terrain_sect>
+
+		<rank>800</rank>
+		<reputation>0</reputation>
+
+		<money min="1000" max="2000" infinitive="0"/>
+
+		<visual>actors\stalker_monolith\stalker_monolith_2</visual>
+		<snd_config>characters_voice\human_03\monolith\</snd_config>
+
+		<supplies>
+			[spawn] \n
+			device_torch \n
+			wpn_beretta \n
+			wpn_svd \n
+			ammo_7.62x54_7h1 \n
+		</supplies>
+
+#include "gameplay\character_criticals_1.xml"
+
+	</specific_character>
+
+	<specific_character id="lim_stalker_enemy_default_0" team_default = "1">
+
+		<name>GENERATE_NAME_stalker</name>
+		<icon>ui_npc_u_monolith_3</icon>
+
+		<class>lim_stalker_enemy</class>
+		<community>monolith</community> <terrain_sect>stalker_terrain</terrain_sect>
+
+		<rank>500</rank>
+		<reputation>0</reputation>
+
+		<money min="300" max="700" infinitive="0"/>
+
+		<visual>actors\stalker_monolith\stalker_monolith_3</visual>
+		<snd_config>characters_voice\human_03\monolith\</snd_config>
+
+		<supplies>
+			[spawn] \n
+			device_torch \n
+			wpn_val \n
+			ammo_9x39_ap \n
+			wpn_colt1911 \n
+			ammo_11.43x23_fmj \n
+			grenade_f1 = 3, prob=0.1 \n
+		</supplies>
+
+#include "gameplay\character_criticals_1.xml"
+
+	</specific_character>
+
+	<specific_character id="lim_stalker_enemy_default_1" team_default = "1">
+
+		<name>GENERATE_NAME_stalker</name>
+		<icon>ui_npc_u_monolith_2</icon>
+
+		<class>lim_stalker_enemy</class>
+		<community>monolith</community> <terrain_sect>stalker_terrain</terrain_sect>
+
+		<rank>500</rank>
+		<reputation>0</reputation>
+
+		<money min="300" max="700" infinitive="0"/>
+
+		<visual>actors\stalker_monolith\stalker_monolith_2</visual>
+		<snd_config>characters_voice\human_03\monolith\</snd_config>
+
+		<supplies>
+			[spawn] \n
+			device_torch \n
+			wpn_ak74 \n
+			ammo_5.45x39_ap \n
+			wpn_walther \n
+			ammo_9x19_fmj \n
+			grenade_f1 = 2, prob=0.1 \n
+		</supplies>
+
+#include "gameplay\character_criticals_1.xml"
+
+	</specific_character>
+	
+	<specific_character id="lim_stalker_enemy_default_2" team_default = "1">
+
+		<name>GENERATE_NAME_stalker</name>
+		<icon>ui_npc_u_monolith_2</icon>
+
+		<class>lim_stalker_enemy</class>
+		<community>monolith</community> <terrain_sect>stalker_terrain</terrain_sect>
+
+		<rank>500</rank>
+		<reputation>0</reputation>
+
+		<money min="300" max="700" infinitive="0"/>
+
+		<visual>actors\stalker_monolith\stalker_monolith_2</visual>
+		<snd_config>characters_voice\human_03\monolith\</snd_config>
+
+		<supplies>
+			[spawn] \n
+			device_torch \n
+			wpn_sig550 \n
+			ammo_5.56x45_ap \n
+			wpn_fort \n
+			ammo_9x18_fmj \n
+			grenade_f1 = 2, prob=0.1 \n
+		</supplies>
+
+#include "gameplay\character_criticals_1.xml"
+
+	</specific_character>
+	
+	<specific_character id="lim_stalker_enemy_default_3" team_default = "1">
+
+		<name>GENERATE_NAME_stalker</name>
+		<icon>ui_npc_u_monolith_2</icon>
+
+		<class>lim_stalker_enemy</class>
+		<community>monolith</community> <terrain_sect>stalker_terrain</terrain_sect>
+
+		<rank>500</rank>
+		<reputation>0</reputation>
+
+		<money min="300" max="700" infinitive="0"/>
+
+		<visual>actors\stalker_monolith\stalker_monolith_2</visual>
+		<snd_config>characters_voice\human_03\monolith\</snd_config>
+
+		<supplies>
+			[spawn] \n
+			device_torch \n
+			wpn_abakan = 1, scope \n
+			ammo_5.45x39_ap \n
+			wpn_pm \n
+			ammo_9x18_fmj \n
+			grenade_f1 = 2, prob=0.1 \n
+		</supplies>
+
+#include "gameplay\character_criticals_1.xml"
+
+	</specific_character>
+	
+	<specific_character id="lim_stalker_enemy_default_4" team_default = "1">
+
+		<name>GENERATE_NAME_stalker</name>
+		<icon>ui_npc_u_monolith_2</icon>
+
+		<class>lim_stalker_enemy</class>
+		<community>monolith</community> <terrain_sect>stalker_terrain</terrain_sect>
+
+		<rank>500</rank>
+		<reputation>0</reputation>
+
+		<money min="300" max="700" infinitive="0"/>
+
+		<visual>actors\stalker_monolith\stalker_monolith_2</visual>
+		<snd_config>characters_voice\human_03\monolith\</snd_config>
+
+		<supplies>
+			[spawn] \n
+			device_torch \n
+			wpn_lr300 \n
+			ammo_5.56x45_ap \n
+			wpn_hpsa \n
+			ammo_9x19_fmj \n
+			grenade_f1 = 2, prob=0.1 \n
+		</supplies>
+
+#include "gameplay\character_criticals_1.xml"
+
+	</specific_character>
+
+	<specific_character id="lim_bandit_minigunner" team_default = "1">
+
+		<name>GENERATE_NAME_stalker</name>
+		<icon>ui_npc_u_neutral_4</icon>
+
+		<class>lim_bandit_minigunner</class>
+		<community>bandit</community> <terrain_sect>stalker_terrain</terrain_sect>
+
+		<rank>450</rank>
+		<reputation>0</reputation>
+
+		<money min="1000" max="2750" infinitive="0"/>
+
+		<visual>actors\stalker_neutral\stalker_neutral_4</visual>
+		<snd_config>characters_voice\human_03\bandit\</snd_config>
+
+		<supplies>
+			[spawn] \n
+			device_torch \n
+			wpn_pkm \n
+			ammo_pkm_100 \n
+		</supplies>
+
+#include "gameplay\character_criticals_1.xml"
+
+	</specific_character>
+	
+	<specific_character id="lim_bridge_minigunner" team_default = "1">
+
+		<name>GENERATE_NAME_stalker</name>
+		<icon>ui_npc_u_soldier_4</icon>
+
+		<class>lim_bridge_minigunner</class>
+		<community>army</community> <terrain_sect>stalker_terrain</terrain_sect>
+
+		<rank>910</rank>
+		<reputation>0</reputation>
+
+		<money min="1000" max="3000" infinitive="0"/>
+
+		<visual>actors\stalker_soldier\stalker_soldier_4</visual>
+		<snd_config>characters_voice\human_03\military\</snd_config>
+
+		<supplies>
+			[spawn] \n
+			device_torch \n
+			wpn_pkm \n
+			ammo_pkm_100 \n
+		</supplies>
+
+#include "gameplay\character_criticals_1.xml"
+
+	</specific_character>
+</xml>

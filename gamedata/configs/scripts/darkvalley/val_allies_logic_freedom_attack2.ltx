@@ -1,0 +1,89 @@
+;----------------------------------------------------------------------------- Walker 1
+
+[logic@work10]
+active = walker@start_work6
+suitable = {-val_destroy_killer_base_done =check_npc_name(val_freedom_attack_6)}
+prior = 200
+
+[walker@start_work6]
+out_restr = val_smart_2_1_bufer_zone_2
+path_walk = freedom_attack_walker_6_walk
+path_look = freedom_attack_walker_6_look
+meet = no_meet
+def_state_standing = hide
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+combat_ignore_cond = {=fighting_dist_ge(50)}
+
+;----------------------------------------------------------------------------- Walker 2
+
+[logic@work20]
+active = walker@start_work7
+suitable = {-val_destroy_killer_base_done =check_npc_name(val_freedom_attack_7)}
+prior = 200
+
+[walker@start_work7]
+out_restr = val_smart_2_1_bufer_zone_2
+path_walk = freedom_attack_walker_7_walk
+path_look = freedom_attack_walker_7_look
+meet = no_meet
+def_state_standing = hide
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+combat_ignore_cond = {=fighting_dist_ge(50)}
+
+;----------------------------------------------------------------------------- Walker 3
+
+[logic@work30]
+active = walker@start_work8
+suitable = {-val_destroy_killer_base_done =check_npc_name(val_freedom_attack_8)}
+prior = 200
+
+[walker@start_work8]
+out_restr = val_smart_2_1_bufer_zone_2
+path_walk = freedom_attack_walker_8_walk
+path_look = freedom_attack_walker_8_look
+meet = no_meet
+def_state_standing = hide
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+combat_ignore_cond = {=fighting_dist_ge(50)}
+
+;----------------------------------------------------------------------------- Walker 4
+
+[logic@work40]
+active = walker@start_work9
+suitable = {-val_destroy_killer_base_done =check_npc_name(val_freedom_attack_9)}
+prior = 200
+
+[walker@start_work9]
+out_restr = val_smart_2_1_bufer_zone_2
+path_walk = freedom_attack_walker_9_walk
+path_look = freedom_attack_walker_9_look
+meet = no_meet
+def_state_standing = hide
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+combat_ignore_cond = {=fighting_dist_ge(50)}
+
+;----------------------------------------------------------------------------- Walker 5
+
+[logic@work50]
+active = walker@start_work10
+suitable = {-val_destroy_killer_base_done =check_npc_name(val_freedom_attack_10)}
+prior = 200
+
+[walker@start_work10]
+out_restr = val_smart_2_1_bufer_zone_2
+path_walk = freedom_attack_walker_10_walk
+path_look = freedom_attack_walker_10_look
+meet = no_meet
+def_state_standing = hide
+def_state_moving1 = assault
+def_state_moving2 = assault
+def_state_moving3 = assault
+combat_ignore_cond = {=fighting_dist_ge(50)}

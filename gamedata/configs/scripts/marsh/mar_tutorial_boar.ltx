@@ -1,0 +1,20 @@
+[logic]
+active = mob_home@temp
+on_death = death
+
+[mob_home@temp]
+path_home = mar_tutorial_boars_home
+on_info = {=distance_to_obj_le(306:200) +mar_intro_talk_with_commander_1_tutorial} mob_home@tower
+home_max_radius = 80
+aggressive = true
+invulnerable = true
+
+[mob_home@tower]
+path_home = mar_tutorial_boars_home
+on_info = {+mar_tutorial_surge_warned} nil %=kill_npc%
+home_max_radius = 80
+aggressive = true
+invulnerable = false
+
+[death]
+on_info = %=dec_counter(mar_tutorial_boars)%

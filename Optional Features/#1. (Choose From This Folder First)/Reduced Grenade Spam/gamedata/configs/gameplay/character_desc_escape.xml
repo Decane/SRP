@@ -1,0 +1,459 @@
+<?xml version='1.0' encoding="windows-1251"?>
+
+<xml>
+	<specific_character id="escape_trader" no_random = "1">
+
+		<name>escape_trader_name</name>
+		<icon>ui_npc_u_trader_1</icon>
+
+		<class>trader</class>
+		<community>trader</community> <terrain_sect>stalker_terrain</terrain_sect>
+
+		<rank>330</rank>
+		<reputation>23</reputation>
+
+		<money min="1000000" max="1000000" infinitive="1"/>
+
+		<visual>actors\stalker_trader\stalker_trader_1</visual>
+
+		<supplies>
+			[spawn] \n
+		</supplies>
+
+		<start_dialog>esc_trader_meet</start_dialog>
+<!--		<actor_dialog>esc_trader_about_zone</actor_dialog>	-->
+		<actor_dialog>esc_trader_community</actor_dialog>
+		<actor_dialog>esc_trader_about_you</actor_dialog>
+		<actor_dialog>esc_trader_about_situation</actor_dialog>
+		<actor_dialog>esc_trader_about_questions</actor_dialog>
+		<actor_dialog>esc_trader_about_other</actor_dialog>
+		<actor_dialog>treasure_dialog</actor_dialog>
+
+#include "gameplay\character_criticals_4.xml"
+
+	</specific_character>
+
+	<specific_character id="esc_leader_stalkerbase" team_default = "1">
+
+		<name>esc_leader_stalkerbase_name</name>
+		<icon>ui_npc_u_neutral_2_face_2</icon>
+
+		<class>esc_leader_stalkerbase</class>
+		<community>stalker</community> <terrain_sect>stalker_terrain</terrain_sect>
+
+		<rank>600</rank>
+		<reputation>0</reputation>
+
+		<money min="4000" max="9000" infinitive="0"/>
+
+		<visual>actors\stalker_neutral\stalker_neutral_2_face_2</visual>
+		<snd_config>characters_voice\human_02\stalker\</snd_config>
+
+		<supplies>
+			[spawn] \n
+		</supplies>
+
+		<start_dialog>esc_leader_talk</start_dialog>
+		<actor_dialog>esc_leader_first_join</actor_dialog>
+		<actor_dialog>esc_leader_join_stalker</actor_dialog>
+		<actor_dialog>esc_leader_about_you</actor_dialog>
+		<actor_dialog>esc_leader_about_zone</actor_dialog>
+		<actor_dialog>esc_leader_what_happens</actor_dialog>
+		<actor_dialog>esc_leader_about_home</actor_dialog>
+		<actor_dialog>esc_leader_about_prisoner</actor_dialog>
+		<actor_dialog>treasure_dialog</actor_dialog>
+
+#include "gameplay\character_criticals_4.xml"
+
+	</specific_character>
+
+	<specific_character id="esc_trader_stalkerbase" team_default = "1">
+
+		<name>esc_trader_stalkerbase_name</name>
+		<icon>ui_npc_u_neutral_2_mask</icon>
+
+		<class>esc_trader_stalkerbase</class>
+		<community>stalker</community> <terrain_sect>stalker_terrain</terrain_sect>
+
+		<rank>450</rank>
+		<reputation>0</reputation>
+
+		<money min="1000000" max="1000000" infinitive="1"/>
+
+		<visual>actors\stalker_neutral\stalker_neutral_2_mask</visual>
+		<snd_config>characters_voice\human_01\stalker\</snd_config>
+
+		<supplies>
+			[spawn] \n
+		</supplies>
+
+		<start_dialog>hello_dialog</start_dialog>
+		<actor_dialog>esc_stalker_trader_about_you</actor_dialog>
+		<actor_dialog>esc_stalker_trader_quest</actor_dialog>
+		<actor_dialog>esc_stalker_trader_quest_complete</actor_dialog>
+		<actor_dialog>treasure_dialog</actor_dialog>
+		<actor_dialog>tm_reward_task</actor_dialog>
+
+#include "gameplay\character_criticals_4.xml"
+
+	</specific_character>
+
+	<specific_character id="esc_tech_stalkerbase" team_default = "1">
+
+		<name>esc_tech_stalkerbase_name</name>
+		<icon>ui_npc_u_neutral_2_mask</icon>
+
+		<class>esc_tech_stalkerbase</class>
+		<community>stalker</community> <terrain_sect>stalker_terrain</terrain_sect>
+
+		<rank>450</rank>
+		<reputation>0</reputation>
+
+		<money min="2500" max="6000" infinitive="0"/>
+
+		<visual>actors\stalker_neutral\stalker_neutral_2_mask</visual>
+		<snd_config>characters_voice\human_02\stalker\</snd_config>
+
+		<supplies>
+			[spawn] \n
+		</supplies>
+
+		<mechanic_mode>1</mechanic_mode>
+
+		<start_dialog>hello_dialog</start_dialog>
+		<actor_dialog>esc_stalker_mechanic_about_you</actor_dialog>
+		<actor_dialog>tm_upgr_task</actor_dialog>
+		<actor_dialog>find_upgrade_task</actor_dialog>
+
+#include "gameplay\character_criticals_1.xml"
+
+	</specific_character>
+
+	<specific_character id="esc_zak_stalkerbase" team_default = "1">
+
+		<name>esc_zak_stalkerbase_name</name>
+		<icon>ui_npc_u_soldier_2_face_1</icon>
+
+		<class>esc_zak_stalkerbase</class>
+		<community>army</community> <terrain_sect>stalker_terrain</terrain_sect>
+
+		<rank>500</rank>
+		<reputation>0</reputation>
+
+		<money min="0"	max="0"	infinitive="0"/>
+
+		<visual>actors\stalker_soldier\stalker_soldier_2_face_1</visual>
+		<snd_config>characters_voice\human_01\military\</snd_config>
+
+		<supplies>
+			[spawn] \n
+		</supplies>
+
+		<start_dialog>esc_comm_talk</start_dialog>
+		<actor_dialog>esc_comm_about_prisoner</actor_dialog>
+		<actor_dialog>esc_comm_about_life_in_zone</actor_dialog>
+
+#include "gameplay\character_criticals_4.xml"
+
+	</specific_character>
+
+	<specific_character id="esc_zak_stalkerbase_2" team_default = "1">
+
+		<name>esc_zak_stalkerbase_2_name</name>
+		<icon>ui_npc_u_soldier_2_face_1</icon>
+
+		<class>esc_zak_stalkerbase_2</class>
+		<community>army</community> <terrain_sect>stalker_terrain</terrain_sect>
+
+		<rank>700</rank>
+		<reputation>0</reputation>
+
+		<money min="0"	max="0"	infinitive="0"/>
+
+		<visual>actors\stalker_soldier\stalker_soldier_2_face_1</visual>
+		<snd_config>characters_voice\human_01\military\</snd_config>
+
+		<supplies>
+			[spawn] \n
+		</supplies>
+
+		<start_dialog>hello_dialog</start_dialog>
+
+#include "gameplay\character_criticals_4.xml"
+
+	</specific_character>
+
+	<specific_character id="esc_driver" team_default = "1">
+
+		<name>esc_driver_name</name>
+		<icon>ui_npc_u_soldier_1</icon>
+
+		<class>esc_driver</class>
+		<community>army</community> <terrain_sect>stalker_terrain</terrain_sect>
+
+		<rank>50</rank>
+		<reputation>0</reputation>
+
+		<money min="25" max="75" infinitive="0"/>
+
+		<visual>actors\stalker_soldier\stalker_soldier_1</visual>
+		<snd_config>characters_voice\human_01\military\</snd_config>
+
+		<supplies>
+			[spawn] \n
+		</supplies>
+
+		<start_dialog>esc_driver_fear</start_dialog>
+		<actor_dialog>esc_driver_who_are_you</actor_dialog>
+		<actor_dialog>esc_driver_about_you</actor_dialog>
+		<actor_dialog>esc_driver_quest</actor_dialog>
+		<actor_dialog>esc_driver_quest_complete</actor_dialog>
+		<actor_dialog>treasure_dialog</actor_dialog>
+
+#include "gameplay\character_criticals_4.xml"
+
+	</specific_character>
+
+	<specific_character id="esc_st_patrol_lead" team_default = "1">
+
+		<name>esc_st_patrol_lead_name</name>
+		<icon>ui_npc_u_neutral_2</icon>
+
+		<class>esc_st_patrol_lead</class>
+		<community>stalker</community> <terrain_sect>stalker_terrain</terrain_sect>
+
+		<rank>200</rank>
+		<reputation>0</reputation>
+
+		<money min="375" max="775" infinitive="0"/>
+
+		<visual>actors\stalker_neutral\stalker_neutral_2</visual>
+		<snd_config>characters_voice\human_03\stalker\</snd_config>
+
+		<supplies>
+			[spawn] \n
+			wpn_ak74u \n
+			ammo_5.45x39_fmj \n
+			wpn_pm \n
+			ammo_9x18_fmj \n
+			grenade_rgd5 = 2, prob=0.15 \n
+#include "gameplay\character_items.xml"
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+		</supplies>
+
+#include "gameplay\character_criticals_4.xml"
+#include "gameplay\character_dialogs.xml"
+
+	</specific_character>
+
+	<specific_character id="esc_wolf" team_default = "1">
+
+		<name>esc_wolf_name</name>
+		<icon>ui_npc_u_neutral_2</icon>
+
+		<class>esc_wolf</class>
+		<community>stalker</community> <terrain_sect>stalker_terrain</terrain_sect>
+
+		<rank>300</rank>
+		<reputation>0</reputation>
+
+		<money min="2000" max="2500" infinitive="0"/>
+
+		<visual>actors\stalker_neutral\stalker_neutral_2</visual>
+		<snd_config>characters_voice\human_03\stalker\</snd_config>
+
+		<supplies>
+			[spawn] \n
+			device_torch \n
+			wpn_ak74u \n
+			ammo_5.45x39_fmj \n
+			wpn_pm \n
+			ammo_9x18_fmj \n
+			grenade_rgd5 = 2, prob=0.15 \n
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+		</supplies>
+
+		<start_dialog>esc_wolf_talk</start_dialog>
+		<actor_dialog>esc_wolf_other_works</actor_dialog>
+		<actor_dialog>esc_wolf_brother_complete</actor_dialog>
+		<actor_dialog>esc_wolf_novice_complete</actor_dialog>
+		<actor_dialog>esc_wolf_novice_fail</actor_dialog>
+		<actor_dialog>esc_wolf_about_zone</actor_dialog>
+		<actor_dialog>esc_wolf_about_around</actor_dialog>
+		<actor_dialog>esc_wolf_about_you</actor_dialog>
+		<actor_dialog>treasure_dialog</actor_dialog>
+
+#include "gameplay\character_criticals_4.xml"
+
+	</specific_character>
+
+	<specific_character id="esc_military_secret_trader" team_default = "1">
+
+		<name>esc_military_secret_trader_name</name>
+		<icon>ui_npc_u_soldier_2</icon>
+
+		<class>esc_military_secret_trader</class>
+		<community>army</community> <terrain_sect>stalker_terrain</terrain_sect>
+
+		<rank>300</rank>
+		<reputation>0</reputation>
+
+		<money min="3000" max="7000" infinitive="0"/>
+
+		<visual>actors\stalker_soldier\stalker_soldier_2</visual>
+		<snd_config>characters_voice\human_01\military\</snd_config>
+
+		<supplies>
+			[spawn] \n
+			device_torch \n
+			wpn_ak74u \n
+			ammo_5.45x39_fmj \n
+			wpn_fort \n
+			ammo_9x18_fmj \n
+			grenade_rgd5 = 2, prob=0.15 \n
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+		</supplies>
+
+		<start_dialog>hello_dialog</start_dialog>
+		<actor_dialog>treasure_dialog</actor_dialog>
+
+#include "gameplay\character_criticals_4.xml"
+
+	</specific_character>
+
+	<specific_character id="esc_military_general" team_default = "1">
+
+		<name>esc_military_general_name</name>
+		<icon>ui_npc_u_soldier_3</icon>
+
+		<class>esc_military_general</class>
+		<community>army</community> <terrain_sect>stalker_terrain</terrain_sect>
+
+		<rank>1000</rank>
+		<reputation>1000</reputation>
+
+		<money min="5000" max="7000" infinitive="0"/>
+
+		<visual>actors\stalker_soldier\stalker_soldier_3</visual>
+		<snd_config>characters_voice\human_03\military\</snd_config>
+
+		<supplies>
+			[spawn] \n
+			device_torch \n
+			wpn_fort \n
+			ammo_9x18_fmj \n
+			grenade_rgd5 = 2, prob=0.15 \n
+			flesh_up_ac_ak74u \n
+		</supplies>
+
+#include "gameplay\character_criticals_4.xml"
+
+	</specific_character>
+
+	<specific_character id="esc_wolf_brother" team_default = "1">
+
+		<name>esc_wolf_brother_name</name>
+		<icon>ui_npc_u_neutral_2</icon>
+
+		<class>esc_wolf_brother</class>
+		<community>stalker</community> <terrain_sect>stalker_terrain</terrain_sect>
+
+		<rank>100</rank>
+		<reputation>0</reputation>
+
+		<money min="0" max="0" infinitive="0"/>
+
+		<visual>actors\stalker_neutral\stalker_neutral_2</visual>
+		<snd_config>characters_voice\human_03\stalker\</snd_config>
+
+		<supplies>
+			[spawn] \n
+		</supplies>
+
+		<start_dialog>hello_dialog</start_dialog>
+		<actor_dialog>esc_wolf_brother</actor_dialog>
+		<actor_dialog>treasure_dialog</actor_dialog>
+
+#include "gameplay\character_criticals_4.xml"
+
+	</specific_character>
+
+	<specific_character id="esc_stalker_novice_quest" team_default = "1">
+
+		<name>esc_stalker_novice_quest_name</name>
+		<icon>ui_npc_u_neutral_2</icon>
+
+		<class>esc_stalker_novice_quest</class>
+		<community>stalker</community> <terrain_sect>stalker_terrain</terrain_sect>
+
+		<rank>100</rank>
+		<reputation>0</reputation>
+
+		<money min="200" max="500" infinitive="0"/>
+
+		<visual>actors\stalker_neutral\stalker_neutral_2</visual>
+		<snd_config>characters_voice\human_03\stalker\</snd_config>
+
+		<supplies>
+			[spawn] \n
+			device_torch \n
+			wpn_pm \n
+			ammo_9x18_fmj \n
+		</supplies>
+
+		<start_dialog>hello_dialog</start_dialog>
+		<actor_dialog>esc_wolf_stalker_novice</actor_dialog>
+		<actor_dialog>treasure_dialog</actor_dialog>
+
+#include "gameplay\character_criticals_4.xml"
+
+	</specific_character>
+
+	<specific_character id="esc_driver_friend" team_default = "1">
+
+		<name>esc_driver_friend_name</name>
+		<icon>ui_npc_u_soldier_1</icon>
+
+		<class>esc_driver_friend</class>
+		<community>army</community> <terrain_sect>stalker_terrain</terrain_sect>
+
+		<rank>50</rank>
+		<reputation>0</reputation>
+
+		<money min="25" max="75" infinitive="0"/>
+
+		<visual>actors\stalker_soldier\stalker_soldier_1</visual>
+		<snd_config>characters_voice\human_01\military\</snd_config>
+
+		<supplies>
+			[spawn] \n
+			esc_device_pda_driver \n
+		</supplies>
+
+	</specific_character>
+
+	<specific_character id="esc_flashman" team_default = "1">
+
+		<name>esc_flashman_name</name>
+		<icon>ui_npc_u_soldier_1</icon>
+
+		<class>esc_flashman</class>
+		<community>army</community> <terrain_sect>stalker_terrain</terrain_sect>
+
+		<rank>200</rank>
+		<reputation>500</reputation>
+
+		<money min="75" max="150" infinitive="0"/>
+
+		<visual>actors\stalker_soldier\stalker_soldier_1</visual>
+		<snd_config>characters_voice\human_02\military\</snd_config>
+
+		<supplies>
+			[spawn] \n
+		</supplies>
+
+	</specific_character>
+</xml>

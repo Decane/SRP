@@ -1,0 +1,259 @@
+[wpn_usp]:identity_immunities,weapon_probability,default_weapon_params
+GroupControlSection			= spawn_group
+discovery_dependency			=
+$spawn					= "weapons\usp"
+$npc					= on			
+$prefetch				= 8
+scheduled				= off
+cform					= skeleton
+class					= WP_USP45
+min_radius				= 0
+max_radius				= 30
+description				= st_wpn_usp_descr
+
+ef_weapon_type				= 5
+
+default_to_ruck				= false
+sprint_allowed				= true
+
+;---DOF-------------------------------------------------------------------------
+;zoom_dof				= -1000, 1, 1000 
+reload_dof				= 0, 0.5, 5, 2.25
+;-----------------------------------------------------------------------------
+
+;--- scope weapons -------------------------------------------------------------
+holder_range_modifier			= 1
+holder_fov_modifier			= 1
+;-------------------------------------------------------------------------------
+
+upgrades				= up_gr_ab_usp, up_gr_cd_usp, up_gr_e_usp, up_gr_f_usp, up_gr_g_usp
+installed_upgrades			=
+upgrade_scheme				= upgrade_scheme_u9
+
+cost					= 2250
+
+;ammo_limit				= 120
+;ammo_current				= 96
+ammo_elapsed				= 8
+
+ammo_mag_size				= 8
+ammo_class				= ammo_11.43x23_fmj, ammo_11.43x23_hydro
+fire_modes				= 1
+
+hand_dependence				= 1
+single_handed				= 1
+
+slot					= 1
+animation_slot				= 1
+
+inv_name				= st_wpn_usp
+inv_name_short				= st_wpn_usp
+inv_weight				= 0.72
+
+inv_grid_width				= 2						; 1
+inv_grid_height				= 1
+inv_grid_x				= 11
+inv_grid_y				= 33						; 8
+
+kill_msg_x				= 134
+kill_msg_y				= 177
+kill_msg_width				= 31
+kill_msg_height				= 25
+
+;-------------------------------------------------------------------------------
+
+fire_dispersion_base			= 0.7
+control_inertion_factor			= 1
+
+cam_relax_speed				= 7
+cam_dispersion				= 1
+cam_dispersion_inc			= 1
+cam_dispersion_frac			= 1
+cam_max_angle				= 10
+cam_max_angle_horz			= 10
+cam_step_angle_horz			= 1
+
+fire_dispersion_condition_factor	= 5
+misfire_probability			= 0.004						; 0.005
+misfire_condition_k			= 0.05						; decane: missing by default
+condition_shot_dec			= 0.0013
+
+;-------------------------------------------------------------------------------
+
+position				= -0.021, -0.085, 0
+orientation				= 0, 0, 0
+
+fire_point				= 0, 0.133, 0.161
+
+flame_particles				= weapons\generic_weapon03
+smoke_particles				= weapons\generic_shoot_00
+
+shell_point				= 0, 0.133, 0.047
+shell_dir				= 0, 0, 0.4
+shell_particles				= weapons\generic_shells
+
+PDM_disp_base				= 1
+PDM_disp_vel_factor			= 0.3
+PDM_disp_accel_factor			= 0.3
+PDM_disp_crouch				= 1
+PDM_disp_crouch_no_acc			= 1
+
+hit_power				= 0.42						; 0.5, 0.5, 0.5, 0.5
+hit_impulse				= 1						; 100
+hit_type				= fire_wound
+
+silencer_hit_power			= 0.42						; 0.52
+silencer_hit_impulse			= 1						; 105
+silencer_fire_distance			= 700						; 100
+silencer_bullet_speed			= 390						; 240
+
+hit_probability_gd_novice		= 1
+hit_probability_gd_stalker		= 1
+hit_probability_gd_veteran		= 1
+hit_probability_gd_master		= 1
+
+use_aim_bullet				= true
+time_to_aim				= 1
+
+fire_distance				= 700						; 50
+bullet_speed				= 390						; 150
+rpm					= 350
+;rpm_empty_click			= 200
+
+hud					= wpn_usp_hud
+
+;--STRAP PARAMETERS-----------------------------------------------------------------
+
+visual					= dynamics\weapons\wpn_usp45\wpn_usp45.ogf
+
+light_color				= 0.6, 0.5, 0.3
+light_range				= 3
+light_var_color				= 0.05
+light_var_range				= 0.5
+light_time				= 0.2
+
+ph_mass					= 0.72						; 1
+
+scope_status				= 0
+silencer_status				= 2
+grenade_launcher_status			= 0
+
+zoom_enabled				= true
+;zoom_rotate_time			= 0.25
+scope_zoom_factor			= 75						; 55
+
+silencer_name				= wpn_addon_silencer
+silencer_x				= 49						; 39
+silencer_y				= -16
+
+snd_draw				= weapons\usp_draw
+snd_holster				= weapons\generic_holster
+snd_shoot				= weapons\n_usp_shot
+snd_silncer_shot			= weapons\n_pb_shot
+
+snd_empty				= weapons\pistol_empty
+snd_reload				= weapons\pistol_reload
+;snd_close				= weapons\generic_close
+
+;silencer_flame_particles		= weapons\generic_weapon01
+silencer_smoke_particles		= weapons\generic_shoot_00
+
+silencer_light_color			= 0.6, 0.5, 0.3
+silencer_light_range			= 0.01
+silencer_light_var_color		= 0.05
+silencer_light_var_range		= 0.5
+silencer_light_time			= 0.2
+
+[wpn_usp_hud]:hud_base
+
+;zoom_hide_crosshair			= false
+attach_place_idx			= 0
+item_visual				= dynamics\weapons\wpn_usp45\wpn_usp45_hud.ogf
+
+hands_position				= -0.021, -0.16, 0.0025
+hands_orientation			= -0.5, 1, 1.149999
+
+hands_position_16x9			= 0.033, -0.1895, 0.039
+hands_orientation_16x9			= 2.349998, 2.749999, 2.849998
+
+item_position				= 0.000746, -0.000321, 0.003479
+item_orientation			= 1.239378, -0.134046, -2.052052
+
+shell_point				= 0.015, 0.048, 0.481
+shell_bone				= wpn_body
+
+fire_point				= 0, 0.048, 0.163
+fire_bone				= wpn_body
+
+anm_show				= usp45_draw
+anm_show_empty				= usp45_draw, usp45_opened
+
+anm_hide				= usp45_holster
+anm_hide_empty				= usp45_holster, usp45_opened
+
+anm_idle				= usp45_idle
+anm_idle_empty				= usp45_idle, usp45_opened
+
+anm_shots				= usp45_shoot
+anm_shot_l				= usp45_shoot, usp45_open
+
+anm_idle_aim				= usp45_idle_aim
+anm_idle_aim_empty			= usp45_idle_aim, usp45_opened
+
+anm_reload				= usp45_reload
+anm_reload_empty			= usp45_reload, usp45_close
+
+anm_idle_moving				= usp45_idle_moving
+anm_idle_moving_empty			= usp45_idle_moving, usp45_opened
+
+anm_idle_sprint				= usp45_idle_sprint
+anm_idle_sprint_empty			= usp45_idle_sprint, usp45_opened
+
+anm_bore				= usp45_idle_bore
+anm_bore_empty				= usp45_idle_bore, usp45_opened
+
+aim_hud_offset_pos			= -0.1051, 0.0308, 0.05
+aim_hud_offset_rot			= -0.0057, 0.005, -0.033
+
+aim_hud_offset_pos_16x9			= -0.1658, 0.0608, 0
+aim_hud_offset_rot_16x9			= 0.0246, 0.055, 0.0025
+
+;-----------------------------------------------------------------------------
+; Custom
+;-----------------------------------------------------------------------------
+
+[wpn_223_pistol]:wpn_usp
+GroupControlSection			= spawn_group
+discovery_dependency			=
+$spawn					= "weapons\wpn_223_pistol"
+$npc					= on			
+$prefetch				= 8
+scheduled				= off
+cform					= skeleton
+class					= WP_USP45
+min_radius				= 0
+max_radius				= 30
+description				= st_wpn_223_pistol_descr
+
+ammo_mag_size				= 5
+ammo_class				= ammo_223_fmj
+
+inv_name				= st_wpn_223_pistol
+inv_name_short				= st_wpn_223_pistol
+
+fire_dispersion_base			= 0.2
+
+cam_relax_speed				= 7
+cam_dispersion				= 2
+cam_dispersion_inc			= 2
+cam_dispersion_frac			= 1
+cam_max_angle				= 10
+cam_max_angle_horz			= 10
+cam_step_angle_horz			= 2
+
+hit_power				= 1.0, 1.0, 1.0, 1.0
+
+fire_distance				= 70
+bullet_speed				= 700
+
+scope_zoom_factor			= 45

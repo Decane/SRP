@@ -1,0 +1,37 @@
+If you have installed SweetFX correctly and have run the game with this log.log file in the same folder
+as the game .exe and the d3d9.dll and dxgi.dll files, then it should be overwritten with debug information.
+
+So if you have done that and you are reading this, then your game likely crashed because it couldn't write to this file.
+
+Some steps to resolve this:
+1) Check that this file is in the same folder as the game .exe and the d3d9.dll and dxgi.dll files.
+   It's installed there per default so it should be there.
+
+   If you moved the .dll's that came with SweetFX to another folder then check in that folder for the correct log.log,
+   that the injector creates when it runs
+
+2) Find out if it's a problem with insufficient user permissions in the game folder you installed SweetFX to.
+   To do that try running the game with administrator rights by right-clicking it's exe and choosing "Run as administrator"
+   If that worked then you have found the problem.
+
+   To solve it, you can either keep running it as administrator everything, which can be a little annoying in the long run.
+
+   You can also right click on the folder that contains this file and then choose "Properties"
+   From there click "Security", then "Edit", then on your username, and then set "Full Control" to "Allow"
+   This should also allow Modify, Execute, List, Read and Write - if it doesn't then also set thoose to "Allow"
+   Now "OK" your way out of the dialogs.
+   Your user account now has full control for that folder and you don't have to Run as administrator.
+
+   Alternatively you can create a new shortcut to the game and right click that and choose "Properties"
+   Under "Shortcut" click Advanced and check "Run as administrator" and "OK" your way out.
+   This shortcut will now always run as administrator and the administrator account always has the necessary rights.
+
+3) Does it still crash?
+   Try disabling all game overlays (like Origin), recording software (like Fraps), framerate displaying software (like Fraps),
+   GPU overclocking and tweaking software software and other d3d9.dll or dxgi.dll proxy dlls (like ENB, Helix or Umod)
+
+
+4) If the above doesn't work and you can't solve the problem yourself or google your way to a solution then try to get support
+   online in either the SweetFX thread on Guru3d or your preferred forum.
+   Note that I prefer not to get support questions as PM's but I'd rather have you post in the thread so others can help you too.
+   I'm not always in the thread but there is usually always other users.

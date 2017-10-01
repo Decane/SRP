@@ -1,0 +1,33 @@
+----------------------------------------------------
+-- file : atmmain
+-- copyright (c) 2009 Atempad  (atem.pad@mail.ru)
+----------------------------------------------------
+
+local ui_sleep_init = false
+local sleepingbag_id = nil
+
+----------------------------------------------------------------------------------
+-- Func: Callback on the loss of item.
+----------------------------------------------------------------------------------
+
+function on_item_drop(obj)
+	sleepingbag_id = obj:id()
+	ui_sleep_init = true
+end
+
+----------------------------------------------------------------------------------
+-- Func: Update of actor.
+----------------------------------------------------------------------------------
+
+function update()
+	atmsleep.update()
+	if ui_sleep_init then
+		local sim = alife()
+		if sleepingbag_id and sim:object(sleepingbag_id) == nil then
+			sim:create("sleepingbag", vector(), 0, 0, db.actor:id())
+			level.start_stop_menu(atmsleep.UISleep(), true)
+		end
+		ui_sleep_init = false
+		sleepingbag_id = nil
+	end
+end

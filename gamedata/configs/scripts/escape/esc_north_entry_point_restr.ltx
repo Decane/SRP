@@ -1,0 +1,7 @@
+[logic]
+active = sr_idle
+
+[sr_idle]
+on_info = {+esc_actor_inside_traders_dung} nil %-esc_warnings_off -esc_warning_squads_hostile -esc_warning_squad_bridge_made_hostile -esc_warning_squad_tonnel_made_hostile%
+on_actor_inside = {-esc_came_from_north -esc_fire} %+esc_came_from_north%
+on_actor_inside2 = {-esc_actor_inside_traders_dung -esc_warnings_off} %+esc_warnings_off%

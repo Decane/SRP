@@ -1,0 +1,225 @@
+[wpn_toz34]:identity_immunities,weapon_probability,default_weapon_params
+GroupControlSection			= spawn_group
+discovery_dependency			=
+$spawn					= "weapons\toz-34"
+$npc					= on
+$prefetch				= 8
+scheduled				= off
+cform					= skeleton
+class					= WP_BM16
+min_radius				= 0
+max_radius				= 50
+description				= st_wpn_toz34_descr
+
+ef_main_weapon_type			= 1
+ef_weapon_type				= 7
+
+;---DOF-------------------------------------------------------------------------
+zoom_dof				= 0.5, 1, 600					; 180
+;-------------------------------------------------------------------------------
+
+;-------------------------------------------------------------------------------
+holder_range_modifier			= 1
+holder_fov_modifier			= 0.7
+;-------------------------------------------------------------------------------
+
+upgrades				= up_gr_ab_toz34, up_gr_c_toz34, up_gr_d_toz34, up_gr_e_toz34
+installed_upgrades			=
+upgrade_scheme				= upgrade_scheme_u5
+
+;tri_state_reload			= off
+
+cost					= 400
+weapon_class				= shotgun
+
+;ammo_limit				= 60
+;ammo_current				= 10
+ammo_elapsed				= 0
+
+ammo_mag_size				= 2
+ammo_class				= ammo_12x70_buck, ammo_12x76_zhekan, ammo_12x76_dart
+fire_modes				= 1
+
+hand_dependence				= 1
+single_handed				= 0
+
+slot					= 2
+animation_slot				= 3
+
+inv_name				= st_wpn_toz34
+inv_name_short				= st_wpn_toz34
+inv_weight				= 3.3						; 3.1
+
+inv_grid_width				= 6
+inv_grid_height				= 1
+inv_grid_x				= 12
+inv_grid_y				= 2
+
+kill_msg_x				= 127
+kill_msg_y				= 82
+kill_msg_width				= 97
+kill_msg_height				= 23
+
+;-------------------------------------------------------------------------------
+
+fire_dispersion_base			= 0.6
+control_inertion_factor			= 1.5f
+
+cam_relax_speed				= 5
+cam_relax_speed_ai			= 360
+cam_dispersion				= 5
+cam_dispersion_inc			= 5
+cam_dispersion_frac			= 0.7
+cam_max_angle				= 10
+cam_max_angle_horz			= 10
+cam_step_angle_horz			= 1
+
+zoom_cam_relax_speed			= 5
+zoom_cam_relax_speed_ai			= 120.75
+zoom_cam_dispersion			= 3
+zoom_cam_dispersion_inc			= 3
+zoom_cam_dispersion_frac		= 0.7
+zoom_cam_max_angle			= 10
+zoom_cam_max_angle_horz			= 10
+zoom_cam_step_angle_horz		= 1
+
+fire_dispersion_condition_factor	= 10
+misfire_probability			= 0
+misfire_condition_k			= 0						; 0.05
+condition_shot_dec			= 0.005
+
+;-------------------------------------------------------------------------------
+
+position				= -0.023, -0.14, 0
+orientation				= 0, 30, 0
+
+shell_point				= 0, 0.183, 0.07
+fire_point				= 0, 0.168, 0.755
+fire_point2				= 0, 0.168, 0.755
+
+flame_particles				= weapons\generic_weapon05
+smoke_particles				= weapons\generic_shoot_00
+
+PDM_disp_base				= 1
+PDM_disp_vel_factor			= 2
+PDM_disp_accel_factor			= 2
+PDM_disp_crouch				= 1
+PDM_disp_crouch_no_acc			= 1
+
+hit_power				= 1						; 1.0, 1.0, 1.0, 1.0
+hit_impulse				= 1						; 100
+hit_type				= fire_wound
+
+hit_probability_gd_novice		= 1
+hit_probability_gd_stalker		= 1
+hit_probability_gd_veteran		= 1
+hit_probability_gd_master		= 1
+
+fire_distance				= 400						; 70
+bullet_speed				= 350						; 250
+rpm					= 1000
+;rpm_empty_click			= 200
+
+hud					= wpn_toz34_hud
+
+;--STRAP PARAMETERS-----------------------------------------------------------------
+
+strap_position				= -0.26, -0.11, 0.15
+strap_orientation			= -15, -9, 110
+strap_bone0				= bip01_spine2
+strap_bone1				= bip01_spine1
+
+;startup_ammo				= 10
+visual					= dynamics\weapons\wpn_toz34\wpn_toz34.ogf
+
+light_color				= 0.6, 0.5, 0.3
+light_range				= 6
+light_var_color				= 0.05
+light_var_range				= 0.5
+light_time				= 0.2
+
+ph_mass					= 3.3						; 3
+
+scope_status				= 0
+silencer_status				= 0
+grenade_launcher_status			= 0
+
+zoom_enabled				= true
+scope_zoom_factor			= 75						; 55
+
+snd_draw				= weapons\generic_draw
+snd_holster				= weapons\generic_holster
+snd_shoot				= weapons\n_toz34_shot
+snd_shoot_1				= weapons\n_toz34_shot
+;snd_shoot_duplet			= weapons\n_toz34_shot
+
+snd_empty				= weapons\generic_empty
+snd_reload				= weapons\toz34_reload
+snd_reload_1				= weapons\toz34_reload_one
+snd_bore				= weapons\toz34_bore
+
+snd_close_weapon			= weapons\spas12_close
+snd_add_cartridge			= weapons\w1300_load
+snd_open_weapon				= weapons\spas12_close
+
+[wpn_toz34_hud]:hud_base
+
+;zoom_hide_crosshair			= false
+attach_place_idx			= 0
+item_visual				= dynamics\weapons\wpn_toz34\wpn_toz34_hud.ogf
+
+hands_position				= -0.144001, -0.129499, 0.0395
+hands_orientation			= 0.39997, 0.399999, -2.000002
+
+hands_position_16x9			= -0.1475, -0.1385, -0.004
+hands_orientation_16x9			= 0.5, 1.35, -5.150002
+
+item_position				= -0.001402, 0.000506, 0.000837
+item_orientation			= -200.454514, 152.486038, -179.781982
+
+shell_point				= 0, 0, 0
+shell_dir				= 0, 1, 0
+shell_bone				= wpn_body
+
+fire_point				= 0, 0.026, 0.893
+fire_bone				= wpn_body
+
+aim_hud_offset_pos			= -0.0822, 0.0295, 0.026
+aim_hud_offset_rot			= -0.00525, -0, 0.022
+
+aim_hud_offset_pos_16x9			= -0.0718, 0.03, 0.05
+aim_hud_offset_rot_16x9			= 0.012, 0.001, -0.02
+
+anm_show_0				= toz_draw
+anm_show_1				= toz_draw
+anm_show_2				= toz_draw
+
+anm_hide_0				= toz_holster
+anm_hide_1				= toz_holster
+anm_hide_2				= toz_holster
+
+anm_idle_0				= toz_idle
+anm_idle_1				= toz_idle
+anm_idle_2				= toz_idle
+
+anm_idle_aim_0				= toz_idle_aim
+anm_idle_aim_1				= toz_idle_aim
+anm_idle_aim_2				= toz_idle_aim
+
+anm_idle_moving_0			= toz_idle_moving
+anm_idle_moving_1			= toz_idle_moving
+anm_idle_moving_2			= toz_idle_moving
+
+anm_idle_sprint_0			= toz_idle_sprint
+anm_idle_sprint_1			= toz_idle_sprint
+anm_idle_sprint_2			= toz_idle_sprint
+
+anm_reload_1				= toz_reload_l
+anm_reload_2				= toz_reload_lr
+
+anm_shot_1				= toz_shoot
+anm_shot_2				= toz_shoot
+
+anm_bore_0				= toz_idle_bore
+anm_bore_1				= toz_idle_bore
+anm_bore_2				= toz_idle_bore

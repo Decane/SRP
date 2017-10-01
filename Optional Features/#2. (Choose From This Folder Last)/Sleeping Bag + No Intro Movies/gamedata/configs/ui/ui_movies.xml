@@ -1,0 +1,94 @@
+	<intro_logo>
+		<global_wnd x="0" y="0" width="1024" height="768"/>
+		<item type="video">
+			<video_wnd x="0" y="0" width="1024" height="768" stretch="1">
+				<texture x="0" y="0" width="1024" height="768">intro\intro_back</texture>
+			</video_wnd>
+		</item>
+	</intro_logo>
+
+	<intro_game>
+		<play_each_item>1</play_each_item>
+		<global_wnd x="0" y="0" width="1024" height="768">
+			<_auto_static x="0" y="0" width="1024" height="768" stretch="1">
+				<window_name>back</window_name>
+				<texture>intro\intro_back</texture>
+			</_auto_static>
+		</global_wnd>
+		<item type="video">
+			<sound>characters_voice\scenario\video\intro</sound>
+			<pause_state>on</pause_state>
+			<function_on_stop>xr_effects.start_marsh_intro</function_on_stop>
+			<video_wnd x="0" y="0" width="1024" height="768" stretch="1">
+				<texture x="1" y="1" width="628" height="358">intro\intro_half</texture>
+			</video_wnd>
+			<background x="0" y="0" width="1024" height="768" stretch="1">
+				<texture>intro\intro_back</texture>
+			</background>
+		</item>
+		<item type="image">
+			<length_sec>5</length_sec>
+			<pause_state>off</pause_state>
+			<main_wnd>
+				<auto_static start_time="0" length_sec="5" x="0" y="0" width="1230" height="768" light_anim="intro_1" light_anim_cyclic="0" la_alpha="1" la_texture="1" stretch="1">
+					<window_name>w1</window_name>
+					<texture>intro\intro_back</texture>
+				</auto_static>
+			</main_wnd>
+		</item>
+	</intro_game>
+
+	<atmdream>
+		<play_each_item>1</play_each_item>
+		<global_wnd x="0" y="0" width="1024" height="768">
+			<auto_static x="0" y="0" width="1024" height="768" stretch="1">
+				<window_name>back</window_name>
+				<texture>intro\intro_back</texture>
+			</auto_static>
+		</global_wnd>
+		<item type="video">
+			<sound>characters_voice\human_02\csky\states\sleep\sleep_4.ogg</sound>
+			<pause_state>off</pause_state>
+			<can_be_stopped>off</can_be_stopped>
+			<function_on_stop>atmsleep.sleep_stop</function_on_stop>
+			<video_wnd x="0" y="0" width="1024" height="768" stretch="1">
+				<texture x="0" y="1" width="1024" height="768">intro\intro_back</texture>
+			</video_wnd>
+		</item>
+	</atmdream>
+
+	<mov_csky_outro>
+		<play_each_item>1</play_each_item>
+		<global_wnd x="0" y="0" width="1024" height="768"/>
+			<item type="image">
+				<length_sec>3</length_sec>
+				<pause_state>off</pause_state>
+				<main_wnd>
+			 		<auto_static start_time="0" length_sec="3" x="0" y="0" width="1230" height="768" light_anim="outro_la" light_anim_cyclic="0" la_alpha="1" la_texture="1" stretch="1">
+						<window_name>w1</window_name>
+						<texture>intro\intro_back</texture>
+					</auto_static>
+				</main_wnd>
+			</item>
+			<item type="video">
+				<sound>characters_voice\scenario\video\outro</sound>
+				<pause_state>on</pause_state>
+				<can_be_stopped>on</can_be_stopped>
+
+				<!-- Simple CS Freeplay Mod -->
+
+				<function_on_start>ogsm_freeplay.teleport</function_on_start>
+				<function_on_stop>ogsm_freeplay.awakening</function_on_stop>
+
+				<!-- Simple CS Freeplay Mod -->
+
+<!--				<function_on_start>xr_effects.game_disconnect</function_on_start>		-->
+<!--				<function_on_stop>xr_effects.game_credits</function_on_stop>			-->
+				<video_wnd x="0" y="0" width="1024" height="768" stretch="1">
+					<texture x="0" y="1" width="512" height="286">intro\outro_half</texture>
+				</video_wnd>
+				<background x="0" y="0" width="1024" height="768" stretch="1">
+					<texture>intro\intro_back</texture>
+				</background>
+			</item>
+	</mov_csky_outro>

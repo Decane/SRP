@@ -1,0 +1,274 @@
+[wpn_l85]:identity_immunities,weapon_probability,default_weapon_params
+GroupControlSection			= spawn_group
+discovery_dependency			=
+$spawn					= "weapons\l85"
+$npc					= on
+$prefetch				= 8
+scheduled				= off
+cform					= skeleton
+class					= WP_AK74
+min_radius				= 30
+max_radius				= 100
+description				= st_wpn_l85_descr
+
+ef_main_weapon_type			= 2
+ef_weapon_type				= 6
+
+default_to_ruck				= false
+sprint_allowed				= true
+
+;---DOF-------------------------------------------------------------------------
+;zoom_dof				= 0.5, 1, 1000
+reload_dof				= 0, 0.5, 5, 2.85
+;-------------------------------------------------------------------------------
+
+;-------------------------------------------------------------------------------
+holder_range_modifier			= 1.85
+holder_fov_modifier			= 0.3
+;-------------------------------------------------------------------------------
+
+upgrades				= up_gr_ab_l85, up_gr_cd_l85, up_gr_ef_l85, up_gr_gh_l85, up_gr_i_l85, up_gr_j_l85
+installed_upgrades			=
+upgrade_scheme				= upgrade_scheme_u16a
+
+cost					= 5000
+weapon_class				= assault_rifle
+
+;ammo_limit				= 210
+;ammo_current				= 180
+ammo_elapsed				= 30
+
+ammo_mag_size				= 30
+fire_modes				= 1, -1
+
+ammo_class				= ammo_5.56x45_ss190, ammo_5.56x45_ap
+grenade_class				= ammo_m209
+
+launch_speed				= 0
+hand_dependence				= 1
+single_handed				= 0
+
+slot					= 2
+animation_slot				= 2
+
+inv_name				= st_wpn_l85
+inv_name_short				= st_wpn_l85
+inv_weight				= 4.13						; 5
+
+inv_grid_width				= 5
+inv_grid_height				= 2
+inv_grid_x				= 0
+inv_grid_y				= 12
+
+kill_msg_x				= 84
+kill_msg_y				= 28
+kill_msg_width				= 73
+kill_msg_height				= 30
+
+;-------------------------------------------------------------------------------
+
+fire_dispersion_base			= 0.8
+control_inertion_factor			= 1.4f
+
+cam_relax_speed				= 5
+cam_relax_speed_ai			= 360
+cam_dispersion				= 0.4
+cam_dispersion_inc			= 0.4
+cam_dispersion_frac			= 0.7
+cam_max_angle				= 7
+cam_max_angle_horz			= 7
+cam_step_angle_horz			= 2
+
+zoom_cam_relax_speed			= 5
+zoom_cam_relax_speed_ai			= 120.75					; 360
+zoom_cam_dispersion			= 0.3
+zoom_cam_dispersion_inc			= 0.3
+zoom_cam_dispersion_frac		= 0.7
+zoom_cam_max_angle			= 7
+zoom_cam_max_angle_horz			= 7
+zoom_cam_step_angle_horz		= 1.5
+
+fire_dispersion_condition_factor	= 5
+misfire_probability			= 0.03
+misfire_condition_k			= 0.05
+condition_shot_dec			= 0.0003
+
+;-------------------------------------------------------------------------------
+
+position				= -0.026, -0.135, 0
+orientation				= 0, 0, 0
+
+fire_point				= 0, 0.186, 0.435
+fire_point2				= 0, 0.106, 0.468
+
+flame_particles				= weapons\generic_weapon05
+smoke_particles				= weapons\generic_shoot_00
+grenade_flame_particles			= weapons\generic_weapon01
+
+shell_point				= -0.02, 0.167, 0.082
+shell_dir				= 0, 0, 0.4
+shell_particles				= weapons\generic_shells
+
+PDM_disp_base				= 1
+PDM_disp_vel_factor			= 1.45
+PDM_disp_accel_factor			= 1.45
+PDM_disp_crouch				= 1
+PDM_disp_crouch_no_acc			= 1
+
+hit_power				= 0.62						; 0.4, 0.4, 0.4, 0.4
+hit_impulse				= 1						; 100
+hit_type				= fire_wound
+
+silencer_hit_power			= 0.62						; 0.55, 0.55, 0.55, 0.55
+silencer_hit_impulse			= 1						; 120
+silencer_fire_distance			= 1000						; 250
+silencer_bullet_speed			= 900						; 600
+
+hit_probability_gd_novice		= 1
+hit_probability_gd_stalker		= 1
+hit_probability_gd_veteran		= 1
+hit_probability_gd_master		= 1
+
+fire_distance				= 1000						; 150
+bullet_speed				= 900						; 400
+rpm					= 650						; 600
+;rpm_empty_click			= 200
+
+use_aim_bullet				= true
+time_to_aim				= 3
+
+hud					= wpn_l85_hud
+
+;--STRAP PARAMETERS-----------------------------------------------------------------
+
+strap_position				= -0.15, -0.36, 0.25
+strap_orientation			= -10, -5, 10
+strap_bone0				= bip01_spine2
+strap_bone1				= bip01_spine1
+
+;startup_ammo				= 90
+visual					= dynamics\weapons\wpn_l85\wpn_l85.ogf
+
+light_disabled				= false
+light_color				= 0.6, 0.5, 0.3
+light_range				= 5
+light_var_color				= 0.05
+light_var_range				= 0.5
+light_time				= 0.2
+
+ph_mass					= 4.13						; 5
+
+scope_status				= 1
+silencer_status				= 2
+grenade_launcher_status			= 0
+
+zoom_enabled				= true
+;zoom_rotate_time			= 0.25
+scope_zoom_factor			= 33.3
+scope_texture				= wpn_crosshair_l85
+
+;scope_name				= wpn_addon_scope
+;scope_x				= 60
+;scope_y				= -2
+
+silencer_name				= wpn_addon_silencer
+silencer_x				= 196
+silencer_y				= 11
+
+grenade_launcher_name			= wpn_addon_grenade_launcher_m203
+grenade_launcher_x			= 128
+grenade_launcher_y			= 28
+
+snd_draw				= weapons\ak74_draw
+snd_holster				= weapons\generic_holster
+snd_shoot				= weapons\n_l85_shot
+snd_silncer_shot			= weapons\w_ak74_shot1
+
+snd_empty				= weapons\gen_empty
+snd_reload				= weapons\l85_reload
+snd_shoot_grenade			= weapons\gen_grenshoot
+snd_reload_grenade			= weapons\l85_grenload
+snd_switch				= weapons\groza_switch
+snd_bore				= weapons\draw_silent
+snd_bore1				= weapons\mp5_bore
+
+;silencer_flame_particles		= weapons\generic_weapon01
+silencer_smoke_particles		= weapons\generic_shoot_00
+
+silencer_light_color			= 0.6, 0.5, 0.3
+silencer_light_range			= 0.01
+silencer_light_var_color		= 0.05
+silencer_light_var_range		= 0.5
+silencer_light_time			= 0.2
+
+[wpn_l85_hud]:hud_base
+
+;zoom_hide_crosshair			= false
+attach_place_idx			= 0
+item_visual				= dynamics\weapons\wpn_l85\wpn_l85_hud.ogf
+
+hands_position				= -0.076, -0.167, 0.237499
+hands_orientation			= -2.449999, 2.899998, -3.149999
+
+hands_position_16x9			= -0.08, -0.1765, 0.244999
+hands_orientation_16x9			= -3.099998, 3.949998, -4.449999
+
+item_position				= 0.002926, 0.000089, 0.001182
+item_orientation			= 1.598515, -1.348796, 363.621826
+
+shell_point				= 0.02, 0.06, -0.119
+shell_dir				= 0, 1, 0
+shell_bone				= wpn_body
+
+fire_point				= 0, 0.054, 0.469
+fire_bone				= wpn_body
+fire_point2				= 0, -0.029, 0.525
+fire_bone2				= wpn_body
+
+anm_show				= l85_draw
+anm_hide				= l85_holster
+anm_idle				= l85_idle
+anm_idle_sprint				= l85_idle_sprint
+anm_idle_moving				= l85_idle_moving
+anm_shots				= l85_shoot
+anm_reload				= l85_reload
+anm_idle_aim				= l85_idle_aim
+anm_bore				= l85_idle_bore
+
+anm_switch				= l85_switch_off
+anm_switch_g				= l85_switch_on
+
+anm_hide_w_gl				= l85_holster_w_gl
+anm_show_w_gl				= l85_draw_w_gl
+anm_idle_w_gl				= l85_idle_w_gl
+anm_shots_w_gl				= l85_shoot_w_gl
+anm_reload_w_gl				= l85_reload_w_gl
+anm_idle_w_gl_aim			= l85_idle_w_gl_aim
+anm_idle_sprint_w_gl			= l85_idle_sprint_w_gl
+anm_idle_moving_w_gl			= l85_idle_moving_w_gl
+anm_bore_w_gl				= l85_idle_bore_w_gl
+
+anm_show_g				= l85_draw_grenade
+anm_hide_g				= l85_holster_grenade
+anm_idle_g				= l85_idle_grenade
+anm_reload_g				= l85_reload_grenade
+anm_idle_g_aim				= l85_idle_grenade
+anm_shots_g				= l85_shoot_grenade
+anm_idle_sprint_g			= l85_idle_sprint_grenade
+anm_idle_moving_g			= l85_idle_moving_grenade
+anm_bore_g				= l85_idle_bore_grenade
+
+aim_hud_offset_pos			= -0.102, 0.0195, -0.148
+aim_hud_offset_rot			= 0.01, 0.0025, -0.01
+
+aim_hud_offset_pos_16x9			= -0.0925, 0.019, -0.1265
+aim_hud_offset_rot_16x9			= 0.015, 0.01, -0.0675
+
+gl_hud_offset_pos			= 0, 0, 0					; -0.053, -0.059, 0
+gl_hud_offset_rot			= 0, 0, 0					; -0.145, 0, 0
+
+gl_hud_offset_pos_16x9			= 0, 0, 0					; -0.053, -0.059, 0
+gl_hud_offset_rot_16x9			= 0, 0, 0					; -0.145, 0, 0
+
+;lean_hud_offset_pos			= 0, 0, 0
+;lean_hud_offset_rot			= 0, 0, 0

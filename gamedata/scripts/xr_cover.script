@@ -1,0 +1,191 @@
+class "evaluator_need_cover" (property_evaluator)
+
+function evaluator_need_cover:__init(storage, name) super(nil, name)
+	self.st = storage
+end
+
+function evaluator_need_cover:evaluate()
+	return xr_logic.is_active(self.object, self.st)
+end
+
+----------------------------------------------------------------------------------------------------------------------
+
+class "action_cover" (action_base)
+
+function action_cover:__init (npc_name, action_name, storage) super(nil, action_name)
+	self.st = storage
+end
+
+function action_cover:initialize()
+	action_base.initialize(self)
+--	self.board = sim_board.get_sim_board()
+end
+
+function action_cover:activate_scheme()
+
+	local self_st = self.st
+	local board = sim_board.get_sim_board()
+
+	self_st.signals = {}
+
+	local base_point = board:get_smart_by_name(self_st.smart).m_level_vertex_id
+	local rand = math.random
+	local direction_vector = vector():set(rand(-100, 100), 0, rand(-100, 100))
+	local base_vertex_id = level.vertex_in_direction(base_point, direction_vector, rand(self_st.radius_min, self_st.radius_max))
+	local self_random_position = level.vertex_position(base_vertex_id)
+	local sobj = self.object
+
+	self.enemy_random_position = self_random_position
+	if self_st.use_attack_direction then
+		local squad = db.storage[sobj:id()].squad_obj
+		if squad ~= nil then
+			local combat = board.smarts[squad.sim_combat_id].smrt.combat_manager
+			local combat_smart_id = combat.smart.id
+			for k in pairs (combat.squads) do
+				local squad = board.squads[k]
+				local squad_smart = squad.smart
+				if squad_smart == nil or squad_smart.id ~= combat_smart_id then
+					local sim = alife()
+					for kk in pairs (squad.squad_npc) do
+						local obj = sim:object(kk)
+						self.enemy_random_position = obj.position
+						break
+					end
+					break
+				end
+			end
+		end
+	end
+
+	local cover = nil
+	local tcover = nil
+
+	if self_st.use_precalc_cover then
+		tcover = cover_manager.get_cover(sobj, board:get_smart_by_name(self_st.smart))
+		if tcover ~= nil then
+			self.enemy_random_position = tcover.look_pos
+		end
+	else
+		local cover_dist = 2
+		while cover == nil and cover_dist <= 4 do
+			cover = sobj:best_cover(self_random_position, self.enemy_random_position, cover_dist, 1, 150)
+			cover_dist = cover_dist + 1
+		end
+	end
+
+	if cover == nil then
+		self.cover_vertex_id = base_vertex_id
+		self.cover_position = self_random_position
+	else
+		if tcover ~= nil then
+			self.cover_vertex_id = tcover.cover_vertex_id
+			self.cover_position = tcover.cover_position
+		else
+			self.cover_vertex_id = cover:level_vertex_id()
+			self.cover_position = cover:position()
+		end
+	end
+
+	if not sobj:accessible(self.cover_position) then
+		local ttp = vector():set(0,0,0)
+		self.cover_vertex_id = sobj:accessible_nearest(self.cover_position, ttp)
+		self.cover_position = level.vertex_position(self.cover_vertex_id)
+	end
+
+	local desired_direction = vector():sub(self.cover_position, self.enemy_random_position)
+	if desired_direction ~= nil and not utils.vector_cmp(desired_direction, vector():set(0,0,0)) then
+		desired_direction:normalize()
+		sobj:set_desired_direction(desired_direction)
+	end
+
+	sobj:set_path_type(game_object.level_path)
+	sobj:set_dest_level_vertex_id(self.cover_vertex_id)
+	state_mgr.set_state(sobj, "assault")
+end
+
+function action_cover:execute()
+	local self_st = self.st
+	local sobj = self.object
+	if self.cover_position:distance_to_sqr(sobj:position()) <= 0.4 then
+		local anim = xr_logic.pick_section_from_condlist(db.actor, sobj, self_st.anim)
+		state_mgr.set_state(sobj, anim, nil, nil, {look_position = self.enemy_random_position}, nil, nil)
+	else
+		sobj:set_dest_level_vertex_id(self.cover_vertex_id)	-- SRP
+		state_mgr.set_state(sobj, "assault")
+	end
+	if self_st.sound_idle ~= nil then
+		xr_sound.set_sound_play(sobj:id(), self_st.sound_idle)
+	end
+	action_base.execute(self)
+end
+
+function action_cover:finalize()
+	action_base.finalize(self)
+end
+
+function action_cover:position_riched()
+	return self.cover_position:distance_to_sqr(self.object:position()) <= 0.4
+end
+
+----------------------------------------------------------------------------------------------------------------------
+-- binder
+----------------------------------------------------------------------------------------------------------------------
+
+function add_to_binder(npc, ini, scheme, section, storage)
+
+	local operators			= {}
+	local properties		= {}
+
+	local manager			= npc:motivation_action_manager()
+
+	properties["event"]		= xr_evaluators_id.reaction
+	properties["need_cover"]	= xr_evaluators_id.stohe_cover_base + 1
+	operators["action_cover"]	= xr_actions_id.stohe_cover_base + 1
+
+	-- Evaluators
+
+	manager:add_evaluator		(properties["need_cover"], this.evaluator_need_cover(storage, "need_cover"))
+
+	-- Actions
+
+	local new_action = this.action_cover(npc, "action_cover", storage)
+
+	new_action:add_precondition	(world_property(stalker_ids.property_alive, true))
+	new_action:add_precondition	(world_property(stalker_ids.property_danger, false))
+	new_action:add_precondition	(world_property(stalker_ids.property_enemy, false))
+	new_action:add_precondition	(world_property(stalker_ids.property_anomaly, false))
+	new_action:add_precondition	(world_property(xr_evaluators_id.sidor_wounded_base + 0, false))
+	new_action:add_precondition	(world_property(xr_evaluators_id.smartcover_action + 3, false))
+	new_action:add_precondition	(world_property(properties["need_cover"], true))
+	new_action:add_effect		(world_property(properties["need_cover"], false))
+	manager:add_action		(operators["action_cover"], new_action)
+
+	xr_logic.subscribe_action_for_events(npc, storage, new_action)
+
+	new_action = manager:action(xr_actions_id.alife)
+
+	new_action:add_precondition	(world_property(properties["need_cover"], false))
+end
+
+function set_scheme(npc, ini, scheme, section)	--, gulag_name)
+
+	local get_bool		= utils.cfg_get_bool
+	local get_number	= utils.cfg_get_number
+	local get_string	= utils.cfg_get_string
+
+	local st		= xr_logic.assign_storage_and_bind(npc, ini, scheme, section)
+	st.logic		= xr_logic.cfg_get_switch_conditions(ini, section, npc)
+--	st.path			= get_string(ini, section, "path_walk", npc, false, gulag_name)
+	st.smart		= get_string(ini, section, "smart", npc, false, "")
+	st.anim			= xr_logic.parse_condlist(npc, "anim", "anim", get_string(ini, section, "anim", npc, false, "", "hide"))
+	st.sound_idle		= get_string(ini, section, "sound_idle", npc, false, "")
+
+	if st.smart == nil then
+		abort("[xr_cover.set_scheme]: There is no 'smart' field in xr_cover.")
+	end
+
+	st.use_attack_direction	= get_bool(ini, section, "use_attack_direction", npc, false, true)
+	st.use_precalc_cover	= get_bool(ini, section, "use_precalc_cover", npc, false, false)
+	st.radius_min		= get_number(ini, section, "radius_min", npc, false, 3)
+	st.radius_max		= get_number(ini, section, "radius_max", npc, false, 5)
+end

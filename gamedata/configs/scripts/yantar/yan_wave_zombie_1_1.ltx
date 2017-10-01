@@ -1,0 +1,91 @@
+[logic]
+active = sr_idle@start
+
+[sr_idle@start]
+on_info = {+yan_ready_perekl_cut6} sr_idle@wave_1
+
+[sr_idle@wave_1]
+on_game_timer = 80 | sr_idle@wave_1_2 %=spawn_object(yan_wave_zombie_3:yan_walker_zombie_cut6_way_3_walk) +yan_wave_zombie1_cut6%
+on_info = {+yan_stop_spawn_cut6} sr_idle@stop
+on_info2 = {+yan_wave_speedx2_cut6} sr_idle@wave2x_1
+
+[sr_idle@wave_1_2]
+on_game_timer = 70 | sr_idle@wave_1_3 %=spawn_object(yan_wave_zombie_13:yan_walker_zombie_cut6_way_13_walk) =play_sound(yan_building_wave:stalker:yan_levshas_crew)%
+on_info = {+yan_stop_spawn_cut6} sr_idle@stop
+on_info2 = {+yan_wave_speedx2_cut6} sr_idle@wave2x_1
+
+[sr_idle@wave_1_3]
+on_game_timer = 80 | sr_idle@wave_1_4 %=spawn_object(yan_wave_zombie_3:yan_walker_zombie_cut6_way_3_walk)%
+on_info = {+yan_stop_spawn_cut6} sr_idle@stop
+on_info2 = {+yan_wave_speedx2_cut6} sr_idle@wave2x_1
+
+[sr_idle@wave_1_4]
+on_game_timer = 80 | sr_idle@wave_1_5 %=spawn_object(yan_wave_zombie_12:yan_walker_zombie_cut6_way_12_walk)%
+on_info = {+yan_stop_spawn_cut6} sr_idle@stop
+on_info2 = {+yan_wave_speedx2_cut6} sr_idle@wave2x_1
+
+[sr_idle@wave_1_5]
+on_game_timer = 80 | sr_idle@wave_1 %=spawn_object(yan_wave_zombie_5:yan_walker_zombie_cut6_way_5_walk)%
+on_info = {+yan_stop_spawn_cut6} sr_idle@stop
+on_info2 = {+yan_wave_speedx2_cut6} sr_idle@wave2x_1
+
+;------------------------
+
+[sr_idle@wave2x_1]
+on_game_timer = 70 | sr_idle@wave2x_2 %=spawn_object(yan_wave_zombie_3:yan_walker_zombie_cut6_way_3_walk) -yan_wave_zombie1_cut6%
+on_info = {+yan_stop_spawn_cut6} sr_idle@stop
+on_info2 = {+yan_fast_zombi_cut6} sr_idle@wave_3
+
+[sr_idle@wave2x_2]
+on_game_timer = 35 | sr_idle@wave2x_3 %=spawn_object(yan_wave_zombie_13:yan_walker_zombie_cut6_way_13_walk)%
+on_info = {+yan_stop_spawn_cut6} sr_idle@stop
+on_info2 = {+yan_fast_zombi_cut6}sr_idle@wave_3
+
+[sr_idle@wave2x_3]
+on_game_timer = 70 | sr_idle@wave2x_4 %=spawn_object(yan_wave_zombie_3:yan_walker_zombie_cut6_way_1_walk)%
+on_info = {+yan_stop_spawn_cut6} sr_idle@stop
+on_info2 = {+yan_fast_zombi_cut6} sr_idle@wave_3
+
+[sr_idle@wave2x_4]
+on_game_timer = 45 | sr_idle@wave2x_5 %=spawn_object(yan_wave_zombie_12:yan_walker_zombie_cut6_way_12_walk)%
+on_info = {+yan_stop_spawn_cut6} sr_idle@stop
+on_info2 = {+yan_fast_zombi_cut6} sr_idle@wave_3
+
+[sr_idle@wave2x_5]
+on_game_timer = 35 | sr_idle@wave2x_1 %=spawn_object(yan_wave_zombie_5:yan_walker_zombie_cut6_way_5_walk)%
+on_info2 = {+yan_stop_spawn_cut6} sr_idle@stop
+on_info = {+yan_fast_zombi_cut6} sr_idle@wave_3
+
+;------------------------
+
+[sr_idle@wave_3]
+on_info = {+yan_wave_naval_roof1} sr_idle@wave3_1
+
+[sr_idle@wave3_1]
+on_game_timer = 80 | sr_idle@wave3_2 %=spawn_object(yan_wave_zombie_8:yan_walker_zombie_cut6_way_8_walk)%
+on_info = {+yan_stop_spawn_cut6} sr_idle@stop
+
+[sr_idle@wave3_2]
+on_game_timer = 70 | sr_idle@wave3_3 %=spawn_object(yan_wave_zombie_9:yan_walker_zombie_cut6_way_9_walk)%
+on_info = {+yan_stop_spawn_cut6} sr_idle@stop
+
+[sr_idle@wave3_3]
+on_game_timer = 80 | sr_idle@wave3_4 %=spawn_object(yan_wave_zombie_8:yan_walker_zombie_cut6_way_8_walk)%
+on_info = {+yan_stop_spawn_cut6} sr_idle@stop
+
+[sr_idle@wave3_4]
+on_game_timer = 60 | sr_idle@wave3_5 %=spawn_object(yan_wave_zombie_9:yan_walker_zombie_cut6_way_9_walk)%
+on_info = {+yan_stop_spawn_cut6} sr_idle@stop
+
+[sr_idle@wave3_5]
+on_game_timer = 70 | sr_idle@wave3_6 %=spawn_object(yan_wave_zombie_8:yan_walker_zombie_cut6_way_8_walk)%
+on_info = {+yan_stop_spawn_cut6} sr_idle@stop
+
+[sr_idle@wave3_6]
+on_game_timer = 60 | sr_idle@wave_3_end %=spawn_object(yan_wave_zombie_9:yan_walker_zombie_cut6_way_9_walk)%
+on_info = {+yan_stop_spawn_cut6} sr_idle@stop
+
+[sr_idle@wave_3_end]
+on_game_timer = 350 | sr_idle@wave_1_2
+
+[sr_idle@stop]

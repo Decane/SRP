@@ -1,0 +1,114 @@
+<?xml version='1.0' encoding="windows-1251"?>
+
+<game_information_portions>
+
+<!--	Decane start	-->
+
+	<info_portion id="ui_talk_show"/>
+
+<!--	 Decane end	-->
+
+	<info_portion id="global_dialogs">
+		<dialog>actor_break_dialog</dialog>
+	</info_portion>
+
+	<info_portion id="ui_pda">
+		<disable>ui_pda_hide</disable>
+	</info_portion>
+
+	<info_portion id="ui_pda_hide">
+		<disable>ui_pda</disable>
+	</info_portion>
+<!--
+	<info_portion id="ui_pda_jobs">
+		<disable>ui_pda_jobs_hide</disable>
+	</info_portion>
+
+	<info_portion id="ui_pda_jobs_hide">
+		<disable>ui_pda_jobs</disable>
+	</info_portion>
+
+	<info_portion id="ui_inventory">
+		<disable>ui_inventory_hide</disable>
+	</info_portion>
+
+	<info_portion id="ui_inventory_hide">
+		<disable>ui_inventory</disable>
+	</info_portion>
+-->
+	<info_portion id="ui_talk">
+		<disable>ui_talk_hide</disable>
+	</info_portion>
+
+	<info_portion id="ui_talk_hide">
+		<disable>ui_talk</disable>
+	</info_portion>
+<!--
+	<info_portion id="ui_trade">
+		<disable>ui_trade_hide</disable>
+	</info_portion>
+
+	<info_portion id="ui_trade_hide">
+		<disable>ui_trade</disable>
+	</info_portion>
+
+	<info_portion id="ui_car_body">
+		<disable>ui_car_body_hide</disable>
+	</info_portion>
+
+	<info_portion id="ui_car_body_hide">
+		<disable>ui_car_body</disable>
+	</info_portion>
+
+	<info_portion id="level_changer_icons"/>
+	<info_portion id="ui_pda_contacts"/>
+	<info_portion id="ui_pda_contacts_hide"/>
+-->
+	<info_portion id="ui_pda_map_local"/>
+<!--
+	<info_portion id="ui_pda_map_global"/>
+	<info_portion id="ui_pda_news"/>
+	<info_portion id="ui_pda_news_hide"/>
+	<info_portion id="ui_pda_jobs_failed"/>
+	<info_portion id="ui_pda_jobs_accomplished"/>
+	<info_portion id="ui_pda_jobs_current"/>
+	<info_portion id="ui_pda_contracts"/>
+	<info_portion id="ui_pda_diary"/>
+	<info_portion id="ui_pda_diary_hide"/>
+	<info_portion id="ui_pda_encyclopedia"/>
+	<info_portion id="ui_pda_encyclopedia_hide"/>
+	<info_portion id="ui_pda_actor_info"/>
+	<info_portion id="ui_pda_ranking"/>
+	<info_portion id="ui_pda_events"/>
+	<info_portion id="retreat"/>
+	<info_portion id="alert"/>
+
+	<info_portion id="arena_first_battle_begin"/>
+	<info_portion id="arena_camera_begin"/>
+	<info_portion id="arena_final_battle"/>
+	<info_portion id="arena_rupor_off"/>
+	<info_portion id="arena_fourth_battle"/>
+-->
+	<info_portion id="sim_capture_enemy_base_stalker_done"/>
+	<info_portion id="sim_capture_enemy_base_bandit_done"/>
+	<info_portion id="sim_capture_enemy_base_freedom_done"/>
+	<info_portion id="sim_capture_enemy_base_dolg_done"/>
+
+	<info_portion id="has_sleeping_bag"/>
+
+	<info_portion id="mar_stashes_filled"/>
+	<info_portion id="esc_stashes_filled"/>
+	<info_portion id="gar_stashes_filled"/>
+	<info_portion id="val_stashes_filled"/>
+	<info_portion id="agr_stashes_filled"/>
+	<info_portion id="agru_stashes_filled"/>
+	<info_portion id="yan_stashes_filled"/>
+	<info_portion id="red_stashes_filled"/>
+	<info_portion id="mil_stashes_filled"/>
+	<info_portion id="lim_stashes_filled"/>
+	<info_portion id="kat_stashes_filled"/>
+
+	<info_portion id="gar_treasure_quest_reward_in_anomaly"/>
+	<info_portion id="gar_treasure_quest_old_pda"/>
+
+</game_information_portions>

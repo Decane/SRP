@@ -1,0 +1,11 @@
+[logic]
+active = sr_idle@start
+
+[sr_idle@start]
+on_info = {+yan_quest_levsha} sr_idle@check_position
+
+[sr_idle@check_position]
+on_actor_outside = sr_idle@playing_objectives %=play_sound(yan_professor_about_switcher:ecolog:yan_st_sakharov_name)%
+
+[sr_idle@playing_objectives]
+on_signal = sound_end | nil %=play_sound(yan_levsha_reply_switcher:stalker:yan_st_levsha_name)%

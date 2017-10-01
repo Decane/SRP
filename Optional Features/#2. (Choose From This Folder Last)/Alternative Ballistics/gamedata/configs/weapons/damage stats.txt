@@ -1,0 +1,174 @@
+==================
+ Assault weapons:
+==================
+
+w_abakan:
+
+hit_power				= 0.6						; 0.4, 0.4, 0.4, 0.4
+hit_impulse				= 1						; 100
+
+w_ak74:
+
+hit_power				= 0.57						; 0.4, 0.4, 0.4, 0.4
+hit_impulse				= 1						; 100
+
+w_ak74u:
+
+hit_power				= 0.54						; 0.35, 0.35, 0.35, 0.35
+hit_impulse				= 1						; 100
+
+w_fn2000:
+
+hit_power				= 0.7						; 0.4, 0.4, 0.4, 0.4
+hit_impulse				= 1						; 100
+
+w_g36:
+
+hit_power				= 0.67						; 0.4, 0.4, 0.4, 0.4
+hit_impulse				= 1						; 100
+
+w_groza:
+
+hit_power				= 0.72						; 0.4, 0.4, 0.4, 0.4
+hit_impulse				= 1						; 100
+
+w_l85:
+
+hit_power				= 0.62						; 0.4, 0.4, 0.4, 0.4
+hit_impulse				= 1						; 100
+
+w_lr300:
+
+hit_power				= 0.6						; 0.35, 0.35, 0.35, 0.35
+hit_impulse				= 1						; 100
+
+w_mp5:
+
+hit_power				= 0.38						; 0.5, 0.5, 0.5, 0.5
+hit_impulse				= 1						; 100
+
+w_pkm:
+
+hit_power				= 1						; 1, 1, 1, 1
+hit_impulse				= 1						; 120
+
+w_sig550:
+
+hit_power				= 0.65						; 0.45, 0.45, 0.45, 0.45
+hit_impulse				= 1						; 100
+
+w_val:
+
+hit_power				= 0.78						; 0.35, 0.35, 0.35, 0.35
+hit_impulse				= 1						; 100
+
+==========
+ Pistols:
+==========
+
+w_beretta:
+
+hit_power				= 0.37						; 0.5, 0.5, 0.5, 0.5
+hit_impulse				= 1						; 75
+
+w_colt1911:
+
+hit_power				= 0.45						; 0.5, 0.5, 0.5, 0.5
+hit_impulse				= 1						; 75
+
+w_desert_eagle:
+
+hit_power				= 0.52						; 0.55, 0.55, 0.55, 0.55
+hit_impulse				= 1						; 75
+
+w_fort:
+
+hit_power				= 0.35						; 0.5, 0.5, 0.5, 0.5
+hit_impulse				= 1						; 75
+
+w_hpsa:
+
+hit_power				= 0.4						; 0.5, 0.5, 0.5, 0.5
+hit_impulse				= 1						; 75
+
+w_pb:
+
+hit_power				= 0.32						; 0.5, 0.5, 0.5, 0.5
+hit_impulse				= 1						; 80
+
+w_pm:
+
+hit_power				= 0.3						; 0.5, 0.5, 0.5, 0.5
+hit_impulse				= 1						; 75
+
+w_sig220:
+
+hit_power				= 0.43						; 0.5, 0.5, 0.5, 0.5
+hit_impulse				= 1						; 100
+
+w_usp45:
+
+hit_power				= 0.42						; 0.5, 0.5, 0.5, 0.5
+hit_impulse				= 1						; 100
+
+w_walther:
+
+hit_power				= 0.39						; 0.5, 0.5, 0.5, 0.5
+hit_impulse				= 1						; 75
+
+===========
+ Shotguns:
+===========
+
+w_bm16:
+
+hit_power				= 1.05						; 1.05, 1.05, 1.05, 1.05
+hit_impulse				= 1						; 150
+
+w_spas12:
+
+hit_power				= 0.95						; 1.0, 1.0, 1.0, 1.0
+hit_impulse				= 1						; 100
+
+w_toz34:
+
+hit_power				= 1						; 1.0, 1.0, 1.0, 1.0
+hit_impulse				= 1						; 100
+
+w_wincheaster1300:
+
+hit_power				= 0.9						; 1, 1, 1, 1
+hit_impulse				= 1						; 120
+
+=========
+ Rocket:
+=========
+
+w_rg6:
+
+hit_power				= 1						; 0.75, 0.75, 0.75, 0.75
+hit_impulse				= 1						; 150
+
+w_rpg7:
+
+hit_power				= 3
+hit_impulse				= 1						; 100
+
+=========
+ Sniper:
+=========
+
+w_svd:
+
+hit_power				= 1.1						; 1.0, 1.0, 1.0, 1.0
+hit_impulse				= 1						; 125
+
+w_svu:
+
+hit_power				= 1						; 0.9, 0.9, 0.9, 0.9
+hit_impulse				= 1						; 125
+
+w_vintorez:
+
+hit_power				= 0.9						; 0.35, 0.35, 0.35, 0.35
+hit_impulse				= 1						; 100

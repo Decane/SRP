@@ -1,0 +1,84 @@
+[logic@work1];north
+active = walker@enter_work1
+suitable = {=check_npc_name(esc_stalker_guard_east_bridge)} true
+
+[walker@enter_work1]
+path_walk = grd_3_walk
+path_look = grd_3_look
+meet = meet
+
+;--------------------------------------
+
+[logic@work2];south
+active = walker@enter_work2
+suitable = {=check_npc_name(esc_stalker_guard_west_bridge)} true
+
+[walker@enter_work2]
+path_walk = grd_2_walk
+path_look = grd_2_look
+on_actor_in_zone = esc_space_restrictor_nasip_bridge | {+esc_reach_stalker_base_complete} walker@last_work2, {+esc_actor_inside_traders_dung !actor_enemy} walker@last_work2 %=play_sound(esc_railroadpost_yes:stalker:esc_smart_terrain_6_8)%, {-esc_warnings_off !actor_enemy !gulag_enemy_actor(esc_smart_terrain_4_8)} remark@no_work2 %=play_sound(esc_railroadpost_no:stalker:esc_smart_terrain_6_8)%, {+esc_warning_squads_hostile -esc_warning_squad_bridge_made_hostile} %=set_gulag_relation_actor(esc_smart_terrain_6_8:enemy) +esc_warning_squad_bridge_made_hostile%, {-esc_warning_squads_hostile =gulag_enemy_actor(esc_smart_terrain_4_8)} %+esc_warning_squads_hostile%
+meet = no_meet
+
+[remark@no_work2]
+anim = backoff
+target = actor
+on_actor_in_zone = esc_space_restrictor_nasip_bridge_1 | walker@enter_work2 %+esc_warnings_off +esc_warning_squads_hostile%
+on_actor_not_in_zone = esc_space_restrictor_nasip_bridge | walker@enter_work2
+meet = meet@bad
+
+[walker@last_work2]
+path_walk = grd_2_walk
+path_look = grd_2_look
+meet = meet
+
+;--------------------------------------
+
+[logic@work3]
+active = camper@bridge_work3
+suitable = true
+
+[camper@bridge_work3]
+path_walk = snp_1_walk
+path_look = snp_1_look
+sniper = true
+
+;--------------------------------------
+
+[logic@work4]
+active = camper@bridge_work4
+suitable = true
+
+[camper@bridge_work4]
+path_walk = snp_1_1_walk
+path_look = snp_1_1_look
+sniper = true
+
+;--------------------------------------
+
+[logic@work5]
+active = camper@bridge_work5
+suitable = true
+
+[camper@bridge_work5]
+path_walk = snp_3_walk
+path_look = snp_3_look
+sniper = true
+
+;--------------------------------------
+
+[meet@bad]
+meet_state	= 60 | backoff@esc_railroadpost_no
+meet_state_wpn	= 60 | backoff@esc_railroadpost_no
+victim		= 60 | actor
+victim_wpn	= 60 | actor
+use		= false
+use_wpn		= false
+
+[meet]
+meet_state	= 5 | guard@meet_comander_start
+meet_state_wpn	= 7 | backoff@meet_weapon_wait
+victim		= 10 | nil | 5 | actor
+victim_wpn	= 10 | nil | 5 | actor
+use		= true
+use_wpn		= false
+meet_dialog	= esc_stalker_bridge_talk

@@ -1,0 +1,394 @@
+class "faction_brain_human"
+
+function faction_brain_human:__init(faction)
+	self.faction = faction
+	self.human = true
+	self.use_issue_order = true
+	self.use_cover_attack = true
+	self.use_prepare_phase = true
+	self.use_delay_attack = false
+	if self.faction.player_name == "killer" then
+		self.use_counter_attack = false
+	else
+		self.use_counter_attack = true
+	end
+end
+
+local faction_leader_tbl = {
+
+	["csky"]	= "mar_csky_commander_name",
+	["stalker"]	= "esc_leader_stalkerbase_name",
+	["bandit"]	= "gar_bandit_leader_name",
+	["dolg"]	= "agr_duty_base_commander_name",
+	["freedom"]	= "val_freedom_leader_name"
+
+}
+
+function faction_brain_human:calculate_current_expansion(no_sound)
+
+	local faction = self.faction
+	local cur_exp = faction.current_expansion_level
+
+	if cur_exp == 0 then
+		cur_exp = 1
+	end
+
+	local exp_dec, exp_level, relative_power, act, expansion, power_valid, advance_valid, cond_valid, actor_valid
+	= false, faction.expansion_level, faction:get_relative_power(), db.actor
+
+	for i = 1, (cur_exp - 1) do
+		expansion = exp_level[i]
+		power_valid = relative_power >= expansion.precondition_power
+		advance_valid = self:check_sim_targets_advance(expansion)
+		cond_valid = xr_logic.pick_section_from_condlist(act, self, expansion.precondition_cond) == "true"
+		actor_valid = expansion.precondition_actor_in_faction ~= true or faction.community_player == true
+		if not (cond_valid and power_valid and advance_valid and actor_valid) then
+			if faction.community_player == true then
+				if act ~= nil then
+					local down_snd = exp_level[i + 1].level_down_snd
+					if down_snd ~= nil then
+						local faction_name = faction.player_name
+						xr_sound.set_sound_play(faction.id, down_snd, faction_name, faction_leader_tbl[faction_name])
+					end
+				end
+			end
+			cur_exp = i
+			exp_dec = true
+			break
+		end
+	end
+
+	if exp_dec ~= true then
+		if cur_exp < #exp_level then
+			expansion = exp_level[cur_exp]
+			power_valid = relative_power >= expansion.precondition_power
+			advance_valid = self:check_sim_targets_advance(expansion)
+			cond_valid = xr_logic.pick_section_from_condlist(act, self, expansion.precondition_cond) == "true"
+			actor_valid = expansion.precondition_actor_in_faction ~= true or faction.community_player == true
+			if (cond_valid and power_valid and advance_valid and actor_valid) then
+				if no_sound ~= true then
+					if faction.community_player == true then
+						if act ~= nil then
+							local up_snd = expansion.level_up_snd
+							if up_snd ~= nil then
+								local faction_name = faction.player_name
+								xr_sound.set_sound_play(faction.id, up_snd, faction_name, faction_leader_tbl[faction_name])
+							end
+						end
+					end
+				end
+				cur_exp = cur_exp + 1
+			end
+		end
+	end
+
+	faction.current_expansion_level = cur_exp
+
+	self:calculate_expansion_targets()
+end
+
+function faction_brain_human:calculate_expansion_targets()
+
+	local faction = self.faction
+	local cur_exp = faction.current_expansion_level
+
+	faction.target_smart_value = {}
+
+	if cur_exp == 0 then
+		return
+	end
+
+	local relative_power = faction:get_relative_power()
+	local exp_level = faction.expansion_level
+
+	self:get_sim_targets_power(relative_power < exp_level[cur_exp].precondition_power)
+
+	for i = 1, cur_exp do
+		self:get_sim_targets_advance(exp_level[i])
+	end
+
+	for k in pairs (faction.secondary_targets) do
+		self:register_target_point(faction.board.smarts_by_names[k], false, false, true)
+	end
+
+	if db.actor ~= nil then
+		if faction.community_player == true then
+			self:reset_actor_tasks()
+		end
+	end
+
+	faction:calculate_total_squads()
+	faction:calculate_squad_tasks()
+end
+
+function faction_brain_human:get_sim_targets_power(need_power_targets)
+	local faction = self.faction
+	local faction_name = faction.player_name
+	for k, v in pairs (faction.board.smarts) do
+		local smart_obj = v.smrt
+		local smart_type = smart_obj.sim_type
+		if smart_type == "territory" or smart_type == "resource" then
+			if need_power_targets or smart_obj.player_name == faction_name then
+				if sim_board.is_point_avail(smart_obj, faction_name) then
+					self:register_target_point(smart_obj, false)
+				end
+			end
+		end
+	end
+end
+
+function faction_brain_human:check_sim_targets_advance(expansion)
+
+	local faction = self.faction
+	local faction_name = faction.player_name
+	local smarts_by_name = faction.board.smarts_by_names
+
+	for k, v in pairs (expansion.precondition_target) do
+		local smart_owner = smarts_by_name[v].player_name
+		if smart_owner ~= faction_name then
+			if smart_owner == "none" or game_relations.is_factions_enemies(faction_name, smart_owner) then
+				return false
+			end
+		end
+	end
+--[[
+	for k, v in pairs (expansion.precondition_target_optional) do
+		local smart_owner = smarts_by_name[v].player_name
+		if smart_owner ~= faction_name then
+			if smart_owner == "none" or game_relations.is_factions_enemies(faction_name, smart_owner) then
+				return false
+			end
+		end
+	end
+]]
+	for k, v in pairs (expansion.precondition_target_eliminate) do
+		local smart_owner = smarts_by_name[v].player_name
+		if smart_owner ~= "none" then
+			if game_relations.is_factions_enemies(faction_name, smart_owner) then
+				return false
+			end
+		end
+	end
+
+	return true
+end
+
+function faction_brain_human:get_sim_targets_advance(expansion)
+
+	local faction = self.faction
+	local faction_name = faction.player_name
+	local smarts_by_name = faction.board.smarts_by_names
+
+	for k, v in pairs (expansion.precondition_target) do
+		self:register_target_point(smarts_by_name[v], true)
+	end
+
+	for k, v in pairs (expansion.precondition_target_no_task) do
+		self:register_target_point(smarts_by_name[v], true, nil, true)
+	end
+
+	for k, v in pairs (expansion.precondition_target_eliminate) do
+		local smart_obj = smarts_by_name[v]
+		if game_relations.is_factions_enemies(faction_name, smart_obj.player_name) then
+			self:register_target_point(smart_obj, false, true)
+		end
+	end
+end
+
+function faction_brain_human:register_target_point(smart_obj, advance_point, eliminate, no_task)
+
+	local faction = self.faction
+	local point_capacity = smart_obj.squad_capacity
+	local point_faction = smart_obj.player_name
+
+	if point_faction == faction.player_name or point_faction == "none" then
+		if not smart_obj.important_point then
+			point_capacity = 1
+		else
+			if smart_obj.respawn_sector ~= nil then
+				point_capacity = point_capacity - 1
+			end
+		end
+	end
+
+	local smrt_id = smart_obj.id
+	faction.target_smart_value[smrt_id] = {
+
+		smart = smart_obj,
+		cap = point_capacity,
+		num = 0,
+--		smart_name = smart_obj:name(),
+		smart_id = smrt_id,
+		advance_point = advance_point,
+		eliminate = eliminate,
+		no_task = no_task
+	}
+
+end
+
+function faction_brain_human:reset_actor_tasks()
+
+	local obstacle_points = {}
+	self.interfirience_points = obstacle_points
+	local faction = self.faction
+
+	for k, squad in pairs (faction.squads) do
+		local current_action = squad.current_action
+		if current_action ~= nil then
+			if current_action.name == "stay_point" then
+				local next_smart = current_action.next_point_id
+				if next_smart ~= nil then
+					local next_smart_target = faction.target_smart_value[next_smart]
+					if next_smart_target ~= nil then
+						next_smart_target.allies_exist = true
+					else
+						local point = faction.board.smarts[next_smart].smrt
+						if not point.combat_manager:point_under_attack() then
+							if game_relations.is_factions_enemies(squad.player_id, point.player_name) then
+								obstacle_points[point.id] = point
+							end
+						end
+					end
+				end
+			else
+				local dest_smart = current_action.dest_smrt_id
+				local dest_smart_target = faction.target_smart_value[dest_smart]
+				if dest_smart_target ~= nil then
+					dest_smart_target.allies_exist = true
+				else
+					local point = faction.board.smarts[dest_smart].smrt
+					-- This test will always fail because a point is always under attack when a squad that isn't its owner has it as an attack_point destination smart:
+--					if not point.combat_manager:point_under_attack() then
+						if game_relations.is_factions_enemies(squad.player_id, point.player_name) then
+							obstacle_points[point.id] = point
+						end
+--					end
+				end
+			end
+		end
+	end
+
+	local faction_rand_tasks = faction.random_tasks
+	local faction_target_smarts = faction.target_smart_value
+	local tm = task_manager.get_task_manager()
+	local task
+
+	for k, v in pairs (faction_rand_tasks) do
+		if faction_target_smarts[k] == nil then
+			if obstacle_points[k] == nil then
+				task = tm:get_task_by_entity_id(v)
+				if task ~= nil then
+					if task.actor_helped == true then
+						if faction.board.smarts[k].smrt.player_name == "none" then
+							task.last_check_task = "complete"
+						else
+							task.last_check_task = "reversed"
+						end
+					else
+						task.last_check_task = "reversed"
+					end
+				end
+			end
+		end
+	end
+
+	for k, v in pairs (faction_target_smarts) do
+		self:init_player_task(v)
+	end
+
+	local act_vx = db.actor:game_vertex_id()
+	for k, v in pairs (obstacle_points) do
+		if faction_rand_tasks[k] == nil then
+			if utils.graph_distance(act_vx, v.m_game_vertex_id) <= 300 then
+				task = tm:get_tasks_by_smart(k)
+				if task ~= nil then
+					if task.target == k then
+						return
+					end
+				end
+				task = tm:select_task("eliminate_smart", v, faction.player_name)
+--				task.faction = faction
+				faction_rand_tasks[v.id] = task.entity_id
+				if task.status ~= "selected" then
+					task:give_task(faction.player_name)
+				end
+			end
+		end
+	end
+end
+
+function faction_brain_human:init_player_task(target_data)
+
+	if target_data.no_task == true then
+		return
+	end
+
+	local faction = self.faction
+	local smart = target_data.smart
+	local faction_name = faction.player_name
+	local smart_faction = smart.player_name
+
+	if smart_faction == faction_name then
+		return
+	end
+
+	local empty_point = smart_faction == "none"
+	local enemy_point = game_relations.is_factions_enemies(faction_name, smart_faction)
+
+	if not empty_point then
+		if not enemy_point then
+			return					-- if smart is populated by friends, return
+		end
+	end
+
+	if sim_board.faction_cluster[faction_name] ~= sim_board.sim_level_cluster[smart.smart_level] then
+		return
+	end
+
+	local task_type = nil
+
+	if target_data.eliminate == true then
+		if enemy_point == true then
+			task_type = "eliminate_smart"
+		end
+	elseif target_data.advance_point == true then
+		task_type = "capture_smart"
+	elseif enemy_point == true then				-- if smart is populated by enemies
+		if target_data.allies_exist == true then
+			task_type = "capture_smart"
+		else
+			if level.name() == smart.smart_level then
+				if db.actor:position():distance_to_sqr(smart.position) <= 300*300 then		-- TASK_DISTANCE
+					task_type = "eliminate_smart"
+				end
+			end
+		end
+	end
+
+	if task_type == nil then
+		return
+	end
+
+	local tm = task_manager.get_task_manager()
+	local current_faction_task = faction.random_tasks[smart.id]
+
+	if current_faction_task ~= nil then
+		local current_task = tm:get_task_by_entity_id(current_faction_task)
+		if current_task ~= nil then
+			if current_task.type == task_type then
+				return
+			end
+			current_task.last_check_task = "reversed_silent"	-- 'current_task' was 'task'
+			bind_stalker.task_update = true
+--			return
+		end
+	end
+
+	local task = tm:select_task(task_type, smart, faction_name)
+--	task.faction = faction
+	faction.random_tasks[smart.id] = task.entity_id
+	if task.status ~= "selected" then
+		task:give_task(faction_name)
+	end
+	bind_stalker.task_update = false
+end

@@ -1,0 +1,10 @@
+
+   /*-----------------------------------------------------------.
+  /                SweetFX compatibility settings               /
+  '-----------------------------------------------------------*/
+#define SweetFX_shader_model 3  //If you have an ancient card that does not support shader model 3 (which SweetFX normally uses)
+                               //then you force a lower and older shader model here. This should be set to the highest setting that works.
+                               //0 = SM 2.0, 1 = SM 2.0a (nvidia), 2 = SM 2.0b (ATI), 3 = SM 3.0 and above (SM 4.0 and 5.0 will be autodetected if available)
+
+//Note that several of the more advanced effects require at least shader model 3, and even if you stick to the simpler effects,
+//it may not be possible to enable several of them at the same time unless shader model 3 is enabled.

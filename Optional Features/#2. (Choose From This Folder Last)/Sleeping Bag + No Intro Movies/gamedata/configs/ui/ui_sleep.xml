@@ -1,0 +1,58 @@
+<w>
+	<background x="0" y="0" width="380" height="160">
+		<texture x="0" y="0" width="377" height="154">ui\atmsleep</texture>
+	</background>
+
+	<button_sleep x="78" y="101" width="116" height="30">
+		<texture x="21" y="212" width="116" height="43">ui\atmsleep</texture>
+		<text font="graffiti19">Sleep</text>
+		<text_color>
+			<e r="227" g="199" b="178"/> <t r="180" g="153" b="155"/> <d r="106" g="95" b="91"/> <h r="0" g="0" b="0"/>
+		</text_color>
+	</button_sleep>
+
+	<button_quit x="206" y="101" width="116" height="30">
+		<texture x="21" y="212" width="116" height="43">ui\atmsleep</texture>
+		<text font="graffiti19">Cancel</text>
+		<text_color>
+			<e r="227" g="199" b="178"/> <t r="180" g="153" b="155"/> <d r="106" g="95" b="91"/> <h r="0" g="0" b="0"/>
+		</text_color>
+	</button_quit>
+	
+	<button_left x="157" y="58" width="40" height="25">
+		<texture x="20" y="163" width="40" height="25">ui\atmsleep</texture>
+	</button_left>
+	
+	<button_right x="305" y="58" width="40" height="25">
+		<texture x="61" y="163" width="40" height="25">ui\atmsleep</texture>
+	</button_right>
+		
+	<safetybar x="158" y="42" width="186" height="9">
+		<texture x="21" y="265" width="186" height="9">ui\atmsleep</texture>
+	</safetybar>
+	
+	<fearbar x="158" y="42" width="186" height="9">
+		<texture x="21" y="195" width="186" height="9">ui\atmsleep</texture>
+	</fearbar>
+	
+	<display x="200" y="59" width="102" height="23">
+		<texture x="23" y="285" width="102" height="23">ui\atmsleep</texture>
+		<texture>ui_button_main02</texture>
+		<text font="graffiti19">1h</text>
+		<text_color>
+			<e r="227" g="199" b="178"/> <t r="180" g="153" b="155"/> <d r="106" g="95" b="91"/> <h r="0" g="0" b="0"/>
+		</text_color>
+	</display>
+<!--
+	<text1 x="158" y="42" width="186" height="9">
+		<texture x="21" y="195" width="186" height="9">ui\atmsleep</texture>
+	</text1>
+-->
+	<text_safety x="55" y="40" width="186" height="9">
+		<text font="letterica16" align="l" color="ui_7">Safety:</text>
+	</text_safety>
+
+	<text_duration x="55" y="64" width="186" height="9">
+		<text font="letterica16" align="l" color="ui_7">Duration:</text>
+	</text_duration>
+</w>

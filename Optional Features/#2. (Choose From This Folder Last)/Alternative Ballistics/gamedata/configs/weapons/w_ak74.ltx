@@ -1,0 +1,303 @@
+[wpn_ak74]:identity_immunities,weapon_probability,default_weapon_params
+GroupControlSection			= spawn_group
+discovery_dependency			=
+$spawn					= "weapons\ak-74"
+$npc					= on
+$prefetch				= 8
+scheduled				= off
+cform					= skeleton
+class					= WP_AK74
+min_radius				= 30
+max_radius				= 100
+description				= st_wpn_ak74_descr
+
+ef_main_weapon_type			= 2
+ef_weapon_type				= 6
+
+default_to_ruck				= false
+sprint_allowed				= true
+
+;---DOF-------------------------------------------------------------------------
+zoom_dof				= 0.5, 1, 1000
+reload_dof				= 0, 0.5, 5, 2.85
+;-------------------------------------------------------------------------------
+
+;-------------------------------------------------------------------------------
+holder_range_modifier			= 1
+holder_fov_modifier			= 0.7
+;-------------------------------------------------------------------------------
+
+upgrades				= up_gr_ab_ak74, up_gr_cd_ak74, up_gr_ef_ak74, up_gr_gh_ak74, up_gr_i_ak74, up_gr_j_ak74, up_gr_k_ak74
+installed_upgrades			=
+upgrade_scheme				= upgrade_scheme_u17b
+
+cost					= 4000
+weapon_class				= assault_rifle
+
+;ammo_limit				= 210
+ammo_elapsed				= 30
+
+ammo_mag_size				= 30
+fire_modes				= 1, -1
+
+ammo_class				= ammo_5.45x39_fmj, ammo_5.45x39_ap
+grenade_class				= ammo_vog-25, ammo_vog-25p
+
+launch_speed				= 0
+hand_dependence				= 1
+single_handed				= 0
+
+slot					= 2
+animation_slot				= 2
+
+inv_name				= st_wpn_ak74
+inv_name_short				= st_wpn_ak74
+inv_weight				= 3.07						; 3.3
+
+inv_grid_width				= 5
+inv_grid_height				= 2
+inv_grid_x				= 5
+inv_grid_y				= 5
+
+kill_msg_x				= 0
+kill_msg_y				= 28
+kill_msg_width				= 84
+kill_msg_height				= 28
+
+;-------------------------------------------------------------------------------
+
+fire_dispersion_base			= 0.8
+control_inertion_factor			= 1.2f
+
+cam_relax_speed				= 5
+cam_relax_speed_ai			= 360
+cam_dispersion				= 0.7
+cam_dispersion_inc			= 0.7
+cam_dispersion_frac			= 0.7
+cam_max_angle				= 15
+cam_max_angle_horz			= 5
+cam_step_angle_horz			= 0.7
+
+zoom_cam_relax_speed			= 5
+zoom_cam_relax_speed_ai			= 120.75					; 360
+zoom_cam_dispersion			= 0.6
+zoom_cam_dispersion_inc			= 0.6
+zoom_cam_dispersion_frac		= 0.7
+zoom_cam_max_angle			= 10
+zoom_cam_max_angle_horz			= 5
+zoom_cam_step_angle_horz		= 0.6
+
+fire_dispersion_condition_factor	= 4						; 15
+misfire_probability			= 0.0003
+misfire_condition_k			= 0.01						; 0.05
+condition_shot_dec			= 0.0001
+
+;-------------------------------------------------------------------------------
+
+position				= -0.026, -0.175, 0
+orientation				= 0, 0, 0
+
+fire_point				= 0, 0.218, 0.656
+fire_point2				= 0, 0.161, 0.583
+
+flame_particles				= weapons\generic_weapon05
+smoke_particles				= weapons\generic_shoot_00
+grenade_flame_particles			= weapons\generic_weapon01
+
+shell_point				= 0, 0.216, 0.174
+shell_particles				= weapons\generic_shells
+
+PDM_disp_base				= 1
+PDM_disp_vel_factor			= 1.7
+PDM_disp_accel_factor			= 1.7
+PDM_disp_crouch				= 1
+PDM_disp_crouch_no_acc			= 1
+
+hit_power				= 0.57						; 0.4, 0.4, 0.4, 0.4
+hit_impulse				= 1						; 100
+hit_type				= fire_wound
+
+silencer_hit_power			= 0.57						; 0.55, 0.55, 0.55, 0.55
+silencer_hit_impulse			= 1						; 120
+silencer_fire_distance			= 1000						; 250
+silencer_bullet_speed			= 900						; 600
+
+hit_probability_gd_novice		= 1
+hit_probability_gd_stalker		= 1
+hit_probability_gd_veteran		= 1
+hit_probability_gd_master		= 1
+
+fire_distance				= 1000						; 150
+bullet_speed				= 900						; 300
+rpm					= 600						; 650
+;rpm_empty_click			= 200
+
+use_aim_bullet				= true
+time_to_aim				= 3
+
+hud					= wpn_ak74_hud
+
+;--STRAP PARAMETERS-----------------------------------------------------------------
+
+strap_position				= -0.26, -0.11, 0.25
+strap_orientation			= -15, -9, 110
+strap_bone0				= bip01_spine2
+strap_bone1				= bip01_spine1
+
+;startup_ammo				= 90
+visual					= dynamics\weapons\wpn_ak74\wpn_ak74.ogf
+
+light_disabled				= false
+light_color				= 0.6, 0.5, 0.3
+light_range				= 5
+light_var_color				= 0.05
+light_var_range				= 0.5
+light_time				= 0.2
+
+ph_mass					= 3.07						; 4
+
+scope_status				= 0
+silencer_status				= 2
+grenade_launcher_status			= 0
+
+zoom_enabled				= true
+;zoom_rotate_time			= 0.25
+scope_zoom_factor			= 75						; 50
+
+scope_name				= wpn_addon_scope
+scope_x					= 47
+scope_y					= 0
+
+silencer_name				= wpn_addon_silencer
+silencer_x				= 204						; 224
+silencer_y				= 13
+
+grenade_launcher_name			= wpn_addon_grenade_launcher
+grenade_launcher_x			= 126
+grenade_launcher_y			= 24
+
+snd_draw				= weapons\ak74_draw
+snd_holster				= weapons\generic_holster
+snd_shoot				= weapons\n_ak74_shot
+snd_silncer_shot			= weapons\w_ak74_shot1
+
+snd_empty				= weapons\gen_empty
+snd_reload				= weapons\groza_reload
+snd_shoot_grenade			= weapons\gen_grenshoot
+snd_reload_grenade			= weapons\abakan_grenload
+snd_switch				= weapons\groza_switch
+snd_bore				= weapons\abakan_bore
+
+;silencer_flame_particles		= weapons\generic_weapon01
+silencer_smoke_particles		= weapons\generic_shoot_00
+
+silencer_light_color			= 0.6, 0.5, 0.3
+silencer_light_range			= 0.01
+silencer_light_var_color		= 0.05
+silencer_light_var_range		= 0.5
+silencer_light_time			= 0.2
+
+[wpn_ak74_hud]
+
+;zoom_hide_crosshair			= false
+attach_place_idx			= 0
+item_visual				= dynamics\weapons\wpn_ak74\wpn_ak74_hud.ogf
+
+hands_position				= -0.1205, -0.180999, 0.132501
+hands_orientation			= -2.599998, 0, -2.549999
+
+hands_position_16x9			= -0.1195, -0.199, 0.091
+hands_orientation_16x9			= -0.75, 1.7, -4.199999
+
+item_position				= 0.004111, 0.008527, -0.005906
+item_orientation			= -15.488927, -3.320898, 367.220154
+
+shell_point				= 0.017, 0.054, 0.17
+shell_dir				= 0, 1, 0
+shell_bone				= wpn_body
+
+fire_point				= 0, 0.042, 0.684
+fire_bone				= wpn_body
+fire_point2				= 0.0,-0.011,0.553
+fire_bone2				= wpn_body
+
+anm_show				= ak74_draw
+anm_hide				= ak74_holster
+anm_idle				= ak74_idle
+anm_idle_sprint				= ak74_idle_sprint
+anm_idle_moving				= ak74_idle_moving
+anm_shots				= ak74_shoot
+anm_reload				= ak74_reload
+anm_idle_aim				= ak74_idle_aim
+anm_bore				= ak74_idle_bore
+
+anm_switch				= ak74_switch_off
+anm_switch_g				= ak74_switch_on
+
+anm_hide_w_gl				= ak74_holster_w_gl
+anm_show_w_gl				= ak74_draw_w_gl
+anm_idle_w_gl				= ak74_idle_w_gl
+anm_shots_w_gl				= ak74_shoot_w_gl
+anm_reload_w_gl				= ak74_reload_w_gl
+anm_idle_w_gl_aim			= ak74_idle_aim_w_gl
+anm_idle_sprint_w_gl			= ak74_idle_sprint_w_gl
+anm_idle_moving_w_gl			= ak74_idle_moving_w_gl
+anm_bore_w_gl				= ak74_idle_bore_w_gl
+
+anm_show_g				= ak74_draw_w_gl
+anm_hide_g				= ak74_holster_w_gl
+anm_idle_g				= ak74_idle_w_gl
+anm_reload_g				= ak74_reload_grenade
+anm_idle_g_aim				= ak74_idle_aim_w_gl
+anm_shots_g				= ak74_shoot_grenade
+anm_idle_sprint_g			= ak74_idle_sprint_w_gl
+anm_idle_moving_g			= ak74_idle_moving_w_gl
+anm_bore_g				= ak74_idle_bore_w_gl
+
+aim_hud_offset_pos			= -0.1016, 0.0167, -0.018
+aim_hud_offset_rot			= -0.029, -0.03245, 0.02
+
+aim_hud_offset_pos_16x9			= -0.101, 0.0346, 0.029
+aim_hud_offset_rot_16x9			= 0, -0.0014, -0.0075
+
+gl_hud_offset_pos			= -0.08828, -0.1187, 0
+gl_hud_offset_rot			= -0.22, -0.015, 0.022
+
+gl_hud_offset_pos_16x9			= -0.0685, -0.1015, 0
+gl_hud_offset_rot_16x9			= -0.2, -0.01, 0
+
+;lean_hud_offset_pos			= 0, 0, 0
+;lean_hud_offset_rot			= 0, 0, 0
+
+;-----------------------------------------------------------------------------
+; Custom
+;-----------------------------------------------------------------------------
+
+[wpn_ak74_minigame]:wpn_ak74
+ammo_limit				= 100
+ammo_class				= ammo_minigame
+fire_modes				= 1
+$spawn					= "weapons\wpn_ak74_minigame"
+cost					= 0
+quest_item				= true
+upgrades				= up_gr_ab_ak74, up_gr_cd_ak74, up_gr_ef_ak74, up_gr_gh_ak74, up_gr_i_ak74, up_gr_j_ak74, up_gr_k_ak74
+installed_upgrades			= up_b_ak74, up_d_ak74, up_bd_ak74
+upgrade_scheme				= upgrade_scheme_u17b
+
+;-------------------------------------------------------------------------------
+
+[wpn_ak74_up]:wpn_ak74
+$spawn					= "weapons\uniq\ak_74_up"
+upgrades				= up_gr_ab_ak74, up_gr_cd_ak74, up_gr_ef_ak74, up_gr_gh_ak74, up_gr_i_ak74, up_gr_j_ak74, up_gr_k_ak74
+installed_upgrades			= up_b_ak74, up_d_ak74, up_e_ak74, up_i_ak74
+upgrade_scheme				= upgrade_scheme_u17b
+
+;-------------------------------------------------------------------------------
+
+[wpn_ak74_up2]:wpn_ak74
+$spawn					= "weapons\uniq\ak_74_up2"
+scope_status				= 2
+grenade_launcher_status			= 2
+upgrades				= up_gr_ab_ak74, up_gr_cd_ak74, up_gr_ef_ak74, up_gr_gh_ak74, up_gr_i_ak74, up_gr_j_ak74, up_gr_k_ak74
+installed_upgrades			= up_a_ak74, up_c_ak74, up_e_ak74, up_i_ak74, up_j_ak74
+upgrade_scheme				= upgrade_scheme_u17b

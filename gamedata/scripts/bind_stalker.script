@@ -1,0 +1,671 @@
+function init(obj)
+	xr_motivator.AddToMotivator(obj)
+end
+
+function actor_init(npc)
+	npc:bind_object(actor_binder(npc))
+end
+
+task_update = false
+delayed_alife_release_objects = {}
+to_delayed_alife_release_objects = {}
+
+local game_difficulty_by_num = {[0] = "gd_novice", [1] = "gd_stalker", [2] = "gd_veteran", [3] = "gd_master"}
+local zones_needing_weapon_hide = 0
+----------------------------------------------------------------------------------------------------------------------
+class "actor_binder" (object_binder)
+----------------------------------------------------------------------------------------------------------------------
+function actor_binder:__init (obj) super(obj)
+	self.bCheckStart = false
+	self.weather_manager = level_weathers.get_weather_manager()
+	self.last_level_name = nil
+end
+----------------------------------------------------------------------------------------------------------------------
+function actor_binder:net_spawn(data)
+
+	level.show_indicators()
+	self.bCheckStart = true
+	self.weapon_hidden = false
+	self.weapon_hidden_in_dialog = false
+--	weapon_hide = {}
+
+	if object_binder.net_spawn(self, data) == false then
+		return false
+	end
+
+	db.add_actor(self.object)
+
+	if self.st.disable_input_time == nil then
+		level.enable_input()
+	end
+
+	xr_s.on_game_load()					--' Distemper 03.2008 --
+
+	self.weather_manager:reset()
+
+	death_manager.init_drop_settings()
+
+	self.task_manager = task_manager.get_task_manager()
+
+	if level.name() ~= "marsh" then
+		sim_board.get_sim_board():start_sim()
+	end
+
+	self.spawn_frame = device().frame
+--	self.already_jumped = false
+	benchmark.main()					--' Distemper 06.2008 --
+
+	return true
+end
+----------------------------------------------------------------------------------------------------------------------
+function actor_binder:net_destroy()
+
+	local sobj = self.object
+	local act_id = sobj:id()
+
+	xr_sound.stop_sounds_by_id(act_id)
+
+	local board_factions = sim_board.get_sim_board().players
+	for k, v in pairs (board_factions) do
+		xr_sound.stop_sounds_by_id(v.id)
+	end
+
+--	if actor_stats.remove_from_ranking ~= nil then
+--		actor_stats.remove_from_ranking(act_id)
+--	end
+
+	xr_effects.stc_stop_particle_sounds()
+	level.show_indicators()
+	level.show_weapon(true)
+
+	db.del_actor()
+
+--	sobj:set_callback(callback.inventory_info, nil)
+--	sobj:set_callback(callback.article_info, nil)
+	sobj:set_callback(callback.on_item_take, nil)
+	sobj:set_callback(callback.on_item_drop, nil)
+	sobj:set_callback(callback.trade_sell_buy_item, nil)	-- SRP
+	sobj:set_callback(callback.task_state, nil)
+--	sobj:set_callback(callback.level_border_enter, nil)
+--	sobj:set_callback(callback.level_border_exit, nil)
+	sobj:set_callback(callback.take_item_from_box, nil)
+--	sobj:set_callback(callback.use_object, nil)		-- SRP
+
+	if sr_psy_antenna.psy_antenna then
+		sr_psy_antenna.psy_antenna:destroy()
+		sr_psy_antenna.psy_antenna = false
+	end
+
+	xrs_dyn_music.stop_sound()
+	object_binder.net_destroy(self)
+	xr_s.on_actor_destroy()					--' Distemper 03.2008 --
+end
+----------------------------------------------------------------------------------------------------------------------
+function actor_binder:reinit()
+
+	object_binder.reinit(self)
+
+	local sobj = self.object
+	local act_id = sobj:id()
+
+	db.storage[act_id] = {}
+
+	self.st = db.storage[act_id]
+	self.st.pstor = nil
+
+	self.next_restrictors_update_time = -10000
+
+--	sobj:set_callback(callback.inventory_info, self.info_callback, self)
+--	sobj:set_callback(callback.article_info, self.article_callback, self)
+	sobj:set_callback(callback.on_item_take, self.on_item_take, self)
+	sobj:set_callback(callback.on_item_drop, self.on_item_drop, self)
+	sobj:set_callback(callback.trade_sell_buy_item, self.on_trade, self)
+	sobj:set_callback(callback.task_state, self.task_callback, self)
+--	sobj:set_callback(callback.level_border_enter, self.level_border_enter, self)
+--	sobj:set_callback(callback.level_border_exit, self.level_border_exit, self)
+	sobj:set_callback(callback.take_item_from_box, self.take_item_from_box, self)
+--	sobj:set_callback(callback.use_object, self.on_use_item, self)			-- SRP
+end
+----------------------------------------------------------------------------------------------------------------------
+function actor_binder:take_item_from_box(box, item)
+	local box_name = box:name()
+	treasure_manager.take_item_from_box(box, box_name, item)
+end
+----------------------------------------------------------------------------------------------------------------------
+--[[
+function actor_binder:level_border_enter(npc, info_id)
+end
+----------------------------------------------------------------------------------------------------------------------
+function actor_binder:level_border_exit(npc, info_id)
+end
+----------------------------------------------------------------------------------------------------------------------
+function actor_binder:info_callback(npc, info_id)
+	level_tasks.proceed(self.object)
+	level_tasks.process_info_portion(info_id)
+end
+]]
+----------------------------------------------------------------------------------------------------------------------
+function actor_binder:on_trade(item, sell_bye, money)
+	if sell_bye == true then
+--		game_stats.money_trade_update(money)
+		xr_statistic.inc_recieved_money_counter(money)
+	else
+--		game_stats.money_trade_update(-money)
+		xr_statistic.inc_spent_money_counter(money)
+	end
+end
+----------------------------------------------------------------------------------------------------------------------
+--[[
+function actor_binder:article_callback(npc, group, name)
+	if device().precache_frame > 1 then return end
+	if group == "Diary" then
+		news_manager.send_encyclopedy("diary", group)
+	else
+		news_manager.send_encyclopedy("encyclopedy", group)
+	end
+end
+]]
+----------------------------------------------------------------------------------------------------------------------
+function actor_binder:on_item_take(obj)
+--	level_tasks.proceed(self.object)
+	if isArtefact(obj) then
+		local obj_id = obj:id()
+		bind_anomaly_zone.artefact_ways_by_id[obj_id] = nil
+		local artefact = obj:get_artefact()
+		artefact:FollowByPath("NULL", 0, vector():set(500, 500, 500))
+		if bind_anomaly_zone.parent_zones_by_artefact_id[obj_id] ~= nil then
+			bind_anomaly_zone.parent_zones_by_artefact_id[obj_id]:on_artefact_take()
+			bind_anomaly_zone.parent_zones_by_artefact_id[obj_id] = nil			-- SRP
+		end
+	end
+	for k, v in pairs (self.task_manager.task_info) do
+		if v.type == "bring_item" then
+			if v.state ~= "finished" then
+				v:on_item_take(obj)
+			end
+		end
+	end
+	if obj:clsid() == clsid.wpn_ammo then
+		dunin_ammo.on_take(obj)
+	end
+end
+----------------------------------------------------------------------------------------------------------------------
+function actor_binder:on_item_drop(obj)
+--	level_tasks.proceed(self.object)
+	for k, v in pairs (self.task_manager.task_info) do
+		if v.type == "bring_item" then
+			if v.state ~= "finished" then
+				v:on_item_drop(obj)
+			end
+		end
+	end
+--	if obj:section() == "sleepingbag" then
+--		atmmain.on_item_drop(obj)
+--	end
+end
+----------------------------------------------------------------------------------------------------------------------
+function actor_binder:task_callback(_task, _state)
+	if _state ~= task.fail then
+		if _state == task.completed then
+			news_manager.send_task(db.actor, "complete", _task)
+		elseif task_update == false then
+			news_manager.send_task(db.actor, "new", _task)
+		else
+			news_manager.send_task(db.actor, "update", _task)
+			local actor_stats = xr_statistic.actor_statistic
+			actor_stats.recieved_quests = actor_stats.recieved_quests - 1 -- hack to undo the counter incrementation on assignment of the updated task
+		end
+	end
+	task_manager.task_callback(_task, _state)
+end
+----------------------------------------------------------------------------------------------------------------------
+--[[
+function actor_binder:map_location_added_callback(spot_type_str, object_id)
+	if false == app_ready() or device().precache_frame > 1 then return end
+end
+]]
+----------------------------------------------------------------------------------------------------------------------
+-- nv111103/nv130223: level-specific autosaves
+-- Decane 18.08.2014: adapted for CS with minor tweaks
+--	  21.06.2015: unique autosaves for freeplay
+function manage_autosaves()
+	local fs = getFS()
+	local fs_path = "$game_saves$"
+	local autosave = string.lower(user_name()).."_autosave"
+	local autosave_sav = autosave..".sav"
+	if fs:exist(fs_path, autosave_sav) then
+		local sg = CSavedGameWrapper(autosave)
+		local level_name = level.name()
+		if level_name == sg:level_name() then
+			-- update_path info per fluffy22
+			local savedir = fs:update_path(fs_path, "")
+			local level_prefix = string.sub(level_name, 1, 3)	-- use prefix, not full name
+			if level_name == "agroprom_underground" then		-- agroprom underground has same prefix as agroprom, so use "agru" instead of "agr" for it
+				level_prefix = "agru"
+			end
+			if has_alife_info("stc_final_movie") then
+				level_prefix = "fp_"..level_prefix		-- prefix saves made in freeplay mode with "fp_"
+			end
+			local lvl_autosave = level_prefix.."_autosave"
+			local lvl_autosave_sav = lvl_autosave..".sav"
+			local lvl_autosave_start = lvl_autosave.."_start"
+			local lvl_autosave_start_sav = lvl_autosave_start..".sav"
+			if not fs:exist(fs_path, lvl_autosave_start_sav) and not fs:exist(fs_path, lvl_autosave_sav) then
+				fs:file_rename(savedir..autosave_sav, savedir..lvl_autosave_start_sav, true)
+				get_console():execute("load_last_save "..lvl_autosave_start)
+			else
+				fs:file_rename(savedir..autosave_sav, savedir..lvl_autosave_sav, true)
+				get_console():execute("load_last_save "..lvl_autosave)
+			end
+		end
+	end
+end
+----------------------------------------------------------------------------------------------------------------------
+-- Decane 07.10.2014: stash filler support function
+function give_level_stash_info()
+	local actor_level = level.name()
+	if actor_level == "marsh" and not has_alife_info("mar_stashes_filled") then
+		db.actor:give_info_portion("mar_stashes_filled")
+	elseif actor_level == "escape" and not has_alife_info("esc_stashes_filled") then
+		db.actor:give_info_portion("esc_stashes_filled")
+	elseif actor_level == "garbage" and not has_alife_info("gar_stashes_filled") then
+		db.actor:give_info_portion("gar_stashes_filled")
+	elseif actor_level == "darkvalley" and not has_alife_info("val_stashes_filled") then
+		db.actor:give_info_portion("val_stashes_filled")
+	elseif actor_level == "agroprom" and not has_alife_info("agr_stashes_filled") then
+		db.actor:give_info_portion("agr_stashes_filled")
+	elseif actor_level == "agroprom_underground" and not has_alife_info("agru_stashes_filled") then
+		db.actor:give_info_portion("agru_stashes_filled")
+	elseif actor_level == "yantar" and not has_alife_info("yan_stashes_filled") then
+		db.actor:give_info_portion("yan_stashes_filled")
+	elseif actor_level == "red_forest" and not has_alife_info("red_stashes_filled") then
+		db.actor:give_info_portion("red_stashes_filled")
+	elseif actor_level == "military" and not has_alife_info("mil_stashes_filled") then
+		db.actor:give_info_portion("mil_stashes_filled")
+	elseif actor_level == "limansk" and not has_alife_info("lim_stashes_filled") then
+		db.actor:give_info_portion("lim_stashes_filled")
+	elseif actor_level == "hospital" and not has_alife_info("kat_stashes_filled") then
+		db.actor:give_info_portion("kat_stashes_filled")
+	end
+end
+----------------------------------------------------------------------------------------------------------------------
+function actor_binder:update(delta)
+
+	object_binder.update(self, delta)
+--[[
+	if self.already_jumped == false then
+		if jump_level.need_jump == true then
+			if device().frame > self.spawn_frame + 2000 then
+				jump_level.try_to_jump()
+				self.already_jumped = true
+				return
+			end
+		end
+	end
+]]
+--	atmmain.update()
+
+	local sobj = self.object
+
+--	game_stats.update(delta, sobj)
+
+	self.weather_manager:update()
+
+	xr_sound.update(sobj:id())
+
+	if self.st.disable_input_time ~= nil then
+		if game.get_game_time():diffSec(self.st.disable_input_time) >= self.st.disable_input_idle then
+			level.enable_input()
+			self.st.disable_input_time = nil
+		end
+	end
+--[[
+	if self.st.sleep_relocate_time ~= nil then
+		if game.get_game_time():diffSec(self.st.sleep_relocate_time) >= self.st.sleep_relocate_idle then
+			sobj:set_actor_position(self.st.sleep_relocate_point)
+			local dir = self.st.sleep_relocate_point:sub(self.st.sleep_relocate_look)
+			sobj:set_actor_direction(dir:getH())
+			self.st.sleep_relocate_time = nil
+		end
+	end
+]]
+	if sobj:is_talking() then
+		if self.weapon_hidden_in_dialog == false then
+			sobj:hide_weapon()
+			self.weapon_hidden_in_dialog = true
+		end
+	else
+		if self.weapon_hidden_in_dialog == true then
+			sobj:restore_weapon()
+			self.weapon_hidden_in_dialog = false
+		end
+		dunin_ammo.on_update(sobj)
+	end
+
+--	if check_for_weapon_hide_by_zones() == true then
+	if zones_needing_weapon_hide > 0 then
+		if self.weapon_hidden == false then
+			sobj:hide_weapon()
+			self.weapon_hidden = true
+		end
+	else
+		if self.weapon_hidden == true then
+			sobj:restore_weapon()
+			self.weapon_hidden = false
+		end
+	end
+
+	local time = time_global()
+
+	if self.next_restrictors_update_time < time then
+
+		self.next_restrictors_update_time = time + 200
+		self.task_manager:update()
+
+		local hud = get_hud()
+		local custom_static = hud:GetCustomStatic("cs_radiation_danger")
+		if sobj.radiation >= 0.7 then
+			if custom_static == nil then
+				custom_static = hud:AddCustomStatic("cs_radiation_danger", true)
+				custom_static:wnd():SetTextST("st_radiation_danger")
+			end
+		else
+			if custom_static ~= nil then
+				hud:RemoveCustomStatic("cs_radiation_danger")
+			end
+		end
+
+		if xr_surge_hide.start_surge then	-- moved this block here - no need to run it every update
+
+			if not xr_surge_hide.weather_surge then
+				xr_surge_hide.weather_surge = true
+				level.set_weather("default_cloudy", true)
+			end
+
+			local diff_sec = math.ceil(game.get_game_time():diffSec(xr_surge_hide.initialization_time) / level.get_time_factor())
+			local time_before_lag_noosphere = 0
+			local time_before_give_task = 0
+
+			if level.name() == "marsh" then
+				time_before_lag_noosphere = 12
+				time_before_give_task = 15
+			else
+				time_before_lag_noosphere = 17
+				time_before_give_task = 27
+			end
+
+			local hide_phase = xr_surge_hide.phase
+			if diff_sec >= time_before_lag_noosphere and hide_phase == 1 then
+				xr_surge_hide.activate_surge()
+			elseif diff_sec >= time_before_give_task and hide_phase == 2 then
+				xr_surge_hide.activate_surge(xr_surge_hide.time_before_surge)
+			end
+		end
+	end
+--[[
+	if post_process ~= 0 then
+		if post_process:update() == true then
+			post_process = 0
+		end
+	end
+]]
+	if sr_psy_antenna.psy_antenna then
+		sr_psy_antenna.psy_antenna:update(delta)
+	end
+
+	if self.bCheckStart then
+		if not has_alife_info("global_dialogs") then
+			sobj:give_info_portion("global_dialogs")
+		end
+--[[
+		if not has_alife_info("level_changer_icons") then
+			sobj:give_info_portion("level_changer_icons")
+		end
+]]
+		if treasure_manager.enable_stash_filler == true then
+			give_level_stash_info()
+		end
+
+		manage_autosaves()
+
+		level_tasks.add_lchanger_location()
+
+		if self.last_level_name == nil then
+			self.last_level_name = level.name()
+		else
+			local level_name = level.name()
+			if level_name ~= self.last_level_name then
+				self.last_level_name = level_name
+				time = xr_surge_hide.surge_can_be_started(level_name)
+				if time then
+					xr_surge_hide.activate_surge(time)
+				end
+			end
+		end
+
+		self.bCheckStart = false
+	end
+--[[
+	local play_combat = xrs_dyn_music.play_combat
+	if play_combat == 0 then
+		xrs_dyn_music.interactive_music(0)
+	elseif play_combat == 1 then
+		xrs_dyn_music.interactive_music(20)
+	elseif play_combat == 2 then
+		xrs_dyn_music.interactive_music(10)
+	end
+]]
+	xr_s.on_actor_update(delta)
+
+	if guiders.teleported_to_another_level then
+		if not guiders.level_changed then
+			guiders.action_teleport_to_point()
+		end
+	end
+end
+----------------------------------------------------------------------------------------------------------------------
+function actor_binder:save(packet)
+
+	set_save_marker(packet, "save", false, "actor_binder")
+
+	object_binder.save(self, packet)
+
+	packet:w_u8(level.get_game_difficulty())
+
+	if self.st.disable_input_time == nil then
+		packet:w_bool(false)
+	else
+		packet:w_bool(true)
+		utils.w_CTime(packet, self.st.disable_input_time)
+	end
+
+	xr_logic.pstor_save_all(self.object, packet)
+
+	self.weather_manager:save(packet)
+
+	release_body_manager.save(packet) --' Distemper 12.02.2008
+
+	xr_surge_hide.save(packet)
+
+	sr_psy_antenna.save(packet)
+
+	local board = sim_board.get_sim_board()
+
+	packet:w_bool(board.simulation_started)
+
+	local n = 0
+	for smart_id, squad_id in pairs (sim_combat.wait_for_combat) do
+		local squad = board.squads[squad_id]
+		if squad then
+			local combat = board.smarts[squad.sim_combat_id].smrt.combat_manager
+			if combat then
+				local stage = combat:get_squad_stage(squad)
+				if stage == "prepare" or stage == "wait" then
+					n = n + 1
+				else
+					sim_combat.wait_for_combat[smart_id] = nil
+				end
+			else
+				sim_combat.wait_for_combat[smart_id] = nil
+			end
+		else
+			sim_combat.wait_for_combat[smart_id] = nil
+		end
+	end
+
+	packet:w_u8(n)
+
+	for k, v in pairs (sim_combat.wait_for_combat) do
+		packet:w_u16(k)
+		packet:w_stringZ(v)
+	end
+
+	xr_sound.actor_save(packet)
+
+	packet:w_stringZ(tostring(self.last_level_name))
+
+	xr_statistic.save(packet)
+
+	guiders.save(packet)
+
+	treasure_manager.save(packet)
+
+	n = 0
+	for k in pairs (delayed_alife_release_objects) do
+		n = n + 1
+	end
+
+	packet:w_u8(n)
+
+	for k in pairs (delayed_alife_release_objects) do
+		packet:w_u16(k)
+	end
+
+	-- We must also do the above procedure for the to_ table, otherwise its contents will be lost on save/reload.
+
+	n = 0
+	for k in pairs (to_delayed_alife_release_objects) do
+		n = n + 1
+	end
+
+	packet:w_u8(n)
+
+	for k in pairs (to_delayed_alife_release_objects) do
+		packet:w_u16(k)
+	end
+
+	n = 0
+	for k in pairs (db.script_ids) do
+		n = n + 1
+	end
+
+	packet:w_u8(n)
+
+	for k, v in pairs (db.script_ids) do
+		packet:w_u16(k)
+		packet:w_stringZ(v)
+	end
+
+	set_save_marker(packet, "save", true, "actor_binder")
+end
+----------------------------------------------------------------------------------------------------------------------
+function actor_binder:load(reader)
+
+	set_save_marker(reader, "load", false, "actor_binder")
+
+	object_binder.load(self, reader)
+
+	local game_difficulty = reader:r_u8()
+	get_console():execute("g_game_difficulty "..game_difficulty_by_num[game_difficulty])
+
+	local stored_input_time = reader:r_bool()	-- reader:r_u8()
+	if stored_input_time == true then
+		self.st.disable_input_time = utils.r_CTime(reader)
+	end
+
+	xr_logic.pstor_load_all(self.object, reader)
+
+	self.weather_manager:load(reader)
+
+	release_body_manager.load(reader) --' Distemper 12.02.2008
+
+	xr_surge_hide.load(reader)
+
+	sr_psy_antenna.load(reader)
+
+	sim_board.get_sim_board().simulation_started = reader:r_bool()
+
+	sim_combat.wait_for_combat = {}
+
+	local n = reader:r_u8()
+	for i = 1, n do
+		local smart_id = reader:r_u16()
+		local squad_id = reader:r_stringZ()
+		sim_combat.wait_for_combat[smart_id] = squad_id
+	end
+
+	xr_sound.actor_load(reader)
+
+	n = reader:r_stringZ()
+	if n ~= "nil" then
+		self.last_level_name = n
+	end
+
+	xr_statistic.load(reader)
+
+	guiders.load(reader)
+
+	treasure_manager.load(reader)
+
+	n = reader:r_u8()
+	for i = 1, n do
+		to_delayed_alife_release_objects[reader:r_u16()] = true
+	end
+
+	-- Load the saved contents of the to_ table.
+
+	n = reader:r_u8()
+	for i = 1, n do
+		to_delayed_alife_release_objects[reader:r_u16()] = true
+	end
+
+	n = reader:r_u8()
+	for i = 1, n do
+		db.script_ids[reader:r_u16()] = reader:r_stringZ()
+	end
+
+	set_save_marker(reader, "load", true, "actor_binder")
+end
+----------------------------------------------------------------------------------------------------------------------
+--[[
+function check_for_weapon_hide_by_zones()
+	for k, v in pairs (weapon_hide) do
+		if v == true then
+			return true
+		end
+	end
+	return false
+end
+]]
+function hide_weapon()
+--	weapon_hide[zone_id] = true
+	zones_needing_weapon_hide = zones_needing_weapon_hide + 1
+end
+
+function restore_weapon()
+--	weapon_hide[zone_id] = false
+	zones_needing_weapon_hide = zones_needing_weapon_hide - 1
+end
+
+function add_to_delayed_release(obj_id)
+	delayed_alife_release_objects[obj_id] = true
+end
+
+function del_to_delayed_release(obj_id)
+	delayed_alife_release_objects[obj_id] = nil
+end
+--[[
+function actor_binder:on_use_item(obj)
+-- Modders, uncomment this function and the two relevant use_object callback entries earlier in the file to enable on-item-use callback support.
+end
+]]

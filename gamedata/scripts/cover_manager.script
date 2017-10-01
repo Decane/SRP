@@ -1,0 +1,194 @@
+class "CCover_manager"
+
+function CCover_manager:__init(smart)
+	self.squads = {}
+	self.cover_table = {}
+	self.board = sim_board.get_sim_board()
+	self.is_invalid = true
+end
+
+function CCover_manager:register_squad(squad)
+	local faction_name = squad.player_id
+	if faction_name ~= "monster" and faction_name ~= "zombied" then		-- prevent zombies from behaving like stalkers
+		self.squads[squad.squad_id] = true
+		self.is_invalid = false
+	end
+end
+
+function CCover_manager:unregister_squad(squad)
+	if self.squads[squad.squad_id] == nil then
+		return
+	end
+	self.squads[squad.squad_id] = nil
+	self.is_invalid = false
+end
+
+function CCover_manager:calculate_covers(position)
+
+	if self.is_invalid == true then
+		return
+	end
+
+	self.is_invalid = true
+
+	local npc_table = {}
+	local board_squads = self.board.squads
+	local st = db.storage
+
+	for squad_id in pairs (self.squads) do
+		local squad = board_squads[squad_id]
+		for npc_id in pairs (squad.squad_npc) do
+			local st_obj = st[npc_id]
+			st_obj = st_obj and st_obj.object
+			if st_obj ~= nil then
+				npc_table[st_obj] = npc_id
+			end
+		end
+	end
+--[[
+	for npc_obj in pairs (npc_table) do
+		npc_obj:register_in_combat()
+	end
+
+	self.cover_table = {}
+
+	for npc_obj in pairs (npc_table) do
+		npc_obj:find_best_cover(position)
+	end
+
+	for npc_obj, npc_id in pairs (npc_table) do
+		local cover = npc_obj:find_best_cover(position)
+		if cover ~= nil then
+			self.cover_table[npc_id] = {cover_vertex_id = cover:level_vertex_id(), cover_position = cover:position(), look_pos = position, is_smart_cover = cover:is_smart_cover()}
+		end
+	end
+
+	for npc_obj in pairs (npc_table) do
+		npc_obj:unregister_in_combat()
+	end
+]]
+	self.cover_table = {}
+
+	for npc_obj, npc_id in pairs (npc_table) do	-- more efficient to do it all in one loop
+		npc_obj:register_in_combat()
+		local cover = npc_obj:find_best_cover(position)
+		if cover ~= nil then
+			self.cover_table[npc_id] = {cover_vertex_id = cover:level_vertex_id(), cover_position = cover:position(), look_pos = position, is_smart_cover = cover:is_smart_cover()}
+		end
+		npc_obj:unregister_in_combat()
+	end
+end
+
+function CCover_manager:save(packet)
+	set_save_marker(packet, "save", false, "CCover_manager")
+	packet:w_bool(self.is_invalid)
+	local n = 0
+	for k in pairs (self.cover_table) do
+		n = n + 1
+	end
+	packet:w_u8(n)
+	for k, v in pairs (self.cover_table) do
+		packet:w_u16(k)
+		packet:w_u32(v.cover_vertex_id)
+		packet:w_float(v.cover_position.x)
+		packet:w_float(v.cover_position.y)
+		packet:w_float(v.cover_position.z)
+		packet:w_float(v.look_pos.x)
+		packet:w_float(v.look_pos.y)
+		packet:w_float(v.look_pos.z)
+		packet:w_bool(v.is_smart_cover)
+	end
+	set_save_marker(packet, "save", true, "CCover_manager")
+end
+
+function CCover_manager:load(packet)
+	set_save_marker(packet, "load", false, "CCover_manager")
+	self.is_invalid = packet:r_bool()
+	local n = packet:r_u8()
+	for i = 1, n do
+		local npc_id = packet:r_u16()
+		local cover_vertex_id = packet:r_u32()
+		local cover_position = vector():set(0,0,0)
+		cover_position.x = packet:r_float()
+		cover_position.y = packet:r_float()
+		cover_position.z = packet:r_float()
+		local look_pos = vector():set(0,0,0)
+		look_pos.x = packet:r_float()
+		look_pos.y = packet:r_float()
+		look_pos.z = packet:r_float()
+		local is_smart_cover = packet:r_bool()
+		self.cover_table[npc_id] = {cover_vertex_id = cover_vertex_id, cover_position = cover_position, look_pos = look_pos, is_smart_cover = is_smart_cover}
+	end
+	set_save_marker(packet, "load", true, "CCover_manager")
+end
+
+function has_smart_cover(se_obj, smrttrn)
+
+	local cmanager = smrttrn.combat_manager.cover_manager
+	local npc_id = se_obj.id
+	local cover = cmanager.cover_table[npc_id]
+
+	if cover == nil then
+		return false
+	end
+
+	if cover.is_smart_cover then
+
+		local npc_obj = db.storage[npc_id]
+		npc_obj = npc_obj and npc_obj.object	-- also check that NPC *object* ~= nil, otherwise method 'suitable_smart_cover' below might be applied to a nil value
+		if npc_obj == nil then
+			return false
+		end
+
+		local level_id = game_graph():vertex(smrttrn.m_game_vertex_id):level_id()
+		local smrt_cover = se_smart_cover.registered_smartcovers_by_lv_id[level_id][cover.cover_vertex_id]
+		if smrt_cover == nil then
+			return false
+		end
+
+		local smrt_cover_object = bind_smart_cover.registered_smartcovers[smrt_cover:name()]
+		if npc_obj:suitable_smart_cover(smrt_cover_object) then
+			return true
+		end
+	end
+
+	return false
+end
+
+function has_cover(se_obj, smrttrn)	-- in vanilla, 'npc_id' is undefined in this function, making it return true whenever cover.is_smart_cover == true
+
+	local cmanager = smrttrn.combat_manager.cover_manager
+	local npc_id = se_obj.id
+	local cover = cmanager.cover_table[npc_id]
+
+	if cover == nil then
+		return false
+	end
+
+	if cover.is_smart_cover then
+
+		local npc_obj = db.storage[npc_id]
+		npc_obj = npc_obj and npc_obj.object
+		if npc_obj == nil then
+			return true
+		end
+
+		local level_id = game_graph():vertex(smrttrn.m_game_vertex_id):level_id()
+		local smrt_cover = se_smart_cover.registered_smartcovers_by_lv_id[level_id][cover.cover_vertex_id]
+		if smrt_cover == nil then
+			return true
+		end
+
+		local smrt_cover_object = bind_smart_cover.registered_smartcovers[smrt_cover:name()]
+		if npc_obj:suitable_smart_cover(smrt_cover_object) then
+			return false
+		end
+	end
+
+	return true
+end
+
+function get_cover(obj, smrttrn)
+	local cmanager = smrttrn.combat_manager.cover_manager
+	return cmanager.cover_table[obj:id()]
+end

@@ -1,0 +1,165 @@
+#include "common.h"
+#include "shadow.h"
+
+#define RAY_PATH	2.0h
+
+
+//отвечает за качество (и тормоза) 5-15 - зернистость какая-то, 20 - стандарт, 40 - выпендреж, 100 - для экспериментов
+#define RAY_SAMPLES	20
+
+
+half4	volume_range;	//	x - near plane, y - far plane
+half4	sun_shafts_intensity;
+
+//#ifdef	USE_BRANCHING
+//	"If" in loop
+float4 	main (float2 tc : TEXCOORD0, float4 tcJ : TEXCOORD1 ) : COLOR
+{
+
+
+//	return half4(0,0,0,0);
+	half3	P = tex2D(s_position, tc).xyz;
+
+
+
+//#ifndef	JITTER_SUN_SHAFTS
+//	Fixed ray length, fixed step dencity
+//	half3	direction = (RAY_PATH/RAY_SAMPLES)*normalize(P);	
+//	Variable ray length, variable step dencity
+//	half3	direction = P/RAY_SAMPLES;
+
+
+//#else	//	JITTER_SUN_SHAFTS
+//	Variable ray length, variable step dencity, use jittering
+	half4	J0 	= tex2D		(jitter0,tcJ);
+	half	coeff = (RAY_SAMPLES - 2*J0.x)/(RAY_SAMPLES*RAY_SAMPLES);		
+	half3	direction = P*coeff;
+//	half3	direction = P/(RAY_SAMPLES+(J0.x*4-2));
+//#endif	//	JITTER_SUN_SHAFTS
+
+
+
+	half	depth = P.z;
+	half	deltaDepth = direction.z;
+	
+	half4	current	= mul (m_shadow,float4(P,1));
+	half4	delta 	= mul (m_shadow, float4(direction,0));
+
+	half	res = 0;
+	half	max_density = sun_shafts_intensity;
+
+
+
+	half	density = max_density/RAY_SAMPLES;
+
+
+
+
+
+
+
+	if (depth<0.0001)
+		res = max_density;
+
+//	#ifndef SUNSHAFTS_DYNAMIC
+
+	for ( int i=0; i<RAY_SAMPLES; ++i )
+	{
+		if (depth>0.3)
+
+
+
+//#ifndef	FILTER_LOW
+
+
+
+
+
+//res += sunmask(float4(0,0,0,0))*sample_hw_pcf(current,float4(0,0,0,0) );//глюки
+//res += sunmask(float4(0,0,0,0))/sample_hw_pcf(current,float4(0,0,0,0) );//глюки
+//res += density*shadow(current); //после комментирования этой строчки fps подрос в 2 раза, а качество не ухудшилось
+//res += density*sample_hw_pcf(current, float4(0,0,0,0)); //самый быстрый
+//res += density*sample_hw_pcf(current, half4(0,0,0,0));// вроде тоже быстро
+//res += density; //все светло но нету лучиков
+//res += sample_hw_pcf(current, float4(0,0,0,0)); //глюки
+//res += density*sample_hw_pcf(float4(0,0,0,0),float4(0,0,0,0));//все светло но нету лучиков
+//res += density*sample_hw_pcf(current,current);//лучики есть, но fps уменьшился
+//res += density*sample_hw_pcf(current,density);//лучики есть, но fps уменьшился
+//res += density*sample_hw_pcf(density,density);//глюки
+//res += current*sample_hw_pcf(current,density);//лучики есть, но глюки...
+//res += density/sample_hw_pcf(current,current);//глюки
+//res += density/sample_hw_pcf(current,density);//глюки
+//res += density/sample_hw_pcf(density,density);//глюки
+//res += current/sample_hw_pcf(current,density);//глюки
+//res += current*sample_hw_pcf(current,current);//лучики есть, но глюки...
+//res += current/sample_hw_pcf(current,current);//глюки
+//res += max_density;//глюки
+//res += max_density*sample_hw_pcf(current, float4(0,0,0,0)); //глюки
+//res += density; //все светло но нету лучиков
+//res += sample_hw_pcf(current, float4(0,0,0,0) );глюки
+//res += sample_hw_pcf(current, half4(0,0,0,0) );глюки
+
+
+//res += density*sample_hw_pcf(current, float4(0,0,0,0)); //самый быстрый
+//res += density*shadow(current); //самый медленный 
+
+
+
+#ifndef USE_FETCH4
+			res += density*sample_hw_pcf(current, float4(0,0,0,0));
+#else
+			res += density*sample_hw_f4(current, float4(0,0,0,0));
+#endif
+
+
+
+
+
+
+
+//HWDST/PCF supported and used
+//  -nodf24 * DF24/F4 supported and used [%X]
+//   -r4xx   -nonvs  * NV-DBT supported and used
+// -smap1536   -smap2048   -smap2560   -smap3072   -smap4096
+//   -gloss  -bug    -sunfilter  -sjitter    -depth16    -noshadows  -tsh    -mblur  -nodistort  -disasm -skinw
+
+
+
+
+		depth -= deltaDepth;
+		current -= delta;
+	}
+
+
+
+//	#else
+//	int n = (int)((P.z - 0.3) / deltaDepth);
+//	for ( int i=0; i<n; ++i )
+//	{		
+//#ifndef	FILTER_LOW
+//				res += density*shadow(current);
+//#else	//	FILTER_LOW
+//				res += density*sample_hw_pcf(current, float4(0,0,0,0));
+//#endif	//	FILTER_LOW
+//		depth -= deltaDepth;
+//		current -= delta;
+//	}
+//	#endif
+
+
+
+//Здесь можно выбрать из двух вариантов:
+//	float fSturation = -dot(Ldynamic_dir, half3(0,0,1));
+	float fSturation = -Ldynamic_dir.z;
+
+	//	Normalize dot product to
+	fSturation	= 0.5*fSturation+0.5;
+//	fSturation	= 0.5/fSturation-0.5;
+	//	Map saturation to 0.2..1
+	fSturation	= 0.80*fSturation+0.20;
+
+	res		*= fSturation;
+
+	return res*Ldynamic_color;
+//#endif	//	SUN_SHAFTS_QUALITY
+}

@@ -1,0 +1,427 @@
+--[[
+
+The variable self.flag can take a value of:
+
+0:	coordinates not given, treasure not emptied
+1:	coordinates given
+2:	treasure emptied
+
+]]
+
+enable_stash_filler = true	-- do not change this
+
+local treasures = {}
+local treasure_by_target = {}
+local rank_table = {["novice"] = 0, ["stalker"] = 300, ["veteran"] = 600, ["master"] = 900}
+
+class "CTreasure"
+
+function CTreasure:__init(ini, section)
+
+	local get_string = utils.cfg_get_string
+
+	self.section			= section
+	local self_target		= get_string(ini, section, "target", nil, true, "")
+	self.target			= self_target
+	self.name			= get_string(ini, section, "name", nil, true, "")
+	self.description		= get_string(ini, section, "description", nil, true, "")
+	local items			= get_string(ini, section, "items", nil, true, "", "nil")
+
+	if items ~= "nil" then
+		self.items		= utils.parse_spawns(items)
+		if self.items == nil then
+			abort("[treasure_manager.__init]: The 'items' field is empty.")
+		end
+	end
+
+	local act = db.actor
+
+	self.rank			= get_string(ini, section, "rank", nil, false, "", "novice")
+	self.treasure_cost		= utils.cfg_get_number(ini, section, "treasure_cost", nil, false, 0)
+	self.say_item_name		= utils.cfg_get_bool(ini, section, "say_item_name", nil, false, true)
+	self.on_empty			= xr_logic.parse_condlist(act, section, "on_empty", get_string(ini, section, "on_empty", nil, false, "", "false"))
+	local t				= {}
+	self.community			= t
+	local community			= parse_names(get_string(ini, section, "community", nil, false, "", "stalker, bandit, dolg, freedom, csky, renegade"))
+
+	for k, v in pairs (community) do
+		t[v] = true
+	end
+
+	if treasure_by_target[self_target] == nil then
+		treasure_by_target[self_target] = {}
+	end
+
+	table.insert(treasure_by_target[self_target], self)
+
+	self.condlist			= xr_logic.parse_condlist(act, section, "condlist", get_string(ini, section, "condlist", nil, false, "", "false"))
+	self.flag			= 0
+end
+
+function CTreasure:give_location_only()
+
+	-- If an assignable treasure exists then:
+
+	local obj = alife():object(self.target)
+
+	if obj ~= nil then
+
+		-- If the treasure name or description is not set in the XML file then abort.
+
+		local treasure_name = self.name
+		local trans = game.translate_string
+--[[
+		if treasure_name == trans(treasure_name) then
+			abort("[treasure_manager.give_location_only]: Treasure name '%s' is not set in the XML file.", tostring(treasure_name))
+		end
+
+		if self.description == trans(self.description) then
+			abort("[treasure_manager.give_location_only]: Treasure description '%s' is not set in the XML file.", tostring(self.description))
+		end
+]]
+		-- Give the treasure news, info, and map spot.
+
+		news_manager.send_treasure(treasure_name)
+
+		local text = "%c[255,238,155,23]"..trans(treasure_name).."\\n".."%c[default]"..trans(self.description)
+		level.map_add_object_spot_ser(obj.id, "treasure", text)
+
+		-- Set the treasure coordinate status to "given".
+
+		self.flag = 1
+	end
+end
+
+function CTreasure:populate_stash()
+
+	-- If an assignable treasure exists then:
+
+	local sim = alife()
+	local obj = sim:object(self.target)
+
+	if obj ~= nil then
+
+		-- If the treasure name or description is not set in the XML file then abort.
+--[[
+		local treasure_name = self.name
+		local trans = game.translate_string
+
+		if treasure_name == trans(treasure_name) then
+			abort("[treasure_manager.populate_stash]: Treasure name '%s' is not set in the XML file.", tostring(treasure_name))
+		end
+
+		local treasure_descr = self.description
+
+		if treasure_descr == trans(treasure_descr) then
+			abort("[treasure_manager.populate_stash]: Treasure description '%s' is not set in the XML file.", tostring(treasure_descr))
+		end
+]]
+		-- Give the treasure info and map spot. (Debug code!)
+
+--		local text = "%c[255,238,155,23]"..trans(treasure_name).."\\n".."%c[default]"..trans(treasure_descr)
+		local obj_id = obj.id
+--		level.map_add_object_spot_ser(obj_id, "treasure", text)
+
+		-- Spawn the treasure.
+
+		if self.items then
+			local ammo_sections = ammo_section
+			local vec = vector()
+			for kk, vv in pairs (self.items) do
+				local section = vv.section
+				if ammo_sections[section] == true then
+					se_respawn.create_ammo(section, vec, 0, 0, obj_id, vv.prob)
+				else
+					for i = 1, vv.prob do
+						sim:create(section, vec, 0, 0, obj_id)
+					end
+				end
+			end
+		end
+	end
+end
+
+function CTreasure:check_rank_and_community(npc)
+	return npc:character_rank() > rank_table[self.rank] and self.community[npc:character_community()] == true
+end
+
+function use_box(box, actor)
+
+	-- If this is not a treasure box then do nothing.
+
+	local treasures = treasure_by_target[box:name()]
+	if treasures == nil then
+		return
+	end
+
+	local available_treasures = {}
+
+	-- Parse all treasures available for this box.
+
+	local c = 0
+	for k, v in pairs (treasures) do
+		c = c + 1
+		available_treasures[c] = v
+	end
+
+	-- If no treasures are assignable to this box then do nothing.
+
+	local num_avail = #available_treasures
+	if num_avail == 0 then
+		return
+	end
+
+	-- Populate the box with one of the available treasures chosen at random.
+
+	available_treasures[math.random(1, num_avail)]:populate_stash()
+
+--	dbglog("Populated box with name "..box:name().." and ID "..box:id()..".")
+end
+
+function treasure_empty(box, box_story_id)
+
+	-- If this is not a treasure box then do nothing.
+
+	local treasures = treasure_by_target[box_story_id] or treasure_by_target[box:name()]
+	if treasures == nil then
+		return
+	end
+
+	-- For all treasures suitable for this box, if the treasure hasn't already been emptied then:
+
+	local act, num = db.actor, 0
+
+	for k, v in pairs (treasures) do
+
+		if v.flag ~= 2 then
+
+			-- Handle the two exceptions in the Garbage.
+
+			local box_name = box:name()
+
+			if (box_name == "gar_treasure_quest_reward_in_anomaly" and not has_alife_info("gar_treasure_quest_reward_in_anomaly") and not has_alife_info("gar_quest_talk_with_captive_leader_done"))
+			or (box_name == "gar_treasure_quest_old_pda" and not has_alife_info("gar_treasure_quest_old_pda")) then
+				return
+			end
+
+			-- Execute on_empty effect(s) if any.
+
+			xr_logic.pick_section_from_condlist(act, box, v.on_empty)
+
+			-- Set the treasure status to "emptied".
+
+			v.flag = 2
+
+			-- Remove its map spot.
+
+			local id = box:id()
+			if level.map_has_object_spot(id, "treasure") ~= 0 then
+				level.map_remove_object_spot(id, "treasure")
+			end
+
+			-- For just the first suitable treasure:
+
+			num = num + 1
+
+			if num == 1 then
+
+				-- Increase the 'stashes found' counter by 1.
+
+				xr_statistic.inc_founded_secrets_counter()
+
+				-- Give the actor a 'stash emptied' news update.
+
+				local trans = game.translate_string
+
+				act:give_game_news("Stash emptied:", trans(level.name())..": "..trans(v.name), "ui_iconsTotal_found_thing", 0, 3000)
+
+--				dbglog("Emptied box with name "..box_name.." and ID "..id..".")
+			end
+		end
+	end
+end
+
+function take_item_from_box(box, box_story_id, item)
+	if box:is_inv_box_empty() == true then
+		treasure_empty(box, box_story_id)
+	end
+end
+
+function use(npc)
+	local act = db.actor
+	local c = 0
+	local available_treasures = {}
+	for k, v in pairs (treasures) do
+		if xr_logic.pick_section_from_condlist(act, npc, v.condlist) == "true" then
+			if v:check_rank_and_community(npc) == true then
+				local flag = v.flag
+				if flag ~= 1 and flag ~= 2 then
+					if v.treasure_cost == 0 then
+						c = c + 1
+						available_treasures[c] = v
+					end
+				end
+			end
+		end
+	end
+
+	local rand, num_avail = math.random, #available_treasures
+
+	if num_avail == 0 or rand(100) > 20 then
+		return
+	end
+
+	available_treasures[rand(1, num_avail)]:give_location_only()
+end
+
+function load_treasures()
+
+	local treasure_ini = ini_file("misc\\treasure_manager.ltx")
+
+	if not treasure_ini:section_exist("list") then
+		abort("[treasure_manager.load_treasures]: There is no 'list' section in treasure_manager.ltx.")
+	end
+
+	local n = treasure_ini:line_count("list")
+	local result, section = "", ""
+
+--	treasures = {}
+
+	for i = 0, n - 1 do
+		result, section = treasure_ini:r_line("list", i, "", "")
+		treasures[section] = CTreasure(treasure_ini, section)
+	end
+end
+
+function save(thread)
+
+	set_save_marker(thread, "save", false, "treasure_manager")
+
+	for k, v in pairs (treasures) do
+		thread:w_u8(v.flag)
+--		dbglog("Saved self.flag = "..tostring(v.flag).." for treasure with name "..tostring(v.name)..".")
+	end
+
+	set_save_marker(thread, "save", true, "treasure_manager")
+end
+
+function load(thread)
+
+	set_save_marker(thread, "load", false, "treasure_manager")
+
+	for k, v in pairs (treasures) do
+		v.flag = thread:r_u8()
+--		dbglog("Loaded self.flag = "..tostring(v.flag).." for treasure with name "..tostring(v.name)..".")
+	end
+
+	set_save_marker(thread, "load", true, "treasure_manager")
+end
+
+function give_treasure(treasure_id)
+	local t = treasures[treasure_id]
+	if t ~= nil then
+		if t.flag ~= 2 then
+			t:populate_stash()
+			t:give_location_only()
+		end
+	else
+		abort("[treasure_manager.give_treasure]: There is no treasure with ID '%s'.", tostring(treasure_id))
+	end
+end
+
+function give_location_only(treasure_id)
+	local t = treasures[treasure_id]
+	if t ~= nil then
+		local flag = t.flag
+		if flag ~= 1 and flag ~= 2 then
+			t:give_location_only()
+		end
+	else
+		abort("[treasure_manager.give_location_only]: There is no treasure with ID '%s'.", tostring(treasure_id))
+	end
+end
+
+--------------------------------------------------------------------------------
+
+local dt = nil
+
+function select_dialog_treasures(npc)
+	local act = db.actor
+	local c = 0
+	local available_treasures = {}
+	for k, v in pairs (treasures) do
+		if xr_logic.pick_section_from_condlist(act, npc, v.condlist) == "true" then
+			if v:check_rank_and_community(npc) then
+				local flag = v.flag
+				if flag ~= 1 and flag ~= 2 then
+					if v.treasure_cost > 0 then
+						c = c + 1
+						available_treasures[c] = v
+					end
+				end
+			end
+		end
+	end
+
+	local num_avail = #available_treasures
+
+	if num_avail == 0 then
+		return nil
+	end
+
+	dt = available_treasures[math.random(1, num_avail)]
+	return dt
+end
+
+function is_dialog_treasure(npc, ss)
+	return select_dialog_treasures(npc) ~= nil
+end
+
+function is_not_dialog_treasure(npc, ss)
+	return select_dialog_treasures(npc) == nil
+end
+
+function give_treasure_from_dialog(npc, ss)
+	dialogs.relocate_money(npc, dt.treasure_cost, "out")
+	dt:give_location_only()
+end
+
+function get_treasure_cost()
+	return tostring(dt.treasure_cost)
+end
+
+function have_money()
+	return dt.treasure_cost <= db.actor:money()
+end
+
+function have_no_money()
+	return dt.treasure_cost > db.actor:money()
+end
+
+function get_treasure_desc()
+	return game.translate_string(dt.description)
+end
+
+function is_item_name()
+	return dt.say_item_name
+end
+
+function is_not_item_name()
+	return not dt.say_item_name
+end
+
+function get_item_name()
+	local dt_items = dt.items
+	if dt_items then
+		local trans = game.translate_string
+		local ini = system_ini()
+		local str = trans(ini:r_string(dt_items[1].section, "inv_name"))
+		for i = 2, #dt_items do
+			str = str..", "..trans(ini:r_string(dt_items[i].section, "inv_name"))
+		end
+		str = str.."."
+		return str
+	else
+		return game.translate_string("treasure_dialog_11131")
+	end
+end

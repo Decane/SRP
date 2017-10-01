@@ -1,0 +1,2100 @@
+-----------------------------------------------------------------------------
+
+This file details every alteration made to the vanilla all.spawn by the sRP.
+Alterations are indicated with respect to the vanilla section headers.
+
+-----------------------------------------------------------------------------
+
+
+====================================
+alife_l01_marsh.ltx:
+====================================
+
+
+[99]-[151],
+[156]-[176]
+
+object_flags = 0xffffff3b
+
+• Automatically made by the compiler (ACDC) to any spawn section belonging to the 'inventory_box' class.
+
+------------------------------------
+
+[129]
+
+position = 300.269989013672,0.889999985694885,-156.130004882813
+
+• This is the inventory box in the Old Church: 'mar_smart_terrain_8_11_box'. In vanilla, its mesh is misaligned with its texture, which misalignment is corrected by the position adjustment.
+
+------------------------------------
+
+[807]
+
+name = mar_smart_terrain_9_10_to_mar_smart_terrain_8_11_patrol_1_wait_1_smartcover
+
+• Changed '9_11' to '9_10' in the name. There is no smart terrain named 'mar_smart_terrain_9_11'.
+
+------------------------------------
+
+[808]
+
+name = mar_smart_terrain_9_10_to_mar_smart_terrain_8_11_patrol_1_wait_2_smartcover
+
+• Changed '9_11' to '9_10' in the name. There is no smart terrain named 'mar_smart_terrain_9_11'.
+
+------------------------------------
+
+[809]
+
+name = mar_smart_terrain_9_10_to_mar_smart_terrain_8_11_patrol_1_wait_4_smartcover
+
+• Changed '9_11' to '9_10' in the name. There is no smart terrain named 'mar_smart_terrain_9_11'.
+
+------------------------------------
+
+[810]
+
+name = mar_smart_terrain_9_10_to_mar_smart_terrain_8_11_patrol_1_wait_3_smartcover
+
+• Changed '9_11' to '9_10' in the name. There is no smart terrain named 'mar_smart_terrain_9_11'.
+
+------------------------------------
+
+[811]
+
+name = mar_smart_terrain_9_10_to_mar_smart_terrain_8_11_patrol_1_wait_5_smartcover
+
+• Changed '9_11' to '9_10' in the name. There is no smart terrain named 'mar_smart_terrain_9_11'.
+
+------------------------------------
+
+[817]
+
+name = mar_smart_terrain_9_10_to_mar_smart_terrain_11_11_patrol_1_wait_1_smartcover
+
+• Changed '9_11' to '9_10' in the name. There is no smart terrain named 'mar_smart_terrain_9_11'.
+
+------------------------------------
+
+[818]
+
+name = mar_smart_terrain_9_10_to_mar_smart_terrain_11_11_patrol_1_wait_2_smartcover
+
+• Changed '9_11' to '9_10' in the name. There is no smart terrain named 'mar_smart_terrain_9_11'.
+
+------------------------------------
+
+[819]
+
+name = mar_smart_terrain_9_10_to_mar_smart_terrain_11_11_patrol_1_wait_3_smartcover
+
+• Changed '9_11' to '9_10' in the name. There is no smart terrain named 'mar_smart_terrain_9_11'.
+
+------------------------------------
+
+[820]
+
+name = mar_smart_terrain_9_10_to_mar_smart_terrain_11_11_patrol_1_wait_4_smartcover
+
+• Changed '9_11' to '9_10' in the name. There is no smart terrain named 'mar_smart_terrain_9_11'.
+
+------------------------------------
+
+[821]
+
+name = mar_smart_terrain_9_10_to_mar_smart_terrain_11_11_patrol_1_wait_5_smartcover
+
+• Changed '9_11' to '9_10' in the name. There is no smart terrain named 'mar_smart_terrain_9_11'.
+
+------------------------------------
+
+[888]
+
+name = mar_smart_terrain_11_11_to_mar_smart_terrain_9_10_patrol_1_wait_1_smartcover
+
+• Changed '9_11' to '9_10' in the name. There is no smart terrain named 'mar_smart_terrain_9_11'.
+
+------------------------------------
+
+[889]
+
+name = mar_smart_terrain_11_11_to_mar_smart_terrain_9_10_patrol_1_wait_2_smartcover
+
+• Changed '9_11' to '9_10' in the name. There is no smart terrain named 'mar_smart_terrain_9_11'.
+
+------------------------------------
+
+[906]
+
+name = mar_smart_terrain_8_11_to_mar_smart_terrain_9_10_patrol_1_wait_1_smartcover
+
+• Changed '9_11' to '9_10' in the name. There is no smart terrain named 'mar_smart_terrain_9_11'.
+
+------------------------------------
+
+[907]
+
+name = mar_smart_terrain_8_11_to_mar_smart_terrain_9_10_patrol_1_wait_2_smartcover
+
+• Changed '9_11' to '9_10' in the name. There is no smart terrain named 'mar_smart_terrain_9_11'.
+
+------------------------------------
+
+[908]
+
+name = mar_smart_terrain_8_11_to_mar_smart_terrain_9_10_patrol_1_wait_3_smartcover
+
+• Changed '9_11' to '9_10' in the name. There is no smart terrain named 'mar_smart_terrain_9_11'.
+
+------------------------------------
+
+[1138] <deleted>
+
+• Superfluous space restrictor: 'mar_space_restrictor_tut_artefact'. Not referenced anywhere in the game code.
+
+------------------------------------
+
+[1139] <deleted>
+
+• Superfluous space restrictor: 'mar_space_restrictor_tut_boars'. Not referenced anywhere in the game code.
+
+------------------------------------
+
+[1235] <deleted>
+
+• Duplicate section: 'mar_physic_destroyable_object_0028'. Identical to 'mar_physic_destroyable_object_0027' of [1234] above it. This alteration resolves the issue with the duplicate supply box spawn at the back of the UAZ-469 at the Trailhead.
+
+------------------------------------
+
+[1403]
+
+name = mar_csky_tactic
+
+• Corrected the wrong name: 'mar_mar_csky_tactic'.
+
+------------------------------------
+
+[1417]
+; cse_abstract properties
+section_name = physic_object
+name = mar_box_under_church_inv_box
+position = 300.279998779297,0.660000026226044,-156.119995117188
+direction = 0,0,0
+
+; cse_alife_object properties
+game_vertex_id = 0
+distance = 0
+level_vertex_id = 171487
+object_flags = 0xffffff3a
+custom_data = <<END
+[collide]
+ignore_static
+END
+
+; cse_visual properties
+visual_name = dynamics\box\box_1b
+
+; cse_ph_skeleton properties
+
+; cse_alife_object_physic properties
+physic_type = 0x3
+mass = 10
+fixed_bones = link
+
+upd:num_items = 0
+
+• Added a wooden box underneath the inventory box in the Old Church to prevent it from appearing to levitate. Shifting the position of the inventory box itself would require a level recompile.
+
+
+====================================
+alife_l02_garbage.ltx:
+====================================
+
+
+[1446]-[1467],
+[1473]-[1476],
+[1483]-[1495],
+[2786]-[2787]
+
+object_flags = 0xffffff3b
+
+• Automatically made by the compiler (ACDC) to any spawn section belonging to the 'inventory_box' class.
+
+------------------------------------
+
+[1547] <deleted>
+
+• Superfluous space restrictor: 'gar_space_restrictor_killer_pseudodogs'. Binds gar_space_restrictor_killer_pseudodogs.ltx, the condlist of whose initial active section references an info portion which is never supplied: 'gar_quest_killer_pseudodogs_started'. Remnant of a cut quest.
+
+------------------------------------
+
+[1548] <deleted>
+
+• Superfluous space restrictor: 'gar_space_restrictor_killer_pseudodogs_forest_spawn_point'. Binds gar_space_restrictor_killer_pseudodogs_forest_spawn_point.ltx, the condlist of whose initial active section references an info portion which is never supplied: 'gar_quest_killer_pseudodogs_started'. Remnant of a cut quest.
+
+------------------------------------
+
+[2608]
+
+object_flags = 0xffffffbf
+
+• Automatically made by the compiler (ACDC).
+
+------------------------------------
+
+[2758]
+
+sim_avail = {=actor_in_stalker =is_stalker_at_expansion_4_or_higher} true, {-gar_story_searched_digger_body} false, {+gar_quest_get_old_pda_started -gar_quest_bring_old_pda_started} false, true
+
+• Made the Treasure hunters’ camp available for entry by squads whenever the player is in the stalker faction and the stalkers are trying to capture the Depot, regardless of storyline progress, to resolve the issue where this camp becomes a bottleneck to faction war progress.
+
+
+====================================
+alife_l03_escape.ltx:
+====================================
+
+
+[2861],
+[2901]-[2914],
+[2916]-[2920],
+[2923],
+[2932],
+[2934]-[2949],
+[2954]-[2966],
+[4424]-[4425]
+
+object_flags = 0xffffff3b
+
+• Automatically made by the compiler (ACDC) to any spawn section belonging to the 'inventory_box' class.
+
+------------------------------------
+
+[3012] <deleted>
+
+• Superfluous space restrictor: 'esc_space_restrictor_scene1'. Not referenced anywhere in the game code. Binds esc_space_restrictor_enter.ltx whose sole function is to supply the info portion 'esc_actor_inside' upon the player entering the space restrictor. This info portion is referenced in a condlist in and only in esc_smart_terrain_6_8_spawn_restr.ltx, but the active section logic for that file is nil so the info portion is never actually used for anything.
+
+------------------------------------
+
+[3014]
+
+;custom_data = <<END
+;END
+
+• Superfluous custom_data section.
+
+------------------------------------
+
+[3023] <deleted>
+
+• Superfluous space restrictor: 'esc_space_restrictor_trader_last'. Not referenced anywhere in the game code.
+
+------------------------------------
+
+[3025]
+
+custom_data = <<END
+[dont_spawn_loot]
+
+• Added section '[dont_spawn_loot]' to prevent the spawning of grenades, ammo, etc. on Lambee when his corpse is checked: if you give him a pistol and he drains the magazine before dying and flees as a result, it makes little sense for ammo to spawn on his corpse as if he still had ammo left after all.
+
+------------------------------------
+
+[3027]
+
+;custom_data = <<END
+;[logic]
+;cfg = scripts\escape\esc_space_restrictor_trader_last.ltx
+;END
+
+• Superfluous script logic: its sole function is to supply the info portion 'esc_actor_inside_traders_dung_last' upon the player entering the space restrictor, but this info portion is never actually used for anything.
+
+------------------------------------
+
+[3029]
+
+;custom_data = <<END
+;[logic]
+;active = sr_idle
+;[sr_idle]
+;on_actor_inside = sr_idle@end %+esc_actor_inside_tonnel%
+;[sr_idle@end]
+;END
+
+• Superfluous script logic: its sole function is to supply the info portion 'esc_actor_inside_tonnel' upon the player entering the space restrictor, but this info portion is never actually used for anything in the SRP.
+
+------------------------------------
+
+[3030]
+
+;custom_data = <<END
+;[logic]
+;active = sr_idle
+;[sr_idle]
+;on_actor_inside = nil %+esc_actor_inside_tonnel_1%
+;END
+
+• Superfluous script logic: its sole function is to supply the info portion 'esc_actor_inside_tonnel_1' upon the player entering the space restrictor, but this info portion is never actually used for anything in the SRP.
+
+------------------------------------
+
+[3066] <deleted>
+
+• Superfluous space restrictor: 'esc_space_restrictor_reach_trader'. Not referenced anywhere in the game code and its script logic's sole function is to supply the info portion 'esc_actor_comes_2_trader' upon the player entering the space restrictor, but this info portion is never actually used for anything.
+
+------------------------------------
+
+[3071] <deleted>
+
+• Superfluous space restrictor: 'esc_space_restrictor_spawn_stalker_6_8_patrol_squad_spawn'. Not referenced anywhere in the game code.
+
+------------------------------------
+
+[3072] <deleted>
+
+• Superfluous space restrictor: 'esc_space_restrictor_red_line'. Not referenced anywhere in the game code and its script logic's sole function is to supply the info portion 'esc_actor_near_mill' upon the player entering the space restrictor, but this info portion is never actually used for anything.
+
+------------------------------------
+
+[3074] <deleted>
+
+• Superfluous space restrictor: 'esc_stalker_patrol_2_sound'. Not referenced anywhere in the game code and its script logic binding is commented out by default.
+
+------------------------------------
+
+[3076] <deleted>
+
+• Superfluous space restrictor: 'esc_space_restrictor_patrol_zastava'. Not referenced anywhere in the game code.
+
+------------------------------------
+
+[3095] <deleted>
+
+• Superfluous space restrictor: 'esc_prisoner_secret'. Not referenced anywhere in the game code and its story ID (426) is not used.
+
+------------------------------------
+
+[3166]
+
+position = 29.7800006866455,16.2700004577637,686.880004882813
+
+• This is the north-eastern level changer to the Garbage: 'esc_level_changer_to_garbage_1'. It has been moved to emulate its SoC location in order to prevent the player from accidentally walking into it.
+
+------------------------------------
+
+[3167] <deleted>
+
+• Superfluous space restrictor: 'esc_trader_bye_give_habar'. Binds and is referenced in and only in esc_trader_bye_give_habar.ltx whose sole function is to play an angry sound upon the player leaving Sid's bunker without returning him his loot after picking it up. The handling of this prompt has instead been moved directly into Sid's script logic since SRP v1.0.3.
+
+------------------------------------
+
+[3181] <deleted>
+
+• Superfluous space restrictor: 'esc_space_restrictor_in_restr_2'. Not referenced anywhere in the game code.
+
+------------------------------------
+
+[3182] <deleted>
+
+• Superfluous space restrictor: 'esc_space_restrictor_in_restr_3'. Not referenced anywhere in the game code.
+
+------------------------------------
+
+[3232] <deleted>
+
+• Superfluous space restrictor: 'esc_wolf_brother_1_0000'. Not referenced anywhere in the game code and its story ID (430) is not used.
+
+------------------------------------
+
+[3243] <deleted>
+
+• Superfluous space restrictor: 'esc_quest_additional_line_4'. Not referenced anywhere in the game code. Binds esc_quest_additional_line_4.ltx, the condlist of whose initial active section references an info portion which is never supplied, nor even defined: 'esc_mechanic_flash_card_1'. Remnant of a cut quest.
+
+------------------------------------
+
+[3246] <deleted>
+
+• Superfluous space restrictor: 'esc_trader_tradezone'. Not referenced anywhere in the game code.
+
+------------------------------------
+
+[3272] <deleted>
+
+• Superfluous space restrictor: 'esc_novice_secret'. Not referenced anywhere in the game code. Binds esc_novice_secret.ltx, the condlist of whose initial active section references an info portion which is never supplied: 'esc_novice_secret'.
+
+------------------------------------
+
+[3273]
+
+;active = sr_no_weapon
+
+;[sr_no_weapon]
+;on_info = {=is_smart_in_combat(esc_smart_terrain_5_7)} sr_idle, {!is_smart_captured(esc_smart_terrain_5_7)} sr_idle
+
+;[sr_idle]
+;on_info = {!is_smart_in_combat(esc_smart_terrain_5_7) =is_smart_captured(esc_smart_terrain_5_7)} sr_no_weapon
+
+cfg = scripts\escape\esc_stalker_base_no_weapon_zone.ltx
+
+• Exported the script logic to a custom LTX file for convenience of manipulation.
+
+------------------------------------
+
+[4333] <deleted>
+
+• Superfluous space restrictor: 'esc_trader_habar_3_restrictor'. Not referenced anywhere in the game code.
+
+------------------------------------
+
+[4334] <deleted>
+
+• Superfluous space restrictor: 'esc_trader_habar_1_restrictor'. Not referenced anywhere in the game code.
+
+------------------------------------
+
+[4343] <deleted>
+
+• Superfluous space restrictor: 'esc_out_restr_atp_1'. Referenced in and only in esc_military_works.ltx, but the references are all commented out.
+
+------------------------------------
+
+[4348]
+
+section_name = esc_leader_stalkerbase
+
+• Corrected the wrong section name: 'agr_stalker_base_leader'.
+
+------------------------------------
+
+[4375]
+
+sim_avail = {+esc_mission_stalker_leader_complete} true, {-esc_actor_mission_stalker_leader} true
+
+• Added support for the stalker squad on the hill overlooking the car park to raid the car park immediately upon payment.
+
+------------------------------------
+
+[4426]
+; cse_abstract properties
+section_name = space_restrictor
+name = esc_north_entry_point_restr
+position = -201,23,231
+direction = 0,0,0
+
+; cse_alife_object properties
+game_vertex_id = 474
+distance = 0
+level_vertex_id = 51486
+object_flags = 0xffffff3e
+custom_data = <<END
+[logic]
+cfg = scripts\escape\esc_north_entry_point_restr.ltx
+END
+
+; cse_shape properties
+shapes = shape0
+shape0:type = sphere
+shape0:offset = 0,0,0
+shape0:radius = 13
+
+; cse_alife_space_restrictor properties
+restrictor_type = 0
+
+• Added space restrictor 'esc_north_entry_point_restr' and created file esc_north_entry_point_restr.ltx with logic:
+
+[logic]
+active = sr_idle
+
+[sr_idle]
+on_info = {+esc_actor_inside_traders_dung} nil %-esc_warnings_off -esc_warning_squads_hostile -esc_warning_squad_bridge_made_hostile -esc_warning_squad_tonnel_made_hostile%
+on_actor_inside = {-esc_came_from_north -esc_fire} %+esc_came_from_north%
+on_actor_inside2 = {-esc_actor_inside_traders_dung -esc_warnings_off} %+esc_warnings_off%
+
+• The info portion 'esc_warnings_off' is utilized in and only in esc_stalker_bridge_logic.ltx and esc_stalker_tonnel_logic.ltx for the purpose of preventing the stalker territory guards from threatening the player and turning hostile if the player approaches them from behind after entering the Cordon through the northern Swamp-to-Cordon level changer. Squad disposition is here handled with the help of info portions because function xr_effects.set_squad_goodwill() will not alter the disposition of any squad NPCs that are not yet in db.storage and there is a chance of either the tunnel squad NPCs or the bridge squads' NPCs not being there when the function is called, e.g. if the player has not yet gone within the switch distance of the relevant squad NPCs when the function is called. The info portion 'esc_came_from_north' is utilized for the correct functioning of the military outpost machine gunner in case the player approaches the outpost for the first time from the north.
+
+------------------------------------
+
+[4427]
+; cse_abstract properties
+section_name = space_restrictor
+name = esc_bridge_south_side_restr
+position = 140,13,120
+direction = 0,0,0
+
+; cse_alife_object properties
+game_vertex_id = 712
+distance = 0
+level_vertex_id = 472477
+object_flags = 0xffffff3e
+custom_data = <<END
+[logic]
+cfg = scripts\escape\esc_bridge_south_side_restr.ltx
+END
+
+; cse_shape properties
+shapes = shape0
+shape0:type = box
+shape0:axis_x = 459,0,0
+shape0:axis_y = 0,29,0
+shape0:axis_z = 0,0,64
+shape0:offset = 0,0,0
+
+; cse_alife_space_restrictor properties
+restrictor_type = 0
+
+• Added space restrictor 'esc_bridge_south_side_restr' and created file esc_bridge_south_side_restr.ltx with logic:
+
+[logic]
+active = sr_idle
+
+[sr_idle]
+on_info = {+esc_actor_inside_traders_dung} nil %-esc_warnings_off -esc_warning_squads_hostile -esc_warning_squad_bridge_made_hostile -esc_warning_squad_tonnel_made_hostile%
+on_actor_inside = {=actor_out_zone(esc_space_restrictor_nasip_bridge) =actor_out_zone(esc_space_restrictor_nasip_tonnel) +esc_warnings_off -esc_warning_squads_hostile} %-esc_warnings_off%
+
+• The info portion 'esc_warnings_off' is utilized in and only in esc_stalker_bridge_logic.ltx and esc_stalker_tonnel_logic.ltx for the purpose of preventing the stalker territory guards from threatening the player and turning hostile if the player approaches them from behind after entering the Cordon through the northern Swamp-to-Cordon level changer. Squad disposition is here handled with the help of info portions because function xr_effects.set_squad_goodwill() will not alter the disposition of any squad NPCs that are not yet in db.storage and there is a chance of either the tunnel squad NPCs or the bridge squads' NPCs not being there when the function is called, e.g. if the player has not yet gone within the switch distance of the relevant squad NPCs when the function is called.
+
+
+====================================
+alife_l04_darkvalley.ltx:
+====================================
+
+
+[4501]-[4528],
+[4535]-[4539],
+[4542]-[4552],
+[5455]
+
+object_flags = 0xffffff3b
+
+• Automatically made by the compiler (ACDC) to any spawn section belonging to the 'inventory_box' class.
+
+------------------------------------
+
+[4591]
+
+cond = {!npc_stay_offline(val_smart_terrain_7_3) !npc_stay_offline(val_smart_terrain_7_4) !npc_stay_offline(val_smart_terrain_7_5) =smart_captured_by_faction(val_smart_terrain_7_4:freedom)} true
+
+• Chekhov needed a stronger spawn condition.
+
+------------------------------------
+
+[4592]
+
+cond = {!npc_stay_offline(val_smart_terrain_7_3) !npc_stay_offline(val_smart_terrain_7_4) !npc_stay_offline(val_smart_terrain_7_5) =smart_captured_by_faction(val_smart_terrain_7_3:freedom)} true
+
+• Yar needed a stronger spawn condition.
+
+------------------------------------
+
+[4598]
+
+cond = {!npc_stay_offline(val_smart_terrain_7_3) !npc_stay_offline(val_smart_terrain_7_4) !npc_stay_offline(val_smart_terrain_7_5) =smart_captured_by_faction(val_smart_terrain_7_5:freedom)} true
+
+• Lingov needed a stronger spawn condition.
+
+------------------------------------
+
+[4613]
+
+custom_data = <<END
+[logic]
+active = ph_idle
+on_hit = hit
+[hit]
+on_info = %+val_freedom_megafon_hit%
+[ph_idle]
+on_info = {+val_freedom_megafon_hit} nil
+END
+
+• This is the Freedom base loudspeaker closest to Ashot: 'val_physic_destroyable_object_0001'. Binding to it the logic above enables us to disable the loudspeaker via info portion when hit.
+
+------------------------------------
+
+[4660] <deleted>
+
+• Superfluous space restrictor: 'val_out_restrictor_freedom_fixer'. Not referenced anywhere in the game code.
+
+------------------------------------
+
+[4661] <deleted>
+
+• Superfluous space restrictor: 'val_space_restrictor_eliminate_smart_1_1_mapspot'. Not referenced anywhere in the game code and its story ID (1115) is not used.
+
+------------------------------------
+
+[4662] <deleted>
+
+• Superfluous space restrictor: 'val_space_restrictor_eliminate_smart_7_8'. Not referenced anywhere in the game code and its story ID (1114) is not used.
+
+------------------------------------
+
+[4663] <deleted>
+
+• Superfluous space restrictor: 'val_space_restrictor_capture_smart_4_0_mapspot_2'. Not referenced anywhere in the game code and its story ID (1116) is not used.
+
+------------------------------------
+
+[4670]
+
+;custom_data = <<END
+;[logic]
+;active = sr_no_weapon
+
+;[sr_no_weapon]
+;END
+
+• Unnecessary weapon hide logic in Lingov's zone. The weapon hide scheme for Freedom's base is handled by space restrictor 'val_freedom_base_no_weapon_zone'.
+
+------------------------------------
+
+[4679] <deleted>
+
+• Superfluous space restrictor: 'val_space_restrictor_9_2_boar'. Not referenced anywhere in the game code. Binds val_check_for_spawn_boar_rush_to_freedom_base.ltx, the contents of whose initial active section have been commented out. Remnant of a cut quest.
+
+------------------------------------
+
+[4680] <deleted>
+
+• Superfluous space restrictor: 'val_space_restrictor_quest_rush_boar'. Not referenced anywhere in the game code. Binds val_space_restrictor_quest_rush_boar.ltx, but the active section logic for that file is nil. Remnant of a cut quest.
+
+------------------------------------
+
+[4685] <deleted>
+
+• Superfluous space restrictor: 'val_space_restrictor_quest_eliminate_boar'. Not referenced anywhere in the game code. Binds val_s_r_quest_eliminate_boar.ltx, but the active section logic for that file is nil. Remnant of a cut quest.
+
+------------------------------------
+
+[4686] <deleted>
+
+• Superfluous space restrictor: 'val_space_restrictor_elliminated_boar_9_2_mapspot'. Not referenced anywhere in the game code. Its story ID (1117) is referenced in tm_darkvalley.ltx under [val_destroy_boar_guard_9_2], but this task is never given. Remnant of a cut quest.
+
+------------------------------------
+
+[4690] <deleted>
+
+• Superfluous space restrictor: 'val_space_restrictor_blockpost_n_actor_inside'. Not referenced anywhere in the game code. The logic it binds is handled elsewhere in the SRP, rendering it obsolete.
+
+------------------------------------
+
+[4691] <deleted>
+
+• Superfluous space restrictor: 'val_space_restrictor_blockpost_s_actor_inside'. Not referenced anywhere in the game code. The logic it binds is handled elsewhere in the SRP, rendering it obsolete.
+
+------------------------------------
+
+[4693] <deleted>
+
+• Superfluous space restrictor: 'val_actor_in_zone_trader'. Not referenced anywhere in the game code.
+
+------------------------------------
+
+[4694] <deleted>
+
+• Superfluous space restrictor: 'val_space_restrictor_block_trader_magazine'. Not referenced anywhere in the game code.
+
+------------------------------------
+
+[4696]
+
+cond = {!npc_stay_offline(val_smart_terrain_7_3) !npc_stay_offline(val_smart_terrain_7_4) !npc_stay_offline(val_smart_terrain_7_5) =smart_captured_by_faction(val_smart_terrain_7_5:freedom)} true
+
+• Ashot needed a stronger spawn condition.
+
+------------------------------------
+
+[4697]
+
+cond = {!npc_stay_offline(val_smart_terrain_7_3) !npc_stay_offline(val_smart_terrain_7_4) !npc_stay_offline(val_smart_terrain_7_5) =smart_captured_by_faction(val_smart_terrain_7_5:freedom)} true
+
+• Ganja needed a stronger spawn condition.
+
+------------------------------------
+
+[4703] <deleted>
+
+• Superfluous space restrictor: 'val_space_restrictor_actor_in_zone_7_8_killer'. Referenced in and only in val_check_for_killer_podspawn_7_8.ltx, but the reference is commented out.
+
+------------------------------------
+
+[4704] <deleted>
+
+• Superfluous space restrictor: 'val_space_restrictor_7_8_killer_podspawn'. Not referenced anywhere in the game code. Binds val_check_for_killer_podspawn_7_8.ltx, the contents of whose initial active section have been commented out.
+
+------------------------------------
+
+[4710] <deleted>
+
+• Superfluous space restrictor: 'val_space_restrictor_enter_killer_base'. Not referenced anywhere in the game code. Binds val_check_for_killer_base_attack.ltx whose sole function is to supply the info portion 'val_killer_base_under_attack' upon the player entering the space restrictor, but this info portion is never actually used for anything.
+
+------------------------------------
+
+[4718] <deleted>
+
+• Superfluous space restrictor: 'val_space_restrictor_quest_bandit_spy_pda'. Not referenced anywhere in the game code. Binds val_check_for_spy_bandit_pda.ltx, the contents of whose initial active section have been commented out.
+
+------------------------------------
+
+[4720] <deleted>
+
+• Superfluous space restrictor: 'val_space_restrictor_cisterna_night_bloodsucker'. Not referenced anywhere in the game code.
+
+------------------------------------
+
+[4737] <deleted>
+
+• Superfluous space restrictor: 'val_space_restrictor_freedom_join'. Not referenced anywhere in the game code. Binds val_space_restrictor_freedom_join.ltx whose sole function is to supply the player the obsolete task 'val_join_freedom' upon the end of an audio cue, but this audio cue is missing so the task is never given. Remnant of a cut quest.
+
+------------------------------------
+
+[4816] <deleted>
+
+• Superfluous space restrictor: 'val_freedom_base_leader_noweapon_zone'. Not referenced anywhere in the game code. (The weapon hide scheme for Chekhov's zone is instead handled by space restrictor 'val_freedom_base_no_weapon_zone'.)
+
+------------------------------------
+
+[4838]
+
+sim_avail = {+val_strike_antenna_two_captured -val_destroy_killer_base_done} false, true
+
+• Flipped the '+' and '-', as otherwise the condition will always evaluate to true.
+
+;att_restr = val_smart_terrain_1_2_attack
+
+• No such restrictor exists.
+
+------------------------------------
+
+[5351] <deleted>
+
+• Superfluous space restrictor: 'val_gunnery_zone_noweap'. Not referenced anywhere in the game code. (The weapon hide scheme for Yar's zone is instead handled by space restrictor 'val_freedom_base_no_weapon_zone'.)
+
+------------------------------------
+
+[5352] <deleted>
+
+• Superfluous space restrictor: 'val_chehov_zone_noweap'. Not referenced anywhere in the game code. (The weapon hide scheme for Chekhov's zone is instead handled by space restrictor 'val_freedom_base_no_weapon_zone'.)
+
+
+====================================
+alife_l05_red_forest.ltx:
+====================================
+
+
+[5580]-[5604],
+[5607],
+[5614],
+[5628]-[5641]
+
+object_flags = 0xffffff3b
+
+• Automatically made by the compiler (ACDC) to any spawn section belonging to the 'inventory_box' class.
+
+------------------------------------
+
+[5688] <deleted>
+
+• Superfluous space restrictor: 'red_bridge_restrictor'. Not referenced anywhere in the game code.
+
+------------------------------------
+
+[5711] <deleted>
+
+• Superfluous space restrictor: 'red_bridge_sniper_1_restr'. Not referenced anywhere in the game code.
+
+------------------------------------
+
+[5712] <deleted>
+
+• Superfluous space restrictor: 'red_bridge_sniper_2_restr'. Not referenced anywhere in the game code.
+
+------------------------------------
+
+[5736] <deleted>
+
+• Superfluous space restrictor: 'red_pursuit_patricle_1_restr'. Not referenced anywhere in the game code. Binds red_pursuit_particle_1_restr.ltx, the contents of whose initial active section have been commented out.
+
+------------------------------------
+
+[5737] <deleted>
+
+• Superfluous space restrictor: 'red_pursuit_patricle_2_restr'. Not referenced anywhere in the game code. Binds red_pursuit_particle_2_restr.ltx, the contents of whose initial active section have been commented out.
+
+------------------------------------
+
+[5738] <deleted>
+
+• Superfluous space restrictor: 'red_pursuit_patricle_3_restr'. Not referenced anywhere in the game code. Binds red_pursuit_particle_3_restr.ltx, the contents of whose initial active section have been commented out.
+
+------------------------------------
+
+[5739] <deleted>
+
+• Superfluous space restrictor: 'red_pursuit_patricle_4_restr'. Not referenced anywhere in the game code. Binds red_pursuit_particle_4_restr.ltx, the contents of whose initial active section have been commented out.
+
+------------------------------------
+
+[5740] <deleted>
+
+• Superfluous space restrictor: 'red_pursuit_patricle_5_restr'. Not referenced anywhere in the game code. Binds red_pursuit_particle_5_restr.ltx, the contents of whose initial active section have been commented out.
+
+------------------------------------
+
+[5761] <deleted>
+
+• Superfluous space restrictor: 'red_pursuit_strelok_spawn_restr'. Not referenced anywhere in the game code. Binds red_pursuit_strelok_spawn_restr.ltx, whose initial active section logic is set to nil immediately upon its activation.
+
+------------------------------------
+
+[5767] <deleted>
+
+• Superfluous space restrictor: 'red_space_restrictor_0000'. Not referenced anywhere in the game code.
+
+------------------------------------
+
+[5768] <deleted>
+
+• Superfluous space restrictor: 'red_space_restrictor_0001'. Not referenced anywhere in the game code.
+
+------------------------------------
+
+[5770] <deleted>
+
+• Superfluous space restrictor: 'red_bloodsucker_hunter_zone'. Not referenced anywhere in the game code. Binds red_bloodsucker_hunter_zone.ltx, the contents of whose initial active section have been commented out.
+
+------------------------------------
+
+[5805] <deleted>
+
+• Superfluous space restrictor: 'red_bloodsucker_hunter_zone1'. Referenced in and only in red_bounty_hunter_restr.ltx, but the reference has been commented out. Binds red_bloodsucker_hunter_zone.ltx, the contents of whose initial active section have been commented out.
+
+------------------------------------
+
+[5814] <deleted>
+
+• Superfluous space restrictor: 'red_quest_line_2'. Not referenced anywhere in the game code. Binds red_quest_line_2.ltx, which assigns the task to capture the Devilish encampment. But this task should not be assigned because the task to defend the stalkers going there is anyway assigned independently from red_additional_quest_line.ltx, so the two tasks would overlap. Furthermore, this file assigns the task to defend the stalkers at the Devilish encampment when there is no-one to defend them from, which constitutes a bug.
+
+------------------------------------
+
+[5827] <deleted>
+
+• Superfluous space restrictor: 'red_lesnik_speak_zone'. Not referenced anywhere in the game code.
+
+------------------------------------
+
+[5833] <deleted>
+
+• Superfluous space restrictor: 'red_lesnik_speak_zone_2'. Not referenced anywhere in the game code.
+
+------------------------------------
+
+[6182] <deleted>
+
+• Superfluous space restrictor: 'red_psy_dog_restr'. Referenced in and only in red_bounty_hunter_restr.ltx, but the reference has been commented out. Binds red_psy_dog_restr.ltx, but the file's initial active section is empty.
+
+------------------------------------
+
+[6185] <deleted>
+
+• Superfluous space restrictor: 'red_bounty_hunter_restr'. Not referenced anywhere in the game code. Binds red_bounty_hunter_restr.ltx, the contents of whose initial active section have been commented out.
+
+------------------------------------
+
+[6271] <deleted>
+
+• Superfluous space restrictor: 'red_bloodsucker_hunter_zone1_0000'. Not referenced anywhere in the game code. Binds red_bloodsucker_hunter_zone.ltx, the contents of whose initial active section have been commented out.
+
+------------------------------------
+
+[6298] <deleted>
+
+• Superfluous space restrictor: 'red_teleport_restr_2'. Not referenced anywhere in the game code. Binds red_teleport_restr_2.ltx, the contents of whose initial active section have been commented out.
+
+------------------------------------
+
+[6313] <deleted>
+
+• Superfluous space restrictor: 'red_fake_faction_allyes'. Not referenced anywhere in the game code. Binds red_fake_faction_allyes.ltx, the contents of whose initial active section have been commented out.
+
+------------------------------------
+
+[6314] <deleted>
+
+• Superfluous space restrictor: 'red_fake_faction_enemy'. Not referenced anywhere in the game code. Binds red_fake_faction_enemy.ltx, but the file's initial active section is empty.
+
+------------------------------------
+
+[6376]
+
+;custom_data = <<END
+;[logic]
+;cfg = scripts\red_forest\red_forest_pda_map_zone.ltx
+;END
+
+• Superfluous script logic: the contents of its initial active section have been commented out.
+
+------------------------------------
+
+[6686]
+
+def_restr = red_smart_terrain_4_5_defence
+
+• Corrected the restrictor reference. It was: 'red_smart_terrain_4_5_attack'.
+
+
+====================================
+alife_l06_agroprom.ltx:
+====================================
+
+
+[6783]-[6833],
+[8045]-[8046]
+
+object_flags = 0xffffff3b
+
+• Automatically made by the compiler (ACDC) to any spawn section belonging to the 'inventory_box' class.
+
+------------------------------------
+
+[6842]
+
+cond = {!npc_stay_offline(agr_smart_terrain_1_6) !npc_stay_offline(agr_smart_terrain_1_6_near_1) !npc_stay_offline(agr_smart_terrain_1_6_near_2) =smart_captured_by_faction(agr_smart_terrain_1_6:dolg)} true
+
+• Mitay needed a stronger spawn condition.
+
+------------------------------------
+
+[6843]
+
+cond = {!npc_stay_offline(agr_smart_terrain_1_6) !npc_stay_offline(agr_smart_terrain_1_6_near_1) !npc_stay_offline(agr_smart_terrain_1_6_near_2) =smart_captured_by_faction(agr_smart_terrain_1_6_near_2:dolg)} true
+
+• Thunderov needed a stronger spawn condition.
+
+------------------------------------
+
+[6846]
+
+cond = {!npc_stay_offline(agr_smart_terrain_1_6) !npc_stay_offline(agr_smart_terrain_1_6_near_1) !npc_stay_offline(agr_smart_terrain_1_6_near_2) =smart_captured_by_faction(agr_smart_terrain_1_6_near_2:dolg)} true
+
+• Krylov needed a stronger spawn condition.
+
+------------------------------------
+
+[6857] <deleted>
+
+• Superfluous space restrictor: 'agr_rad_zone'. Not referenced anywhere in the game code and its sr_psy_antenna scheme parameters have all been commented out.
+
+------------------------------------
+
+[6862]
+
+section_name = agr_weaponmaster
+
+cond = {!npc_stay_offline(agr_smart_terrain_1_6) !npc_stay_offline(agr_smart_terrain_1_6_near_1) !npc_stay_offline(agr_smart_terrain_1_6_near_2) =smart_captured_by_faction(agr_smart_terrain_1_6_near_1:dolg)} true
+
+• Replaced the generic section name: 'stalker'.
+
+• Major Zvyagintsev needed a stronger spawn condition.
+
+------------------------------------
+
+[6863] <deleted>
+
+• Superfluous space restrictor: 'agr_duty_weaponmaster_zone'. Not referenced anywhere in the game code.
+
+------------------------------------
+
+[6865] <deleted>
+
+• Superfluous space restrictor: 'agr_train_attackers_scripts'. Not referenced anywhere in the game code and its script logic binding is commented out by default.
+
+------------------------------------
+
+[6866] <deleted>
+
+• Superfluous space restrictor: 'agr_space_restrictor_0006'. Not referenced anywhere in the game code. Binds agr_monsters_big_attack.ltx whose sole function is to supply the info portion 'agr_monsters_big_attack' upon the player entering the space restrictor 'agr_smart_terrain_4_4_def', but this info portion is never actually used for anything.
+
+------------------------------------
+
+[6868] <deleted>
+
+• Superfluous space restrictor: 'agr_blockpost_shout_start'. Not referenced anywhere in the game code. Binds agr_blockpost_shout_start.ltx whose sole function is to supply the info portion 'agr_actor_inside_1' upon the player entering the space restrictor. This info portion is referenced all over the place, but it should not be given like this, as doing so can lead to there being, for a duration, no storyline task active in the player's PDA. This info portion is properly supplied via dialogue.
+
+------------------------------------
+
+[6871] <deleted>
+
+• Superfluous space restrictor: 'agr_danger_zone'. Not referenced anywhere in the game code.
+
+------------------------------------
+
+[6898] <deleted>
+
+• Superfluous space restrictor: 'agr_sumulation_snork_attack'. Not referenced anywhere in the game code. Binds sumulation_snork_attack.ltx whose sole function is to supply the info portion 'agr_snork_simulation_attack_on_group' upon the player entering the space restrictor, but this info portion is never actually used for anything.
+
+------------------------------------
+
+[6911] <deleted>
+
+• Superfluous space restrictor: 'agr_smart_terrain_4_6_pre'. Referenced in sumulation_snork_attack.ltx, but this file was deactivated above.
+
+------------------------------------
+
+[7381]
+
+custom_data = <<END
+[logic]
+active = ph_idle
+on_hit = hit
+[hit]
+on_info = %+agr_duty_megafon_hit%
+[ph_idle]
+on_info = {+agr_duty_megafon_hit} nil
+END
+
+• The 'on_hit' parameter needs to be in the logic of the object, not in that of a space restrictor. See agr_duty_megafon.ltx.
+
+------------------------------------
+
+[7426] <deleted>
+
+• Superfluous space restrictor: 'agr_dolgs_blockpost_attack'. Not referenced anywhere in the game code. Binds agr_dogs_blockpost_attack.ltx, the contents of whose initial active section have been commented out.
+
+------------------------------------
+
+[7461]
+
+[animated_object]
+leave_joints = all
+controled_bones = whell
+
+• Deleted the invalid comment syntax ('//') and subsequent comments.
+
+------------------------------------
+
+[7462]
+
+[animated_object]
+leave_joints = all
+controled_bones = whell
+
+• Deleted the invalid comment syntax ('//') and subsequent comments.
+
+------------------------------------
+
+[7662] <deleted>
+
+• Superfluous space restrictor: 'agr_quest_additional_line_1'. Not referenced anywhere in the game code. Binds agr_quest_additional_line_1.ltx, the condlist of whose initial active section checks for info portions that are never given. Remnant of a cut quest.
+
+------------------------------------
+
+[7664] <deleted>
+
+• Superfluous space restrictor: 'agr_quest_additional_line_3'. Not referenced anywhere in the game code. Binds agr_quest_additional_line_3.ltx, the condlist of whose initial active section checks for info portions that are never given. Remnant of a cut quest.
+
+------------------------------------
+
+[7756]
+
+;active = sr_no_weapon
+
+;[sr_no_weapon]
+;on_info = {=is_smart_in_combat(agr_smart_terrain_4_4)} sr_idle, {!is_smart_captured(agr_smart_terrain_4_4)} sr_idle
+
+;[sr_idle]
+;on_info = {!is_smart_in_combat(agr_smart_terrain_4_4) =is_smart_captured(agr_smart_terrain_4_4)} sr_no_weapon
+
+cfg = scripts\agroprom\agr_stalker_base_no_weapon_zone.ltx
+
+• Exported the script logic to a custom LTX file for convenience of manipulation.
+
+------------------------------------
+
+[7991]
+
+section_name = agr_stalker_base_mechanic
+
+• Corrected the wrong section name: 'agr_stalker_base_leader'.
+
+------------------------------------
+
+[8021]
+
+att_restr = agr_smart_terrain_4_4_near_2_att
+
+• Corrected the wrong restrictor type. It was 'def_restr', which is already defined above it.
+
+------------------------------------
+
+[8022]
+
+;att_restr = agr_smart_terrain_1_6_near_1_att
+
+• No such restrictor exists.
+
+------------------------------------
+
+[8025]
+
+;active = sr_no_weapon
+
+;[sr_no_weapon]
+;on_info = {=is_smart_in_combat(agr_smart_terrain_1_6)} sr_idle, {!is_smart_captured(agr_smart_terrain_1_6)} sr_idle
+
+;[sr_idle]
+;on_info = {!is_smart_in_combat(agr_smart_terrain_1_6) =is_smart_captured(agr_smart_terrain_1_6)} sr_no_weapon
+
+cfg = scripts\agroprom\agr_duty_base_no_weapon_zone_1.ltx
+
+• Exported the script logic to a custom LTX file for convenience of manipulation.
+
+------------------------------------
+
+[8026]
+
+;active = sr_no_weapon
+
+;[sr_no_weapon]
+;on_info = {=is_smart_in_combat(agr_smart_terrain_1_6_near_2)} sr_idle, {!is_smart_captured(agr_smart_terrain_1_6_near_2)} sr_idle
+
+;[sr_idle]
+;on_info = {!is_smart_in_combat(agr_smart_terrain_1_6_near_2) =is_smart_captured(agr_smart_terrain_1_6_near_2)} sr_no_weapon
+
+cfg = scripts\agroprom\agr_duty_base_no_weapon_zone_2.ltx
+
+• Exported the script logic to a custom LTX file for convenience of manipulation.
+
+
+====================================
+alife_l07_yantar.ltx:
+====================================
+
+
+[8075]-[8107],
+[8688]
+
+object_flags = 0xffffff3b
+
+• Automatically made by the compiler (ACDC) to any spawn section belonging to the 'inventory_box' class.
+
+------------------------------------
+
+[8085]
+
+position = -3.6932909488678,5,0.331966996192932
+
+• This is the safe at the factory: 'yantar_treasure_11'. In vanilla, its mesh is both misaligned with its texture and is the wrong shape. As a consequence, the safe is frustratingly difficult to access. This difficulty has been alleviated by the position adjustment: it is now possible to access the safe by pointing the crosshair at its front side.
+
+------------------------------------
+
+[8116] <deleted>
+
+• Superfluous space restrictor: 'yan_space_restrictor_yan_actor_go_to_stalker'. Not referenced anywhere in the game code and its script logic binding is commented out by default.
+
+------------------------------------
+
+[8119] <deleted>
+
+• Superfluous space restrictor: 'yan_zombie_wave_2_spawn_restrictor'. Not referenced anywhere in the game code. Binds yan_wave_zombie_1_2.ltx, the condlist of whose initial active section references several info portions that are never supplied: 'yan_death_stalker3_cut6', 'yan_death_stalker4_cut6', and 'yan_death_stalker5_cut6'. Remnant of a cut quest.
+
+------------------------------------
+
+[8122] <deleted>
+
+• Superfluous space restrictor: 'yan_space_restrictor_yan_actor_go_to_stalker_0000'. Not referenced anywhere in the game code. Binds yan_actor_go_to_red_forest.ltx, but the file's initial active section is empty.
+
+------------------------------------
+
+[8125] <deleted>
+
+• Superfluous space restrictor: 'yan_space_restrictor_zombi_in_krisha'. Referenced in and only in yan_zombie_3.ltx, yan_zombie_8.ltx, and yan_zombie_9.ltx, but the references have all been commented out.
+
+------------------------------------
+
+[8126] <deleted>
+
+• Superfluous space restrictor: 'yan_space_restrictor_zombi_in_angar'. Not referenced anywhere in the game code and its script logic binding is commented out by default.
+
+------------------------------------
+
+[8138] <deleted>
+
+• Superfluous space restrictor: 'yan_space_restrictor_in_base_for_actor'. Not referenced anywhere in the game code. Binds yan_space_restrictor_in_base_for_actor.ltx, the contents of whose initial active section have been commented out.
+
+------------------------------------
+
+[8139] <deleted>
+
+• Superfluous space restrictor: 'yan_sound_space_restrictor_alarm_cut2'. Not referenced anywhere in the game code and its script logic binding is commented out by default.
+
+------------------------------------
+
+[8150] <deleted>
+
+• Superfluous space restrictor: 'yan_space_restrictor_not_for_stalkers'. Not referenced anywhere in the game code.
+
+------------------------------------
+
+[8151] <deleted>
+
+• Superfluous space restrictor: 'yan_space_restrictor_tryba1_cut5'. Not referenced anywhere in the game code.
+
+------------------------------------
+
+[8152] <deleted>
+
+• Superfluous space restrictor: 'yan_space_restrictor_tryba2_cut5'. Not referenced anywhere in the game code.
+
+------------------------------------
+
+[8153] <deleted>
+
+• Superfluous space restrictor: 'yan_space_restrictor_tryba3_cut5'. Not referenced anywhere in the game code.
+
+------------------------------------
+
+[8154] <deleted>
+
+• Superfluous space restrictor: 'yan_space_restrictor_tryba4_cut5'. Not referenced anywhere in the game code.
+
+------------------------------------
+
+[8155] <deleted>
+
+• Superfluous space restrictor: 'yan_space_restrictor_tryba5_cut5'. Not referenced anywhere in the game code.
+
+------------------------------------
+
+[8171] <deleted>
+
+• Superfluous space restrictor: 'yan_space_restrictor_quest_signal'. Not referenced anywhere in the game code. Binds yan_space_restrictor_quest_signal_start.ltx, the contents of whose initial active section have been commented out.
+
+------------------------------------
+
+[8172] <deleted>
+
+• Superfluous space restrictor: 'yan_space_restrictor_quest_defend_cut2'. Not referenced anywhere in the game code and its story ID (806) is not used.
+
+------------------------------------
+
+[8203] <deleted>
+
+• Superfluous space restrictor: 'yan_space_restrictor_0002'. Not referenced anywhere in the game code.
+
+------------------------------------
+
+[8211] <deleted>
+
+• Superfluous space restrictor: 'yan_space_restrictor_0003'. Not referenced anywhere in the game code.
+
+------------------------------------
+
+[8674]
+
+;att_restr = yan_smart_terrain_2_5_att
+
+• No such restrictor exists.
+
+------------------------------------
+
+[8681]
+
+;att_restr = yan_smart_terrain_zombi_in_sci_base5_att
+;def_restr = yan_smart_terrain_zombi_in_sci_base5_def
+
+• No such restrictors exist.
+
+------------------------------------
+
+[8683]
+
+;att_restr = yan_smart_terrain_quest_saharov_att
+;def_restr = yan_smart_terrain_quest_saharov_def
+
+• No such restrictors exist.
+
+
+====================================
+alife_l08_military.ltx:
+====================================
+
+
+[8751]-[8771],
+[8775]-[8776],
+[8810]-[8840]
+
+object_flags = 0xffffff3b
+
+• Automatically made by the compiler (ACDC) to any spawn section belonging to the 'inventory_box' class.
+
+------------------------------------
+
+[8903] <deleted>
+
+• Superfluous space restrictor: 'mil_space_restrictor_bloodsucker_task'. Not referenced anywhere in the game code and its story ID (1208) is not used.
+
+------------------------------------
+
+[8905] <deleted>
+
+• Superfluous space restrictor: 'mil_space_restrictor_battle_in_house_task'. Not referenced anywhere in the game code and its story ID (1212) is not used.
+
+------------------------------------
+
+[8906] <deleted>
+
+• Superfluous space restrictor: 'mil_space_restrictor_attack_coo_tower_task'. Not referenced anywhere in the game code and its story ID (1214) is not used.
+
+------------------------------------
+
+[8909] <deleted>
+
+• Superfluous space restrictor: 'mil_space_restrictor_spawn_freedom_for_attack_base'. Not referenced anywhere in the game code. Binds mil_space_restrictor_spawn_freedom_for_attack_base.ltx, but all the contents of the file except the '[logic]' section header have been commented out.
+
+------------------------------------
+
+[8921] <deleted>
+
+• Superfluous space restrictor: 'mil_house_def_restrictor_1'. Not referenced anywhere in the game code.
+
+------------------------------------
+
+[8922] <deleted>
+
+• Superfluous space restrictor: 'mil_house_def_restrictor_2'. Not referenced anywhere in the game code.
+
+------------------------------------
+
+[8923] <deleted>
+
+• Superfluous space restrictor: 'mil_house_def_restrictor_3'. Not referenced anywhere in the game code.
+
+------------------------------------
+
+[8924] <deleted>
+
+• Superfluous space restrictor: 'mil_house_def_restrictor_4'. Not referenced anywhere in the game code.
+
+------------------------------------
+
+[8925] <deleted>
+
+• Superfluous space restrictor: 'mil_house_def_restrictor_5'. Not referenced anywhere in the game code.
+
+------------------------------------
+
+[8926] <deleted>
+
+• Superfluous space restrictor: 'mil_house_def_restrictor_6'. Not referenced anywhere in the game code.
+
+------------------------------------
+
+[8927] <deleted>
+
+• Superfluous space restrictor: 'mil_restrictor_towerdef_1'. Not referenced anywhere in the game code.
+
+------------------------------------
+
+[8929] <deleted>
+
+• Superfluous space restrictor: 'mil_house_def_restrictor_8'. Not referenced anywhere in the game code.
+
+------------------------------------
+
+[8951] <deleted>
+
+• Superfluous space restrictor: 'mil_barrier_attackers'. Not referenced anywhere in the game code. Binds mil_barrier_attackers.ltx, but the active section logic for that file is nil.
+
+------------------------------------
+
+[8974] <deleted>
+
+• Superfluous space restrictor: 'mil_barrier_defenders'. Not referenced anywhere in the game code. Binds mil_barrier_defenders.ltx, but the active section logic for that file is nil.
+
+------------------------------------
+
+[9852]
+
+;att_restr = mil_space_restrictors_3_5_sr_attack
+
+• No such restrictor exists.
+
+------------------------------------
+
+[9871]
+
+targets = mil_smart_terrain_7_7, mil_smart_terrain_7_11
+
+• Added 'mil_smart_terrain_7_11' as a target to prevent a crash when pseudodogs attack the military base.
+
+------------------------------------
+
+[9873]
+
+targets = mil_smart_terrain_7_7, mil_smart_terrain_7_10
+
+• Added 'mil_smart_terrain_7_10' as a target to prevent a crash when pseudodogs attack the military base.
+
+------------------------------------
+
+[9874]
+
+;att_restr = mil_space_restrictors_7_12_sr_attack
+;def_restr = mil_space_restrictors_7_12_sr_defense
+
+• No such restrictors exist.
+
+
+====================================
+alife_l09_agroprom_undeground.ltx:
+====================================
+
+
+[9952]
+
+joint = provod
+force = 1.5
+period = 500
+
+• Deleted the invalid comment syntax ('//') and subsequent comments.
+
+------------------------------------
+
+[9966]-[9974]
+
+object_flags = 0xffffff3b
+
+• Automatically made by the compiler (ACDC) to any spawn section belonging to the 'inventory_box' class.
+
+------------------------------------
+
+[9980] <deleted>
+
+• Superfluous space restrictor: 'kat_space_restrictor_0006'. Not referenced anywhere in the game code.
+
+------------------------------------
+
+[9985] <deleted>
+
+• Superfluous space restrictor: 'kat_space_restrictor_0010'. Not referenced anywhere in the game code.
+
+------------------------------------
+
+[9993]
+
+;custom_data = <<END
+;[logic]
+;cfg = scripts\agroprom_underground\agru_dead_zone_for_tuskkanchiki.ltx
+;END
+
+• Superfluous script logic: its initial active section is empty.
+
+------------------------------------
+
+[9996] <deleted>
+
+• Superfluous space restrictor: 'agru_snork_spawn_2_zone'. Referenced in and only in agru_snorks_spawns.ltx, but the reference is commented out.
+
+------------------------------------
+
+[9998] <deleted>
+
+• Superfluous space restrictor: 'agru_snork_spawn_4_zone'. Referenced in and only in agru_snorks_spawns.ltx, but the reference is commented out.
+
+------------------------------------
+
+[10001] <deleted>
+
+• Superfluous space restrictor: 'agru_snork_spawn_7_8_zone'. Referenced in and only in agru_snorks_spawns.ltx, but the reference is commented out.
+
+------------------------------------
+
+[10013] <deleted>
+
+• Superfluous space restrictor: 'agru_snork_spawn_10_zone'. Not referenced anywhere in the game code.
+
+------------------------------------
+
+[10019] <deleted>
+
+• Superfluous space restrictor: 'kat_space_restrictor_0034'. Not referenced anywhere in the game code.
+
+------------------------------------
+
+[10055]
+
+;[logic]
+
+• Superfluous '[logic]' header: its contents have been commented out.
+
+------------------------------------
+
+[10060]
+
+[animated_object]
+leave_joints = all
+controled_bones = whell
+
+• Deleted the invalid comment syntax ('//') and subsequent comments.
+
+------------------------------------
+
+[10061]
+
+[animated_object]
+leave_joints = all
+controled_bones = whell
+
+• Deleted the invalid comment syntax ('//') and subsequent comments.
+
+------------------------------------
+
+[10079] <deleted>
+
+• Superfluous space restrictor: 'agru_nv_spawns'. Not referenced anywhere in the game code. Binds agru_nv_spawns.ltx, the contents of whose initial active section have been commented out.
+
+------------------------------------
+
+[10101] <deleted>
+
+• Superfluous space restrictor: 'agru_nv_teleport'. Referenced in and only in its own script logic, but this is commented out by default.
+
+------------------------------------
+
+[10109] <deleted>
+
+• Superfluous space restrictor: 'agru_bloodsucker_spawn'. Not referenced anywhere in the game code. Binds agru_bloodsucker_spawn.ltx, the contents of whose initial active section have been commented out.
+
+------------------------------------
+
+[10111] <deleted>
+
+• Superfluous space restrictor: 'kat_space_restrictor_0011'. Not referenced anywhere in the game code.
+
+------------------------------------
+
+[10147] <deleted>
+
+• Superfluous space restrictor: 'agru_start_restrictor'. Not referenced anywhere in the game code.
+
+------------------------------------
+
+[10148] <deleted>
+
+• Superfluous space restrictor: 'agru_poltergeist_out_restr'. Referenced in and only in agru_poltergeist_1.ltx, agru_poltergeist_2.ltx, agru_poltergeist_3.ltx, and agru_poltergeist_4.ltx, but these files are not used.
+
+------------------------------------
+
+[10151] <deleted>
+
+• Superfluous space restrictor: 'agru_bloodsucker_out_restr'. Referenced in and only in agru_bloodsucker.ltx, but this file is not used.
+
+------------------------------------
+
+[10152] <deleted>
+
+• Superfluous stalker corpse: 'agr_pda_map_animals'. The info portion ('agr_pda_map_animals_quest_1') which triggers its spawner is never given, so the corpse never appears in the game. Remnant of a cut quest.
+
+------------------------------------
+
+[10176] <deleted>
+
+• Superfluous space restrictor: 'agr_restrictor_secret_room'. Not referenced anywhere in the game code.
+
+------------------------------------
+
+[10197] <deleted>
+
+• Superfluous space restrictor: 'agru_actor_tushkano'. Not referenced anywhere in the game code.
+
+------------------------------------
+
+[10230] <deleted>
+
+• Superfluous space restrictor: 'agr_recover_item_3_corpse'. Not referenced anywhere in the game code. Was perhaps originally intended to be the target container of the task to retrieve the Duty member's case but this target is 'agru_smart_terrain_1_box' in the finished game.
+
+
+====================================
+alife_l10_limansk.ltx:
+====================================
+
+
+[10267]-[10279]
+
+object_flags = 0xffffff3b
+
+• Automatically made by the compiler (ACDC) to any spawn section belonging to the 'inventory_box' class.
+
+------------------------------------
+
+[10318] <deleted>
+
+• Superfluous space restrictor: 'lim_winfire_zone_abush_actor_3'. Referenced in and only in lim_winfire_zone_abush_actor.ltx, but the reference is commented out.
+
+------------------------------------
+
+[10324] <deleted>
+
+• Superfluous space restrictor: 'lim_winfire_zone_enemy2_2'. Not referenced anywhere in the game code.
+
+------------------------------------
+
+[10326] <deleted>
+
+• Superfluous space restrictor: 'lim_winfire_zone_enemy2_7'. Not referenced anywhere in the game code.
+
+------------------------------------
+
+[10339] <deleted>
+
+• Superfluous space restrictor: 'lim_winfire_zone_abush_actor_5'. Not referenced anywhere in the game code.
+
+------------------------------------
+
+[10359] <deleted>
+
+• Superfluous space restrictor: 'lim_winfire_zone_fountain_4'. Referenced in and only in lim_square_enemy_spawner.ltx, but the reference is commented out.
+
+------------------------------------
+
+[10361] <deleted>
+
+• Superfluous space restrictor: 'lim_winfire_zone_fountain_5'. Not referenced anywhere in the game code.
+
+------------------------------------
+
+[10364] <deleted>
+
+• Superfluous space restrictor: 'lim_roof_sniper_2_zone'. Referenced in and only in lim_roof_sniper_2_logic.ltx, but this file is not used.
+
+------------------------------------
+
+[10367] <deleted>
+
+• Superfluous space restrictor: 'lim_roof_sniper_4_zone'. Referenced in and only in lim_roof_sniper_4_logic.ltx, but this file is not used.
+
+------------------------------------
+
+[10369] <deleted>
+
+• Superfluous space restrictor: 'lim_space_restrictor_0000'. Not referenced anywhere in the game code.
+
+------------------------------------
+
+[10373] <deleted>
+
+• Superfluous space restrictor: 'lim_store_restr'. Not referenced anywhere in the game code.
+
+------------------------------------
+
+[10384] <deleted>
+
+• Superfluous space restrictor: 'lim_winfire_zone_fountain_8'. Not referenced anywhere in the game code.
+
+------------------------------------
+
+[10389] <deleted>
+
+• Superfluous space restrictor: 'lim_limansk_exit'. Not referenced anywhere in the game code.
+
+------------------------------------
+
+[10400] <deleted>
+
+• Superfluous space restrictor: 'lim_roof_sniper_6_zone'. Referenced in and only in lim_roof_sniper_6_logic.ltx, but this file is not used.
+
+------------------------------------
+
+[10409]
+
+;att_restr = lim_smart_terrain_7_attack
+;def_restr = lim_smart_terrain_7_defence
+
+• No such restrictors exist.
+
+------------------------------------
+
+[10410]
+
+;def_restr = lim_smart_terrain_8_defence
+
+• No such restrictor exists.
+
+------------------------------------
+
+[10440] <deleted>
+
+• Superfluous space restrictor: 'lim_space_restrictor_0002'. Not referenced anywhere in the game code.
+
+------------------------------------
+
+[10442] <deleted>
+
+• Superfluous space restrictor: 'lim_space_restrictor_0003'. Not referenced anywhere in the game code.
+
+------------------------------------
+
+[10488] <deleted>
+
+• Superfluous space restrictor: 'lim_smart_terrain_6_defence_0000'. Not referenced anywhere in the game code. Note that appending a numerical suffix to the name of an intended defence restrictor will result in the game failing to identify it as such unless explicitly declared.
+
+------------------------------------
+
+[10489] <deleted>
+
+• Superfluous space restrictor: 'lim_smart_terrain_6_attack_0000'. Not referenced anywhere in the game code. Note that appending a numerical suffix to the name of an intended attack restrictor will result in the game failing to identify it as such unless explicitly declared.
+
+------------------------------------
+
+[10598] <deleted>
+
+• Superfluous space restrictor: 'lim_space_restrictor_0004'. Not referenced anywhere in the game code.
+
+------------------------------------
+
+[10730] <deleted>
+
+• Superfluous space restrictor: 'lim_space_restrictor_0013'. Not referenced anywhere in the game code and its script logic binding is commented out by default.
+
+------------------------------------
+
+[10885] <deleted>
+
+• Superfluous space restrictor: 'lim_space_restrictor_0021'. Not referenced anywhere in the game code.
+
+------------------------------------
+
+[10981] <deleted>
+
+• Superfluous space restrictor: 'lim_in_restr'. Not referenced anywhere in the game code.
+
+------------------------------------
+
+[10983] <deleted>
+
+• Superfluous space restrictor: 'lim_final_transformer_restr'. Not referenced anywhere in the game code.
+
+------------------------------------
+
+[10985] <deleted>
+
+• Superfluous space restrictor: 'lim_game_place_restr'. Not referenced anywhere in the game code.
+
+
+====================================
+alife_l11_stancia2.ltx:
+====================================
+
+
+[11076] <deleted>
+
+• Superfluous space restrictor: 'aes2_space_restrictor'. Not referenced anywhere in the game code.
+
+------------------------------------
+
+[11110] <deleted>
+
+• Superfluous space restrictor: 'stc_csky_defend_restr_1'. Referenced in and only in stc_battle_csky_stalker.ltx, but the section in which it is referenced is never reached.
+
+------------------------------------
+
+[11112] <deleted>
+
+• Superfluous space restrictor: 'stc_monolith_defend_restr_1'. Referenced in and only in stc_battle_monolith_stalker.ltx, but the section in which it is referenced is never reached.
+
+------------------------------------
+
+[11119] <deleted>
+
+• Superfluous space restrictor: 'stc_first_teleport_floor_2'. Not referenced anywhere in the game code.
+
+------------------------------------
+
+[11120] <deleted>
+
+• Superfluous space restrictor: 'stc_first_teleport_floor_3'. Not referenced anywhere in the game code.
+
+
+====================================
+alife_l12_hospital.ltx:
+====================================
+
+
+[11181]-[11183]
+
+object_flags = 0xffffff3b
+
+• Automatically made by the compiler (ACDC) to any spawn section belonging to the 'inventory_box' class.
+
+------------------------------------
+
+[11222] <deleted>
+
+• Superfluous space restrictor: 'sniper_fire_scene_restr'. Not referenced anywhere in the game code. Binds kat_hosp_z1_sniper_fire_scene_restr.ltx, the contents of whose initial active section have been commented out.
+
+------------------------------------
+
+[11261] <deleted>
+
+• Superfluous space restrictor: 'katacomb_space_restrictor'. Not referenced anywhere in the game code.
+
+------------------------------------
+
+[11263] <deleted>
+
+• Superfluous space restrictor: 'kat_hosp_z3_floor_right_restr_1'. Referenced in and only in kat_hosp_z3_floor2_enemy_7.ltx, but the reference is commented out.
+
+------------------------------------
+
+[11331] <deleted>
+
+• Superfluous space restrictor: 'camp_fire_0000'. Not referenced anywhere in the game code.
+
+------------------------------------
+
+[11331] <deleted>
+
+• Superfluous space restrictor: 'kat_hosp_z3_spawn_jumper_restr'. Not referenced anywhere in the game code.
+
+
+====================================
+way_l01_marsh.ltx:
+====================================
+
+
+[mar_smart_terrain_10_7_to_mar_smart_terrain_8_8_patrol_1_walk]
+
+p1:name = name01|ret=0
+
+• Deleted the invalid character: 'ý'.
+
+------------------------------------
+
+[mar_smart_terrain_11_11_to_mar_smart_terrain_9_11_patrol_1_walk]
+
+--> [mar_smart_terrain_11_11_to_mar_smart_terrain_9_10_patrol_1_walk]
+
+• Fixed the header by changing '9_11' to '9_10'. There is no smart terrain with the name 'mar_smart_terrain_9_11'.
+
+------------------------------------
+
+[mar_smart_terrain_6_7_walker_1_look]
+
+p0:name = name00|a=sleep|t=40000
+
+• Fixed the typo: 'sllep' was replaced by 'sleep'.
+
+------------------------------------
+
+[mar_smart_terrain_8_11_to_mar_smart_terrain_9_11_patrol_1_walk]
+
+--> [mar_smart_terrain_8_11_to_mar_smart_terrain_9_10_patrol_1_walk]
+
+p2:name = name02|sig=arrive_to_wait
+
+• Fixed the typo: '-' was replaced by '='.
+• Fixed the header by changing '9_11' to '9_10'. There is no smart terrain with the name 'mar_smart_terrain_9_11'.
+
+------------------------------------
+
+[mar_smart_terrain_9_11_to_mar_smart_terrain_11_11_patrol_1_walk]
+
+--> [mar_smart_terrain_9_10_to_mar_smart_terrain_11_11_patrol_1_walk]
+
+• Fixed the header by changing '9_11' to '9_10'. There is no smart terrain with the name 'mar_smart_terrain_9_11'.
+
+------------------------------------
+
+[mar_smart_terrain_9_11_to_mar_smart_terrain_8_11_patrol_1_walk]
+
+--> [mar_smart_terrain_9_10_to_mar_smart_terrain_8_11_patrol_1_walk]
+
+• Fixed the header by changing '9_11' to '9_10'. There is no smart terrain with the name 'mar_smart_terrain_9_11'.
+
+
+====================================
+way_l03_escape.ltx:
+====================================
+
+
+[esc_smart_terrain_3_7_walker_1_walk]
+
+p5:position = -122.511215209961,4.81434392929077,210.727478027344
+p5:level_vertex_id = 135001
+
+• Fixed the invalid position (was off the AI map, under a rock) and level_vertex_id.
+
+------------------------------------
+
+[esc_smart_terrain_4_9_guard_2_look]
+
+p1:name = name00|a=guard_chasovoy
+
+• Deleted the extra character: '|'.
+
+------------------------------------
+
+[esc_smart_terrain_5_7_grd_1_look]
+
+p1:name = wp01|a=ward
+
+• Added the missing character: '|'.
+
+------------------------------------
+
+[esc_smart_terrain_5_7_walker_3_look]
+
+p0:name = name00|a=binocular
+
+• Added the missing character: '|'.
+
+
+====================================
+way_l04_darkvalley.ltx:
+====================================
+
+
+[val_smart_terrain_9_6_freedom_attack_walker_2_walk]
+
+p0:name = name00|sig=val_free2_done
+
+• Added support for signalling when it is appropriate to use smart cover.
+
+------------------------------------
+
+[val_smart_terrain_9_6_freedom_attack_walker_3_walk]
+
+p0:name = name00|sig=val_free3_done
+
+• Added support for signalling when it is appropriate to use smart cover.
+
+------------------------------------
+
+[val_smart_terrain_9_6_freedom_attack_walker_4_walk]
+
+p0:name = name00|sig=val_free4_done
+
+• Added support for signalling when it is appropriate to use smart cover.
+
+
+====================================
+way_l05_red_forest.ltx:
+====================================
+
+
+[red_bridge_bandit_smart_skirmish_2_walk]
+
+p0:name = name00|sig=action
+
+• Deleted the extra character: '|'.
+
+
+====================================
+way_l06_agroprom.ltx:
+====================================
+
+
+[agr_smart_terrain_4_4_near_1_agr_stalker_defender_on_trains_1_look]
+
+p0:name = name00|a=threat_na
+
+• Added the missing character: '|'.
+
+------------------------------------
+
+[agr_smart_terrain_4_4_near_1_agr_stalker_defender_on_trains_2_look]
+
+p0:name = name00|a=threat_na
+
+• Added the missing character: '|'.
+
+------------------------------------
+
+[agr_smart_terrain_5_2_guard_1_look]
+
+p1:name = name01|a=threat_na
+
+• Fixed the typo: '-' was replaced by '_'.
+
+
+====================================
+way_l07_yantar.ltx:
+====================================
+
+
+[yan_walker_zombie_cut6_1a_look]
+
+p0:name = name00
+
+• Deleted the extra character: '|'.
+
+------------------------------------
+
+[yan_walker_zombie_cut6_2_1b_look]
+
+p1:name = name01|t=1500|sig=in_angar
+
+• Corrected the flag type: the second 't' was replaced by 'sig'.
+
+------------------------------------
+
+[yan_walker_zombie_cut6_7_okr_look]
+
+p5:name = name05
+
+• Replaced 'no_retreat=true' with a valid name: 'name05'.
+
+------------------------------------
+
+[yan_walker_zombie_cut6_7_okr_walk]
+
+p5:name = name05
+
+• Replaced 'no_retreat=true' with a valid name: 'name05'.
+
+
+====================================
+way_l08_military.ltx:
+====================================
+
+
+[mil_smart_terrain_5_6_to_mil_smart_terrain_7_8_patrol_1_walk]
+
+p1:name = name01|sig=arrive_to_wait
+
+• Added the missing character: '|'.
+
+
+====================================
+way_l10_limansk.ltx:
+====================================
+
+
+[lim_roof_sniper_3_attack_walk]
+
+p1:name = name01
+
+• Deleted the extra character: '|'.
+
+------------------------------------
+
+[lim_smart_terrain_2_to_lim_smart_terrain_3_patrol_1_walk]
+
+p1:name = name01|a=assault|sig=arrive_to_wait
+
+• Deleted both instances of the extra character: '|'.
+
+------------------------------------
+
+[lim_smart_terrain_3_to_lim_smart_terrain_2_patrol_1_walk]
+
+p2:name = name02|sig=arrive_to_wait
+
+• Added the missing character: '|'.
+
+------------------------------------
+
+[lim_smart_terrain_6_spec_sniper_1_fire_look]
+
+p3:name = name03|a=threat_fire
+
+• Deleted the extra character: '|'.

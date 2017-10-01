@@ -1,0 +1,194 @@
+local item_by_community = {}
+local item_dependence = {}
+local count_by_level = {}
+local always_keep_item = {}
+-- ammo_sections = {}
+
+function init_drop_settings()
+	local community_list = {"stalker", "dolg", "freedom", "renegade", "bandit", "army", "zombied", "ecolog", "killer", "monolith", "csky"}
+	local death_ini = ini_file("misc\\death_generic.ltx")
+	local result, id, value = "", "", ""
+	local n
+	for k, v in pairs (community_list) do
+		local T = {}
+		item_by_community[v] = T
+		if death_ini:section_exist(v) then
+			n = death_ini:line_count(v)
+			for i = 0, n - 1 do
+				result, id, value = death_ini:r_line(v, i, "", "")
+				T[id] = 100 * tonumber(value)
+			end
+		end
+	end
+	n = death_ini:line_count("item_dependence")
+	for i = 0, n - 1 do
+		result, id, value = death_ini:r_line("item_dependence", i, "", "")
+		local T = {}
+		item_dependence[id] = T
+		local t = parse_names(value)
+		for k, v in pairs (t) do
+			T[v] = true
+		end
+	end
+	local level_name = level.name()
+	if not death_ini:section_exist(level_name) then
+		level_name = "default"
+	end
+	local mul_by_level = {}
+	n = death_ini:line_count(level_name)
+	for i = 0, n - 1 do
+		result, id, value = death_ini:r_line(level_name, i, "", "")
+		mul_by_level[id] = tonumber(value)
+	end
+	local item_count_section = "item_count_"..level.get_game_difficulty()
+	n = death_ini:line_count(item_count_section)
+	for i = 0, n - 1 do
+		result, id, value = death_ini:r_line(item_count_section, i, "", "")
+		local t = parse_nums(value)
+		local min = t[1]
+		if min == nil then
+			abort("Error on [death_ini] declaration. Section [%s], line [%s]", item_count_section, tostring(id))
+		end
+		local max = t[2]
+		if max == nil then
+			max = min
+		end
+		local multiplier = mul_by_level[id]
+		if multiplier == nil then
+			multiplier = 0
+			mul_by_level[id] = 0
+		end
+		min = tonumber(min) * multiplier
+		max = tonumber(max) * multiplier
+		count_by_level[id] = {min = min, max = max}
+	end
+	n = death_ini:line_count("keep_items")
+	for i = 0, n - 1 do
+		result, id, value = death_ini:r_line("keep_items", i, "", "")
+		if value == "true" then
+			always_keep_item[id] = true
+		end
+	end
+--	ammo_sections = {}
+--[[
+	local ammo_sections = ammo_sections
+	n = death_ini:line_count("ammo_sections")
+	for i = 0, n - 1 do
+		result, id = death_ini:r_line("ammo_sections", i, "", "")
+		ammo_sections[id] = true
+	end
+]]
+end
+
+class "drop_manager"
+
+function drop_manager:__init(npc)
+	self.npc = npc
+end
+
+function drop_manager:create_release_item()
+	local sim = alife()
+	local snpc = self.npc
+	local npc_id = snpc:id()
+	local se_obj = sim:object(npc_id)
+	if se_obj == nil or se_obj.death_droped == true then
+		return
+	end
+	se_obj.death_droped = true
+	snpc:iterate_inventory(keep_item, snpc)
+	local ini = se_obj.ini			-- snpc:spawn_ini()
+	if ini then
+		if ini:section_exist("dont_spawn_loot") then
+			return
+		end
+	end
+	local spawn_items = item_by_community[snpc:character_community()]
+	if spawn_items == nil then
+		return
+	end
+	local ceil = math.ceil		-- optimization: http://www.lua.org/gems/sample.pdf#3
+	local rand = math.random
+	local vec = vector()
+	local ammo_sections = ammo_section
+	for k, v in pairs (spawn_items) do
+		if check_item_dependence(snpc, k) == true then
+			local number = ceil(rand(count_by_level[k].min, count_by_level[k].max))
+			if ammo_sections[k] == true then
+				if number > 0 then
+					se_respawn.create_ammo(k, vec, 0, 0, npc_id, number)
+				end
+			else
+				for i = 1, number do
+					if rand(100) <= v then
+						sim:create(k, vec, 0, 0, npc_id)
+					end
+				end
+			end
+		end
+	end
+end
+
+function keep_item(npc, item)
+	local section = item:section()
+	if section == "bolt" then
+		return
+	end
+	if always_keep_item[section] == true then
+		return
+	end
+	local slot_item = npc:item_in_slot(1)
+	if slot_item ~= nil then
+		if slot_item:id() == item:id() then
+			item:set_condition((math.random(15) + 65) / 100)
+			npc:transfer_item(item, npc)
+--			dbgmsg("Pistol stored in backpack!")
+			return
+		end
+	end
+	slot_item = npc:item_in_slot(2)
+	if slot_item ~= nil then
+		if slot_item:id() == item:id() then
+			item:set_condition((math.random(15) + 65) / 100)
+			if section ~= "wpn_svd" and section ~= "wpn_svu" then
+				npc:transfer_item(item, npc)
+--				dbgmsg("Rifle stored in backpack!")
+			end
+			return
+		end
+	end
+	if not npc:marked_dropped(item) then
+		local sim = alife()
+		sim:release(sim:object(item:id()), true)
+	end
+end
+--[[								-- inserted this directly into create_release_item()
+function create_items(npc, section, number, rnd)
+	if ammo_sections[section] == true then
+		if number > 0 then
+			se_respawn.create_ammo(section, vector(), 0, 0, npc:id(), number)
+		end
+	else
+		local rand, sim, npc_id = math.random, alife(), npc:id()
+		for i = 1, number do
+			if rand(100) <= rnd then
+				sim:create(section, vector(), 0, 0, npc_id)
+			end
+		end
+	end
+end
+]]
+function check_item_dependence(npc, section)
+	if item_dependence[section] == nil then
+		return true
+	end
+	local obj
+	for k in pairs (item_dependence[section]) do
+		obj = npc:object(k)
+		if obj ~= nil then
+			if npc:marked_dropped(obj) ~= true then
+				return true
+			end
+		end
+	end
+	return false
+end

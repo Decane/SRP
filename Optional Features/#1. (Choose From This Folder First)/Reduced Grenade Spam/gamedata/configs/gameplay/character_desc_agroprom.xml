@@ -1,0 +1,735 @@
+<?xml version='1.0' encoding="windows-1251"?>
+<xml>
+	<specific_character id="agr_weaponmaster" team_default = "1">
+
+		<name>agr_weaponmaster_name</name>
+		<icon>ui_npc_u_dolg_2_mask</icon>
+
+		<class>agr_weaponmaster</class>
+		<community>dolg</community> <terrain_sect>stalker_terrain</terrain_sect>
+
+		<rank>600</rank>
+		<reputation>80</reputation>
+
+		<visual>actors\stalker_dolg\stalker_dolg_2_mask</visual>
+		<snd_config>characters_voice\human_01\dolg\</snd_config>
+
+		<money min="2000" max="5000" infinitive="0"/>
+
+		<supplies>
+			[spawn] \n
+		</supplies>
+
+		<start_dialog>agr_duty_tir_dialog_hello</start_dialog>
+		<actor_dialog>agr_duty_weaponmaster_about_you_in_zone</actor_dialog>
+		<actor_dialog>agr_duty_weaponmaster_about_military</actor_dialog>
+		<actor_dialog>agr_duty_weaponmaster_about_bad_trader</actor_dialog>
+		<actor_dialog>agr_duty_weaponmaster_about_story</actor_dialog>
+		<actor_dialog>treasure_dialog</actor_dialog>
+
+#include "gameplay\character_criticals_1.xml"
+
+	</specific_character>
+
+	<specific_character id="agr_barman" team_default = "1">
+
+		<name>agr_barman_name</name>
+		<icon>ui_npc_u_dolg_2_face_2</icon>
+
+		<class>agr_barman</class>
+		<community>dolg</community> <terrain_sect>stalker_terrain</terrain_sect>
+
+		<rank>600</rank>
+		<reputation>80</reputation>
+
+		<money min="1000000" max="1000000" infinitive="1"/>
+
+		<visual>actors\stalker_dolg\stalker_dolg_2_face_2</visual>
+		<snd_config>characters_voice\human_02\dolg\</snd_config>
+
+		<supplies>
+			[spawn] \n
+		</supplies>
+
+		<start_dialog>hello_dialog</start_dialog>
+		<actor_dialog>agr_duty_barman_you</actor_dialog>
+		<actor_dialog>agr_duty_barman_zone</actor_dialog>
+<!--		<actor_dialog>agr_duty_barman_jelanie</actor_dialog>	-->
+		<actor_dialog>agr_duty_barman_around</actor_dialog>
+		<actor_dialog>treasure_dialog</actor_dialog>
+
+#include "gameplay\character_criticals_1.xml"
+
+	</specific_character>
+
+	<specific_character id="agr_duty_base_commander" team_default = "1">
+
+		<name>agr_duty_base_commander_name</name>
+		<icon>ui_npc_u_dolg_2_face_1</icon>
+
+		<class>agr_duty_base_commander</class>
+		<community>dolg</community> <terrain_sect>stalker_terrain</terrain_sect>
+
+		<rank>900</rank>
+		<reputation>80</reputation>
+
+		<money min="5000" max="10000" infinitive="0"/>
+
+		<visual>actors\stalker_dolg\stalker_dolg_2_face_1</visual>
+		<snd_config>characters_voice\human_02\dolg\</snd_config>
+
+		<supplies>
+			[spawn] \n
+			hand_radio \n
+		</supplies>
+
+		<start_dialog>agr_leader_hello_dialog</start_dialog>
+		<actor_dialog>agr_leader_first_join</actor_dialog>
+		<actor_dialog>agr_leader_join_duty</actor_dialog>
+		<actor_dialog>agr_leader_about_dolg</actor_dialog>
+		<actor_dialog>agr_leader_about_zone</actor_dialog>
+		<actor_dialog>treasure_dialog</actor_dialog>
+
+#include "gameplay\character_criticals_1.xml"
+
+	</specific_character>
+
+	<specific_character id="agr_secret_trader" team_default = "1">
+
+		<name>agr_secret_trader_name</name>
+		<icon>ui_npc_u_neutral_2_mask</icon>
+
+		<class>agr_secret_trader</class>
+		<community>stalker</community> <terrain_sect>stalker_terrain</terrain_sect>
+
+		<rank>300</rank>
+		<reputation>80</reputation>
+
+		<money min="4500" max="5500" infinitive="0"/>
+
+		<visual>actors\stalker_neutral\stalker_neutral_2_mask</visual>
+		<snd_config>characters_voice\human_01\stalker\</snd_config>
+
+		<supplies>
+			[spawn] \n
+			wpn_val = 1, scope \n
+			wpn_lr300_up2 \n
+			wpn_ak74_up = 2 \n
+			wpn_ak74_up2 \n
+			wpn_rpg7 \n
+			medkit_scientic = 11 \n
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+		</supplies>
+
+		<start_dialog>hello_dialog</start_dialog>
+		<actor_dialog>agr_stalker_secret_trader_quest</actor_dialog>
+		<actor_dialog>agr_stalker_secret_trader_quest_complete</actor_dialog>
+		<actor_dialog>agr_stalker_secret_trader_who_are_you</actor_dialog>
+		<actor_dialog>agr_stalker_secret_trader_what_is_you_doing</actor_dialog>
+		<actor_dialog>agr_stalker_secret_trader_about_zone</actor_dialog>
+		<actor_dialog>treasure_dialog</actor_dialog>
+
+#include "gameplay\character_criticals_1.xml"
+
+	</specific_character>
+
+	<specific_character id="agr_stalker_base_leader" team_default = "1">
+
+		<name>agr_stalker_base_leader_name</name>
+		<icon>ui_npc_u_neutral_2_mask</icon>
+
+		<class>agr_stalker_base_leader</class>
+		<community>stalker</community> <terrain_sect>stalker_terrain</terrain_sect>
+
+		<rank>600</rank>
+		<reputation>80</reputation>
+
+		<money min="90000" max="100000" infinitive="0"/>
+
+		<visual>actors\stalker_neutral\stalker_neutral_2_mask</visual>
+		<snd_config>characters_voice\human_02\stalker\</snd_config>
+
+		<supplies>
+			[spawn] \n
+			wpn_binoc \n
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+		</supplies>
+
+		<start_dialog>hello_dialog</start_dialog>
+		<actor_dialog>agr_stalker_commander_1</actor_dialog>
+		<actor_dialog>agr_stalker_commander_2</actor_dialog>
+		<actor_dialog>agr_stalker_commander_3</actor_dialog>
+		<actor_dialog>agr_stalker_leader_about_you</actor_dialog>
+		<actor_dialog>agr_stalker_leader_about_zone</actor_dialog>
+		<actor_dialog>agr_stalker_leader_about_join</actor_dialog>
+		<actor_dialog>agr_stalker_leader_about_contact</actor_dialog>
+		<actor_dialog>treasure_dialog</actor_dialog>
+
+#include "gameplay\character_criticals_1.xml"
+
+	</specific_character>
+
+	<specific_character id="agr_stalker_base_trader" team_default = "1">
+
+		<name>agr_stalker_base_trader_name</name>
+		<icon>ui_npc_u_neutral_2_mask</icon>
+
+		<class>agr_stalker_base_trader</class>
+		<community>stalker</community> <terrain_sect>stalker_terrain</terrain_sect>
+
+		<rank>300</rank>
+		<reputation>80</reputation>
+
+		<money min="1000000" max="1000000" infinitive="1"/>
+
+		<visual>actors\stalker_neutral\stalker_neutral_2_mask</visual>
+		<snd_config>characters_voice\human_02\stalker\</snd_config>
+
+		<supplies>
+			[spawn] \n
+		</supplies>
+
+		<start_dialog>hello_dialog</start_dialog>
+		<actor_dialog>agr_stalker_trader_about_select</actor_dialog>
+		<actor_dialog>agr_stalker_trader_about_prisoner</actor_dialog>
+		<actor_dialog>agr_stalker_trader_about_dolg</actor_dialog>
+		<actor_dialog>agr_stalker_trader_about_trader</actor_dialog>
+		<actor_dialog>treasure_dialog</actor_dialog>
+
+#include "gameplay\character_criticals_1.xml"
+
+	</specific_character>
+
+	<specific_character id="agr_stalker_base_mechanic" team_default = "1">
+
+		<name>agr_stalker_base_mechanic_name</name>
+		<icon>ui_npc_u_neutral_2_mask</icon>
+
+		<class>agr_stalker_base_mechanic</class>
+		<community>stalker</community> <terrain_sect>stalker_terrain</terrain_sect>
+
+		<rank>300</rank>
+		<reputation>80</reputation>
+
+		<money min="2000" max="5000" infinitive="0"/>
+
+		<visual>actors\stalker_neutral\stalker_neutral_2_mask</visual>
+		<snd_config>characters_voice\human_01\stalker\</snd_config>
+
+		<supplies>
+			[spawn] \n
+		</supplies>
+
+		<mechanic_mode>1</mechanic_mode>
+
+		<start_dialog>hello_dialog</start_dialog>
+		<actor_dialog>tm_upgr_task</actor_dialog>
+		<actor_dialog>find_upgrade_task</actor_dialog>
+		<actor_dialog>agr_stalker_mechanic_what_is_you_doing</actor_dialog>
+		<actor_dialog>agr_stalker_mechanic_about_gun_and_armor_upgrades</actor_dialog>
+		<actor_dialog>treasure_dialog</actor_dialog>
+
+#include "gameplay\character_criticals_1.xml"
+
+	</specific_character>
+
+	<specific_character id="agr_prisoner_1" team_default = "1">
+
+		<name>agr_prisoner_1_name</name>
+		<icon>ui_npc_u_bandit_3</icon>
+
+		<class>agr_prisoner_1</class>
+		<community>stalker</community> <terrain_sect>stalker_terrain</terrain_sect>
+
+		<rank>100</rank>
+		<reputation>0</reputation>
+
+		<money min="0" max="0" infinitive="0"/>
+
+		<visual>actors\stalker_bandit\stalker_bandit_3</visual>
+		<snd_config>characters_voice\human_01\stalker\</snd_config>
+
+		<supplies>
+			[spawn] \n
+		</supplies>
+
+#include "gameplay\character_criticals_1.xml"
+
+	</specific_character>
+
+	<specific_character id="agr_prisoner_2" team_default = "1">
+
+		<name>agr_prisoner_2_name</name>
+		<icon>ui_npc_u_bandit_1</icon>
+
+		<class>agr_prisoner_2</class>
+		<community>stalker</community> <terrain_sect>stalker_terrain</terrain_sect>
+
+		<rank>100</rank>
+		<reputation>0</reputation>
+
+		<money min="0" max="0" infinitive="0"/>
+
+		<visual>actors\stalker_bandit\stalker_bandit_1</visual>
+		<snd_config>characters_voice\human_01\stalker\</snd_config>
+
+		<supplies>
+			[spawn] \n
+		</supplies>
+
+#include "gameplay\character_criticals_1.xml"
+
+	</specific_character>
+
+	<specific_character id="agr_duty_base_mechanic" team_default = "1">
+
+		<name>agr_duty_base_mechanic_name</name>
+		<icon>ui_npc_u_dolg_2_mask</icon>
+
+		<class>agr_duty_base_mechanic</class>
+		<community>dolg</community> <terrain_sect>stalker_terrain</terrain_sect>
+
+		<rank>600</rank>
+		<reputation>80</reputation>
+
+		<money min="1500" max="3500" infinitive="0"/>
+
+		<visual>actors\stalker_dolg\stalker_dolg_2_mask</visual>
+		<snd_config>characters_voice\human_01\dolg\</snd_config>
+
+		<supplies>
+			[spawn] \n
+		</supplies>
+
+		<mechanic_mode>1</mechanic_mode>
+
+		<start_dialog>hello_dialog</start_dialog>
+		<actor_dialog>tm_upgr_task</actor_dialog>
+		<actor_dialog>find_upgrade_task</actor_dialog>
+		<actor_dialog>agr_duty_mechanic_about_upgrade</actor_dialog>
+		<actor_dialog>agr_duty_mechanic_like_parametrs</actor_dialog>
+<!--		<actor_dialog>agr_duty_mechanic_about_many_word</actor_dialog>	-->
+
+#include "gameplay\character_criticals_1.xml"
+
+	</specific_character>
+
+	<specific_character id="agr_duty_base_trader" team_default = "1">
+
+		<name>agr_duty_base_trader_name</name>
+		<icon>ui_npc_u_dolg_2_mask</icon>
+
+		<class>agr_duty_base_trader</class>
+		<community>dolg</community> <terrain_sect>stalker_terrain</terrain_sect>
+
+		<rank>600</rank>
+		<reputation>80</reputation>
+
+		<money min="1000000" max="1000000" infinitive="1"/>
+
+		<visual>actors\stalker_dolg\stalker_dolg_2_mask</visual>
+		<snd_config>characters_voice\human_02\dolg\</snd_config>
+
+		<supplies>
+			[spawn] \n
+		</supplies>
+
+		<start_dialog>hello_dialog</start_dialog>
+		<actor_dialog>agr_duty_trader_about_freetime</actor_dialog>
+		<actor_dialog>agr_duty_trader_about_original_weapons</actor_dialog>
+<!--		<actor_dialog>agr_duty_trader_about_fight</actor_dialog>	-->
+		<actor_dialog>treasure_dialog</actor_dialog>
+		<actor_dialog>tm_reward_task</actor_dialog>
+
+#include "gameplay\character_criticals_1.xml"
+
+	</specific_character>
+
+	<specific_character id="agr_zooman" team_default = "1">
+
+		<name>agr_zooman_name</name>
+		<icon>ui_npc_u_dolg_2_mask</icon>
+
+		<class>agr_zooman</class>
+		<community>dolg</community> <terrain_sect>stalker_terrain</terrain_sect>
+
+		<rank>600</rank>
+		<reputation>80</reputation>
+
+		<money min="1500" max="3500" infinitive="0"/>
+
+		<visual>actors\stalker_dolg\stalker_dolg_2_mask</visual>
+		<snd_config>characters_voice\human_02\dolg\</snd_config>
+
+		<supplies>
+			[spawn] \n
+			device_torch \n
+			wpn_beretta \n
+			ammo_9x19_fmj \n
+			wpn_spas12 \n
+			ammo_12x70_buck \n
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+		</supplies>
+
+		<start_dialog>hello_dialog</start_dialog>
+		<actor_dialog>agr_duty_zooman_about_zoo</actor_dialog>
+		<actor_dialog>agr_duty_zooman_about_animals</actor_dialog>
+		<actor_dialog>treasure_dialog</actor_dialog>
+
+#include "gameplay\character_criticals_1.xml"
+
+	</specific_character>
+
+	<specific_character id="agr_holeman" team_default = "1">
+
+		<name>agr_holeman_name</name>
+		<icon>ui_npc_u_dolg_2_mask</icon>
+
+		<class>agr_holeman</class>
+		<community>dolg</community> <terrain_sect>stalker_terrain</terrain_sect>
+
+		<rank>600</rank>
+		<reputation>80</reputation>
+
+		<money min="1500" max="3500" infinitive="0"/>
+
+		<visual>actors\stalker_dolg\stalker_dolg_2_mask</visual>
+		<snd_config>characters_voice\human_02\dolg\</snd_config>
+
+		<supplies>
+			[spawn] \n
+			wpn_beretta \n
+			ammo_9x19_fmj \n
+			wpn_spas12 \n
+			ammo_12x70_buck \n
+#include "gameplay\character_items.xml"
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+		</supplies>
+
+		<start_dialog>agr_duty_holeman_dialog</start_dialog>
+		<actor_dialog>treasure_dialog</actor_dialog>
+
+#include "gameplay\character_criticals_1.xml"
+#include "gameplay\character_dialogs.xml"
+
+	</specific_character>
+
+	<specific_character id="agr_stalker_zombied_1_default" team_default = "1">
+
+		<name>GENERATE_NAME_stalker</name>
+		<icon>ui_npc_u_zombied_1</icon>
+
+		<class>agr_stalker_zombied</class>
+		<community>zombied</community> <terrain_sect>stalker_terrain</terrain_sect>
+
+		<rank>90</rank>
+		<reputation>80</reputation>
+
+		<money min="50" max="100" infinitive="0"/>
+
+		<visual>actors\stalker_zombied\stalker_zombied_1</visual>
+		<snd_config>characters_voice\human_01\zombied\</snd_config>
+
+		<supplies>
+			[spawn] \n
+			device_torch \n
+			wpn_beretta \n
+			wpn_lr300 \n
+			ammo_5.56x45_ss190 \n
+			ammo_9x19_fmj \n
+		</supplies>
+
+#include "gameplay\character_criticals_1.xml"
+
+	</specific_character>
+
+	<specific_character id="agr_bar_stalker_1" team_default = "1">
+
+		<name>agr_bar_stalker_1_name</name>
+		<icon>ui_npc_u_dolg_2</icon>
+
+		<class>agr_bar_stalker_1</class>
+		<community>dolg</community> <terrain_sect>stalker_terrain</terrain_sect>
+
+		<rank>600</rank>
+		<reputation>80</reputation>
+
+		<money min="1500" max="3500" infinitive="0"/>
+
+		<visual>actors\stalker_dolg\stalker_dolg_2</visual>
+		<snd_config>characters_voice\human_03\dolg\</snd_config>
+
+		<supplies>
+			[spawn] \n
+			wpn_abakan \n
+			ammo_5.45x39_ap \n
+			wpn_pm \n
+			ammo_9x18_fmj \n
+			grenade_rgd5 = 1, prob=0.15 \n
+#include "gameplay\character_items.xml"
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+		</supplies>
+
+<!--		<start_dialog>hello_dialog</start_dialog>		-->
+		<actor_dialog>treasure_dialog</actor_dialog>
+
+#include "gameplay\character_criticals_1.xml"
+#include "gameplay\character_dialogs.xml"
+
+	</specific_character>
+
+	<specific_character id="agr_bar_stalker_2" team_default = "1">
+
+		<name>agr_bar_stalker_2_name</name>
+		<icon>ui_npc_u_dolg_2</icon>
+
+		<class>agr_bar_stalker_2</class>
+		<community>dolg</community> <terrain_sect>stalker_terrain</terrain_sect>
+
+		<rank>600</rank>
+		<reputation>80</reputation>
+
+		<money min="1500" max="3500" infinitive="0"/>
+
+		<visual>actors\stalker_dolg\stalker_dolg_2</visual>
+		<snd_config>characters_voice\human_03\dolg\</snd_config>
+
+		<supplies>
+			[spawn] \n
+			wpn_abakan \n
+			ammo_5.45x39_ap \n
+			wpn_pm \n
+			ammo_9x18_fmj \n
+			grenade_rgd5 = 1, prob=0.15 \n
+#include "gameplay\character_items.xml"
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+		</supplies>
+
+<!--		<start_dialog>hello_dialog</start_dialog>		-->
+		<actor_dialog>treasure_dialog</actor_dialog>
+
+#include "gameplay\character_criticals_1.xml"
+#include "gameplay\character_dialogs.xml"
+
+	</specific_character>
+
+	<specific_character id="agr_bar_stalker_3" team_default = "1">
+
+		<name>agr_bar_stalker_3_name</name>
+		<icon>ui_npc_u_dolg_2</icon>
+
+		<class>agr_bar_stalker_3</class>
+		<community>dolg</community> <terrain_sect>stalker_terrain</terrain_sect>
+
+		<rank>600</rank>
+		<reputation>80</reputation>
+
+		<money min="1500" max="3500" infinitive="0"/>
+
+		<visual>actors\stalker_dolg\stalker_dolg_2</visual>
+		<snd_config>characters_voice\human_03\dolg\</snd_config>
+
+		<supplies>
+			[spawn] \n
+			wpn_abakan_up2 = 1, scope \n
+			ammo_5.45x39_ap \n
+			wpn_pm \n
+			ammo_9x18_fmj \n
+			grenade_f1 = 1, prob=0.1 \n
+#include "gameplay\character_items.xml"
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+		</supplies>
+
+<!--		<start_dialog>hello_dialog</start_dialog>		-->
+		<actor_dialog>treasure_dialog</actor_dialog>
+
+#include "gameplay\character_criticals_1.xml"
+#include "gameplay\character_dialogs.xml"
+
+	</specific_character>
+
+	<specific_character id="agr_bar_stalker_4" team_default = "1">
+
+		<name>agr_bar_stalker_4_name</name>
+		<icon>ui_npc_u_dolg_2</icon>
+
+		<class>agr_bar_stalker_4</class>
+		<community>dolg</community> <terrain_sect>stalker_terrain</terrain_sect>
+
+		<rank>600</rank>
+		<reputation>80</reputation>
+
+		<money min="1500" max="3500" infinitive="0"/>
+
+		<visual>actors\stalker_dolg\stalker_dolg_2</visual>
+		<snd_config>characters_voice\human_03\dolg\</snd_config>
+
+		<supplies>
+			[spawn] \n
+			wpn_abakan \n
+			ammo_5.45x39_ap \n
+			wpn_pm \n
+			ammo_9x18_fmj \n
+			grenade_rgd5 = 1, prob=0.15 \n
+#include "gameplay\character_items.xml"
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+		</supplies>
+
+<!--		<start_dialog>hello_dialog</start_dialog>		-->
+		<actor_dialog>treasure_dialog</actor_dialog>
+
+#include "gameplay\character_criticals_1.xml"
+#include "gameplay\character_dialogs.xml"
+
+	</specific_character>
+
+	<specific_character id="agr_bar_stalker_5" team_default = "1">
+
+		<name>agr_bar_stalker_5_name</name>
+		<icon>ui_npc_u_dolg_2</icon>
+
+		<class>agr_bar_stalker_5</class>
+		<community>dolg</community> <terrain_sect>stalker_terrain</terrain_sect>
+
+		<rank>600</rank>
+		<reputation>80</reputation>
+
+		<money min="1500" max="3500" infinitive="0"/>
+
+		<visual>actors\stalker_dolg\stalker_dolg_2</visual>
+		<snd_config>characters_voice\human_03\dolg\</snd_config>
+
+		<supplies>
+			[spawn] \n
+			wpn_abakan \n
+			ammo_5.45x39_ap \n
+			wpn_pm \n
+			ammo_9x18_fmj \n
+			grenade_rgd5 = 1, prob=0.15 \n
+#include "gameplay\character_items.xml"
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+		</supplies>
+
+<!--		<start_dialog>hello_dialog</start_dialog>		-->
+		<actor_dialog>treasure_dialog</actor_dialog>
+
+#include "gameplay\character_criticals_1.xml"
+#include "gameplay\character_dialogs.xml"
+
+	</specific_character>
+
+	<specific_character id="agr_stalker_pda" team_default = "1">
+
+		<name>agr_stalker_pda_name</name>
+		<icon>ui_npc_u_neutral_2_mask</icon>
+
+		<class>agr_stalker_pda</class>
+		<community>stalker</community> <terrain_sect>stalker_terrain</terrain_sect>
+
+		<rank>100</rank>
+		<reputation>80</reputation>
+
+		<money min="200" max="500" infinitive="0"/>
+
+		<visual>actors\stalker_neutral\stalker_neutral_2_mask</visual>
+		<snd_config>characters_voice\human_01\stalker\</snd_config>
+
+		<supplies>
+			[spawn] \n
+		</supplies>
+
+	</specific_character>
+
+	<specific_character id="agr_stalker_pda_for_secret_trader" team_default = "1">
+
+		<name>agr_stalker_pda_for_secret_trader_name</name>
+		<icon>ui_npc_u_neutral_2_mask</icon>
+
+		<class>agr_stalker_pda_for_secret_trader</class>
+		<community>stalker</community> <terrain_sect>stalker_terrain</terrain_sect>
+
+		<rank>100</rank>
+		<reputation>80</reputation>
+
+		<money min="200" max="500" infinitive="0"/>
+
+		<visual>actors\stalker_neutral\stalker_neutral_2_mask</visual>
+		<snd_config>characters_voice\human_01\stalker\</snd_config>
+
+		<supplies>
+			[spawn] \n
+			agr_pda_for_secret_trader \n
+		</supplies>
+
+	</specific_character>
+
+	<specific_character id="agr_stalker_scientist" team_default = "1">
+
+		<name>agr_stalker_scientist_name</name>
+		<icon>ui_npc_u_neutral_2_mask</icon>
+
+		<class>agr_stalker_scientist</class>
+		<community>stalker</community> <terrain_sect>stalker_terrain</terrain_sect>
+
+		<rank>100</rank>
+		<reputation>80</reputation>
+
+		<money min="200" max="500" infinitive="0"/>
+
+		<visual>actors\stalker_neutral\stalker_neutral_2_mask</visual>
+		<snd_config>characters_voice\human_01\stalker\</snd_config>
+
+		<supplies>
+			[spawn] \n
+		</supplies>
+
+		<start_dialog>hello_dialog</start_dialog>
+		<actor_dialog>agr_stalker_scientist_quest</actor_dialog>
+		<actor_dialog>agr_stalker_mechanic_quest_complete</actor_dialog>
+
+#include "gameplay\character_criticals_1.xml"
+
+	</specific_character>
+	
+	<specific_character id="agr_dolg_blockpost_commander" team_default = "1">
+
+		<name>GENERATE_NAME_stalker</name>
+		<icon>ui_npc_u_dolg_2_mask</icon>
+
+		<class>agr_dolg_blockpost_commander</class>
+		<community>dolg</community> <terrain_sect>stalker_terrain</terrain_sect>
+
+		<rank>600</rank>
+		<reputation>0</reputation>
+
+		<money min="1500" max="3500" infinitive="0"/>
+
+		<visual>actors\stalker_dolg\stalker_dolg_2_mask</visual>
+		<snd_config>characters_voice\human_02\dolg\</snd_config>
+
+		<supplies>
+			[spawn] \n
+			wpn_abakan \n
+			ammo_5.45x39_fmj \n
+			wpn_pm \n
+			ammo_9x18_fmj \n
+			grenade_rgd5 = 1, prob=0.15 \n
+#include "gameplay\character_items.xml"
+#include "gameplay\character_food.xml"
+#include "gameplay\character_drugs.xml"
+		</supplies>
+
+#include "gameplay\character_criticals_4.xml"
+#include "gameplay\character_dialogs.xml"
+
+	</specific_character>
+</xml>

@@ -1,0 +1,249 @@
+[logic@stalker4] 
+active = walker@snork_appear
+suitable = {-yan_stop_spawn_cut6} true
+prior = 95					; +++
+post_combat_time = 0,0
+
+[danger_ignore]
+ignore_distance = 0
+;ignore_types = sound, corpse
+
+[walker@snork_appear]
+invulnerable = true
+path_walk = stalker4_cut5_walk
+path_look = stalker4_cut5_look
+;wounded = wounded
+combat_ignore_cond = {-yan_space_restrictor_actor_ready_cut5} true, {+yan_scene_6_snork_dead} true
+on_info = {+yan_scene_6_snork_dead} camper@wait_cut5
+danger = danger_ignore
+meet = no_meet
+
+[camper@wait_cut5]
+invulnerable = true
+path_walk = stalker4_cut5_walk
+path_look = stalker4_cut5_look
+radius = 0
+def_state_moving = assault			; +++
+combat_ignore_cond = always
+on_info = {+yan_proriv_k_ystanovke} walker@prepare_to_zabor
+danger = danger_ignore
+meet = no_meet
+
+[walker@prepare_to_zabor]
+invulnerable = true
+path_walk = stalker_4_prepare_walk
+path_look = levsha_prepare_look
+def_state_moving = assault
+combat_ignore_cond = always
+team = prepare_to_zabor
+on_info = {+yan_scene_6_ready_to_zabor} remark@prepare_to_zabor_wait
+danger = danger_ignore
+meet = no_meet
+
+[remark@prepare_to_zabor_wait]
+invulnerable = true
+anim = wait_na
+target = yan_smart_terrain_for_squad_levsha_levsha_prepare_walk, 0
+combat_ignore_cond = always
+on_timer = 8000 | {-yan_zabor_1_already_jumping} camper@to_zabor %+yan_zabor_1_already_jumping%
+danger = danger_ignore
+meet = no_meet
+
+[camper@to_zabor]
+invulnerable = true
+path_walk = zabor_walk
+path_look = zabor_look
+radius = 0					; +++
+def_state_moving = assault
+combat_ignore_cond = always
+on_signal = ready_to_jump | remark@zabor %-yan_zabor_1_already_jumping%
+danger = danger_ignore
+meet = no_meet
+
+[remark@zabor]
+invulnerable = true
+anim = yan_zabor_3
+combat_ignore_cond = true
+combat_ignore_keep_when_attacked = true
+on_signal = anim_end | camper@fire1_cut5	;camper@timer_fire1_cut5
+danger = danger_ignore
+meet = no_meet
+
+;[camper@timer_fire1_cut5]
+;invulnerable = true
+;path_walk = stalker4_cut5_walk
+;path_look = stalker4_cut5_look
+;radius = 0					; +++
+;def_state_moving = assault			; +++
+;combat_ignore_cond = {=fighting_dist_ge(25)}
+;on_game_timer = 50 | camper@fire1_cut5
+;meet = no_meet
+
+[camper@fire1_cut5]
+invulnerable = true
+path_walk = stalker4_cut5_2_walk
+path_look = stalker4_cut5_2_look
+radius = 0
+def_state_moving = assault
+combat_ignore_cond = {=fighting_dist_ge(25)}
+on_info = {+yan_destroy_zombi20_cut5 +yan_destroy_zombi21_cut5 +yan_space_restrictor_actor_go_cut5} camper@fire2_cut5
+meet = no_meet
+
+[camper@fire2_cut5]
+invulnerable = true
+path_walk = stalker4_cut5_3_walk
+path_look = stalker4_cut5_3_look
+radius = 0
+def_state_moving = assault
+combat_ignore_cond = {=fighting_dist_ge(25)}
+on_info = {+yan_destroy_zombi22_cut5 +yan_destroy_zombi23_cut5} camper@fire3_cut5
+meet = no_meet 
+
+[camper@fire3_cut5]
+invulnerable = true
+path_walk = stalker4_cut5_4_walk
+path_look = stalker4_cut5_4_look
+radius = 0
+def_state_moving = assault
+combat_ignore_cond = {=fighting_dist_ge(25)}
+on_info = {+yan_destroy_zombi26_cut5} camper@fire3_9_cut5
+meet = no_meet
+
+[camper@fire3_9_cut5]
+invulnerable = true
+path_walk = stalker4_cut5_4_walk
+path_look = stalker4_cut5_4_look
+radius = 0
+def_state_moving = assault
+combat_ignore_cond = {=fighting_dist_ge(25)}
+on_game_timer = 20 | camper@fire4_cut5
+meet = no_meet
+
+[camper@fire4_cut5]
+invulnerable = true
+path_walk = stalker4_cut5_5_walk
+path_look = stalker4_cut5_5_look
+radius = 0
+def_state_moving = assault
+combat_ignore_cond = {=fighting_dist_ge(15)}
+on_info = {+yan_destroy_zombi29_cut5} camper@fire5_cut5
+meet = no_meet
+
+[camper@fire5_cut5]
+invulnerable = true
+path_walk = stalker4_cut5_6_walk
+path_look = stalker4_cut5_6_look
+radius = 0
+def_state_moving = assault
+combat_ignore_cond = {=fighting_dist_ge(15)}
+on_info = {+yan_destroy_zombi30_cut5} camper@fire6_cut5
+meet = no_meet
+
+[camper@fire6_cut5]
+invulnerable = true
+path_walk = stalker4_cut5_7_walk
+path_look = stalker4_cut5_7_look
+radius = 0
+def_state_moving = assault
+combat_ignore_cond = {=fighting_dist_ge(15)}
+;on_signal = on_position | %+yan_zabor_stalker_4_on_position%
+on_info = {+typoi +yan_levsha_ready_cut6} remark@1
+meet = no_meet
+
+[remark@1]
+invulnerable = true
+anim = wait_na
+target = yan_smart_terrain_for_squad_levsha_stalker5_cut5_7_walk, 0
+combat_ignore_cond = true
+combat_ignore_keep_when_attacked = true
+on_timer = 19000 | {-yan_zabor_2_already_jumping} camper@to_zabor_2 %+yan_zabor_2_already_jumping%
+danger = danger_ignore											; +++
+meet = no_meet		; +++
+
+[camper@to_zabor_2]
+invulnerable = true
+path_walk = zabor_2_walk
+path_look = zabor_2_look
+radius = 0			; +++
+def_state_moving = assault
+combat_ignore_cond = always
+on_signal = ready_to_jump | remark@zabor_2 %-yan_zabor_2_already_jumping%
+danger = danger_ignore								; +++
+meet = no_meet
+
+[remark@zabor_2]
+invulnerable = true
+anim = yan_zabor_1
+;target = yan_smart_terrain_for_squad_levsha_zabor_2_look, 0
+combat_ignore_cond = true
+combat_ignore_keep_when_attacked = true
+on_signal = anim_end | camper@wait_cut6
+danger = danger_ignore					; +++
+meet = no_meet
+
+[camper@wait_cut6]
+invulnerable = true
+path_walk = yan_camp_4_walk
+path_look = yan_camp_4_look
+radius = 3
+combat_ignore_cond = always
+on_signal = turn_end | remark@wait_cut6_temp
+danger = danger_ignore					; +++
+meet = no_meet
+
+[remark@wait_cut6_temp]
+invulnerable = true		; +++
+anim = guard
+target = yan_smart_terrain_for_squad_levsha_stalker5_cut5_8_walk, 0
+combat_ignore_cond = always
+on_info = {+yan_ready_actor_cut6} camper@go
+danger = danger_ignore					; +++
+meet = no_meet
+
+[camper@go]
+invulnerable = true
+path_walk = yan_per_2_walk
+path_look = yan_per_2_look
+radius = 0
+def_state_moving = assault
+combat_ignore_cond = always
+on_signal = yan_ready_position_stalker4 | camper@fire2_inv
+out_restr = yan_space_restrictor_cut6_for_group2
+danger = danger_ignore					; +++
+meet = no_meet
+
+[camper@fire2_inv]
+invulnerable = true
+path_walk = yan_per_2_walk
+path_look = yan_per_2_look
+radius = 3
+combat_ignore_cond = {+yan_stalker_4_kaput} true, {=fighting_dist_ge(15)} true
+on_info = {+yan_stalker_4_kaput} camper@fire2_not_inv
+out_restr = yan_space_restrictor_cut6_for_group2
+meet = no_meet
+
+[camper@fire2_not_inv]
+invulnerable = false
+path_walk = yan_per_2_walk
+path_look = yan_per_2_look
+radius = 3
+on_info = {-yan_stalker_4_kaput} camper@fire2_inv
+combat_ignore_cond = {=fighting_dist_ge(15)}
+out_restr = yan_space_restrictor_cut6_for_group2
+meet = no_meet
+ 
+;[camper@guard_vikl]
+;invulnerable = false
+;path_walk = yan_camp_2_walk
+;path_look = yan_camp_2_look
+;def_state_moving = assault
+;combat_ignore_cond = {=fighting_dist_ge(15)}
+;out_restr = yan_space_restrictor_cut6_for_group1
+;meet = no_meet
+
+;[wounded]
+;hp_state        = 0|wounded_heavy@help_heavy
+;hp_state_see    = 0|wounded_heavy@help_heavy
+;hp_victim       = 0|nil
+;hp_fight        = 0|false
+;hp_cover        = 0|false

@@ -1,0 +1,651 @@
+; Decane 22.01.2013: Removed superfluous restore_health call (all npcs are invulnerable).
+;	 25.02.2013: Fixed a range of logic issues.
+;	 13.03.2015: Ditto.
+
+[logic@work1]
+active = camper@wait_work1
+suitable = {=check_npc_name(lim_csky_commander) -lim_electro_fence_off} true
+post_combat_time = 0,0
+
+[camper@wait_work1]
+danger = danger_condition
+invulnerable = true
+combat_ignore_cond = true
+path_walk = wait_1_walk
+path_look = wait_1_walk
+def_state_moving = assault
+on_info = {+lim_final_scene_begin} remark@threat_actor_work1
+on_info2 = {=actor_in_zone(lim_construction_exit_restr)} camper@talk_work1 
+meet = no_meet
+
+[camper@talk_work1]
+danger = danger_condition
+invulnerable = true
+combat_ignore_cond = true
+path_walk = talk_1_walk
+path_look = talk_1_walk
+def_state_moving = walk
+on_signal = action | remark@wait_actor_work1
+on_info = {+lim_final_scene_begin} remark@threat_actor_work1
+meet = no_meet
+
+[remark@wait_actor_work1]
+danger = danger_condition
+invulnerable = true
+combat_ignore_cond = true
+anim = hide
+on_info = {+lim_final_scene_begin} remark@threat_actor_work1
+meet = no_meet
+
+[remark@threat_actor_work1]
+danger = danger_condition
+invulnerable = true
+combat_ignore_cond = true
+anim = threat
+target = actor
+on_game_timer = 20 | remark@greet_actor_work1 %+lim_cs_recon_squad_alert =play_sound(lim_cs_reconnaissance_squad_alert:csky:st_ui_pda_legend_squad)%
+on_info = {+lim_cs_recon_squad_alert} remark@greet_actor_work1
+meet = no_meet
+
+[remark@greet_actor_work1]
+danger = danger_condition
+invulnerable = true
+combat_ignore_cond = true
+anim = hello_wpn
+target = actor
+;on_signal = sound_end | remark@greet_actor2_work1 %+lim_recon_squad_wait =play_sound(lim_cs_reconnaissance_squad_clear:csky:st_ui_pda_legend_squad)%
+on_signal = sound_end | remark@greet2_actor_work1 %+lim_recon_squad_wait =play_sound(lim_cs_reconnaissance_squad_clear:csky:st_ui_pda_legend_squad)%
+on_info = {+lim_recon_squad_wait} remark@greet_actor2_work1
+meet = no_meet
+
+[remark@greet2_actor_work1]
+danger = danger_condition
+invulnerable = true
+combat_ignore_cond = true
+anim = hello_wpn
+target = actor
+;on_info = {+lim_recon_squad_wait} remark@greet_actor2_work1
+on_game_timer = 50 | remark@greet_actor2_work1
+on_signal = sound_end | patrol@enter_work1 %+lim_recon_squad_go_1%
+meet = no_meet
+
+[remark@greet_actor2_work1]
+danger = danger_condition
+invulnerable = true
+combat_ignore_cond = true
+anim = talk_default
+target = lim_smart_terrain_10_fire_target, 0
+on_signal = sound_end | patrol@enter_work1 %+lim_recon_squad_go_1%
+on_info = {+lim_recon_squad_go_1} patrol@enter_work1
+meet = no_meet
+
+[patrol@enter_work1]
+danger = danger_condition
+invulnerable = true
+combat_ignore_cond = true
+path_walk = enter_walk
+move_type = rush
+on_signal = action | %+lim_final_sniper_fire%
+on_info = {+lim_final_sniper_fire2} camper@runner_work1 %=play_sound(lim_cs_reconnaissance_squad_sniper_alert:csky:st_ui_pda_legend_squad)%
+meet = no_meet
+
+[camper@runner_work1]
+danger = danger_condition
+invulnerable = true
+combat_ignore_cond = true
+path_walk = hide_1_walk
+path_look = hide_1_walk
+def_state_moving = assault
+;on_signal = action | smartcover@hide_work1 %=play_sound(lim_cs_reconnaissance_squad_order1:csky:st_ui_pda_legend_squad) +lim_recon_squad_order_1%
+on_signal = action | camper@runner2_work1
+on_info = {+lim_recon_squad_order_1} smartcover@hide_work1
+meet = no_meet
+
+[camper@runner2_work1]
+danger = danger_condition
+invulnerable = true
+combat_ignore_cond = true
+path_walk = hide_1_walk
+path_look = hide_1_walk
+def_state_moving = assault
+;on_game_timer = 50 | smartcover@hide_work1 %=play_sound(lim_cs_reconnaissance_squad_order1:csky:st_ui_pda_legend_squad) +lim_recon_squad_order_1%
+on_game_timer = 50 | smartcover@hide_work1 %=play_sound(lim_cs_reconnaissance_squad_order1:csky:st_ui_pda_legend_squad)%
+on_info = {+lim_recon_squad_order_1} smartcover@hide_work1
+meet = no_meet
+
+[smartcover@hide_work1]
+;danger = danger_condition
+invulnerable = true
+combat_ignore_cond = true			; {=enemy_in_zone(lim_final_sniper_restr)}
+cover_name = lim_final_allyes_cover_2
+;cover_state = idle_target
+on_signal = sound_end | %+lim_recon_squad_order_1%
+on_info = {+lim_final_allyes_cover_fire -lim_final_sniper_off} smartcover@fire_work1
+on_info2 = {+lim_final_sniper_fire_actor} smartcover@wait2_work1
+meet = no_meet
+
+[smartcover@fire_work1]
+;danger = danger_condition
+invulnerable = true
+combat_ignore_cond = true
+cover_name = lim_final_allyes_cover_2
+cover_state = fire_target
+target_path = lim_smart_terrain_10_fire_target
+on_info = {-lim_final_allyes_cover_fire} smartcover@hide_work1, {+lim_final_sniper_off} smartcover@hide_work1
+on_info2 = {+lim_final_sniper_fire_actor} smartcover@wait2_work1
+meet = no_meet
+
+[smartcover@wait2_work1]
+;danger = danger_condition
+invulnerable = true
+combat_ignore_cond = true
+cover_name = lim_final_allyes_cover_2
+;on_info = {+lim_final_allyes_cover_fire} smartcover@fire_work1
+on_info = {+lim_final_sniper_fire_actor =actor_in_zone(lim_final_squad_commander_restr)} smartcover@talk_work1 %=play_sound(lim_cs_reconnaissance_squad_electro_fence:csky:st_ui_pda_legend_squad) +lim_electro_fence_actor_come%
+meet = no_meet
+
+[smartcover@talk_work1]
+;danger = danger_condition
+invulnerable = true
+combat_ignore_cond = true
+cover_name = lim_final_allyes_cover_2
+cover_state = idle_target
+on_signal = sound_end | smartcover@talk2_work1 %=play_sound(lim_cs_reconnaissance_squad_confused:csky:st_ui_pda_legend_squad)%
+meet = no_meet
+
+[smartcover@talk2_work1]
+;danger = danger_condition
+invulnerable = true
+combat_ignore_cond = true
+cover_name = lim_final_allyes_cover_2
+cover_state = lookout_target
+on_signal = sound_end | smartcover@talk3_work1 %+lim_electro_fence =play_sound(lim_cs_reconnaissance_squad_destroy_generator:csky:st_ui_pda_legend_squad)%
+meet = no_meet
+
+[smartcover@talk3_work1]
+;danger = danger_condition
+invulnerable = true
+combat_ignore_cond = true
+cover_name = lim_final_allyes_cover_2
+cover_state = idle_target
+on_signal = sound_end | smartcover@fire2_work1 %+lim_shut_transformer_task +lim_final_allyes_cover_fire%
+meet = no_meet
+
+[smartcover@hide2_work1]
+;danger = danger_condition
+invulnerable = true
+combat_ignore_cond = true
+cover_name = lim_final_allyes_cover_2
+on_game_timer = 70 | smartcover@fire2_work1 %+lim_final_allyes_cover_fire%
+meet = no_meet
+
+[smartcover@fire2_work1]
+;danger = danger_condition
+invulnerable = true
+combat_ignore_cond = true
+use_in_combat = true
+cover_name = lim_final_allyes_cover_2
+cover_state = default_behaviour
+target_path = lim_smart_terrain_10_fire_target
+on_game_timer = 70 | smartcover@hide2_work1 %-lim_final_allyes_cover_fire%
+meet = no_meet
+
+;***********************************
+
+[logic@work2]
+active = camper@wait_work2
+suitable = {=check_npc_name(lim_csky_soldier) -lim_electro_fence_off} true
+post_combat_time = 0,0
+
+[camper@wait_work2]
+danger = danger_condition
+invulnerable = true
+combat_ignore_cond = true
+path_walk = wait_2_walk
+path_look = wait_2_walk
+def_state_moving = assault
+meet = no_meet
+on_info = {+lim_final_scene_begin} remark@threat_actor_work2
+on_info2 = {=actor_in_zone(lim_construction_exit_restr)} camper@talk_work2 
+
+[camper@talk_work2]
+danger = danger_condition
+invulnerable = true
+combat_ignore_cond = true
+path_walk = talk_2_walk
+path_look = talk_2_walk
+def_state_moving = walk
+on_signal = action | remark@wait_actor_work2
+on_info = {+lim_final_scene_begin} remark@threat_actor_work2
+meet = no_meet
+
+[remark@wait_actor_work2]
+danger = danger_condition
+invulnerable = true
+combat_ignore_cond = true
+anim = hide
+on_info = {+lim_final_scene_begin} remark@threat_actor_work2
+meet = no_meet
+
+[remark@threat_actor_work2]
+danger = danger_condition
+invulnerable = true
+combat_ignore_cond = true
+anim = threat
+target = actor
+on_info = {+lim_recon_squad_wait} remark@greet_actor_work2
+meet = no_meet
+
+[remark@greet_actor_work2]
+danger = danger_condition
+invulnerable = true
+combat_ignore_cond = true
+anim = guard
+target = actor
+on_info = {+lim_recon_squad_go_1} patrol@enter_work2
+meet = no_meet
+
+[patrol@enter_work2]
+danger = danger_condition
+invulnerable = true
+combat_ignore_cond = true
+path_walk = enter_walk
+move_type = rush
+;on_signal = action | camper@wait_work2 %+lim_final_sniper_fire%
+on_info = {+lim_final_sniper_fire2} camper@runner_work2
+meet = no_meet
+
+[camper@runner_work2]
+danger = danger_condition
+invulnerable = true
+combat_ignore_cond = true
+path_walk = hide_1_walk
+path_look = hide_1_walk
+def_state_moving = sneak_run;assault
+on_signal = action | smartcover@hide_work2
+meet = no_meet
+
+[smartcover@hide_work2]
+;danger = danger_condition
+invulnerable = true
+combat_ignore_cond = true
+use_in_combat = true
+cover_name = lim_final_allyes_cover_1
+on_info = {+lim_final_allyes_cover_fire} smartcover@fire_work2
+meet = no_meet
+
+[smartcover@fire_work2]
+;danger = danger_condition
+invulnerable = true
+combat_ignore_cond = true
+use_in_combat = true
+cover_name = lim_final_allyes_cover_1
+cover_state = default_behaviour
+target_path = lim_smart_terrain_10_fire_target
+on_info = {-lim_final_allyes_cover_fire} smartcover@hide_work2
+meet = no_meet
+
+;***********************************
+
+[logic@work3]
+active = camper@wait_work3
+suitable = {=check_npc_name(lim_csky_soldier) -lim_final_sniper_fire_actor} true
+;suitable = {=check_npc_name(lim_csky_soldier) -lim_electro_fence_off} true
+on_death = death
+post_combat_time = 0,0
+
+[death]
+on_info = %+lim_final_sniper_fire_actor -lim_final_allyes_cover_fire%
+
+[camper@wait_work3]
+danger = danger_condition
+invulnerable = true
+combat_ignore_cond = true
+path_walk = wait_3_walk
+path_look = wait_3_walk
+def_state_moving = assault
+on_info = {+lim_final_scene_begin} remark@threat_actor_work3
+on_info2 = {=actor_in_zone(lim_construction_exit_restr)} camper@talk_work3
+meet = no_meet
+
+[camper@talk_work3]
+danger = danger_condition
+invulnerable = true
+combat_ignore_cond = true
+path_walk = talk_3_walk
+path_look = talk_3_walk
+def_state_moving = walk
+on_signal = action | remark@wait_actor_work3
+on_info = {+lim_final_scene_begin} remark@threat_actor_work3
+meet = no_meet
+
+[remark@wait_actor_work3]
+danger = danger_condition
+invulnerable = true
+combat_ignore_cond = true
+anim = hide
+on_info = {+lim_final_scene_begin} remark@threat_actor_work3
+meet = no_meet
+
+[remark@threat_actor_work3]
+danger = danger_condition
+invulnerable = true
+combat_ignore_cond = true
+anim = threat
+target = actor
+on_info = {+lim_recon_squad_wait} remark@greet_actor_work3
+meet = no_meet
+
+[remark@greet_actor_work3]
+danger = danger_condition
+invulnerable = true
+combat_ignore_cond = true
+anim = guard
+target = actor
+on_info = {+lim_recon_squad_go_1} patrol@enter_work3
+meet = no_meet
+
+[patrol@enter_work3]
+danger = danger_condition
+invulnerable = true
+combat_ignore_cond = true
+path_walk = enter_walk
+move_type = rush
+;on_signal = action | camper@wait_work3 %+lim_final_sniper_fire%
+on_info = {+lim_final_sniper_fire2} camper@runner_work3
+meet = no_meet
+
+[camper@runner_work3]
+danger = danger_condition
+invulnerable = true
+combat_ignore_cond = true
+path_walk = hide_3_walk
+path_look = hide_3_walk
+def_state_moving = sprint;assault
+;on_game_timer = 70 | {+lim_recon_squad_order_1} walker@runner2_work3 %+lim_final_allyes_cover_fire%
+;on_info = {=dist_to_actor_le(5) +lim_recon_squad_order_1} walker@runner2_work3 %+lim_final_allyes_cover_fire%
+;on_info = {+lim_recon_squad_order_1} walker@runner2_work3 %+lim_final_allyes_cover_fire%
+on_signal = action | smartcover@hide_work3_1
+meet = no_meet
+
+[smartcover@hide_work3_1]
+;danger = danger_condition
+invulnerable = true
+combat_ignore_cond = true
+use_in_combat = false
+cover_name = lim_final_allyes_cover_3_1
+on_info = {+lim_recon_squad_order_1} walker@runner2_work3 %+lim_final_allyes_cover_fire%
+meet = no_meet
+
+[walker@runner2_work3]
+danger = danger_condition
+invulnerable = true
+combat_ignore_cond = true
+path_walk = hide2_3_walk
+path_look = hide2_3_walk
+def_state_moving = sneak_run;assault
+;def_state_moving1 = assault
+;def_state_moving2 = assault
+;def_state_moving3 = assault
+on_signal = action | walker@runner3_work3	; smartcover@hide_work3 %-lim_final_allyes_cover_fire%
+meet = no_meet
+
+;[smartcover@hide_work3]
+;;danger = danger_condition
+;invulnerable = true
+;combat_ignore_cond = true
+;cover_name = lim_final_allyes_cover_3
+;;on_game_timer = 50 | walker@runner3_work3 %+lim_final_allyes_cover_fire%
+;on_signal = action | walker@runner3_work3 %+lim_final_allyes_cover_fire%
+;meet = no_meet
+
+;-----
+
+;[walker@runner4_work3]
+;danger = danger_condition
+;invulnerable = true
+;combat_ignore_cond = true
+;path_walk = hide_3_walk
+;path_look = hide_3_walk
+;def_state_moving = assault
+;on_signal = action | smartcover@hide_2_work3 %-lim_final_allyes_cover_fire%
+;meet = no_meet
+
+;[smartcover@hide_2_work3]
+;danger = danger_condition
+;invulnerable = true
+;use_in_combat = true
+;combat_ignore_cond = true
+;cover_name = lim_final_allyes_cover_3_1
+;cover_state = default_behaviour
+;meet = no_meet
+
+;-----
+
+[walker@runner3_work3]
+danger = danger_condition
+invulnerable = true
+combat_ignore_cond = true
+combat_ignore_keep_when_attacked = true
+path_walk = runner_3_walk
+def_state_moving = sprint
+on_game_timer = 20 | walker@runner4_work3
+meet = no_meet
+
+[walker@runner4_work3]
+danger = danger_condition
+invulnerable = true
+combat_ignore_cond = true
+combat_ignore_keep_when_attacked = true
+path_walk = runner_3_walk
+def_state_moving = assault
+on_signal = action | remark@electro_fence_work3
+;on_info = {=in_zone(lim_electro_fence_1)} remark@electro_fence_work3
+meet = no_meet
+
+[remark@electro_fence_work3]
+danger = danger_condition
+invulnerable = true
+combat_ignore_cond = true
+combat_ignore_keep_when_attacked = true
+anim = electra_damage
+target = lim_smart_terrain_10_fire_target, 0
+on_game_timer = 100 | %=kill_npc%
+meet = no_meet
+
+;************************
+
+[logic@work4]
+active = camper@wait_work4
+suitable = {=check_npc_name(lim_csky_soldier) -lim_electro_fence_off} true
+post_combat_time = 0,0
+
+[camper@wait_work4]
+danger = danger_condition
+invulnerable = true
+combat_ignore_cond = true
+path_walk = wait_4_walk
+path_look = wait_4_walk
+def_state_moving = assault
+on_info = {+lim_final_scene_begin} remark@threat_actor_work4
+on_info2 = {=actor_in_zone(lim_construction_exit_restr)} camper@talk_work4
+meet = no_meet
+
+[camper@talk_work4]
+danger = danger_condition
+invulnerable = true
+combat_ignore_cond = true
+path_walk = talk_4_walk
+path_look = talk_4_walk
+def_state_moving = walk
+on_signal = action | remark@wait_actor_work4
+on_info = {+lim_final_scene_begin} remark@threat_actor_work4
+meet = no_meet
+
+[remark@wait_actor_work4]
+danger = danger_condition
+invulnerable = true
+combat_ignore_cond = true
+anim = hide
+on_info = {+lim_final_scene_begin} remark@threat_actor_work4
+meet = no_meet
+
+[remark@threat_actor_work4]
+danger = danger_condition
+invulnerable = true
+combat_ignore_cond = true
+anim = threat
+target = actor
+on_info = {+lim_recon_squad_wait} remark@greet_actor_work4
+meet = no_meet
+
+[remark@greet_actor_work4]
+danger = danger_condition
+invulnerable = true
+combat_ignore_cond = true
+anim = guard
+target = actor
+on_info = {+lim_recon_squad_go_1} patrol@enter_work4
+meet = no_meet
+
+[patrol@enter_work4]
+danger = danger_condition
+invulnerable = true
+combat_ignore_cond = true
+path_walk = enter_walk
+move_type = rush
+;on_signal = action | camper@runner_work4 %+lim_final_sniper_fire%
+on_info = {+lim_final_sniper_fire2} camper@runner_work4
+meet = no_meet
+
+[camper@runner_work4]
+danger = danger_condition
+invulnerable = true
+combat_ignore_cond = true
+path_walk = hide_4_walk
+path_look = hide_4_walk
+def_state_moving = sneak_run;assault
+on_signal = action | smartcover@hide_work4
+meet = no_meet
+
+[smartcover@hide_work4]
+;danger = danger_condition
+invulnerable = true
+combat_ignore_cond = true
+cover_name = lim_final_allyes_cover_4
+use_in_combat = true
+on_info = {+lim_final_allyes_cover_fire} smartcover@fire_work4
+meet = no_meet
+
+[smartcover@fire_work4]
+;danger = danger_condition
+invulnerable = true
+combat_ignore_cond = true
+cover_name = lim_final_allyes_cover_4
+use_in_combat = true
+cover_state = default_behaviour
+target_path = lim_smart_terrain_10_fire_target
+on_info = {-lim_final_allyes_cover_fire} smartcover@hide_work4
+meet = no_meet
+
+;************************
+
+[logic@work5]
+active = camper@wait_work5
+suitable = {=check_npc_name(lim_csky_soldier) -lim_electro_fence_off} true
+post_combat_time = 0,0
+
+[camper@wait_work5]
+danger = danger_condition
+invulnerable = true
+combat_ignore_cond = true
+path_walk = wait_5_walk
+path_look = wait_5_walk
+def_state_moving = assault
+on_info = {+lim_final_scene_begin} patrol@enter_work5
+on_info2 = {=actor_in_zone(lim_construction_exit_restr)} camper@talk_work5
+meet = no_meet
+
+[camper@talk_work5]
+danger = danger_condition
+invulnerable = true
+combat_ignore_cond = true
+path_walk = talk_5_walk
+path_look = talk_5_walk
+def_state_moving = walk
+on_signal = action | remark@wait_actor_work5
+on_info = {+lim_final_scene_begin} remark@threat_actor_work5
+meet = no_meet
+
+[remark@wait_actor_work5]
+danger = danger_condition
+invulnerable = true
+combat_ignore_cond = true
+anim = hide
+on_info = {+lim_final_scene_begin} remark@threat_actor_work5
+meet = no_meet
+
+[remark@threat_actor_work5]
+danger = danger_condition
+invulnerable = true
+combat_ignore_cond = true
+anim = threat
+target = actor
+on_info = {+lim_recon_squad_wait} remark@greet_actor_work5
+meet = no_meet
+
+[remark@greet_actor_work5]
+danger = danger_condition
+invulnerable = true
+combat_ignore_cond = true
+anim = guard
+target = actor
+on_info = {+lim_recon_squad_go_1} patrol@enter_work5
+meet = no_meet
+
+[patrol@enter_work5]
+danger = danger_condition
+invulnerable = true
+combat_ignore_cond = true
+path_walk = enter_walk
+move_type = rush
+;on_signal = action | camper@wait_work5 %+lim_final_sniper_fire%
+on_info = {+lim_final_sniper_fire2} camper@runner_work5
+meet = no_meet
+
+[camper@runner_work5]
+danger = danger_condition
+invulnerable = true
+combat_ignore_cond = true
+path_walk = hide_5_walk
+path_look = hide_5_walk
+def_state_moving = sneak_run;assault
+on_signal = action | smartcover@hide_work5
+meet = no_meet
+
+[smartcover@hide_work5]
+;danger = danger_condition
+invulnerable = true
+combat_ignore_cond = true
+loophole_name = lh_5
+cover_name = lim_final_allyes_cover_5
+use_in_combat = true
+on_info = {+lim_final_allyes_cover_fire} smartcover@fire_work5
+meet = no_meet
+
+[smartcover@fire_work5]
+;danger = danger_condition
+invulnerable = true
+combat_ignore_cond = true
+loophole_name = lh_5
+cover_name = lim_final_allyes_cover_5
+use_in_combat = true
+cover_state = default_behaviour
+target_path = lim_smart_terrain_10_fire_target
+on_info = {-lim_final_allyes_cover_fire} smartcover@hide_work5
+meet = no_meet
+
+[danger_condition]
+ignore_distance_hit = 0
+ignore_distance_sound = 0
+ignore_distance_grenade = 0

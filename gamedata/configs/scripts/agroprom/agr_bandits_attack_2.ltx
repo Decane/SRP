@@ -1,0 +1,32 @@
+[logic]
+active = sr_idle@line_0
+
+[sr_idle@line_0]
+on_game_timer = 100 | sr_idle@check_attack_present
+
+[sr_idle@check_attack_present]
+on_info = {!squad_exist(agr_smart_terrain_2_3_bandits_1_squad) !squad_exist(agr_smart_terrain_2_3_bandits_1_squad_attack)} sr_idle@wait_spawn
+on_info2 = {=squad_exist(agr_smart_terrain_2_3_bandits_1_squad) !squad_exist(agr_smart_terrain_2_3_bandits_1_squad_attack)} sr_idle@wait_spawn_attack
+
+[sr_idle@wait_spawn]
+on_game_timer = 1800 | sr_idle@check_spawn
+
+[sr_idle@check_spawn]
+on_actor_dist_ge_nvis = 100 | {-agr_smart_terrain_2_3_simulation_task !smart_captured_by_faction(agr_smart_terrain_4_4_near_2:bandit)} sr_idle@try_spawn
+on_info = {+agr_smart_terrain_2_3_simulation_task_complete} nil
+
+[sr_idle@try_spawn]
+on_info = {=smart_captured_by_faction(agr_smart_terrain_2_3:none)} sr_idle@wait_idle %=create_squad(agr_smart_terrain_2_3_bandits_1_squad:agr_smart_terrain_2_3)%, sr_idle@check_attack_present
+
+[sr_idle@wait_spawn_attack]
+on_game_timer = 1800 | sr_idle@check_spawn_attack
+
+[sr_idle@check_spawn_attack]
+on_actor_dist_ge_nvis = 100 | {-agr_smart_terrain_2_3_simulation_task !smart_captured_by_faction(agr_smart_terrain_4_4_near_2:bandit)} sr_idle@try_spawn_attack
+on_info = {+agr_smart_terrain_2_3_simulation_task_complete} nil
+
+[sr_idle@try_spawn_attack]
+on_info = {=smart_captured_by_faction(agr_smart_terrain_2_3:bandit) =smart_squad_population(bandit:agr_smart_terrain_2_3:2)} sr_idle@wait_idle %=create_squad(agr_smart_terrain_2_3_bandits_1_squad_attack:agr_smart_terrain_2_3)%, sr_idle@check_attack_present
+
+[sr_idle@wait_idle]
+on_game_timer = 1800 | sr_idle@check_attack_present

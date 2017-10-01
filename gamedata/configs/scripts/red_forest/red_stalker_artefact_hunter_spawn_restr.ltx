@@ -1,0 +1,10 @@
+[logic]
+active = sr_idle
+
+[sr_idle]
+on_info = {!is_smart_captured(red_smart_terrain_6_6) !actor_dist_to_zone_le(red_smart_terrain_6_6_defence:150)} sr_idle@snork_spawn %=create_squad(red_stalker_artefact_hunters_1:red_smart_terrain_6_6)%
+
+[sr_idle@snork_spawn]
+on_info = {!squad_exist(red_snork_attack_1) !actor_dist_to_zone_le(red_smart_terrain_6_3_defence:150)} sr_idle@spawn_wait %=create_squad(red_snork_attack_1:red_smart_terrain_6_3)%
+
+[sr_idle@spawn_wait]

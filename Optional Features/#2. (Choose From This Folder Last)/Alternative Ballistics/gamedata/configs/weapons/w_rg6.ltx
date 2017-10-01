@@ -1,0 +1,199 @@
+[wpn_rg-6]:zero_immunities,weapon_probability,default_weapon_params
+GroupControlSection			= spawn_group
+discovery_dependency			=
+$spawn					= "weapons\rg-6"
+$npc					= on		
+$prefetch				= 2
+scheduled				= off
+cform					= skeleton
+class					= WP_RG6
+min_radius				= 0
+max_radius				= 50
+description				= st_wpn_rg6_descr
+
+ef_main_weapon_type			= 4
+ef_weapon_type				= 9
+
+sprint_allowed				= false
+
+;---DOF-------------------------------------------------------------------------
+zoom_dof				= 0.5, 1, 1000
+;reload_dof				= 0, 0.5, 5, 1.7
+;-------------------------------------------------------------------------------
+
+;-------------------------------------------------------------------------------
+holder_range_modifier			= 1
+holder_fov_modifier			= 1
+;-------------------------------------------------------------------------------
+
+cost					= 10000
+weapon_class				= heavy_weapon
+
+tri_state_reload			= on
+
+;ammo_limit				= 60
+;ammo_current				= 10
+ammo_elapsed				= 0
+
+ammo_mag_size				= 6
+ammo_class				= ammo_vog-25, ammo_vog-25p
+fire_modes				= 1
+
+hand_dependence				= 1
+single_handed				= 0
+
+slot					= 2
+animation_slot				= 10
+
+launch_speed				= 73.5						; 50
+
+inv_name				= st_wpn_rg6
+inv_name_short				= st_wpn_rg6
+inv_weight				= 6.2
+
+inv_grid_width				= 4
+inv_grid_height				= 2
+inv_grid_x				= 0
+inv_grid_y				= 8
+
+kill_msg_x				= 0
+kill_msg_y				= 172
+kill_msg_width				= 68
+kill_msg_height				= 30
+
+;-------------------------------------------------------------------------------
+
+fire_dispersion_base			= 1
+control_inertion_factor			= 1.7f
+
+cam_relax_speed				= 7
+cam_relax_speed_ai			= 360
+cam_dispersion				= 5
+cam_dispersion_inc			= 5
+cam_dispersion_frac			= 0.1
+cam_max_angle				= 15
+cam_max_angle_horz			= 5
+cam_step_angle_horz			= 5
+
+fire_dispersion_condition_factor	= 5
+misfire_probability			= 0
+;misfire_condition_k			= 0
+condition_shot_dec			= 0
+
+;-------------------------------------------------------------------------------
+
+position				= -0.026, -0.111, 0
+orientation				= 0, 0, 0
+
+shell_point				= 0, 0.12, 0.2
+fire_point				= 0, 0.12, 0.452
+fire_point2				= 0, 0.12, 0.452
+
+flame_particles				= weapons\generic_weapon05
+smoke_particles				= weapons\generic_shoot_00
+
+hit_power				= 1						; 0.75, 0.75, 0.75, 0.75
+hit_impulse				= 1						; 150
+hit_type				= fire_wound
+
+hit_probability_gd_novice		= 1
+hit_probability_gd_stalker		= 1
+hit_probability_gd_veteran		= 1
+hit_probability_gd_master		= 1
+
+fire_distance				= 400						; 100
+bullet_speed				= 73.5						; 76
+rpm					= 120						; 100
+;rpm_empty_click			= 200
+
+PDM_disp_base				= 1
+PDM_disp_vel_factor			= 1.1
+PDM_disp_accel_factor			= 1.1
+PDM_disp_crouch				= 1
+PDM_disp_crouch_no_acc			= 1
+
+hud					= wpn_rg-6_hud
+
+;--STRAP PARAMETERS-----------------------------------------------------------------
+
+strap_position				= -0.26, -0.11, 0.15
+strap_orientation			= -15, -9, 110
+strap_bone0				= bip01_spine2
+strap_bone1				= bip01_spine1
+
+visual					= dynamics\weapons\wpn_rg6\wpn_rg6.ogf
+
+light_color				= 0.6, 0.5, 0.3
+light_range				= 6
+light_var_color				= 0.05
+light_var_range				= 0.5
+light_time				= 0.2
+
+ph_mass					= 6.2						; 3
+
+scope_status				= 0
+silencer_status				= 0
+grenade_launcher_status			= 0
+
+zoom_enabled				= true
+scope_zoom_factor			= 75						; 55
+
+snd_draw				= weapons\generic_draw
+snd_holster				= weapons\generic_holster
+snd_shoot				= weapons\n_toz34_shot
+snd_shoot_1				= weapons\n_toz34_shot
+snd_shoot_duplet			= weapons\n_toz34_shot
+
+snd_empty				= weapons\generic_empty
+snd_reload				= weapons\rg6_reload
+snd_reload_1				= weapons\bm16_reload_one
+
+snd_open_weapon				= weapons\rg6_reload_start
+snd_add_cartridge			= weapons\rg6_reload
+snd_close_weapon			= weapons\rg6_reload_end
+
+[wpn_rg-6_hud]:hud_base
+
+;zoom_hide_crosshair			= false
+attach_place_idx			= 0
+item_visual				= dynamics\weapons\wpn_rg6\wpn_rg6_hud.ogf
+
+hands_position				= -0.013, -0.176999, 0.118
+hands_orientation			= 6.250005, -0.649999, 0
+
+hands_position_16x9			= -0.029, -0.186, 0.112
+hands_orientation_16x9			= 1.699999, 0.000001, 0.6
+
+item_position				= -0.003178, 0.002246, 0.000581
+item_orientation			= -181.191742, 180.482727, -180.330688
+
+shell_point				= 0, 0, 0
+shell_dir				= 0, 1, 0
+shell_bone				= wpn_body
+
+fire_point				= -0, 0, 0.513
+fire_bone				= wpn_body
+
+aim_hud_offset_pos			= -0.1203, 0.0045, 0.05
+aim_hud_offset_rot			= -0.015, 0.077, -0.0185
+
+aim_hud_offset_pos_16x9			= -0.0985, 0.0105, 0.05
+aim_hud_offset_rot_16x9			= -0.01, 0, 0
+
+;gl_hud_offset_pos			= 0, 0, 0
+;gl_hud_offset_rot			= 0, 0, 0
+
+;lean_hud_offset_pos			= 0, 0, 0
+;lean_hud_offset_rot			= 0, 0, 0
+
+anm_show				= rg6_draw
+anm_hide				= rg6_holster
+anm_idle				= rg6_idle
+anm_idle_aim				= rg6_idle_aim
+anm_idle_moving				= rg6_idle_moving
+anm_idle_sprint				= rg6_idle_sprint
+anm_open				= rg6_reload_start
+anm_add_cartridge			= rg6_reload
+anm_close				= rg6_reload_end
+anm_shots				= rg6_shoot
+anm_bore				= rg6_idle_bore

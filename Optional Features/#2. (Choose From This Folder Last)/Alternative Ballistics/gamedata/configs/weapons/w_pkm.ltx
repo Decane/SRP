@@ -1,0 +1,277 @@
+[wpn_pkm]:identity_immunities,weapon_probability,default_weapon_params
+GroupControlSection			= spawn_group
+discovery_dependency			=
+$spawn					= "weapons\pkm"
+$npc					= on
+$prefetch				= 8
+scheduled				= off
+cform					= skeleton
+class					= WP_AK74
+min_radius				= 30
+max_radius				= 100
+description				= st_wpn_rp_descr
+
+ef_main_weapon_type			= 2
+ef_weapon_type				= 6
+
+default_to_ruck				= false
+sprint_allowed				= false
+
+;---DOF-------------------------------------------------------------------------
+zoom_dof				= 0.5, 1, 1000
+reload_dof				= 0, 0.5, 5, 6
+;-------------------------------------------------------------------------------
+
+;-------------------------------------------------------------------------------
+holder_range_modifier			= 1
+holder_fov_modifier			= 0.7
+;-------------------------------------------------------------------------------
+
+upgrades				= up_gr_a_pkm, up_gr_b_pkm, up_gr_c_pkm, up_gr_d_pkm, up_gr_e_pkm
+installed_upgrades			=
+upgrade_scheme				= upgrade_scheme_u8
+
+cost					= 50000
+weapon_class				= assault_rifle
+
+;ammo_limit				= 300
+;ammo_current				= 200
+ammo_elapsed				= 100
+
+ammo_mag_size				= 100
+fire_modes				= -1
+
+ammo_class				= ammo_pkm_100
+grenade_class				= ammo_m209
+
+launch_speed				= 0
+hand_dependence				= 1
+single_handed				= 0
+
+slot					= 2
+animation_slot				= 2
+
+inv_name				= st_wpn_rp
+inv_name_short				= st_wpn_rp
+inv_weight				= 7.5
+
+inv_grid_width				= 6
+inv_grid_height				= 2
+inv_grid_x				= 0
+inv_grid_y				= 36
+
+kill_msg_x				= 80
+kill_msg_y				= 59
+kill_msg_width				= 87
+kill_msg_height				= 24
+
+;-------------------------------------------------------------------------------
+
+fire_dispersion_base			= 0.85
+control_inertion_factor			= 3.0f
+
+cam_relax_speed				= 15
+cam_relax_speed_ai			= 360
+cam_dispersion				= 1
+cam_dispersion_inc			= 1.3
+cam_dispersion_frac			= 1
+cam_max_angle				= 5
+cam_max_angle_horz			= 15
+cam_step_angle_horz			= 1.8
+
+fire_dispersion_condition_factor	= 5
+misfire_probability			= 0.001
+misfire_condition_k			= 0.01
+condition_shot_dec			= 0.0001
+
+;-------------------------------------------------------------------------------
+
+position				= -0.027, -0.097, 0.042
+orientation				= 0, -2, 0
+
+fire_point				= 0, 0.158, 0.845
+fire_point2				= 0, 0.097, 0.722
+
+flame_particles				= weapons\generic_weapon05
+smoke_particles				= weapons\generic_shoot_00
+grenade_flame_particles			= weapons\generic_weapon01
+
+shell_point				= -0.02, 0.167, 0.082
+shell_dir				= 0, 0, 0.4
+shell_particles				= weapons\generic_shells
+
+PDM_disp_base				= 1.5
+PDM_disp_vel_factor			= 2.45
+PDM_disp_accel_factor			= 2.45
+PDM_disp_crouch				= 0.2
+PDM_disp_crouch_no_acc			= 0.2
+
+hit_power				= 1						; 1, 1, 1, 1
+hit_impulse				= 1						; 120
+hit_type				= fire_wound
+
+;silencer_hit_power			= 1						; 0.55, 0.55, 0.55, 0.55
+;silencer_hit_impulse			= 1						; 120
+;silencer_fire_distance			= 1000						; 250
+;silencer_bullet_speed			= 825						; 600
+
+hit_probability_gd_novice		= 1
+hit_probability_gd_stalker		= 1
+hit_probability_gd_veteran		= 1
+hit_probability_gd_master		= 1
+
+fire_distance				= 1000						; 150
+bullet_speed				= 825						; 450
+rpm					= 650						; 600
+;rpm_empty_click			= 200
+
+use_aim_bullet				= false
+time_to_aim				= 5
+
+hud					= wpn_pkm_hud
+
+;--STRAP PARAMETERS-----------------------------------------------------------------
+
+strap_position				= -0.26, -0.11, 0.25
+strap_orientation			= -15, -9, 110
+strap_bone0				= bip01_spine2
+strap_bone1				= bip01_spine1
+
+;startup_ammo				= 90
+visual					= dynamics\weapons\wpn_pkm\wpn_pkm.ogf
+
+light_disabled				= false
+light_color				= 0.6, 0.5, 0.3
+light_range				= 5
+light_var_color				= 0.05
+light_var_range				= 0.5
+light_time				= 0.2
+
+ph_mass					= 7.5						; 4
+
+scope_status				= 0
+silencer_status				= 0
+grenade_launcher_status			= 0
+
+zoom_enabled				= false
+
+snd_draw				= weapons\ak74_draw
+snd_holster				= weapons\generic_holster
+snd_shoot				= weapons\pkm_shot
+;snd_silncer_shot			= weapons\w_ak74_shot1
+
+snd_empty				= weapons\gen_empty
+snd_reload				= weapons\pkm_reload
+;snd_shoot_grenade			= weapons\gen_grenshoot
+;snd_reload_grenade			= weapons\gen_grenload
+;snd_switch				= weapons\groza_switch
+
+;silencer_flame_particles		= weapons\generic_weapon01
+;silencer_smoke_particles		= weapons\generic_shoot_00
+
+;silencer_light_color			= 0.6, 0.5, 0.3
+;silencer_light_range			= 0.01
+;silencer_light_var_color		= 0.05
+;silencer_light_var_range		= 0.5
+;silencer_light_time			= 0.2
+
+[wpn_pkm_hud]:hud_base
+
+;zoom_hide_crosshair			= false
+attach_place_idx			= 0
+item_visual				= dynamics\weapons\wpn_pkm\wpn_pkm_hud
+
+hands_position				= -0.0755, -0.163, 0.1395
+hands_orientation			= -1.75, 5.400002, -8.100014
+
+hands_position_16x9			= -0.051, -0.1735, 0.173999
+hands_orientation_16x9			= -0.85, 5.400002, -6.450006
+
+item_position				= 0.000908, 0.001413, 0.001031
+item_orientation			= 2.090982, -0.985601, 361.809204
+
+shell_point				= 0.013, 0.033, 0.128
+shell_dir				= 0, 1, 0
+shell_bone				= wpn_body
+
+fire_point				= 0, 0.053, 0.931
+fire_bone				= wpn_body
+fire_point2				= -0.014, 0.01, -0.037
+fire_bone2				= wpn_body
+
+anm_show				= pkm_draw
+anm_hide				= pkm_holster
+anm_idle				= pkm_idle
+anm_idle_sprint				= pkm_idle_sprint
+anm_idle_moving				= pkm_idle_moving
+anm_shots				= pkm_shoot
+anm_reload				= pkm_reload
+anm_idle_aim				= pkm_idle_aim
+anm_bore				= pkm_idle_bore
+
+aim_hud_offset_pos			= 0, 0, 0
+aim_hud_offset_rot			= 0, 0, 0
+
+aim_hud_offset_pos_16x9			= -0.032, -0.185, 0.1025
+aim_hud_offset_rot_16x9			= 1.3, 8.400014, -6.450007
+
+;gl_hud_offset_pos			= -0.053, -0.059, 0
+;gl_hud_offset_rot			= -0.145, 0, 0
+
+;lean_hud_offset_pos			= 0, 0, 0
+;lean_hud_offset_rot			= 0, 0, 0
+
+;********************************************************
+;********************************************************
+
+[wpn_bozar]:wpn_pkm
+GroupControlSection			= spawn_group
+discovery_dependency			=
+$spawn					= "weapons\bozar"
+$npc					= on
+$prefetch				= 8
+scheduled				= off
+cform					= skeleton
+class					= WP_AK74
+min_radius				= 30
+max_radius				= 100
+description				= st_wpn_bozar_descr
+
+ef_main_weapon_type			= 3
+ef_weapon_type				= 8
+
+ammo_class				= ammo_223_fmj
+fire_modes				= 10
+
+inv_name				= st_wpn_bozar
+inv_name_short				= st_wpn_bozar
+
+fire_dispersion_base			= 0.000001
+control_inertion_factor			= 5.0f
+
+cam_relax_speed				= 15
+cam_relax_speed_ai			= 360
+cam_dispersion				= 0.00001
+cam_dispersion_inc			= 0.00001
+cam_dispersion_frac			= 0
+cam_max_angle				= 0.001
+cam_max_angle_horz			= 0
+cam_step_angle_horz			= 0.05
+
+visual					= dynamics\weapons\wpn_svd\wpn_svd.ogf
+hud					= wpn_svd_hud
+
+ammo_mag_size				= 300
+rpm					= 10000
+hit_impulse				= 5000
+
+zoom_enabled				= true
+;zoom_rotate_time			= 0.5
+scope_zoom_factor			= 20
+
+snd_draw				= weapons\svd_draw
+snd_holster				= weapons\generic_holster
+snd_shoot				= weapons\n_svd_shot
+snd_empty				= weapons\gen_empty
+snd_reload				= weapons\svd_reload
+snd_close				= weapons\generic_close

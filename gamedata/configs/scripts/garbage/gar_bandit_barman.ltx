@@ -1,0 +1,55 @@
+;--------------------------------------------------------------------------------------------------
+;
+; Borov
+;
+; Vandals Immortality Fix v1.1
+; By Vandal aka SpeedCanHurt
+; 09.11.2008
+;
+; Not to be modified and redistributed without the permission of the creator
+; For permission, email speedcanhurt@fastmail.fm
+;
+;--------------------------------------------------------------------------------------------------
+
+
+[meet]
+invulnerable			= true
+meet_state			= 3|nil@nil
+victim				= 3|actor
+sound_start 			= gar_bandit_barman_meet
+sound_stop 			= gar_bandit_barman_meet_bye
+use_wpn				= true
+use				= true
+quest_npc			= true
+
+[logic]
+active				= walker@barman
+level_spot			= quest_npc
+trade				= misc\trade\trade_barmen_all.ltx
+
+[walker@barman]
+invulnerable			= true
+path_walk			= gar_smart_terrain_3_5_bandit_barman_walk
+path_look			= gar_smart_terrain_3_5_bandit_barman_look
+def_state_standing		= wait
+on_signal			= turn_end | smartcover@lean_on_bar_fire ;smartcover@lean_on_bar_idle
+meet				= meet
+combat_ignore_cond		= true
+
+[smartcover@lean_on_bar_fire]
+invulnerable			= true
+cover_name			= gar_smart_cover_bandit_barman_lead_stand_lean_on_bar
+loophole_name			= lead_stand_lean_on_bar
+cover_state			= fire_target
+on_timer			= 15000 | smartcover@lean_on_bar_fire_no_lookout ;{~33} ;, {~66} smartcover@lean_on_bar_idle, smartcover@lean_on_bar_lookout
+meet				= meet
+combat_ignore_cond		= true
+
+[smartcover@lean_on_bar_fire_no_lookout]
+invulnerable			= true
+cover_name			= gar_smart_cover_bandit_barman_lead_stand_lean_on_bar
+loophole_name			= lead_stand_lean_on_bar
+cover_state			= fire_no_lookout_target
+on_timer			= 15000 | smartcover@lean_on_bar_fire ;{~33} smartcover@lean_on_bar_idle, {~66} smartcover@lean_on_bar_lookout,
+meet				= meet
+combat_ignore_cond		= true

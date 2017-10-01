@@ -1,0 +1,230 @@
+[wpn_fort]:identity_immunities,weapon_probability,default_weapon_params
+GroupControlSection			= spawn_group
+discovery_dependency			=
+$spawn					= "weapons\fort"
+$npc					= on		
+$prefetch				= 8
+scheduled				= off
+cform					= skeleton
+class					= WP_PM
+min_radius				= 5
+max_radius				= 30
+description				= st_wpn_fort_descr
+
+ef_weapon_type				= 5
+
+default_to_ruck				= false
+sprint_allowed				= true
+
+;---DOF-------------------------------------------------------------------------
+;zoom_dof				= -1000, 1, 1000
+reload_dof				= 0, 0.5, 5, 2.25
+;-------------------------------------------------------------------------------
+
+;-------------------------------------------------------------------------------
+holder_range_modifier			= 1
+holder_fov_modifier			= 1
+;-------------------------------------------------------------------------------
+
+upgrades				= up_gr_ab_fort, up_gr_cd_fort, up_gr_e_fort, up_gr_f_fort, up_gr_g_fort, up_gr_h_fort
+installed_upgrades			=
+upgrade_scheme				= upgrade_scheme_u10a
+
+cost					= 600
+
+;ammo_limit				= 120
+;ammo_current				= 90
+ammo_elapsed				= 12
+
+ammo_mag_size				= 12
+ammo_class				= ammo_9x18_fmj, ammo_9x18_pmm
+fire_modes				= 1
+
+hand_dependence				= 1
+single_handed				= 1
+
+slot					= 1
+animation_slot				= 1
+
+inv_name				= st_wpn_fort
+inv_name_short				= st_wpn_fort
+inv_weight				= 0.83
+
+inv_grid_width				= 2						; 1
+inv_grid_height				= 1
+inv_grid_x				= 10
+inv_grid_y				= 8
+
+kill_msg_x				= 104
+kill_msg_y				= 178
+kill_msg_width				= 28
+kill_msg_height				= 21
+
+;-------------------------------------------------------------------------------
+
+fire_dispersion_base			= 0.8
+control_inertion_factor			= 1
+
+cam_relax_speed				= 8
+cam_relax_speed_ai			= 360
+cam_dispersion				= 0.6
+cam_dispersion_inc			= 0.6
+cam_dispersion_frac			= 1
+cam_max_angle				= 5
+cam_max_angle_horz			= 5
+cam_step_angle_horz			= 1
+
+fire_dispersion_condition_factor	= 5
+misfire_probability			= 0.025
+misfire_condition_k			= 0.05						; decane: missing by default
+condition_shot_dec			= 0.0008
+
+;-------------------------------------------------------------------------------
+
+position				= -0.021, -0.1, 0
+orientation				= 0, 0, 0
+
+fire_point				= 0, 0.148, 0.161
+
+flame_particles				= weapons\generic_weapon03
+smoke_particles				= weapons\generic_shoot_00
+
+shell_point				= 0, 0.133, 0.047
+shell_dir				= 0, 0, 0.4
+shell_particles				= weapons\generic_shells
+
+PDM_disp_base				= 1
+PDM_disp_vel_factor			= 0.3
+PDM_disp_accel_factor			= 0.3
+PDM_disp_crouch				= 1
+PDM_disp_crouch_no_acc			= 1
+
+hit_power				= 0.35						; 0.5, 0.5, 0.5, 0.5
+hit_impulse				= 1						; 75
+hit_type				= fire_wound
+
+silencer_hit_power			= 0.35
+silencer_hit_impulse			= 1						; 90
+silencer_fire_distance			= 700						; 100
+silencer_bullet_speed			= 320						; 240
+
+hit_probability_gd_novice		= 1
+hit_probability_gd_stalker		= 1
+hit_probability_gd_veteran		= 1
+hit_probability_gd_master		= 1
+
+fire_distance				= 700						; 40
+bullet_speed				= 320						; 220
+rpm					= 250
+;rpm_empty_click			= 200
+
+use_aim_bullet				= true
+time_to_aim				= 1
+
+hud					= wpn_fort_hud
+
+;--STRAP PARAMETERS-----------------------------------------------------------------
+
+visual					= dynamics\weapons\wpn_fort\wpn_fort.ogf
+
+light_color				= 0.6, 0.5, 0.3
+light_range				= 3
+light_var_color				= 0.05
+light_var_range				= 0.5
+light_time				= 0.2
+
+ph_mass					= 0.83						; 1
+
+scope_status				= 0
+silencer_status				= 2						; 0
+grenade_launcher_status			= 0
+
+zoom_enabled				= true
+;zoom_rotate_time			= 0.25
+scope_zoom_factor			= 75						; 55
+
+silencer_name				= wpn_addon_silencer
+silencer_x				= 49						; 36
+silencer_y				= -15						; -17
+
+snd_draw				= weapons\fort_draw
+snd_holster				= weapons\generic_holster
+snd_shoot				= weapons\n_fort_shot
+snd_silncer_shot			= weapons\n_pb_shot
+
+snd_empty				= weapons\pistol_empty
+snd_reload				= weapons\pistol_reload
+;snd_close				= weapons\generic_close
+
+;silencer_flame_particles		= weapons\generic_weapon01
+silencer_smoke_particles		= weapons\generic_shoot_00
+
+silencer_light_color			= 0.6, 0.5, 0.3
+silencer_light_range			= 0.01
+silencer_light_var_color		= 0.05
+silencer_light_var_range		= 0.5
+silencer_light_time			= 0.2
+
+[wpn_fort_hud]:hud_base
+
+;zoom_hide_crosshair			= false
+attach_place_idx			= 0
+item_visual				= dynamics\weapons\wpn_fort\wpn_fort_hud
+
+hands_position				= -0.021, -0.16, 0.0025
+hands_orientation			= -0.5, 1, 1.149999
+
+hands_position_16x9			= 0.033, -0.1895, 0.039
+hands_orientation_16x9			= 2.349998, 2.749999, 2.849998
+
+item_position				= 0.000494, -0.000025, -0.00351
+item_orientation			= 1.239378, -0.134046, -2.052052
+
+shell_point				= 0.013, 0.041, 0.474
+shell_bone				= wpn_body
+
+fire_point				= 0, 0.04, 0.149
+fire_bone				= wpn_body
+
+anm_show				= fort_draw
+anm_show_empty				= fort_draw, fort_opened
+
+anm_hide				= fort_holster
+anm_hide_empty				= fort_holster, fort_opened
+
+anm_idle				= fort_idle
+anm_idle_empty				= fort_idle, fort_opened
+
+anm_shots				= fort_shoot
+anm_shot_l				= fort_shoot, fort_open
+
+anm_idle_aim				= fort_idle_aim
+anm_idle_aim_empty			= fort_idle_aim, fort_opened
+
+anm_reload				= fort_reload
+anm_reload_empty			= fort_reload, fort_close
+
+anm_idle_moving				= fort_idle_moving
+anm_idle_moving_empty			= fort_idle_moving, fort_opened
+
+anm_idle_sprint				= fort_idle_sprint
+anm_idle_sprint_empty			= fort_idle_sprint, fort_opened
+
+anm_bore				= fort_idle_bore
+anm_bore_empty				= fort_idle_bore, fort_opened
+
+aim_hud_offset_pos			= -0.1083, 0.044, 0.05
+aim_hud_offset_rot			= 0.003, 0.0063, -0.025
+
+aim_hud_offset_pos_16x9			= -0.1702, 0.0744, 0
+aim_hud_offset_rot_16x9			= 0.034, 0.0575, 0.01
+
+;-----------------------------------------------------------------------------
+; Custom
+;-----------------------------------------------------------------------------
+
+[wpn_fort_up]:wpn_fort
+$spawn					= "weapons\fort_up"
+upgrades				= up_gr_ab_fort, up_gr_cd_fort, up_gr_e_fort, up_gr_f_fort, up_gr_g_fort, up_gr_h_fort
+installed_upgrades			= up_a_fort, up_c_fort, up_e_fort, up_h_fort
+upgrade_scheme				= upgrade_scheme_u10a

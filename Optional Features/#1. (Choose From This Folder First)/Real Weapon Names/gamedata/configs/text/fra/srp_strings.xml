@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+
+	<!-- Dialogs -->
+
+	<string id="st_tm_guide_4">
+		<text>Nowhere during an emission, are you crazy?</text>
+	</string>
+	<string id="st_tm_guide_22">
+		<text>Nowhere, I changed my mind.</text>
+	</string>
+	<string id="gar_bandit_robbery_112">
+		<text>I don’t think so.</text>
+	</string>
+	<string id="gar_bandit_robbery_122">
+		<text>Not today.</text>
+	</string>
+	<string id="hello_mil_killer_112">
+		<text>Looking for information about the situation here. Can you tell me anything?</text>
+	</string>
+
+	<!-- Prompts -->
+
+	<string id="tips_wait_conversation_finish">
+		<text>You must wait for the transmission to finish.</text>
+	</string>
+	<string id="no_sleep_during_emission">
+		<text>You cannot sleep through an emission!</text>
+	</string>
+	<string id="nothing_to_repair">
+		<text>Nothing to repair!</text>
+	</string>
+
+	<!-- NPCs -->
+
+	<string id="yan_levshas_crew">
+		<text>Lefty’s crew member</text>
+	</string>
+
+	<!-- Equipment -->
+
+	<string id="st_mar_quest_wpn_pm_1_name">
+		<text>Modified PM</text>
+	</string>
+	<string id="st_mar_quest_wpn_pm_1_descr">
+		<text>A modified Makarov PM, valuable to Clear Sky.</text>
+	</string>
+	<string id="st_mar_quest_wpn_ak74u_1_name">
+		<text>Special AKS-74U</text>
+	</string>
+	<string id="st_mar_quest_novice_outfit_1_name">
+		<text>Experimental suit</text>
+	</string>
+	<string id="st_mar_quest_novice_outfit_1_descr">
+		<text>An experimental suit saturated with anomalous jelly.</text>
+	</string>
+
+	<!-- Locations -->
+
+	<string id="agroprom_underground">
+		<text>Agroprom Underground</text>
+	</string>
+
+	<!-- Optionals -->
+
+	<string id="st_sleepingbag">
+		<text>Sleeping bag</text>
+	</string>
+	<string id="st_sleepingbag_descr">
+		<text>A portable sleeping bag.</text>
+	</string>
+
+	<!-- Squad Stages -->
+
+	<string id="st_stage_idle">
+		<text>(idle)</text>
+	</string>
+	<string id="st_stage_wait">
+		<text>(waiting)</text>
+	</string>
+	<string id="st_stage_defence">
+		<text>(defending)</text>
+	</string>
+	<string id="st_stage_combat">
+		<text>(in combat)</text>
+	</string>
+	<string id="st_stage_post_combat">
+		<text>(post-combat)</text>
+	</string>
+	<string id="st_stage_move">
+		<text>(moving)</text>
+	</string>
+	<string id="st_stage_prepare">
+		<text>(preparing)</text>
+	</string>
+
+</string_table>

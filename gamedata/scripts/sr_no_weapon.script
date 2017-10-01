@@ -1,0 +1,74 @@
+----------------------------------------------------------------------------------------------------
+-- Disable actor's weapon
+----------------------------------------------------------------------------------------------------
+
+-- local state_nowhere = 0
+local state_inside = 1
+local state_outside = 2
+
+class "action_no_weapon"
+
+function action_no_weapon:__init(obj, storage)
+	self.object = obj
+	self.st = storage
+end
+
+function action_no_weapon:reset_scheme()
+--	self.state = state_nowhere
+	local actor = db.actor
+	if self.object:inside(actor:center()) then
+		self:zone_enter()
+	else
+		self.state = state_outside
+	end
+--	self:switch_state(actor)
+end
+
+function action_no_weapon:update(delta)
+	local actor = db.actor
+	if xr_logic.try_switch_to_another_section(self.object, self.st, actor) then
+		if self.state == state_inside then
+			self:zone_leave()
+		end
+		return
+	end
+	self:switch_state(actor)
+end
+
+function action_no_weapon:switch_state(actor)
+	local state = self.state
+	if state == state_outside then
+		if self.object:inside(actor:center()) then
+			self:zone_enter()
+			return
+		end
+	end
+	if state == state_inside then
+		if not self.object:inside(actor:center()) then
+			self:zone_leave()
+			return
+		end
+	end
+end
+
+function action_no_weapon:zone_enter()
+	self.state = state_inside
+	bind_stalker.hide_weapon()
+end
+
+function action_no_weapon:zone_leave()
+	self.state = state_outside
+	bind_stalker.restore_weapon()
+end
+
+---------------------------------------------------------------------------------------------------------------------
+
+function add_to_binder(npc, ini, scheme, section, storage)
+	local new_action = action_no_weapon(npc, storage)
+	xr_logic.subscribe_action_for_events(npc, storage, new_action)
+end
+
+function set_scheme(npc, ini, scheme, section)	--, gulag_name)
+	local st = xr_logic.assign_storage_and_bind(npc, ini, scheme, section)
+	st.logic = xr_logic.cfg_get_switch_conditions(ini, section, npc)
+end
