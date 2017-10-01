@@ -1,0 +1,270 @@
+-- DC170507: Optimization.
+
+local state_lib_states = state_lib.states
+local move_walk = move.walk
+local move_run = move.run
+local move_stand = move.stand
+
+--------------------------------------------------------------------------------
+
+class "eva_state_mgr_movement" (property_evaluator)
+
+function eva_state_mgr_movement:__init(st) super ()
+	self.st = st
+end
+
+function eva_state_mgr_movement:evaluate()
+	local movement = state_lib_states[self.st.target_state].movement
+	return movement == nil or movement == self.object:target_movement_type()
+end
+
+--------------------------------------------------------------------------------
+
+class "eva_state_mgr_movement_walk" (property_evaluator)
+
+function eva_state_mgr_movement_walk:__init(st) super ()
+	self.st = st
+end
+
+function eva_state_mgr_movement_walk:evaluate()
+	return state_lib_states[self.st.target_state].movement == move_walk
+end
+
+--------------------------------------------------------------------------------
+
+class "eva_state_mgr_movement_run" (property_evaluator)
+
+function eva_state_mgr_movement_run:__init(st) super ()
+	self.st = st
+end
+
+function eva_state_mgr_movement_run:evaluate()
+	return state_lib_states[self.st.target_state].movement == move_run
+end
+
+--------------------------------------------------------------------------------
+
+class "eva_state_mgr_movement_stand" (property_evaluator)
+
+function eva_state_mgr_movement_stand:__init(st) super ()
+	self.st = st
+end
+
+function eva_state_mgr_movement_stand:evaluate()
+	return state_lib_states[self.st.target_state].movement == move_stand
+end
+
+--------------------------------------------------------------------------------
+
+class "eva_state_mgr_movement_stand_now" (property_evaluator)
+
+function eva_state_mgr_movement_stand_now:__init() super ()
+--	self.st = st
+end
+
+function eva_state_mgr_movement_stand_now:evaluate()
+	return self.object:target_movement_type() == move_stand
+end
+
+--------------------------------------------------------------------------------
+
+class "act_state_mgr_movement_walk" (action_base)
+
+function act_state_mgr_movement_walk:__init() super ()
+--	self.st = st
+end
+
+function act_state_mgr_movement_walk:initialize()
+	action_base.initialize(self)
+	self.object:set_movement_type(move_walk)
+end
+
+function act_state_mgr_movement_walk:execute()
+	action_base.execute(self)
+end
+
+function act_state_mgr_movement_walk:finalize()
+	action_base.finalize(self)
+end
+
+--------------------------------------------------------------------------------
+
+class "act_state_mgr_movement_run" (action_base)
+
+function act_state_mgr_movement_run:__init() super ()
+--	self.st = st
+end
+
+function act_state_mgr_movement_run:initialize()
+	action_base.initialize(self)
+	self.object:set_movement_type(move_run)
+end
+
+function act_state_mgr_movement_run:execute()
+	action_base.execute(self)
+end
+
+function act_state_mgr_movement_run:finalize()
+	action_base.finalize(self)
+end
+
+--------------------------------------------------------------------------------
+
+class "act_state_mgr_movement_stand" (action_base)
+
+function act_state_mgr_movement_stand:__init() super ()
+--	self.st = st
+end
+
+function act_state_mgr_movement_stand:initialize()
+	action_base.initialize(self)
+	self.object:set_movement_type(move_stand)
+end
+
+function act_state_mgr_movement_stand:execute()
+	action_base.execute(self)
+end
+
+function act_state_mgr_movement_stand:finalize()
+	action_base.finalize(self)
+end
+
+--------------------------------------------------------------------------------
+--                              smart actions                                 --
+--------------------------------------------------------------------------------
+
+class "act_state_mgr_movement_stand_turn" (action_base)
+
+function act_state_mgr_movement_stand_turn:__init(st) super ()
+	self.st = st
+end
+
+function act_state_mgr_movement_stand_turn:initialize()
+	action_base.initialize(self)
+	local sobj = self.object
+	state_mgr_direction.turn(sobj, self.st)
+	sobj:set_movement_type(move_stand)
+end
+
+function act_state_mgr_movement_stand_turn:execute()
+	action_base.execute(self)
+end
+
+function act_state_mgr_movement_stand_turn:finalize()
+	action_base.finalize(self)
+end
+
+--------------------------------------------------------------------------------
+
+class "act_state_mgr_movement_stand_search" (action_base)
+
+function act_state_mgr_movement_stand_search:__init(st) super ()
+	self.st = st
+end
+
+function act_state_mgr_movement_stand_search:initialize()
+	action_base.initialize(self)
+	local sobj = self.object
+	sobj:set_movement_type(move_stand)
+	sobj:set_sight(state_mgr_direction.look_position_type(sobj, self.st), nil, 0)
+end
+
+function act_state_mgr_movement_stand_search:execute()
+	action_base.execute(self)
+end
+
+function act_state_mgr_movement_stand_search:finalize()
+	action_base.finalize(self)
+end
+
+--------------------------------------------------------------------------------
+
+class "act_state_mgr_movement_walk_turn" (action_base)
+
+function act_state_mgr_movement_walk_turn:__init(st) super ()
+	self.st = st
+end
+
+function act_state_mgr_movement_walk_turn:initialize()
+	action_base.initialize(self)
+	local sobj = self.object
+	sobj:set_movement_type(move_walk)
+	state_mgr_direction.turn(sobj, self.st)
+end
+
+function act_state_mgr_movement_walk_turn:execute()
+	action_base.execute(self)
+end
+
+function act_state_mgr_movement_walk_turn:finalize()
+	action_base.finalize(self)
+end
+
+--------------------------------------------------------------------------------
+
+class "act_state_mgr_movement_walk_search" (action_base)
+
+function act_state_mgr_movement_walk_search:__init(st) super ()
+	self.st = st
+end
+
+function act_state_mgr_movement_walk_search:initialize()
+	action_base.initialize(self)
+	local sobj = self.object
+	sobj:set_movement_type(move_walk)
+	sobj:set_sight(state_mgr_direction.look_position_type(sobj, self.st), nil, 0)
+end
+
+function act_state_mgr_movement_walk_search:execute()
+	action_base.execute(self)
+end
+
+function act_state_mgr_movement_walk_search:finalize()
+	action_base.finalize(self)
+end
+
+--------------------------------------------------------------------------------
+
+class "act_state_mgr_movement_run_turn" (action_base)
+
+function act_state_mgr_movement_run_turn:__init(st) super ()
+	self.st = st
+end
+
+function act_state_mgr_movement_run_turn:initialize()
+	action_base.initialize(self)
+	local sobj = self.object
+	sobj:set_movement_type(move_run)
+	state_mgr_direction.turn(sobj, self.st)
+end
+
+function act_state_mgr_movement_run_turn:execute()
+	action_base.execute(self)
+end
+
+function act_state_mgr_movement_run_turn:finalize()
+	action_base.finalize(self)
+end
+
+--------------------------------------------------------------------------------
+
+class "act_state_mgr_movement_run_search" (action_base)
+
+function act_state_mgr_movement_run_search:__init(st) super ()
+	self.st = st
+end
+
+function act_state_mgr_movement_run_search:initialize()
+	action_base.initialize(self)
+	local sobj = self.object
+	sobj:set_movement_type(move_run)
+	sobj:set_sight(state_mgr_direction.look_position_type(sobj, self.st), nil, 0)
+end
+
+function act_state_mgr_movement_run_search:execute()
+	action_base.execute(self)
+end
+
+function act_state_mgr_movement_run_search:finalize()
+	action_base.finalize(self)
+end

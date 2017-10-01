@@ -1,23 +1,23 @@
-zone_by_name		= {}
--- sl_by_name		= {}
-bridge_by_name		= {}
-script_ids		= {}
-storage			= {}
-sound			= {}
-actor			= nil
-actor_proxy		= actor_proxy.actor_proxy()
-heli			= {}
-camp_storage		= {}
-story_by_id		= {}
--- smart_terrain_by_id	= {}
-trader			= nil
--- info_restr		= {}
--- strn_by_respawn	= {}
-heli_enemies		= {}
-heli_enemy_count	= 0
-anim_obj_by_name	= {}
-goodwill		= {sympathy = {}, relations = {}}
-signal_light		= {}
+zone_by_name           = {}
+-- sl_by_name          = {}
+bridge_by_name         = {}
+script_ids             = {}
+storage                = {}
+sound                  = {}
+actor                  = nil
+actor_proxy            = actor_proxy.actor_proxy()
+heli                   = {}
+camp_storage           = {}
+-- story_by_id         = {}
+-- smart_terrain_by_id = {}
+-- trader              = nil
+-- info_restr          = {}
+-- strn_by_respawn     = {}
+heli_enemies           = {}
+heli_enemy_count       = 0
+anim_obj_by_name       = {}
+goodwill               = {sympathy = {}, relations = {}}
+signal_light           = {}
 
 function add_enemy(obj)
 	heli_enemies[heli_enemy_count] = obj
@@ -70,8 +70,8 @@ function add_actor(obj)
 	add_obj(obj)
 
 	if not has_alife_info("has_sleeping_bag") then
-		actor:give_info_portion("has_sleeping_bag")
-		alife():create("sleepingbag", vector(), 0, 0, actor:id())
+		obj:give_info_portion("has_sleeping_bag")
+		alife():create("sleepingbag", vector(), 0, 0, obj:id())
 	end
 end
 

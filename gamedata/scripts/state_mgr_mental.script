@@ -1,0 +1,154 @@
+-- DC170507: Optimization.
+
+local state_lib_states = state_lib.states
+local anim_free = anim.free
+local anim_danger = anim.danger
+local anim_panic = anim.panic
+
+--------------------------------------------------------------------------------
+
+class "eva_state_mgr_mental" (property_evaluator)
+
+function eva_state_mgr_mental:__init(st) super ()
+	self.st = st
+end
+
+function eva_state_mgr_mental:evaluate()
+	local mental_state = state_lib_states[self.st.target_state].mental
+	return mental_state == nil or mental_state == self.object:target_mental_state()
+end
+
+--------------------------------------------------------------------------------
+
+class "eva_state_mgr_mental_free" (property_evaluator)
+
+function eva_state_mgr_mental_free:__init(st) super ()
+	self.st = st
+end
+
+function eva_state_mgr_mental_free:evaluate()
+	return state_lib_states[self.st.target_state].mental == anim_free
+end
+
+--------------------------------------------------------------------------------
+
+class "eva_state_mgr_mental_free_now" (property_evaluator)
+
+function eva_state_mgr_mental_free_now:__init() super ()
+--	self.st = st
+end
+
+function eva_state_mgr_mental_free_now:evaluate()
+	return self.object:target_mental_state() == anim_free
+end
+
+--------------------------------------------------------------------------------
+
+class "eva_state_mgr_mental_danger" (property_evaluator)
+
+function eva_state_mgr_mental_danger:__init(st) super ()
+	self.st = st
+end
+
+function eva_state_mgr_mental_danger:evaluate()
+	return state_lib_states[self.st.target_state].mental == anim_danger
+end
+
+--------------------------------------------------------------------------------
+
+class "eva_state_mgr_mental_danger_now" (property_evaluator)
+
+function eva_state_mgr_mental_danger_now:__init() super ()
+--	self.st = st
+end
+
+function eva_state_mgr_mental_danger_now:evaluate()
+	return self.object:target_mental_state() == anim_danger
+end
+
+--------------------------------------------------------------------------------
+
+class "eva_state_mgr_mental_panic" (property_evaluator)
+
+function eva_state_mgr_mental_panic:__init(st) super ()
+	self.st = st
+end
+
+function eva_state_mgr_mental_panic:evaluate()
+	return state_lib_states[self.st.target_state].mental == anim_panic
+end
+
+--------------------------------------------------------------------------------
+
+class "eva_state_mgr_mental_panic_now" (property_evaluator)
+
+function eva_state_mgr_mental_panic_now:__init() super ()
+--	self.st = st
+end
+
+function eva_state_mgr_mental_panic_now:evaluate()
+	return self.object:target_mental_state() == anim_panic
+end
+
+--------------------------------------------------------------------------------
+
+class "act_state_mgr_mental_free" (action_base)
+
+function act_state_mgr_mental_free:__init() super ()
+end
+
+function act_state_mgr_mental_free:initialize()
+	action_base.initialize(self)
+	self.object:set_mental_state(anim_free)
+end
+
+function act_state_mgr_mental_free:execute()
+	action_base.execute(self)
+	self.object:set_mental_state(anim_free)
+end
+
+function act_state_mgr_mental_free:finalize()
+	action_base.finalize(self)
+end
+
+--------------------------------------------------------------------------------
+
+class "act_state_mgr_mental_danger" (action_base)
+
+function act_state_mgr_mental_danger:__init() super ()
+end
+
+function act_state_mgr_mental_danger:initialize()
+	action_base.initialize(self)
+	self.object:set_mental_state(anim_danger)
+end
+
+function act_state_mgr_mental_danger:execute()
+	action_base.execute(self)
+	self.object:set_mental_state(anim_danger)
+end
+
+function act_state_mgr_mental_danger:finalize()
+	action_base.finalize(self)
+end
+
+--------------------------------------------------------------------------------
+
+class "act_state_mgr_mental_panic" (action_base)
+
+function act_state_mgr_mental_panic:__init() super ()
+end
+
+function act_state_mgr_mental_panic:initialize()
+	action_base.initialize(self)
+	self.object:set_mental_state(anim_panic)
+end
+
+function act_state_mgr_mental_panic:execute()
+	action_base.execute(self)
+	self.object:set_mental_state(anim_panic)
+end
+
+function act_state_mgr_mental_panic:finalize()
+	action_base.finalize(self)
+end

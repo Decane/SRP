@@ -11,10 +11,17 @@ end
 
 ------------------------------------------------------------------------------------
 
+local callback_patrol_path_in_point = callback.patrol_path_in_point
+local callback_hit = callback.hit
+local callback_death = callback.death
+
 class "generic_object_binder" (object_binder)
 
 function generic_object_binder:__init(obj) super(obj)
 	self.loaded = false
+	self.first_update_done = false
+	self.death_recorded = false
+	self.is_trader = obj:clsid() == clsid.script_trader
 end
 
 function generic_object_binder:reload(section)
@@ -27,7 +34,7 @@ function generic_object_binder:reinit()
 
 	local sobj = self.object
 
-	if sobj:clsid() ~= clsid.script_trader then
+	if not self.is_trader then
 		sobj:set_patrol_extrapolate_callback(generic_object_binder.extrapolate_callback, self)
 	end
 
@@ -37,29 +44,37 @@ function generic_object_binder:reinit()
 
 	self.st = t
 
-	sobj:set_callback(callback.patrol_path_in_point, self.waypoint_callback, self)
-	sobj:set_callback(callback.hit, self.hit_callback, self)
-	sobj:set_callback(callback.death, self.death_callback, self)
+	sobj:set_callback(callback_patrol_path_in_point, self.waypoint_callback, self)
+	sobj:set_callback(callback_hit, self.hit_callback, self)
+	sobj:set_callback(callback_death, self.death_callback, self)
 end
 
 function generic_object_binder:update(delta)
 
 	object_binder.update(self, delta)
 
-	local sobj = self.object
-	local sobj_id = sobj:id()
-
-	if bind_stalker.to_delayed_alife_release_objects[sobj_id] == true then
-		local sim = alife()
-		sim:release(sim:object(sobj_id), true)
-		bind_stalker.to_delayed_alife_release_objects[sobj_id] = nil
+	if self.death_recorded == true then
 		return
 	end
 
-	if sobj:clsid() == clsid.script_trader then
---		dbgmsg("[bind_monster.update]: Trader update!")
-		trade_manager.update(sobj)
+	local sobj = self.object
+
+	if self.first_update_done == false then
+		local sobj_id = sobj:id()
+		if bind_stalker.delayed_alife_release_objects[sobj_id] == true then
+			local sim = alife()
+--			dbglog("[bind_monster.update]: Releasing "..sobj_id)
+			sim:release(sim:object(sobj_id), true)
+			bind_stalker.delayed_alife_release_objects[sobj_id] = nil
+			return
+		end
+		if self.is_trader and sobj:alive() then
+			trade_manager.update(sobj)
+		end
+		self.first_update_done = true
 	end
+
+	local self_st = self.st
 
 	if sobj:alive() then
 
@@ -69,26 +84,22 @@ function generic_object_binder:update(delta)
 			sobj:set_tip_text("")
 		end
 
-		local st = db.storage[sobj_id]
-		if st ~= nil then
+		local active_scheme = self_st.active_scheme
+		if active_scheme ~= nil then
+			xr_logic.try_switch_to_another_section(sobj, self_st[active_scheme], db.actor)
+		end
 
-			local active_scheme = st.active_scheme
-			if active_scheme ~= nil then
-				xr_logic.try_switch_to_another_section(sobj, st[active_scheme], db.actor)
-			end
-
-			local squad = st.squad_obj
-			if squad ~= nil then
-				if squad.commander_id == sobj_id then
-					squad:update()
-				end
+		local squad = self_st.squad_obj
+		if squad ~= nil then
+			if squad.commander_id == sobj:id() then
+				squad:update()
 			end
 		end
 	else
 		sobj:set_tip_text_default()
+		self.death_recorded = true
 	end
 
-	local self_st = self.st
 	if self_st.active_section ~= nil then
 		xr_logic.issue_event(sobj, self_st[self_st.active_scheme], "update", delta)
 	end
@@ -103,8 +114,6 @@ function generic_object_binder:extrapolate_callback()
 		return
 	end
 
-	local cur_pt = sobj:get_current_point_index()
-
 	if sobj:get_script() == false then
 		return false
 	end
@@ -114,26 +123,22 @@ function generic_object_binder:extrapolate_callback()
 		return false
 	end
 
-	if patrol(patrol_path):flags(cur_pt):get() == 0 then
-		return true
-	end
-
-	return false
+	return patrol(patrol_path):flags(sobj:get_current_point_index()):get() == 0
 end
 
 function generic_object_binder:waypoint_callback(obj, action_type, index)
-	if self.st.active_section ~= nil then
-		xr_logic.issue_event(self.object, self.st[self.st.active_scheme], "waypoint_callback", obj, action_type, index)
+	local self_st = self.st
+	if self_st.active_section ~= nil then
+		xr_logic.issue_event(obj, self_st[self_st.active_scheme], "waypoint_callback", obj, action_type, index)
 	end
 end
 
-function generic_object_binder:death_callback(victim, who)
+function generic_object_binder:death_callback(victim, culprit)
 
-	local sobj = self.object
 	local act = db.actor
 
-	if who:id() == act:id() then
-		xr_statistic.addKillCount(sobj)
+	if culprit:id() == act:id() then
+		xr_statistic.addKillCount(victim)
 		xr_statistic.inc_killed_monsters_counter()
 	end
 
@@ -141,57 +146,57 @@ function generic_object_binder:death_callback(victim, who)
 	local mob_death = self_st.mob_death
 
 	if mob_death then
-		xr_logic.issue_event(sobj, mob_death, "death_callback", victim, who)
+		xr_logic.issue_event(victim, mob_death, "death_callback", victim, culprit)
 	end
 
 	if self_st.active_section then
-		xr_logic.issue_event(sobj, self_st[self_st.active_scheme], "death_callback", victim, who)
+		xr_logic.issue_event(victim, self_st[self_st.active_scheme], "death_callback", victim, culprit)
 	end
 
 	local h = hit()
-	h.draftsman = sobj
+	h.draftsman = victim
 	h.type = hit.fire_wound
-	h.direction = act:position():sub(sobj:position())
+	h.direction = act:position():sub(victim:position())
 	h:bone("pelvis")
 	h.power = 1
 	h.impulse = 10
-	sobj:hit(h)
+	victim:hit(h)
 
-	sobj:set_callback(callback.death, nil)			-- SRP
-	sobj:set_callback(callback.patrol_path_in_point, nil)	-- SRP
-	sobj:set_callback(callback.hit, nil)			-- SRP
+	victim:set_patrol_extrapolate_callback(nil)             -- SRP
+	victim:set_callback(callback_patrol_path_in_point, nil) -- SRP
+	victim:set_callback(callback_hit, nil)                  -- SRP
+	victim:set_callback(callback_death, nil)                -- SRP
 
-	if sobj:clsid() == clsid.poltergeist_s then
+	if victim:clsid() == clsid.poltergeist_s then
 		local sim = alife()
---		local sim_obj = sim:object(sobj:name())
-		local sim_obj = sim:object(sobj:id())
+--		local sim_obj = sim:object(victim:name())
+		local sim_obj = sim:object(victim:id())
 		if sim_obj ~= nil then
 			sim:release(sim_obj, true)
 		end
 	end
 end
 
-function generic_object_binder:hit_callback(obj, amount, local_direction, who, bone_index)
+function generic_object_binder:hit_callback(victim, amount, local_direction, hitter, bone_index)
 
-	local sobj = self.object
 	local self_st_hit = self.st.hit
 
 	if self_st_hit then
-		xr_logic.issue_event(sobj, self_st_hit, "hit_callback", obj, amount, local_direction, who, bone_index)
+		xr_logic.issue_event(victim, self_st_hit, "hit_callback", victim, amount, local_direction, hitter, bone_index)
 	end
-
-	local who_id = who:id()
 
 	if amount > 0 then
-		sim_combat.hit_callback(sobj:id(), who_id)
+		sim_combat.hit_callback(victim:id(), hitter:id())
 	end
 
-	if string.find(obj:name(), "bloodsucker_jumper") ~= nil then
-		if who_id ~= db.actor:id() then
-			obj.health = obj.health + amount
+	if string.find(victim:name(), "bloodsucker_jumper") ~= nil then
+		if hitter:id() ~= db.actor:id() then
+			victim.health = victim.health + amount
 		end
 	end
 end
+
+local stype_mobile = modules.stype_mobile
 
 function generic_object_binder:net_spawn(sobject)
 
@@ -205,22 +210,22 @@ function generic_object_binder:net_spawn(sobject)
 		return true
 	end
 
-	local sim = alife()
-	local sobj_id = sobj:id()
-	local sim_obj = sim:object(sobj_id)
+	local sim_obj = alife():object(sobj:id())
 
 	if sim_obj == nil then
 		return false
 	end
 
-	db.storage[sobj_id].squad_obj = sim_board.get_sim_board().squads[sim_obj.squad_id]
+	local self_st = self.st
+
+	self_st.squad_obj = sim_board.get_sim_board().squads[sim_obj.squad_id]
 
 	db.add_obj(sobj)
 
-	if sobj:clsid() == clsid.script_trader then
-		smart_terrain.setup_gulag_and_logic_on_spawn(sobj, self.st, sobject, modules.stype_trader, self.loaded)
+	if self.is_trader then
+		smart_terrain.setup_gulag_and_logic_on_spawn(sobj, self_st, sim_obj, modules.stype_trader, self.loaded)
 	else
-		smart_terrain.setup_gulag_and_logic_on_spawn(sobj, self.st, sobject, modules.stype_mobile, self.loaded)
+		smart_terrain.setup_gulag_and_logic_on_spawn(sobj, self_st, sim_obj, stype_mobile, self.loaded)
 	end
 
 	return true
@@ -230,25 +235,28 @@ function generic_object_binder:net_destroy()
 
 	local sobj = self.object
 
-	sobj:set_callback(callback.death, nil)
-	sobj:set_callback(callback.patrol_path_in_point, nil)
-	sobj:set_callback(callback.hit, nil)
+	sobj:set_patrol_extrapolate_callback(nil) -- SRP
+	sobj:set_callback(callback_patrol_path_in_point, nil)
+	sobj:set_callback(callback_hit, nil)
+	sobj:set_callback(callback_death, nil)
 
 	local sobj_id = sobj:id()
 
 	xr_sound.stop_sounds_by_id(sobj_id)
 
-	local st = db.storage[sobj_id]
-	if st and st.active_scheme then
-		xr_logic.issue_event(sobj, st[st.active_scheme], "net_destroy")
+	local self_st = self.st
+
+	if self_st.active_scheme then
+		xr_logic.issue_event(sobj, self_st[self_st.active_scheme], "net_destroy")
 	end
 
---	db.del_obj(sobj)		-- done below
+--	db.del_obj(sobj) -- done below
 	db.storage[sobj_id] = nil
+
 	object_binder.net_destroy(self)
 end
 --[[
-function generic_object_binder:reload(section)	-- duplicate
+function generic_object_binder:reload(section) -- duplicate
 	object_binder.reload(self, section)
 end
 ]]
@@ -260,7 +268,7 @@ function generic_object_binder:save(packet)
 	set_save_marker(packet, "save", false, "generic_object_binder")
 	object_binder.save(self, packet)
 	xr_logic.save_obj(self.object, packet)
---	if self.object:clsid() == clsid.script_trader then
+--	if self.is_trader then
 --		trade_manager.save(self.object, packet)
 --	end
 	set_save_marker(packet, "save", true, "generic_object_binder")
@@ -271,7 +279,7 @@ function generic_object_binder:load(reader)
 	set_save_marker(reader, "load", false, "generic_object_binder")
 	object_binder.load(self, reader)
 	xr_logic.load_obj(self.object, reader)
---	if self.object:clsid() == clsid.script_trader then
+--	if self.is_trader then
 --		trade_manager.load(self.object, reader)
 --	end
 	set_save_marker(reader, "load", true, "generic_object_binder")

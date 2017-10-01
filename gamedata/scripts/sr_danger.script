@@ -1,0 +1,36 @@
+-- DC170516: Optimization.
+
+local info_sectors = nil
+
+function select_active_sectors(npc)
+	if info_sectors == nil then
+		return nil
+	end
+	local t = nil
+	local npc_position = npc:position()
+	for k, info_sector in pairs (info_sectors) do
+		if info_sector:inside(npc_position) then
+			if t == nil then
+				t = {}
+			end
+			t[k] = info_sector
+		end
+	end
+	return t
+end
+
+function check_danger_position(position, sectors)
+	for k, sector in pairs (sectors) do
+		if sector:inside(position) then
+			return true
+		end
+	end
+	return false
+end
+
+function register_new_sector(sector)
+	if info_sectors == nil then
+		info_sectors = {}
+	end
+	info_sectors[sector:id()] = sector
+end

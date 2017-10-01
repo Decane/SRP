@@ -12,7 +12,9 @@ on_info = {-esc_player_sleeps +esc_trader_hello_played} sr_idle@timer
 
 [sr_idle@timer]
 on_actor_outside = sr_idle %-esc_trader_hello_played -esc_actor_come_first%
-on_game_timer = 150 | sr_idle@check
+on_info = {=actor_is_talking} sr_idle@check
+on_info2 = {=is_trading} sr_idle@check
+on_game_timer = 150 | sr_idle@last %+esc_player_sleeps%
 
 [sr_idle@check]
-on_info = sr_idle@last %+esc_player_sleeps%
+on_timer = 1000 | sr_idle@timer

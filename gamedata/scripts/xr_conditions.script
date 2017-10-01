@@ -872,16 +872,12 @@ function actor_on_level(actor, npc, p)					-- if p[1] == nil, returns false; if 
 end
 
 function is_upgrading(actor, npc, p)
-	return pda.upgrade_closed
+	return pda.upgrade_closed == false
 end
-
---[[
 
 function is_trading(actor, npc, p)
-	return pda.trade_closed
+	return pda.trade_closed == false
 end
-
-]]
 
 --'------------------------------------------------------
 --' Minigun support
@@ -1510,4 +1506,8 @@ function npc_dist_to_zone_le(actor, npc, p)
 	local zone = db.zone_by_name[zone_name]
 	local dist = tonumber(distance)
 	return npc:position():distance_to_sqr(zone:position()) <= dist * dist
+end
+
+function actor_is_talking()
+	return pda.dialog_closed == false
 end

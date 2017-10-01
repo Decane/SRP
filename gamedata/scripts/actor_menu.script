@@ -1,0 +1,99 @@
+-- DC170611: Fixed the parting audio of an NPC playing prematurely upon entering the trade or upgrade screen with them.
+
+-- int mode:
+-- 0  = Undefined
+-- 1  = Inventory
+-- 2  = Trade
+-- 3  = Upgrade
+-- 4  = DeadBodySearch
+-- 10 = Talk dialog show
+-- 11 = Talk dialog hide
+
+local last_mode = 0
+-- xr_meet_dialog_closed = false
+-- xr_meet_trade_closed = false
+-- xr_meet_upgrade_closed = false
+
+function actor_menu_mode(mode)
+	if (mode == 0) then
+		if (last_mode == 1) then
+			inventory_wnd_closed()
+		elseif (last_mode == 2) then
+			trade_wnd_closed()
+		elseif (last_mode == 3) then
+			upgrade_wnd_closed()
+		elseif (last_mode == 4) then
+			dead_body_search_wnd_closed()
+		end
+		last_mode = 0
+	elseif (mode == 1) then
+		last_mode = 1
+		inventory_wnd_opened()
+	elseif (mode == 2) then
+		last_mode = 2
+		trade_wnd_opened()
+	elseif (mode == 3) then
+		last_mode = 3
+		upgrade_wnd_opened()
+	elseif (mode == 4) then
+		last_mode = 4
+		dead_body_search_wnd_opened()
+	elseif (mode == 10) then
+		dialog_wnd_showed()
+	elseif (mode == 11) then
+		dialog_wnd_closed()
+	end
+end
+
+function inventory_wnd_opened() -- used
+--	dbglog("[actor_menu.inventory_wnd_opened]: Called!")
+end
+
+function inventory_wnd_closed() -- used
+--	dbglog("[actor_menu.inventory_wnd_closed]: Called!")
+end
+
+function trade_wnd_opened() -- used
+--	dbglog("[actor_menu.trade_wnd_opened]: Called!")
+--	xr_meet_dialog_closed = false
+	pda.dialog_closed = false -- hack to undo pda.dialog_wnd_closed() having set pda.dialog_closed = true
+	pda.trade_closed = false
+end
+
+function trade_wnd_closed() -- used
+--	dbglog("[actor_menu.trade_wnd_closed]: Called!")
+--	xr_meet_trade_closed = true
+	pda.trade_closed = true
+	pda.dialog_closed = true
+end
+
+function upgrade_wnd_opened() -- used
+--	dbglog("[actor_menu.upgrade_wnd_opened]: Called!")
+--	xr_meet_dialog_closed = false
+	pda.dialog_closed = false -- hack to undo pda.dialog_wnd_closed() having set pda.dialog_closed = true
+	pda.upgrade_closed = false
+end
+
+function upgrade_wnd_closed() -- used
+--	dbglog("[actor_menu.upgrade_wnd_closed]: Called!")
+--	xr_meet_upgrade_closed = true
+	pda.upgrade_closed = true
+	pda.dialog_closed = true
+end
+
+function dead_body_search_wnd_opened() -- used
+--	dbglog("[actor_menu.dead_body_search_wnd_opened]: Called!")
+end
+
+function dead_body_search_wnd_closed() -- used
+--	dbglog("[actor_menu.dead_body_search_wnd_closed]: Called!")
+end
+
+function dialog_wnd_showed() -- not used; pda.dialog_wnd_showed() is
+--	dbglog("[actor_menu.dialog_wnd_showed]: Called!")
+end
+
+function dialog_wnd_closed() -- not used; pda.dialog_wnd_closed() is
+--	dbglog("[actor_menu.dialog_wnd_closed]: Called!")
+--	xr_meet_dialog_closed = true
+end

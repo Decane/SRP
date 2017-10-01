@@ -1,63 +1,60 @@
--- attitude = personal_goodwill {-3000, 1000} + community_goodwill {-3000, 1000} + community_to_community {-5000, 5000} + reputation_goodwill {0, 0} + rank_goodwill {0, 0}
--- decane 20.08.2013: goodwill amounts fixed, superfluous code removed, readability improved, script optimized, new functions added
---	  19.02.2014: commented out set_squad_goodwill and set_squad_goodwill_to_npc abort functions for nil arguments to prevent crashes
+-- Decane 20.08.2013: goodwill amounts fixed, superfluous code removed, readability improved, script optimized, new functions added
+--        19.02.2014: commented out set_squad_goodwill and set_squad_goodwill_to_npc abort functions for nil arguments to prevent crashes
+
+-- general_goodwill = personal_goodwill {-3000, 9000} + community_goodwill {-3000, 1000} + community_to_community {-infinite, infinite} + reputation_goodwill {0, 0} + rank_goodwill {0, 0}
 
 default_sympathy = 0.01
 temp_goodwill_table = {}
 
-function set_factions_community(faction, target_faction, relation_name)
+function set_factions_community(faction, target_faction, relation_name) -- sets community_to_community
 
 	if faction == nil or faction == "none" or target_faction == nil or target_faction == "none" or relation_name == nil then
 		return
 	end
 
---	local community = 0
---	if relation_name == "enemy" then
---		community = -5000
---	elseif relation_name == "friend" then
---		community = 5000
---	end
+	local community = 0
+	if relation_name == "enemy" then
+		community = -5000
+	elseif relation_name == "friend" then
+		community = 5000
+	end
 
-	local community = (relation_name == "enemy" and -5000) or (relation_name == "friend" and 5000) or 0
 	relation_registry.set_community_relation(faction, target_faction, community)
 end
 
-function get_factions_community(faction, target_faction)
+function get_factions_community(faction, target_faction) -- returns community_to_community
 
---	if faction == nil or faction == "none" or target_faction == nil or target_faction == "none" then
---		return nil
---	end
---	return relation_registry.community_relation(faction, target_faction)
+	if faction == nil or faction == "none" or target_faction == nil or target_faction == "none" then
+		return nil
+	end
 
-	return (faction ~= nil and faction ~= "none" and target_faction ~= nil and target_faction ~= "none") and relation_registry.community_relation(faction, target_faction) or nil
+	return relation_registry.community_relation(faction, target_faction)
 end
 
-function is_factions_enemies(faction, target_faction)
+function is_factions_enemies(faction, target_faction) -- returns whether community_to_community <= -1000
 
---	if faction == nil or faction == "none" or target_faction == nil or target_faction == "none" then
---		return false
---	end
---	return relation_registry.community_relation(faction, target_faction) <= -1000
+	if faction == nil or faction == "none" or target_faction == nil or target_faction == "none" then
+		return false
+	end
 
-	return faction ~= nil and faction ~= "none" and target_faction ~= nil and target_faction ~= "none" and relation_registry.community_relation(faction, target_faction) <= -1000
+	return relation_registry.community_relation(faction, target_faction) <= -1000
 end
 
-function set_npcs_relation(npc, target_npc, relation_name)									-- function used only for (npc, actor) goodwill
+function set_npcs_relation(npc, actor, relation_name) -- sets NPC's personal_goodwill towards player in vanilla, but can also be used to set it towards another NPC
 
-	if npc == nil or target_npc == nil or relation_name == nil then
---		abort("[game_relations.set_npcs_relation]: Invalid arguments; #1 '%s', #2 '%s', #3 '%s'.", type(npc), type(target_npc), type(relation_name))
+	if npc == nil or actor == nil or relation_name == nil then
+--		abort("[game_relations.set_npcs_relation]: Invalid arguments; #1 '%s', #2 '%s', #3 '%s'.", type(npc), type(actor), type(relation_name))
 		return
 	end
 
---	local goodwill = 0
---	if relation_name == "enemy" then
---		goodwill = -8000												-- a squad has goodwill limits of {-11000, 7000} toward the actor
---	elseif relation_name == "friend" then
---		goodwill = 12000												-- see [communities_relations] table in game_relations.ltx
---	end
+	local goodwill = 0
+	if relation_name == "enemy" then
+		goodwill = -3000
+	elseif relation_name == "friend" then
+		goodwill = 9000
+	end
 
-	local goodwill = (relation_name == "enemy" and -8000) or (relation_name == "friend" and 12000) or 0
-	npc:set_goodwill(goodwill, target_npc)
+	npc:set_goodwill(goodwill, actor)
 end
 
 function set_npc_sympathy(npc, new_sympathy)
@@ -67,19 +64,17 @@ function set_npc_sympathy(npc, new_sympathy)
 		return
 	end
 
---	if new_sympathy < 0 then
---		new_sympathy = 0
---	elseif new_sympathy > 1 then
---		new_sympathy = 1
---	end
+	local new_symp = new_sympathy
+	if new_sympathy < 0 then
+		new_symp = 0
+	elseif new_sympathy > 1 then
+		new_symp = 1
+	end
 
---	npc:set_sympathy(new_sympathy)
-
-	local new_symp = (new_sympathy < 0 and 0) or (new_sympathy > 1 and 1) or new_sympathy
 	npc:set_sympathy(new_symp)
 end
 
-function set_squad_goodwill(squad_id, new_goodwill)										-- function used only for (squad npc, actor) goodwill
+function set_squad_goodwill(squad_id, new_goodwill) -- sets squad NPCs' personal_goodwill and squad's relationship towards player
 
 	local squad = sim_board.get_sim_board().squads[squad_id]
 	if squad == nil or new_goodwill == nil then
@@ -92,27 +87,25 @@ function set_squad_goodwill(squad_id, new_goodwill)										-- function used on
 		return
 	end
 
---	local goodwill = 0
---	if new_goodwill == "enemy" then
---		goodwill = -8000
---	elseif new_goodwill == "friend" then
---		goodwill = 12000
---	end
+	local goodwill = 0
+	if new_goodwill == "enemy" then
+		goodwill = -3000
+	elseif new_goodwill == "friend" then
+		goodwill = 9000
+	end
 
-	local goodwill = (new_goodwill == "enemy" and -8000) or (new_goodwill == "friend" and 12000) or 0
 	local st = db.storage
-	local obj
 
-	for k in pairs (squad.squad_npc) do
-		obj = st[k]
+	for npc_id in pairs (squad.squad_npc) do
+		local obj = st[npc_id]
 		obj = obj and obj.object
 		if obj then
-			local db_goodwill = db.goodwill
 			obj:set_goodwill(goodwill, act)
+			local db_goodwill = db.goodwill
 			if not db_goodwill.relations then
 				db_goodwill.relations = {}
 			end
-			db_goodwill.relations[k] = new_goodwill
+			db_goodwill.relations[npc_id] = new_goodwill
 		end
 	end
 
@@ -120,10 +113,10 @@ function set_squad_goodwill(squad_id, new_goodwill)										-- function used on
 		squad.relationship = new_goodwill
 	end
 
-	squad:refresh()														-- update map icon
+	squad:refresh() -- update map icon
 end
 
-function set_squad_goodwill_to_npc(npc, squad_id, new_goodwill)									-- function used only for (squad npc, npc) goodwill
+function set_squad_goodwill_to_npc(npc, squad_id, new_goodwill) -- sets squad NPCs' personal_goodwill towards NPC
 
 	local squad = sim_board.get_sim_board().squads[squad_id]
 	if npc == nil or squad == nil or new_goodwill == nil then
@@ -131,19 +124,17 @@ function set_squad_goodwill_to_npc(npc, squad_id, new_goodwill)									-- funct
 		return
 	end
 
---	local goodwill = 0
---	if new_goodwill == "enemy" then
---		goodwill = -8000												-- a squad (npc) has goodwill limits of {-11000, 7000} toward an npc
---	elseif new_goodwill == "friend" then
---		goodwill = 12000
---	end
+	local goodwill = 0
+	if new_goodwill == "enemy" then
+		goodwill = -3000
+	elseif new_goodwill == "friend" then
+		goodwill = 9000
+	end
 
-	local goodwill = (new_goodwill == "enemy" and -8000) or (new_goodwill == "friend" and 12000) or 0
 	local st = db.storage
-	local obj
 
-	for k in pairs (squad.squad_npc) do
-		obj = st[k]
+	for npc_id in pairs (squad.squad_npc) do
+		local obj = st[npc_id]
 		obj = obj and obj.object
 		if obj then
 			obj:set_goodwill(goodwill, npc)
@@ -151,7 +142,7 @@ function set_squad_goodwill_to_npc(npc, squad_id, new_goodwill)									-- funct
 	end
 end
 
-function set_squad_community_goodwill(squad_id, community, new_goodwill)							-- function used only for (faction, squad npc) goodwill
+function set_squad_community_goodwill(squad_id, community, new_goodwill) -- sets community_goodwill towards squad NPCs
 
 	local squad = sim_board.get_sim_board().squads[squad_id]
 	if squad == nil or community == nil or new_goodwill == nil then
@@ -159,19 +150,17 @@ function set_squad_community_goodwill(squad_id, community, new_goodwill)							-
 		return
 	end
 
---	local goodwill = 0
---	if new_goodwill == "enemy" then
---		goodwill = -7000												-- a faction has goodwill limits of {-8000, 6000} toward a squad npc
---	elseif new_goodwill == "friend" then
---		goodwill = 9000
---	end
+	local goodwill = 0
+	if new_goodwill == "enemy" then
+		goodwill = -3000
+	elseif new_goodwill == "friend" then
+		goodwill = 1000
+	end
 
-	local goodwill = (new_goodwill == "enemy" and -7000) or (new_goodwill == "friend" and 9000) or 0
 	local st = db.storage
-	local obj
 
-	for k in pairs (squad.squad_npc) do
-		obj = st[k]
+	for npc_id in pairs (squad.squad_npc) do
+		local obj = st[npc_id]
 		obj = obj and obj.object
 		if obj then
 			obj:set_community_goodwill(community, goodwill)
@@ -179,7 +168,7 @@ function set_squad_community_goodwill(squad_id, community, new_goodwill)							-
 	end
 end
 
-function set_level_faction_community(obj)
+function set_level_faction_community(obj) -- sets personal_goodwill and community_goodwill towards player
 
 	local act = db.actor
 	if act == nil or temp_goodwill_table.communities == nil then
@@ -203,7 +192,7 @@ function set_level_faction_community(obj)
 	end
 end
 
-function get_gulag_relation_actor(smart_name, relation)										-- gets gulag's *average* relation to actor
+function get_gulag_relation_actor(smart_name, relation) -- returns gulag NPCs' *average* relation to player (determined from general_goodwill)
 
 	local act = db.actor
 	if act == nil then
@@ -218,10 +207,9 @@ function get_gulag_relation_actor(smart_name, relation)										-- gets gulag's
 	local st = db.storage
 	local goodwill = 0
 	local npc_count = 0
-	local obj
 
-	for k, v in pairs (gulag.npc_info) do
-		obj = st[v.se_obj.id]
+	for npc_id in pairs (gulag.npc_info) do
+		local obj = st[npc_id]
 		obj = obj and obj.object
 		if obj then
 			goodwill = goodwill + obj:general_goodwill(act)
@@ -244,7 +232,7 @@ function get_gulag_relation_actor(smart_name, relation)										-- gets gulag's
 	end
 end
 
-function set_gulag_relation_actor(smart_name, relation)										-- function used only for (gulag npc, actor) goodwill
+function set_gulag_relation_actor(smart_name, relation) -- sets each gulag NPC's personal_goodwill towards player
 
 	local act = db.actor
 	if act == nil then
@@ -256,36 +244,34 @@ function set_gulag_relation_actor(smart_name, relation)										-- function use
 		return
 	end
 
---	local goodwill = 0
---	if relation == "enemy" then
---		goodwill = -8000
---	elseif relation == "friend" then
---		goodwill = 12000
---	end
+	local goodwill = 0
+	if relation == "enemy" then
+		goodwill = -3000
+	elseif relation == "friend" then
+		goodwill = 9000
+	end
 
-	local goodwill = (relation == "enemy" and -8000) or (relation == "friend" and 12000) or 0
-	local act_com = act:character_community()
+--	local act_com = act:character_community()
 	local st = db.storage
-	local obj
 
-	for k, v in pairs (gulag.npc_info) do
-		obj = st[v.se_obj.id]
+	for npc_id in pairs (gulag.npc_info) do
+		local obj = st[npc_id]
 		obj = obj and obj.object
 		if obj then
 			obj:set_goodwill(goodwill, act)
-			obj:set_community_goodwill(act_com, goodwill)
+--			obj:set_community_goodwill(act_com, goodwill)
 		end
 	end
 
-	for k, v in pairs (sim_board.get_sim_board().smarts[gulag.id].squads) do						-- update map icon
+	for k, v in pairs (sim_board.get_sim_board().smarts[gulag.id].squads) do -- update map icon
 		v:refresh()
 	end
 end
 
-function check_all_squad_members(squad_name, goodwill)	-- checks if *any* squad member bears
+function check_all_squad_members(squad_name, goodwill) -- returns whether *any* squad member bears a particular relation (general_goodwill) to player
 
-	local act = db.actor				-- some particular relation to the actor
-	if act == nil then				-- if even one does, it returns true
+	local act = db.actor
+	if act == nil then
 		return false
 	end
 
@@ -296,9 +282,8 @@ function check_all_squad_members(squad_name, goodwill)	-- checks if *any* squad 
 
 	if goodwill == "enemy" then
 		local st = db.storage
-		local obj
-		for k in pairs (squad.squad_npc) do
-			obj = st[k]
+		for npc_id in pairs (squad.squad_npc) do
+			local obj = st[npc_id]
 			obj = obj and obj.object
 			if obj then
 				if obj:general_goodwill(act) <= -1000 then
@@ -308,9 +293,8 @@ function check_all_squad_members(squad_name, goodwill)	-- checks if *any* squad 
 		end
 	elseif goodwill == "friend" then
 		local st = db.storage
-		local obj
-		for k in pairs (squad.squad_npc) do
-			obj = st[k]
+		for npc_id in pairs (squad.squad_npc) do
+			local obj = st[npc_id]
 			obj = obj and obj.object
 			if obj then
 				if obj:general_goodwill(act) >= 1000 then
@@ -322,7 +306,7 @@ function check_all_squad_members(squad_name, goodwill)	-- checks if *any* squad 
 	return false
 end
 
-function get_squad_goodwill_to_actor(squad_name)
+function get_squad_goodwill_to_actor(squad_name) -- returns squad's relationship to player or, if that's nil, squad's community_to_community to player
 
 	local squad = sim_board.get_sim_board().squads[squad_name]
 	if squad == nil then
@@ -335,15 +319,13 @@ function get_squad_goodwill_to_actor(squad_name)
 
 	local goodwill = relation_registry.community_relation(squad.player_id, alife():actor():community())
 
---	if goodwill >= 1000 then
---		return "friend"
---	elseif goodwill <= -1000 then
---		return "enemy"
---	else
---		return "neutral"
---	end
-
-	return (goodwill >= 1000 and "friend") or (goodwill <= -1000 and "enemy") or "neutral"
+	if goodwill >= 1000 then
+		return "friend"
+	elseif goodwill <= -1000 then
+		return "enemy"
+	else
+		return "neutral"
+	end
 end
 
 function is_squad_enemy_to_actor(squad_name)
@@ -375,9 +357,9 @@ function all_smart_members_hostile(smart_name)
 	end
 
 	local st = db.storage
-	local obj
-	for k, v in pairs (smart.npc_info) do
-		obj = st[v.se_obj.id]
+
+	for npc_id in pairs (smart.npc_info) do
+		local obj = st[npc_id]
 		obj = obj and obj.object
 		if obj then
 			if obj:general_goodwill(act) > -1000 then
@@ -401,9 +383,9 @@ function some_smart_members_hostile(smart_name)
 	end
 
 	local st = db.storage
-	local obj
-	for k, v in pairs (smart.npc_info) do
-		obj = st[v.se_obj.id]
+
+	for npc_id in pairs (smart.npc_info) do
+		local obj = st[npc_id]
 		obj = obj and obj.object
 		if obj then
 			if obj:general_goodwill(act) <= -1000 then
@@ -427,9 +409,9 @@ function all_squad_members_hostile(squad_name)
 	end
 
 	local st = db.storage
-	local obj
-	for k in pairs (squad.squad_npc) do
-		obj = st[k]
+
+	for npc_id in pairs (squad.squad_npc) do
+		local obj = st[npc_id]
 		obj = obj and obj.object
 		if obj then
 			if obj:general_goodwill(act) > -1000 then
@@ -453,9 +435,9 @@ function some_squad_members_hostile(squad_name)
 	end
 
 	local st = db.storage
-	local obj
-	for k in pairs (squad.squad_npc) do
-		obj = st[k]
+
+	for npc_id in pairs (squad.squad_npc) do
+		local obj = st[npc_id]
 		obj = obj and obj.object
 		if obj then
 			if obj:general_goodwill(act) <= -1000 then
@@ -471,20 +453,21 @@ end
 --[[ -- unused vanilla functions:
 
 function set_factions_community_num(faction, target_faction, relation_num)
+
 	if faction == nil or faction == "none" or target_faction == nil or target_faction == "none" then
 		return
 	end
+
 	relation_registry.set_community_relation(faction, target_faction, relation_num)
 end
 
 function is_factions_friends(faction, target_faction)
 
---	if faction == nil or faction == "none" or target_faction == nil or target_faction == "none" then
---		return false
---	end
---	return relation_registry.community_relation(faction, target_faction) >= 1000
+	if faction == nil or faction == "none" or target_faction == nil or target_faction == "none" then
+		return false
+	end
 
-	return faction ~= nil and faction ~= "none" and target_faction ~= nil and target_faction ~= "none" and relation_registry.community_relation(faction, target_faction) >= 1000
+	return relation_registry.community_relation(faction, target_faction) >= 1000
 end
 
 function get_npcs_relation(npc, target_npc)

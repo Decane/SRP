@@ -9,6 +9,12 @@
 	<string id="st_tm_guide_22">
 		<text>Nowhere, I changed my mind.</text>
 	</string>
+	<string id="st_tm_guide_213">
+		<text>Whoops, I can’t afford this.</text>
+	</string>
+	<string id="st_tm_guide_214">
+		<text>On second thought, maybe now is not a good time to travel.</text>
+	</string>
 	<string id="gar_bandit_robbery_112">
 		<text>I don’t think so.</text>
 	</string>
@@ -23,6 +29,9 @@
 
 	<string id="tips_wait_conversation_finish">
 		<text>You must wait for the transmission to finish.</text>
+	</string>
+	<string id="tips_wait_emission_finish">
+		<text>You must wait for the emission to finish.</text>
 	</string>
 	<string id="no_sleep_during_emission">
 		<text>You cannot sleep through an emission!</text>

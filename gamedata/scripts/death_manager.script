@@ -1,0 +1,238 @@
+-- DC170429: Fixed hyphenated item names, appearing as dependees for ammo in section [item_dependence] in death_generic.ltx, being parsed incorrectly.
+
+local math_random     = math.random
+local math_ceil       = math.ceil
+local vec             = vector()
+
+local ammo_sections   = ammo_section
+local item_dependence = {}  -- example key-value pair: ["ammo_vog-25p"] = {wpn_groza = true, wpn_rg-6 = true}
+
+item_by_community     = {}  -- example key-value pair: ["stalker"] = {af_cristall = 0.001, ammo_9x18_fmj = 1}
+count_by_level        = {}  -- example key-value pair: ["marsh"] = {["ammo_9x18_fmj"] = {min = 20, max = 60}}
+always_keep_item      = {}  -- example key-value pair: ["flesh_up_ac_ak74u"] = true
+count_by_cur_level    = nil -- example key-value pair: ["ammo_9x18_fmj"] = {min = 20, max = 60}
+
+function init_drop_settings()
+	local death_ini = ini_file("misc\\death_generic.ltx")
+	if not death_ini:section_exist("factions") then
+		abort("[death_manager.init_drop_settings]: There is no section [factions] in misc\\death_generic.ltx or any of its includes.")
+		return
+	end
+	local item_by_community, count_by_level = item_by_community, count_by_level
+	local n = death_ini:line_count("factions")
+	for i = 0, n - 1 do
+		local found, faction_name = death_ini:r_line("factions", i, "", "")
+		if not death_ini:section_exist(faction_name) then
+			abort("[death_manager.init_drop_settings]: There is no section [%s] in misc\\death_generic.ltx or any of its includes, despite being listed under section [factions].", faction_name)
+			return
+		end
+		local prob_by_item = {}
+--		dbglog("item_by_community['%s'] = {}", faction_name)
+		item_by_community[faction_name] = prob_by_item
+		n = death_ini:line_count(faction_name)
+		for i = 0, n - 1 do
+			local found, item_name, prob = death_ini:r_line(faction_name, i, "", "")
+--			dbglog("item_by_community['%s']['%s'] = %.1f", faction_name, item_name, 100 * tonumber(prob))
+			prob_by_item[item_name] = 100 * tonumber(prob)
+		end
+	end
+	if not death_ini:section_exist("item_dependence") then
+		abort("[death_manager.init_drop_settings]: There is no section [item_dependence] in misc\\death_generic.ltx or any of its includes.")
+		return
+	end
+	local string_gfind = string.gfind
+	n = death_ini:line_count("item_dependence")
+	for i = 0, n - 1 do
+		local found, ammo_name, weapons = death_ini:r_line("item_dependence", i, "", "") -- example 'weapons' value: "wpn_pm, wpn_fort_up"
+		local dependees = {}
+--		dbglog("item_dependence['%s'] = {}", ammo_name)
+		item_dependence[ammo_name] = dependees
+--		local t = parse_names(weapons)
+--		for k, v in pairs (t) do
+--			dependees[v] = true
+--		end
+		-- DC170429: parse_names(weapons) splits hyphenated names by the hyphen, e.g. "wpn_rg-6" becomes "wpn_rg" and "6".
+		-- DC170429: The pattern below does not; for parse_names() to be usable here, it should contain "([%w_\\-]+)%p*".
+		for weapon_name in string_gfind(weapons, "([%w_-]+),?") do
+			dependees[weapon_name] = true
+--			dbglog("item_dependence['%s']['%s'] = true", ammo_name, weapon_name)
+		end
+	end
+	if not death_ini:section_exist("levels") then
+		abort("[death_manager.init_drop_settings]: There is no section [levels] in misc\\death_generic.ltx or any of its includes.")
+		return
+	end
+	local mul_by_level = {} -- example key-value pair: ["marsh"] = {["ammo_11.43x23_fmj"] = 0, ["ammo_9x18_fmj"] = 1}
+	n = death_ini:line_count("levels")
+	for i = 0, n - 1 do
+		local found, level_name = death_ini:r_line("levels", i, "", "")
+		if not death_ini:section_exist(level_name) then
+			abort("[death_manager.init_drop_settings]: There is no section [%s] in misc\\death_generic.ltx or any of its includes.", level_name)
+			return
+		end
+		local mul_by_item = {}
+--		dbglog("mul_by_level['%s'] = {}", level_name)
+		mul_by_level[level_name] = mul_by_item
+--		dbglog("count_by_level['%s'] = {}", level_name)
+		count_by_level[level_name] = {}
+		n = death_ini:line_count(level_name)
+		for i = 0, n - 1 do
+			local found, item_name, multi = death_ini:r_line(level_name, i, "", "")
+--			dbglog("mul_by_level['%s']['%s'] = %s", level_name, item_name, multi)
+			mul_by_item[item_name] = tonumber(multi)
+		end
+	end
+	local item_count_section = "item_count_"..level.get_game_difficulty()
+	if not death_ini:section_exist(item_count_section) then
+		abort("[death_manager.init_drop_settings]: There is no section [%s] in misc\\death_generic.ltx or any of its includes.", item_count_section)
+		return
+	end
+	local parse_nums = parse_nums
+	n = death_ini:line_count(item_count_section)
+	for i = 0, n - 1 do
+		local found, item_name, counts = death_ini:r_line(item_count_section, i, "", "") -- example 'counts' values: "20, 100", "1"
+		local t = parse_nums(counts)
+		local min = t[1]
+		if min == nil then
+			abort("[death_manager.init_drop_settings]: Missing value for parameter '%s' in section '%s' in misc\\death_generic.ltx or one of its includes.", item_name, item_count_section)
+			return
+		end
+		local max = t[2]
+		if max == nil then
+			max = min
+		end
+		for level_name, item_data in pairs (mul_by_level) do
+			local multiplier = item_data[item_name]
+			if multiplier == nil then
+				multiplier = 0
+			end
+--			dbglog("count_by_level['%s']['%s'] = {min = %d, max = %d}", level_name, item_name, min * multiplier, max * multiplier)
+			count_by_level[level_name][item_name] = {min = min * multiplier, max = max * multiplier} -- 'min' and 'max' coerced into numbers in parse_nums()
+		end
+	end
+	if not death_ini:section_exist("keep_items") then
+		abort("[death_manager.init_drop_settings]: There is no section [keep_items] in misc\\death_generic.ltx or any of its includes.")
+		return
+	end
+	n = death_ini:line_count("keep_items")
+	for i = 0, n - 1 do
+		local found, item_name = death_ini:r_line("keep_items", i, "", "")
+--		dbglog("always_keep_item['%s'] = true", item_name)
+		always_keep_item[item_name] = true
+	end
+end
+
+function init_level_drop_settings(actor_level)
+	count_by_cur_level = count_by_level[count_by_level[actor_level] ~= nil and actor_level or "default"]
+end
+
+class "drop_manager"
+
+function drop_manager:__init(npc)
+	self.npc = npc
+end
+
+function drop_manager:create_release_item(sim, se_npc, npc_id)
+	local snpc = self.npc
+	se_npc.death_droped = true
+	snpc:iterate_inventory(keep_item, snpc)
+	local ini = se_npc.ini -- snpc:spawn_ini()
+	if ini and ini:section_exist("dont_spawn_loot") then
+		return
+	end
+	local spawn_items = item_by_community[snpc:character_community()]
+	if spawn_items == nil then
+		return
+	end
+	local level_count = count_by_cur_level
+	ini = system_ini()
+	for item_name, spawn_prob in pairs (spawn_items) do
+		local try_spawn = false
+		-- If a spawn item has no dependencies (e.g. on particular weapons if the item is ammo), try to spawn it:
+		if item_dependence[item_name] == nil then
+			try_spawn = true
+		else
+			for dependee in pairs (item_dependence[item_name]) do
+				local owned_dependee = snpc:object(dependee)
+				if owned_dependee ~= nil then
+					-- If a spawn item has dependencies, try to spawn it if the NPC has an item on which it depends and didn't drop this dependee:
+					if snpc:marked_dropped(owned_dependee) ~= true then
+						try_spawn = true
+						break
+					end
+				end
+			end
+		end
+		if try_spawn == true then
+			local units = math_ceil(math_random(level_count[item_name].min, level_count[item_name].max)) -- units to spawn (counted in boxes, if ammo)
+			if units > 0 then
+				if ammo_sections[item_name] == true then
+--					se_respawn.create_ammo(item_name, vec, 0, 0, npc_id, units)
+					local num_in_box = ini:r_u32(item_name, "box_size")
+					while units > num_in_box do
+						sim:create_ammo(item_name, vec, 0, 0, npc_id, num_in_box)
+						units = units - num_in_box
+					end
+					sim:create_ammo(item_name, vec, 0, 0, npc_id, units)
+				else
+					for i = 1, units do
+						if math_random(100) <= spawn_prob then
+							sim:create(item_name, vec, 0, 0, npc_id)
+						end
+					end
+				end
+			end
+		end
+	end
+end
+
+function keep_item(npc, item)
+	local section = item:section()
+	if section == "bolt" then
+		return
+	end
+	if always_keep_item[section] == true then
+		return
+	end
+	local slot_item = npc:item_in_slot(1)
+	if slot_item ~= nil then
+		if slot_item:id() == item:id() then
+			item:set_condition((math_random(15) + 65) / 100)
+--			npc:transfer_item(item, npc)
+--			dbgmsg("Pistol stored in backpack!")
+			return
+		end
+	end
+	slot_item = npc:item_in_slot(2)
+	if slot_item ~= nil then
+		if slot_item:id() == item:id() then
+			item:set_condition((math_random(15) + 65) / 100)
+--			if section ~= "wpn_svd" and section ~= "wpn_svu" then
+--				npc:transfer_item(item, npc)
+--				dbgmsg("Rifle stored in backpack!")
+--			end
+			return
+		end
+	end
+	if not npc:marked_dropped(item) then
+		local sim = alife()
+		sim:release(sim:object(item:id()), true)
+	end
+end
+
+-- Inserted this directly into create_release_item(), but it's still called from sim_squad_generic.script:
+function check_item_dependence(npc, section)
+	if item_dependence[section] == nil then
+		return true
+	end
+	local owned_dependee
+	for dependee in pairs (item_dependence[section]) do
+		owned_dependee = npc:object(dependee)
+		if owned_dependee ~= nil then
+			if npc:marked_dropped(owned_dependee) ~= true then
+				return true
+			end
+		end
+	end
+	return false
+end

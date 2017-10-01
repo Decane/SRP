@@ -1,0 +1,229 @@
+-- DC170507: Optimization.
+
+local state_lib_states = state_lib.states
+local anim_danger = anim.danger
+local look_direction = look.direction
+local look_path_dir = look.path_dir
+local look_danger = look.danger
+
+local look_direction_states =
+{
+	threat    = true,
+	threat_na = true,
+	wait_na   = true,
+	guard_na  = true
+}
+
+local function look_object_type(npc, st)
+	local target_state = st.target_state
+	if look_direction_states[target_state] == true then
+		return true
+	end
+	return state_lib_states[target_state].animation ~= nil
+end
+
+local function look_at_object(npc, st)
+	st.point_obj_dir = look_object_type(npc, st)
+	if st.point_obj_dir == true then
+		npc:set_sight(level.object_by_id(st.look_object), true, false, true)
+	else
+		npc:set_sight(level.object_by_id(st.look_object), true, true)
+	end
+end
+
+--------------------------------------------------------------------------------
+
+class "eva_state_mgr_direction" (property_evaluator)
+
+function eva_state_mgr_direction:__init(st) super ()
+	self.st = st
+end
+
+function eva_state_mgr_direction:evaluate()
+
+	local npc = self.object
+	local sight_type = npc:sight_params()
+	local self_st = self.st
+
+	if self_st.look_object ~= nil then
+		if sight_type.m_object == nil or sight_type.m_object:id() ~= self_st.look_object or self_st.point_obj_dir ~= look_object_type(npc, self_st) then
+			return false
+		end
+		self:callback()
+		return true
+	end
+
+	if self_st.look_position ~= nil then
+		if sight_type.m_sight_type ~= look_position_type(npc, self_st) then
+			return false
+		end
+		local dir = vector():sub(self_st.look_position, npc:position())
+		if look_object_type(npc, self_st) == true then
+			dir.y = 0
+		end
+		if utils.vector_cmp_prec(sight_type.m_vector, dir, 0.01) ~= true then
+			return false
+		end
+		self:callback()
+		return true
+	end
+
+	if sight_type.m_object ~= nil then
+		return false
+	end
+
+	if sight_type.m_sight_type ~= look_position_type(npc, self_st) then
+		return false
+	end
+
+	self:callback()
+
+	return true
+end
+
+function eva_state_mgr_direction:callback()
+	local self_st = self.st
+	local callback = self_st.callback
+	if callback ~= nil and callback.turn_end_func ~= nil then
+		callback.turn_end_func(callback.obj)
+		callback = self_st.callback
+		if callback ~= nil then
+			callback.turn_end_func = nil
+		end
+	end
+end
+
+--------------------------------------------------------------------------------
+
+class "eva_state_mgr_direction_search" (property_evaluator)
+
+function eva_state_mgr_direction_search:__init(st) super ()
+	self.st = st
+end
+
+function eva_state_mgr_direction_search:evaluate()
+	local self_st = self.st
+	return self_st.look_position == nil and self_st.look_object == nil
+end
+
+--------------------------------------------------------------------------------
+
+class "eva_state_mgr_direction_turning" (property_evaluator)
+
+function eva_state_mgr_direction_turning:__init() super ()
+--	self.st = st
+end
+
+function eva_state_mgr_direction_turning:evaluate()
+	local npc = self.object
+	if npc:mental_state() == anim_danger then
+		return false
+	end
+	return npc:is_body_turning()
+end
+
+--------------------------------------------------------------------------------
+
+class "act_state_mgr_direction_turn" (action_base)
+
+function act_state_mgr_direction_turn:__init(st) super ()
+	self.st = st
+end
+
+function act_state_mgr_direction_turn:initialize()
+	action_base.initialize(self)
+	self:turn(self.st)
+end
+
+function act_state_mgr_direction_turn:execute()
+	action_base.execute(self)
+	if db.storage[self.object:id()].active_scheme ~= "smartcover" then
+		self:turn(self.st)
+	end
+end
+
+function act_state_mgr_direction_turn:finalize()
+	action_base.finalize(self)
+end
+
+function act_state_mgr_direction_turn:turn(st)
+	local npc = self.object
+	st.point_obj_dir = look_object_type(npc, st)
+	local look_object = st.look_object
+	if look_object ~= nil and level.object_by_id(look_object) ~= nil then
+		look_at_object(npc, st)
+	else
+		local look_position = st.look_position
+		if look_position ~= nil then
+			local dir = vector():sub(look_position, npc:position())
+			if st.point_obj_dir == true then
+				dir.y = 0
+			end
+			npc:set_sight(look_direction, dir, true)
+		end
+	end
+end
+
+--------------------------------------------------------------------------------
+
+class "act_state_mgr_direction_search" (action_base)
+
+function act_state_mgr_direction_search:__init(st) super ()
+	self.st = st
+end
+
+function act_state_mgr_direction_search:initialize()
+	action_base.initialize(self)
+	local npc = self.object
+	npc:set_sight(look_position_type(npc, self.st), nil, 0)
+end
+
+function act_state_mgr_direction_search:execute()
+	action_base.execute(self)
+end
+
+function act_state_mgr_direction_search:finalize()
+	action_base.finalize(self)
+end
+
+--------------------------------------------------------------------------------
+
+function look_position_type(npc, st)
+
+	if st == nil then
+		return look_path_dir
+	end
+
+	if st.look_position ~= nil then
+		return look_direction
+	else
+		if not st.planner:evaluator(st.properties["movement_stand"]):evaluate() then
+			return look_path_dir
+		end
+	end
+
+	local target_state = st.target_state
+
+	if state_lib_states[target_state].direction then
+		return state_lib_states[target_state].direction
+	end
+
+	return look_danger
+end
+
+function turn(npc, st)
+	st.point_obj_dir = look_object_type(npc, st)
+	local look_object = st.look_object
+	if look_object ~= nil and level.object_by_id(look_object) ~= nil then
+		look_at_object(npc, st)
+	else
+		local look_position = st.look_position
+		if look_position ~= nil then
+			local dir = vector():sub(look_position, npc:position())
+			if st.point_obj_dir == true then
+				dir.y = 0
+			end
+			npc:set_sight(look_direction, dir, true)
+		end
+	end
+end

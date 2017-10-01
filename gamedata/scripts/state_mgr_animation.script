@@ -1,0 +1,720 @@
+-- DC170509: Fixed the audio associated with an NPC's instrument-playing animation continuing to play even when the animation is interrupted by the NPC getting up intermittently.
+-- DC170513: Optimization.
+
+local state_lib_states = state_lib.states
+local anims = state_mgr_animation_list.animations
+local sight_dir = CSightParams.eSightTypeAnimationDirection
+
+--------------------------------------------------------------------------------
+
+class "eva_state_mgr_animation" (property_evaluator)
+
+function eva_state_mgr_animation:__init(st) super ()
+	self.st = st
+end
+
+function eva_state_mgr_animation:evaluate()
+	local self_st = self.st
+	local target_anim = state_lib_states[self_st.target_state].animation
+	if target_anim == nil then
+		local cb = self_st.callback
+		if cb ~= nil and cb.func ~= nil and cb.begin == nil then
+			return false
+		end
+	end
+	return target_anim == self_st.animation:state()
+end
+
+--------------------------------------------------------------------------------
+
+class "eva_state_mgr_animation_play" (property_evaluator)
+
+function eva_state_mgr_animation_play:__init(st) super ()
+	self.st = st
+end
+
+function eva_state_mgr_animation_play:evaluate()
+	return state_lib_states[self.st.target_state].animation ~= nil
+end
+
+--------------------------------------------------------------------------------
+
+class "eva_state_mgr_animation_play_now" (property_evaluator)
+
+function eva_state_mgr_animation_play_now:__init(st) super ()
+	self.st = st
+end
+
+function eva_state_mgr_animation_play_now:evaluate()
+	local anim_state = self.st.animation:state()
+	return anim_state ~= "_wait" and anim_state ~= nil
+end
+
+--------------------------------------------------------------------------------
+
+class "eva_state_mgr_animation_none" (property_evaluator)
+
+function eva_state_mgr_animation_none:__init(st) super ()
+	self.st = st
+end
+
+function eva_state_mgr_animation_none:evaluate()
+	return state_lib_states[self.st.target_state].animation == nil
+end
+
+--------------------------------------------------------------------------------
+
+class "eva_state_mgr_animation_none_now" (property_evaluator)
+
+function eva_state_mgr_animation_none_now:__init(st) super ()
+	self.st = st
+end
+
+function eva_state_mgr_animation_none_now:evaluate()
+	return self.st.animation:state() == nil
+end
+
+--------------------------------------------------------------------------------
+
+class "eva_state_mgr_animation_reset" (property_evaluator)
+
+function eva_state_mgr_animation_reset:__init(st) super ()
+	self.st = st
+end
+
+function eva_state_mgr_animation_reset:evaluate()
+	local self_st = self.st
+	local target_state = state_lib_states[self_st.target_state]
+	if target_state.animation == nil then
+		local cb = self_st.callback
+		if cb ~= nil and cb.func ~= nil and cb.begin == nil then
+			return true
+		end
+	end
+	return self_st.reset_state == true and target_state ~= nil and self_st.current_state == self_st.target_state and target_state.reset == true
+end
+
+--------------------------------------------------------------------------------
+
+class "eva_state_mgr_animation_locked" (property_evaluator)
+
+function eva_state_mgr_animation_locked:__init(st) super ()
+	self.st = st
+end
+
+function eva_state_mgr_animation_locked:evaluate()
+	local anim_state = self.st.animation:state()
+	return anim_state == "_wait" or anim_state == "_new"
+end
+
+--------------------------------------------------------------------------------
+
+class "act_state_mgr_animation_start" (action_base)
+
+function act_state_mgr_animation_start:__init(st) super ()
+	self.st = st
+end
+
+function act_state_mgr_animation_start:initialize()
+	action_base.initialize(self)
+	local self_st = self.st
+	self_st.animation:set_state(state_lib_states[self_st.target_state].animation)
+end
+
+function act_state_mgr_animation_start:execute()
+	action_base.execute(self)
+end
+
+function act_state_mgr_animation_start:finalize()
+	action_base.finalize(self)
+end
+
+--------------------------------------------------------------------------------
+
+class "act_state_mgr_animation_reset" (action_base)
+
+function act_state_mgr_animation_reset:__init(st) super ()
+	self.st = st
+end
+
+function act_state_mgr_animation_reset:initialize()
+	action_base.initialize(self)
+	local self_st = self.st
+	self_st.animation:set_state(state_lib_states[self_st.target_state].animation, true)
+	self_st.reset_state = false
+end
+
+function act_state_mgr_animation_reset:execute()
+	action_base.execute(self)
+end
+
+function act_state_mgr_animation_reset:finalize()
+	action_base.finalize(self)
+end
+
+--------------------------------------------------------------------------------
+
+class "act_state_mgr_animation_stop" (action_base)
+
+function act_state_mgr_animation_stop:__init(st) super ()
+	self.st = st
+end
+
+function act_state_mgr_animation_stop:initialize()
+	action_base.initialize(self)
+	self.st.animation:set_state(nil)
+end
+
+function act_state_mgr_animation_stop:execute()
+	action_base.execute(self)
+end
+
+function act_state_mgr_animation_stop:finalize()
+	action_base.finalize(self)
+end
+
+--------------------------------------------------------------------------------
+
+class "animation"
+
+local function anim_for_slot(slot, t)
+	if t[slot] ~= nil then
+		return t[slot]
+	else
+		if t[0] == nil then
+			abort("cant find animation for slot %s", tonumber(slot))
+		end
+		return t[0]
+	end
+end
+
+function animation:__init(npc, mgr)
+	self.mgr = mgr
+	self.npc = npc
+	self.states =
+	{
+		last_id = nil,
+		current_state = nil,
+		target_state = nil,
+		begin = nil,
+		idle = nil,
+		anim_level = 0,
+		attach_items =
+		{
+			hand_radio		= {mode = "detach", done = true},
+			bread			= {mode = "detach", done = true},
+			vodka			= {mode = "detach", done = true},
+			energy_drink	= {mode = "detach", done = true},
+			kolbasa			= {mode = "detach", done = true},
+			guitar_a		= {mode = "detach", done = true},
+			harmonica_a		= {mode = "detach", done = true},
+			wpn_binoc		= {mode = "detach", done = true},
+			detector_simple	= {mode = "detach", done = true}
+		}
+	}
+	self.clb_settings = {}
+--	self.clb_cnt = 0
+	local props = mgr.properties
+	self.ops_end = mgr.operators["end"]
+	self.props_animation = props["animation"]
+	self.props_weapon = props["weapon"]
+end
+
+function animation:set_state(id, reset) -- TODO
+
+--	local nn = 0
+	local npc = self.npc
+	local wpn_slot = self:weapon_slot()
+
+	npc:clear_animations()
+	self:clear_anim_callback()
+
+	local self_states = self.states
+	local target_anim = anims[self_states.target_state]
+	local mgr = self.mgr
+
+	if target_anim ~= nil then
+		if mgr.emerg.animation_nout == true or mgr.emerg.animation == true then
+			if npc:active_sound_count() > 0 then
+				if mgr.subanim > 0 and target_anim.subanim ~= nil then
+					for anim_idx = mgr.subanim, 0, -1 do -- DC170509
+						local a = target_anim.subanim[anim_idx]
+						if a and a.into_music then
+							stop_play_sound(npc)
+							break
+						end
+					end
+				end
+			end
+			if target_anim.out ~= nil then
+				local anima = anim_for_slot(wpn_slot, target_anim.out)
+				if anima then
+					if type(anima) == "table" then
+						for k, v in pairs (anima) do
+							if type(v) == "table" and v.d ~= nil then
+								local obj = npc:object(v.d)
+								if obj then
+									obj:enable_attachable_item(false)
+								end
+								self_states.attach_items[v.d].mode = "detach"
+								self_states.attach_items[v.d].done = true
+							end
+						end
+					end
+				end
+			end
+		else
+			if mgr.subanim > 0 and target_anim.subanim ~= nil then
+				for key = mgr.subanim, 0, -1 do -- DC170509
+					local a = target_anim.subanim[key]
+					if a then
+						if a.out then
+							local anima = anim_for_slot(wpn_slot, a.out)
+							if anima then
+								add_anim(npc, anima, true, a.prop)
+							end
+						end
+						if a.into_music then
+							stop_play_sound(npc)
+						end
+					end
+				end
+			end
+--			local a = target_anim
+			if target_anim.out ~= nil then
+				local anima = anim_for_slot(wpn_slot, target_anim.out)
+				if anima then
+					if type(anima) == "table" then
+						for k, v in pairs (anima) do
+							if type(v) == "table" then
+								self:set_anim_callback(v)
+							else
+								add_anim(npc, v, true, target_anim.prop)
+							end
+						end
+					else
+						add_anim(npc, anima, true, target_anim.prop)
+					end
+--					nn = nn + 1
+				end
+			end
+		end
+	end
+	if self_states.current_state == "_new" then
+		for k, v in pairs (self_states.attach_items) do
+			local t = npc:object(k)
+			if t then
+				if v.mode == "attach" then
+					t:enable_attachable_item(false)
+				end
+			end
+			v.mode = "detach"
+			v.done = true
+		end
+	end
+	local a = anims[id]
+	if a ~= nil then
+		if a.into ~= nil then
+			local anima = anim_for_slot(wpn_slot, a.into)
+			if type(anima) == "table" then
+				for k, v in pairs (anima) do
+					if type(v) == "table" then
+						self:set_anim_callback(v)
+					else
+						add_anim(npc, v, true, a.prop, true)
+					end
+				end
+--				nn = nn + 1
+			else
+				add_anim(npc, anima, true, a.prop)
+--				nn = nn + 1
+			end
+		end
+		if reset == true then
+			if mgr.callback ~= nil then
+				mgr.callback.begin = nil
+			end
+			self:play_rnd(id, 100)
+		end
+		local a = anims[id]
+		if a.idle ~= nil then
+			local anima = anim_for_slot(wpn_slot, a.idle)
+			if anima then
+				add_anim(npc, anima, true, a.prop)
+			end
+--			nn = nn + 1
+		else
+			mgr.animstate:add_idle_animation()
+		end
+	else
+		mgr.animstate:add_idle_animation()
+	end
+	self_states.current_state = "_new"
+	self_states.target_state = id
+	self_states.begin = nil
+	self_states.anim_level = 0
+	mgr.emerg.animation = nil
+end
+
+function animation:update()
+
+--	self.is_called = false
+
+	if self.sound_played then
+		if self.npc:active_sound_count() == 0 then
+			self.sound_played = false
+		end
+	end
+
+	local self_states = self.states
+
+	for item_name, state_info in pairs (self_states.attach_items) do
+		if state_info.done == false then
+			local t = self.npc:object(item_name)
+			if t then
+				if state_info.mode == "attach" then
+					t:enable_attachable_item(true)
+				elseif state_info.mode == "detach" then
+					t:enable_attachable_item(false)
+				end
+			end
+			state_info.done = true
+		end
+	end
+
+	if self_states.current_state == nil then
+		self:callback_process()
+		return
+	end
+
+	if self.mgr.emerg ~= nil and self.mgr.emerg.animation == true then
+		self.npc:clear_animations()
+		self:set_state(nil)
+		self_states.current_state = nil
+		self.mgr.emerg.animation = nil
+		return
+	end
+
+	if self_states.current_state == "_new" then
+		local nnum = 0
+		local target_anim = state_mgr_animation_list.animations[self_states.target_state]
+		if (target_anim ~= nil and target_anim.idle ~= nil) or self.mgr.animstate:idle_animation_present() then
+			nnum = 1
+		end
+		if self.npc:animation_count() <= nnum then
+			self_states.current_state = self_states.target_state
+			self:callback_init()
+		end
+		return
+	end
+
+	if self_states.current_state == "_wait" then
+		local nnum = 0
+		local target_state = self_states.target_state
+		local target_anim = state_mgr_animation_list.animations[target_state]
+		if (target_anim ~= nil and target_anim.idle ~= nil) or self.mgr.animstate:idle_animation_present() then
+			nnum = 1
+		end
+		if self.npc:animation_count() <= nnum then
+			self_states.current_state = target_state
+		end
+		if target_state == state_lib_states[self.mgr.target_state].animation then
+			local cb = self.mgr.callback
+			if cb and cb.func and cb.timeout and cb.begin == nil then
+				self:callback_init(true)
+			end
+		end
+		self:callback_process()
+		return
+	end
+
+	if self_states.current_state == self_states.target_state then
+
+		local cb = self.mgr.callback
+
+		if cb and cb.func and cb.timeout and cb.begin == nil then
+			self:callback_init(true)
+		end
+
+		if self:callback_process() == true then
+			return
+		end
+
+		local cur_state_anim = anims[self_states.current_state]
+
+		if cur_state_anim.subanim == nil then
+			self_states.anim_level = 0
+			self.mgr.subanim = 0
+		end
+
+		local anim_level = self_states.anim_level
+		local mgr_subanim = self.mgr.subanim
+
+		if anim_level < mgr_subanim then
+
+			local wpn_slot = self:weapon_slot()
+			self.npc:clear_animations()
+			for key = anim_level + 1, mgr_subanim do -- the loop body will fire at least once
+				local a = cur_state_anim.subanim[key]
+				if a and a.into then
+					local anima = anim_for_slot(wpn_slot, a.into)
+					if anima then
+						add_anim(self.npc, anima, true, a.prop)
+					end
+				end
+				if a.into_music then
+					xr_sound.set_sound_play(self.npc:id(), a.into_music)
+				end
+			end
+			self_states.anim_level = mgr_subanim
+			local a = cur_state_anim.subanim[mgr_subanim]
+			local anima = anim_for_slot(wpn_slot, a.idle)
+			if anima then
+				add_anim(self.npc, anima, true, a.prop)
+			end
+			self_states.current_state = "_wait"
+
+		elseif anim_level > mgr_subanim then
+
+			local wpn_slot = self:weapon_slot()
+			self.npc:clear_animations()
+			for key = anim_level, mgr_subanim + 1 do -- the loop body will fire a maximum of once; was a negative delta maybe intended?
+				local a = cur_state_anim.subanim[key]
+				if a and a.out then
+					local anima = anim_for_slot(wpn_slot, a.out)
+					if anima then
+						add_anim(self.npc, anima, true, a.prop)
+					end
+				end
+			end
+			self_states.anim_level = mgr_subanim
+			local a
+			if mgr_subanim == 0 then
+				a = cur_state_anim
+			else
+				a = cur_state_anim.subanim[mgr_subanim]
+			end
+			local anima = anim_for_slot(wpn_slot, a.idle)
+			if anima then
+				add_anim(self.npc, anima, true, a.prop)
+			end
+			self_states.current_state = "_wait"
+		else
+			if cur_state_anim ~= nil then
+				local state
+				if anim_level == 0 then
+					state = cur_state_anim
+				else
+					state = cur_state_anim.subanim[anim_level]
+				end
+				if state.rnd ~= nil then
+					if self_states.begin == nil then
+						self:play_rnd(state, true)
+					elseif time_global() - self_states.begin > self_states.idle then
+						self:play_rnd(state)
+					end
+				end
+			end
+		end
+	end
+end
+
+function animation:play_rnd(state, must_play)
+
+	local planner = self.mgr.planner
+
+	planner:action(self.ops_end):weapon_update()
+
+	if not (planner:evaluator(self.props_animation):evaluate() and planner:evaluator(self.props_weapon):evaluate()) then
+		return
+	end
+
+	if self.sound_played then
+		if self.npc:active_sound_count() == 0 then
+			self.sound_played = false
+		end
+		return
+	end
+
+	local self_states = self.states
+
+	self_states.begin = time_global()
+
+	local state_prop = state.prop
+
+	if state_prop.maxidle == 0 then
+		self_states.idle = state_prop.sumidle * 1000
+	else
+		self_states.idle = (math.random(state_prop.maxidle) + state_prop.sumidle) * 1000
+	end
+
+	if math.random(100) < state_prop.rnd or must_play then
+		local wpn_slot = self:weapon_slot()
+		local anima = anim_for_slot(wpn_slot, state.rnd)
+		if anima == nil then
+			return
+		end
+		local r
+		if #anima > 1 then
+			if self_states.last_id == nil then
+				r = math.random(#anima)
+			else
+				r = math.random(#anima - 1)
+				if r >= self_states.last_id then
+					r = r + 1
+				end
+			end
+			self_states.last_id = r
+		else
+			r = 1
+		end
+		self.npc:clear_animations()
+		if anima[r] ~= nil then
+			add_anim(self.npc, anima[r], true, state_prop.moving)
+			if self.mgr.synsound and self.npc:active_sound_count() == 0 then
+				self.sound_played = true
+			end
+		end
+		if state.idle ~= nil then
+			anima = anim_for_slot(wpn_slot, state.idle)
+			if anima then
+				add_anim(self.npc, anima, true, state_prop.moving)
+			end
+		else
+			self.mgr.animstate:add_idle_animation()
+		end
+		self_states.current_state = "_wait"
+	end
+end
+
+function animation:callback_init(recall)
+	local cb = self.mgr.callback
+	if cb ~= nil and cb.func ~= nil and cb.begin == nil and (state_lib_states[self.mgr.target_state].animation == self.states.current_state or recall == true) then
+		cb.begin = time_global()
+	end
+end
+
+function animation:callback_process()
+	local cb = self.mgr.callback
+	if cb ~= nil and cb.func ~= nil and cb.begin ~= nil then
+		if time_global() - cb.begin >= cb.timeout then
+			local a = cb.func
+			local b = cb.obj
+			cb.begin = nil
+			cb.func = nil
+			a(b)
+			return true
+		end
+	end
+	return false
+end
+
+function animation:clear_anim_callback()
+	self.clb_settings = {}
+end
+
+function animation:set_anim_callback(value)
+	local clb_settings = self.clb_settings
+	local table_size = #clb_settings
+	local anim_count = self.npc:animation_count()
+	for key = table_size + 1, anim_count do
+--		table.insert(self.clb_settings, "nil")
+		clb_settings[key] = "nil"
+	end
+	clb_settings[#clb_settings] = {
+		a = value.a,
+		d = value.d,
+		s = value.s,
+		sh = value.sh,
+		f = value.f
+	}
+end
+
+function animation:anim_callback()
+
+	local v = self.clb_settings[1]
+
+	if v == nil then
+		return true
+	end
+
+	if v == "nil" then
+		table.remove(self.clb_settings, 1)
+		return true
+	end
+
+	if v.a ~= nil then
+		local a = self.states.attach_items[v.a]
+		if a ~= nil then
+			a.mode = "attach"
+			a.done = false
+		end
+	end
+
+	if v.d ~= nil then
+		local d = self.states.attach_items[v.d]
+		if d ~= nil then
+			d.mode = "detach"
+			d.done = false
+		end
+	end
+
+	if v.s ~= nil then
+		xr_sound.set_sound_play(self.npc:id(), v.s)
+	end
+
+	if v.sh ~= nil then
+		local npc = self.npc
+		local h = hit()
+		h.power = v.sh
+		h.direction = vector_rotate_y(npc:direction(), 90)
+		h.draftsman = npc
+		h.impulse = 200
+		h.type = hit.wound
+		npc:hit(h)
+	end
+
+	if v.f ~= nil then
+		v.f(self.npc)
+	end
+
+	table.remove(self.clb_settings, 1)
+
+	return true
+end
+
+function animation:state()
+	return self.states.current_state
+end
+
+function animation:target_state()
+	return self.states.target_state
+end
+
+function animation:weapon_slot()
+	local npc = self.npc
+	local weapon = npc:active_item()
+	if weapon == nil or npc:weapon_strapped() == true then
+		return 0
+	end
+	return weapon:animation_slot()
+end
+
+function add_anim(npc, anim, hand_usage, animation_props)
+	if hand_usage == nil then
+		hand_usage = false
+	end
+	if animation_props ~= nil and animation_props.moving == true then
+		npc:set_sight(sight_dir, false, false)
+		if animation_props.pos ~= nil and animation_props.rot ~= nil then
+			npc:add_animation(anim, hand_usage, animation_props.pos, animation_props.rot, false)
+		else
+			npc:add_animation(anim, hand_usage, true)
+		end
+	else
+		npc:add_animation(anim, hand_usage, false)
+	end
+end
+
+function clear_anim(npc)
+end

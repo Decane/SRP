@@ -1,31 +1,51 @@
 -- Decane 10.10.2014: Removed superfluous packet data writes and broken-in-vanilla delays to NPCs adjusting their prices (the wrong inequality sign was used). See also xr_motivator.script.
+--        27.04.2017: Optimizations, some of which per NatVac.
 
 local trade_manager = {}
+local generic_ini = ini_file("misc\\trade_generic.ltx")
+local generic_ini_checked = false
 
-function trade_init(npc, cfg)
+function trade_init(npc, ini_path)
 
-	local npc_id = npc:id()
-	trade_manager[npc_id] = {}
-	trade_manager[npc_id].cfg_ltx = cfg
-	trade_manager[npc_id].config = ini_file(cfg)
-
-	local str = utils.cfg_get_string(trade_manager[npc_id].config, "trader", "buy_condition", npc, true, "")
-	if str == nil then
-		abort("Incorrect trader settings. Cannot find buy_condition. [%s]->[%s]", npc:name(), cfg)
+	local ini
+	if ini_path == "misc\\trade_generic.ltx" then
+		ini = generic_ini
+	else
+		ini = ini_file(ini_path)
 	end
 
-	trade_manager[npc_id].buy_condition = xr_logic.parse_condlist(npc, "trade_manager", "buy_condition", str)
+	local trader_sect = "trader"
 
-	str = utils.cfg_get_string(trade_manager[npc_id].config, "trader", "sell_condition", npc, true, "")
-	if str == nil then
-		abort("Incorrect trader settings. Cannot find sell_condition. [%s]->[%s]", npc:name(), cfg)
+	if generic_ini_checked == false or ini_path ~= "misc\\trade_generic.ltx" then
+--		dbglog("Checked: "..ini_path)
+		if not ini:section_exist(trader_sect) then
+			return
+		end
+		if not ini:line_exist(trader_sect, "buy_condition") or not ini:line_exist(trader_sect, "sell_condition") then
+			abort("[trade_manager.trade_init]: Missing mandatory parameter(s) 'buy_condition' and/or 'sell_condition' in trade config '%s' of NPC '%s'.", ini_path, npc:name())
+			return
+		end
 	end
 
-	trade_manager[npc_id].sell_condition = xr_logic.parse_condlist(npc, "trade_manager", "sell_condition", str)
+	if ini_path == "misc\\trade_generic.ltx" then
+		generic_ini_checked = true
+	end
 
-	str = utils.cfg_get_string(trade_manager[npc_id].config, "trader", "buy_supplies", npc, false, "")
-	if str ~= nil then
-		trade_manager[npc_id].buy_supplies = xr_logic.parse_condlist(npc, "trade_manager", "buy_supplies", str)
+	local tt = {config = ini}
+
+	trade_manager[npc:id()] = tt
+
+--	tt.cfg_ltx = ini_path
+
+	local condlist = ini:r_string(trader_sect, "buy_condition")
+	tt.buy_condition = xr_logic.parse_condlist(npc, "trade_manager", "buy_condition", condlist)
+
+	condlist = ini:r_string(trader_sect, "sell_condition")
+	tt.sell_condition = xr_logic.parse_condlist(npc, "trade_manager", "sell_condition", condlist)
+
+	condlist = ini:line_exist(trader_sect, "buy_supplies") and ini:r_string(trader_sect, "buy_supplies")
+	if condlist then
+		tt.buy_supplies = xr_logic.parse_condlist(npc, "trade_manager", "buy_supplies", condlist)
 	end
 end
 
@@ -39,57 +59,57 @@ function update(npc)
 --[[
 	local time_now = time_global()
 
-	if tt.next_update_time ~= nil and time_now < tt.next_update_time then	-- the vanilla second conjunct is equivalent to 'tt.next_update_time < time_now'
+	if tt.next_update_time ~= nil and time_now < tt.next_update_time then	-- the vanilla second conjunct was equivalent to 'tt.next_update_time < time_now'
 		return
 	end
 
 	tt.next_update_time = time_now + 1000	-- the next update will be called one thousand milliseconds from now
 
-	dbgmsg("[trade_manager.update]: Update() called for NPC with ID "..tostring(npc:id())..".")
+	dbglog("[trade_manager.update]: Update() called for NPC with ID "..tostring(npc:id()))
 ]]
 	local act = db.actor
-	local str = xr_logic.pick_section_from_condlist(act, npc, tt.buy_condition)
+	local target_sect = xr_logic.pick_section_from_condlist(act, npc, tt.buy_condition)
 
---	dbgmsg("[trade_manager.update]: Current buy condition: "..tostring(tt.current_buy_condition)..".")
+--	dbglog("[trade_manager.update]: Current buy condition: "..tostring(tt.current_buy_condition))
 
-	if tt.current_buy_condition ~= str then
-		npc:buy_condition(tt.config, str)
-		tt.current_buy_condition = str
---		dbgmsg("[trade_manager.update]: New buy condition: "..str..".")
+	if tt.current_buy_condition ~= target_sect then
+		npc:buy_condition(tt.config, target_sect)
+		tt.current_buy_condition = target_sect
+--		dbglog("[trade_manager.update]: New buy condition: "..target_sect)
 	end
 
-	str = xr_logic.pick_section_from_condlist(act, npc, tt.sell_condition)
+	target_sect = xr_logic.pick_section_from_condlist(act, npc, tt.sell_condition)
 
---	dbgmsg("[trade_manager.update]: Current sell condition: "..tostring(tt.current_sell_condition)..".")
+--	dbglog("[trade_manager.update]: Current sell condition: "..tostring(tt.current_sell_condition))
 
-	if tt.current_sell_condition ~= str then
-		npc:sell_condition(tt.config, str)
-		tt.current_sell_condition = str
---		dbgmsg("[trade_manager.update]: New sell condition: "..str..".")
+	if tt.current_sell_condition ~= target_sect then
+		npc:sell_condition(tt.config, target_sect)
+		tt.current_sell_condition = target_sect
+--		dbglog("[trade_manager.update]: New sell condition: "..target_sect)
 	end
 
 	if tt.buy_supplies == nil then
 		return
 	end
 
-	str = xr_logic.pick_section_from_condlist(act, npc, tt.buy_supplies)
+	target_sect = xr_logic.pick_section_from_condlist(act, npc, tt.buy_supplies)
 
---	dbgmsg("[trade_manager.update]: Current supplies: "..tostring(tt.current_buy_supplies)..".")
+--	dbglog("[trade_manager.update]: Current supplies: "..tostring(tt.current_buy_supplies))
 
-	if tt.current_buy_supplies ~= str then
+	if tt.current_buy_supplies ~= target_sect then
 --[[
 		local time_now = time_global()
 
-		if tt.resupply_time ~= nil and time_now < tt.resupply_time then		-- the vanilla second conjunct is, again, written with the wrong inequality sign, so the vanilla equivalent of this block is bugged
+		if tt.resupply_time ~= nil and time_now < tt.resupply_time then		-- the vanilla second conjunct was, again, written with the wrong inequality sign, so the vanilla equivalent of this block was bugged
 			return
 		end
 
 		tt.resupply_time = time_now + 600000	-- goods are re-stocked every 10 real minutes = 10 * 60 * 1000 milliseconds = 600000 milliseconds
 ]]
-		npc:buy_supplies(tt.config, str)
-		tt.current_buy_supplies = str
+		npc:buy_supplies(tt.config, target_sect)
+		tt.current_buy_supplies = target_sect
 
---		dbgmsg("[trade_manager.update]: New supplies: "..str..".")
+--		dbglog("[trade_manager.update]: New supplies: "..target_sect)
 	end
 end
 --[[

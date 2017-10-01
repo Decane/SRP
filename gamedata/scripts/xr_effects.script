@@ -1401,17 +1401,17 @@ end
 --'------------------------------------------------------
 
 function actor_friend(actor, npc)
---	npc:set_relation(game_object.friend, actor)	-- does not seem to work in all cases
-	npc:set_goodwill(12000, actor)			-- lowest possible npc net goodwill to actor is -11000; to get to +1000, need +12000
+--	npc:set_relation(game_object.friend, actor) -- sometimes fails
+	npc:set_goodwill(9000, actor) -- this will fail iff the NPC's community_goodwill + community_to_community < -8000, but this cannot happen with an unmodified SRP installation
 end
 
-function actor_neutral(actor, npc)			-- not used, so no changes necessary
+function actor_neutral(actor, npc) -- not used, so no changes necessary
 	npc:set_relation(game_object.neutral, actor)
 end
 
 function actor_enemy(actor, npc)
---	npc:set_relation(game_object.enemy, actor)	-- does not seem to work in all cases
-	npc:set_goodwill(-8000, actor)			-- highest possible npc net goodwill to actor is +7000; to get to -1000, need -8000
+--	npc:set_relation(game_object.enemy, actor) -- sometimes fails
+	npc:set_goodwill(-3000, actor) -- this will fail iff the NPC's community_goodwill + community_to_community > 2000, but 2000 is the maximum value of this sum with an unmodified SRP installation
 end
 
 function set_gulag_relation_actor(actor, npc, p)
@@ -1434,43 +1434,40 @@ function set_squad_community_goodwill(actor, npc, p)
 	game_relations.set_squad_community_goodwill(p[1], p[2], p[3])
 end
 
-function set_faction_community_to_actor(actor, npc, p)		-- sets faction *goodwill* to actor
+function set_faction_community_to_actor(actor, npc, p) -- sets faction *goodwill* to player
 	local faction, relation = p[1], p[2]
 	if faction ~= nil then
 		if relation ~= nil then
 
---			local rel = 0
---			if relation == "enemy" then
---				rel = -3000
---			elseif relation == "friend" then
---				rel = 1000
---			end
+			local rel = 0
+			if relation == "enemy" then
+				rel = -3000
+			elseif relation == "friend" then
+				rel = 1000
+			end
 
-			local rel = (relation == "enemy" and -3000) or (relation == "friend" and 1000) or 0
 			db.actor:set_community_goodwill(faction, rel)
 
 --			for k, squad in pairs (sim_board.get_sim_board().players[faction].squads) do
---				squad:refresh()			-- update map icons
+--				squad:refresh() -- update map icons
 --			end
 		end
 	end
 end
 
-function set_level_faction_community(actor, npc, p)		-- sets *goodwill* to actor of all faction members on a particular level
+function set_level_faction_community(actor, npc, p) -- sets *goodwill* to player of all faction members on a particular level
 	local player, map, relation = p[1], p[2], p[3]
 	if player ~= nil then
 		if map ~= nil then
 			if relation ~= nil then
 				local faction = sim_board.get_sim_board().players[player]
 
---				local goodwill = 0
---				if relation == "enemy" then
---					goodwill = -3000	-- npc-to-unaffiliated-actor goodwill limits: -6000, +2000 (function used only in Cordon before actor affiliated with any faction)
---				elseif relation == "friend" then
---					goodwill = 7000		-- vanilla: 1000
---				end
-
-				local goodwill = (relation == "enemy" and -3000) or (relation == "friend" and 7000) or 0
+				local goodwill = 0
+				if relation == "enemy" then
+					goodwill = -3000
+				elseif relation == "friend" then
+					goodwill = 9000 -- vanilla: 1000
+				end
 
 				local sim = alife()
 				local GG = game_graph()
@@ -1971,14 +1968,14 @@ function give_location_only(actor, npc, p)
 		treasure_manager.give_location_only(v)
 	end
 end
-
+--[[
 function reset_faction_relation(actor, obj, p)
 	local faction_name = p and p[1]
 	if faction_name ~= nil then
 		if sim_board.get_sim_board().players[faction_name] then
 			local act = db.actor
 			if act then
-				relation_registry.set_community_relation(act:character_community(), faction_name, 0)
+				relation_registry.set_community_relation(faction_name, act:character_community(), 0)
 			end
 		else
 			abort("[xr_effects.reset_faction_relation]: '%s' is not a valid faction name.", tostring(faction_name))
@@ -1987,7 +1984,7 @@ function reset_faction_relation(actor, obj, p)
 		abort("[xr_effects.reset_faction_relation]: Parameter missing.")
 	end
 end
-
+]]
 function release_npc_item(actor, npc, p)
 	local item_name = p and p[1]
 	if item_name == nil then
@@ -1999,12 +1996,12 @@ function release_npc_item(actor, npc, p)
 		sim:release(sim:object(item:id()), true)
 	end
 end
-
+--[[
 function walkie_talkie_vanish_prevention_hack(actor, npc)
 	trade_manager.update(npc)
 --	dbgmsg("NPC trade supplies updated!")
 end
-
+]]
 function freeplay()
 	ogsm_freeplay.armagezdec()
 end

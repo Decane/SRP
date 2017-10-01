@@ -1,0 +1,57 @@
+class "actor_proxy"
+
+function actor_proxy:__init()
+	self.initialized = false
+end
+
+function actor_proxy:init()
+	if not self.initialized then
+		self.online = false
+		local sim = alife()
+		self.alife = sim
+		if sim then
+			self.actor_id = sim:actor().id
+		end
+		self.actor = nil
+		self.initialized = true
+	end
+end
+
+function actor_proxy:deinit()
+	if self.initialized then
+		self.alife = nil
+		self.actor = nil
+		self.initialized = false
+	end
+end
+
+function actor_proxy:id()
+	self:init()
+	return self.actor_id
+end
+
+function actor_proxy:has_info(name)
+	self:init()
+	return has_alife_info(name) -- DC170530: was missing "return" keyword so didn't return anything
+end
+
+function actor_proxy:dont_has_info(name)
+	self:init()
+--	if self.online then
+		return not has_alife_info(name)
+--	else
+--		return not has_alife_info(self.actor_id, name) -- nv170320: this always returns false (acts on self.actor_id as name)
+--	end
+end
+
+function actor_proxy:net_spawn(obj)
+	self:init()
+	self.online = true
+	self.actor = obj
+end
+
+function actor_proxy:net_destroy()
+	self:init()
+	self.online = false
+	self.actor = nil
+end

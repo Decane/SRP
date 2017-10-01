@@ -1,4 +1,4 @@
--- This script controls the delayed release of corpses exceeding the maximum permitted quantity in the Zone.
+-- This script controls the delayed release of non-permanent corpses exceeding the maximum permitted quantity in the Zone.
 -- The moment there are x corpses in the Zone, where 15 < x <= 75, the game will try to release the min{10, (x - 15)} furthest-away-from-the-player corpses.
 -- This attempt will be successful for and only for corpses that are at least 1 real hour old. (1 hour = 3600 seconds, hence the "3600" in the code.)
 -- If ever x > 75, the game will force the immediate release of the (x - 75) furthest-away-from-the-player corpses.
@@ -9,33 +9,17 @@ local corpse_time = nil
 local corpse_target = nil
 
 local release_objects_table = {}
-local keep_items_table = {}
 local body_max_count = 75
 local body_target_count = 15
 local session_start_time = nil
 
 function init()
-
 	session_start_time = math.ceil(0.001 * time_global())
-
-	local ini = ini_file("misc\\death_generic.ltx")
-	if not ini:section_exist("keep_items") then
-		abort("[release_body_manager.init]: There is no section [keep_items] in death_generic.ltx.")
-	end
-
-	local n = ini:line_count("keep_items")
-	local T = keep_items_table
-	for i = 0, n - 1 do
-		local result, section_name = ini:r_line("keep_items", i, "", "")
-		T[section_name] = true
-	end
 end
 
 local function try_to_release()
 
 	local rel_table = release_objects_table
-	local delay_table = bind_stalker.delayed_alife_release_objects
-	local to_delay_table = bind_stalker.to_delayed_alife_release_objects
 	local sim = alife()
 	local rem = table.remove
 	local session_time = math.ceil(0.001 * time_global()) - session_start_time
@@ -46,65 +30,65 @@ local function try_to_release()
 
 --	dbglog("Initiation time: "..session_time..". Corpses in release table: "..#rel_table..".")
 
-	for i = #rel_table, 1, -1 do													-- for all corpses in the release table:
+	for i = #rel_table, 1, -1 do																-- for all corpses in the release table:
 
 		v = rel_table[i]
 
-		if v.death_time ~= nil then												-- if the corpse was created during this session then
-			time_dead = session_time - v.death_time										-- set its time_dead to the current session time - session death time
+		if v.death_time ~= nil then																-- if the corpse was created during this session then
+			time_dead = session_time - v.death_time												-- set its time_dead to the current session time - session death time
 		else
-			time_dead = v.time_dead + session_time										-- else set its time_dead to the loaded time_dead + current session time
+			time_dead = v.time_dead + session_time												-- else set its time_dead to the loaded time_dead + current session time
 		end
 
 		npc_id = v.id
 
-		if sim:object(npc_id) ~= nil and delay_table[npc_id] == nil and to_delay_table[npc_id] == nil then			-- if the corpse exists and is not in the delay tables then
-			if time_dead < corpse_time then											-- if it is less than corpse_time old then
+		if sim:object(npc_id) ~= nil then														-- if the corpse exists then
+			if time_dead < corpse_time then														-- if it is less than corpse_time old then
 				c = c + 1
-				t[c] = v												-- add it to the temp table for safe-keeping
+				t[c] = v																		-- add it to the temp table for safe-keeping
 --				dbglog("Moved corpse with ID "..npc_id.." to temp table for safe-keeping.")
-				rem(rel_table, i)											-- and temporarily remove it from the release table
+				rem(rel_table, i)																-- and temporarily remove it from the release table
 --				dbglog("Corpse with ID "..npc_id.." is not releasable because it is too fresh.")
 			end
-		else															-- elseif the corpse doesn't exist or is in either of the delay tables then
-			rem(rel_table, i)												-- permanently remove it from the release table (i.e. without adding it to the temp table for later re-insertion)
---			dbglog("Corpse with ID "..npc_id.." is not releasable because it does not exist or is in a delay table.")
+		else																					-- elseif the corpse doesn't exist then
+			rem(rel_table, i)																	-- permanently remove it from the release table (i.e. without adding it to the temp table for later re-insertion)
+--			dbglog("Corpse with ID "..npc_id.." is not releasable because it does not exist.")
 		end
 	end
 
-	local rel_corpse_num = #rel_table												-- now re-calculate the number of corpses in the release table
+	local rel_corpse_num = #rel_table															-- now re-calculate the number of corpses in the release table
 	local t_corpse_num = #t
 
 --	dbglog("Releasable corpses: "..rel_corpse_num..". Corpses in total: "..rel_corpse_num + t_corpse_num..".")
 
-	if rel_corpse_num < 1 then													-- if there are no releasable corpses then
---		for i = 1, t_corpse_num do												-- add back into the release table any corpses safe-kept in the temp table
+	if rel_corpse_num < 1 then																	-- if there are no releasable corpses then
+--		for i = 1, t_corpse_num do																-- add back into the release table any corpses safe-kept in the temp table
 --			rel_table[i] = t[i]
 --			dbglog("Added back corpse with ID "..t[i].id.." from temp table to release table since no releasable corpses.")
 --		end
 		release_objects_table = t
-		return															-- and stop the function
+		return																					-- and stop the function
 	end
 
 	local overflow_count = rel_corpse_num + t_corpse_num - corpse_target
 
-	if overflow_count > 0 then													-- if there *are* releasable corpses and if there are still too many corpses in the Zone then
+	if overflow_count > 0 then																	-- if there *are* releasable corpses and if there are still too many corpses in the Zone then
 
 		local GG = game_graph()
-		local act_game_pt = GG:vertex(sim:actor().m_game_vertex_id):game_point()						-- sort the release table in descending order of distance between corpse and player (so the corpse with the most distance is first)
+		local act_game_pt = GG:vertex(sim:actor().m_game_vertex_id):game_point()				-- sort the release table in descending order of distance between corpse and player (so the corpse with the most distance is first)
 
 		table.sort(rel_table, function(a, b) return act_game_pt:distance_to(GG:vertex(sim:object(a.id).m_game_vertex_id):game_point()) > act_game_pt:distance_to(GG:vertex(sim:object(b.id).m_game_vertex_id):game_point()) end)
 
 		if corpse_time ~= 6 then
-			overflow_count = 10												-- if this is only an attempted (rather than forced) release, cap the release_count to 10 (see the line following the next to understand why this constitutes a cap)
-		end															-- we do this because we do not want to release more than 10 corpses at once, as that can cause a slowdown
+			overflow_count = 10																	-- if this is only an attempted (rather than forced) release, cap the release_count to 10 (see the line following the next to understand why this constitutes a cap)
+		end																						-- we do this because we do not want to release more than 10 corpses at once, as that can cause a slowdown
 
-		local release_count = rel_corpse_num >= overflow_count and overflow_count or rel_corpse_num				-- set the release_count to either the surplus corpse count or to the releasable corpse count if below the surplus corpse count
+		local release_count = rel_corpse_num >= overflow_count and overflow_count or rel_corpse_num -- set the release_count to either the surplus corpse count or to the releasable corpse count if below the surplus corpse count
 
-		for i = 1, release_count do												-- for the release_count furthest corpses in the release table:
+		for i = 1, release_count do																-- for the release_count furthest corpses in the release table:
 			npc_id = rel_table[1].id
-			sim:release(sim:object(npc_id), true)										-- release the corpse
-			rem(rel_table, 1)												-- and remove it from the release table
+			sim:release(sim:object(npc_id), true)												-- release the corpse
+			rem(rel_table, 1)																	-- and remove it from the release table
 --			dbglog("Released corpse with ID "..npc_id.." and removed it from release table.")
 		end
 	end
@@ -113,16 +97,16 @@ local function try_to_release()
 
 	for i = 1, t_corpse_num do
 		c = c + 1
-		rel_table[c] = t[i]													-- finally, add back into the release table any corpses safe-kept in the temp table
+		rel_table[c] = t[i]																		-- finally, add back into the release table any corpses safe-kept in the temp table
 --		dbglog("Added back corpse with ID "..t[i].id.." from temp table to release table.")
 	end
 
 --	dbglog("Corpses in total after release attempt: "..#rel_table..".")
 end
 
-function moving_dead_body(npc)
+function moving_dead_body(npc, se_npc, npc_id)
 
-	for section_name in pairs (keep_items_table) do
+	for section_name in pairs (death_manager.always_keep_item) do
 		if npc:object(section_name) ~= nil then
 			return
 		end
@@ -132,25 +116,26 @@ function moving_dead_body(npc)
 		return
 	end
 
-	local npc_name = npc:profile_name()
-	if npc_name == "gar_digger_messenger_man" or npc_name == "agr_dolg_blockpost_commander" or npc_name == "mil_hog" then
+	if se_npc.has_known_info then
+--		dbglog("Corpse with ID "..npc_id.." has info. Not adding it to release table.")
 		return
 	end
 
-	local npc_id = npc:id()
-	local new_corpse_num = #release_objects_table + 1
-	local npc_info = {id = npc_id, death_time = math.ceil(0.001 * time_global()) - session_start_time, time_dead = 0}		-- session death time = session time elapsed now - session start time; converted to seconds so that can be reliably stored as 16-bit unsigned integer; used math.ceil to ensure that death_time is an integer
+--	dbglog("Corpse with ID "..npc_id.." does not have info. Adding it to release table.")
 
-	release_objects_table[new_corpse_num] = npc_info										-- add corpse info (ID, death time, and time spent dead) to release table
+	local new_corpse_num = #release_objects_table + 1
+	local npc_info = {id = npc_id, death_time = math.ceil(0.001 * time_global()) - session_start_time, time_dead = 0} -- session death time = session time elapsed now - session start time; converted to seconds so that can be reliably stored as 16-bit unsigned integer; used math.ceil to ensure that death_time is an integer
+
+	release_objects_table[new_corpse_num] = npc_info											-- add corpse info (ID, death time, and time spent dead) to release table
 
 --	dbglog("Added corpse with ID "..npc_id.." and death_time "..npc_info.death_time.." to release table.")
 
-	if new_corpse_num > body_target_count then											-- if the number of corpses in the release table now exceeds body_target_count then
-		corpse_time = 3600													-- attempt to release the furthest-away-from-player corpses in the release table
+	if new_corpse_num > body_target_count then													-- if the number of corpses in the release table now exceeds body_target_count then
+		corpse_time = 3600																		-- attempt to release the furthest-away-from-player corpses in the release table
 		corpse_target = body_target_count
 		try_to_release()
-		if #release_objects_table > body_max_count then										-- if the number of corpses in the release table *then* exceeds body_max_count then
-			corpse_time = 6													-- force the release of the furthest-away-from-player corpses in the release table
+		if #release_objects_table > body_max_count then											-- if the number of corpses in the release table *then* exceeds body_max_count then
+			corpse_time = 6																		-- force the release of the furthest-away-from-player corpses in the release table
 			corpse_target = body_max_count
 			try_to_release()
 		end
@@ -164,11 +149,11 @@ function save(packet)
 	local session_time = math.ceil(0.001 * time_global()) - session_start_time
 	for k, v in pairs (release_objects_table) do
 		packet:w_u16(v.id)
-		if v.death_time ~= nil then												-- if the corpse was created this session then
-			packet:w_u16(session_time - v.death_time)									-- save the amount of time the corpse has been dead this session (session length now - session length when died)
+		if v.death_time ~= nil then																-- if the corpse was created this session then
+			packet:w_u16(session_time - v.death_time)											-- save the amount of time the corpse has been dead this session (session length now - session length when died)
 --			dbglog("Saved time_dead "..(session_time - v.death_time).." for corpse with ID "..v.id..".")
 		else
-			packet:w_u16(v.time_dead + session_time)									-- else save the previously loaded time_dead (i.e. time_dead at the start of this session) plus the time elapsed right now (at the end of this session)
+			packet:w_u16(v.time_dead + session_time)											-- else save the previously loaded time_dead (i.e. time_dead at the start of this session) plus the time elapsed right now (at the end of this session)
 --			dbglog("Saved time_dead "..(v.time_dead + session_time).." for corpse with ID "..v.id..".")
 		end
 	end
@@ -184,7 +169,7 @@ function load(reader)
 	for i = 1, count do
 		id = reader:r_u16()
 		td = reader:r_u16()
-		T[i] = {id = id, time_dead = td}											-- load the amount of time the corpse has been a corpse
+		T[i] = {id = id, time_dead = td}														-- load the amount of time the corpse has been a corpse
 --		dbglog("Loaded time_dead "..td.." for corpse with ID "..id..".")
 	end
 	set_save_marker(reader, "load", true, "Crelease_body")

@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------------
 
-This file details every alteration made to the vanilla all.spawn by the sRP.
+This file details every alteration made to the vanilla all.spawn by the SRP.
 Alterations are indicated with respect to the vanilla section headers.
 
 -----------------------------------------------------------------------------
@@ -1855,6 +1855,36 @@ object_flags = 0xffffff3b
 
 • Superfluous space restrictor: 'kat_hosp_z3_spawn_jumper_restr'. Not referenced anywhere in the game code.
 
+------------------------------------
+
+[11387]
+
+• Added nil logic section so bind_physic_object.script properly binds to the object without requiring an explicit test for the object clsid.
+
+------------------------------------
+
+[11388]
+
+• Added nil logic section so bind_physic_object.script properly binds to the object without requiring an explicit test for the object clsid.
+
+------------------------------------
+
+[11389]
+
+• Added nil logic section so bind_physic_object.script properly binds to the object without requiring an explicit test for the object clsid.
+
+------------------------------------
+
+[11390]
+
+• Added nil logic section so bind_physic_object.script properly binds to the object without requiring an explicit test for the object clsid.
+
+------------------------------------
+
+[11391]
+
+• Added nil logic section so bind_physic_object.script properly binds to the object without requiring an explicit test for the object clsid.
+
 
 ====================================
 way_l01_marsh.ltx:
@@ -1874,6 +1904,38 @@ p1:name = name01|ret=0
 --> [mar_smart_terrain_11_11_to_mar_smart_terrain_9_10_patrol_1_walk]
 
 • Fixed the header by changing '9_11' to '9_10'. There is no smart terrain with the name 'mar_smart_terrain_9_11'.
+
+------------------------------------
+
+[mar_smart_terrain_3_3_walker_0_look]
+
+--> [mar_smart_terrain_3_3_walker_4_look]
+
+• Waypoint index parsing begins at 1, not 0, in gulag_general.script. [mar_smart_terrain_3_3_walker_3_look] was the highest-index _look waypoint for this smart terrain, so incremented 0 to 4.
+
+------------------------------------
+
+[mar_smart_terrain_3_3_walker_0_walk]
+
+--> [mar_smart_terrain_3_3_walker_4_walk]
+
+• Waypoint index parsing begins at 1, not 0, in gulag_general.script. [mar_smart_terrain_3_3_walker_3_walk] was the highest-index _walk waypoint for this smart terrain, so incremented 0 to 4.
+
+------------------------------------
+
+[mar_smart_terrain_4_5_walker_0_look]
+
+--> [mar_smart_terrain_4_5_walker_6_look]
+
+• Waypoint index parsing begins at 1, not 0, in gulag_general.script. [mar_smart_terrain_4_5_walker_5_look] was the highest-index _look waypoint for this smart terrain, so incremented 0 to 6.
+
+------------------------------------
+
+[mar_smart_terrain_4_5_walker_0_walk]
+
+--> [mar_smart_terrain_4_5_walker_6_walk]
+
+• Waypoint index parsing begins at 1, not 0, in gulag_general.script. [mar_smart_terrain_4_5_walker_5_walk] was the highest-index _walk waypoint for this smart terrain, so incremented 0 to 6.
 
 ------------------------------------
 

@@ -1,0 +1,404 @@
+-- DC170529: Corrected the defaulting in cfg_get_string() - a non-nil default value was not returned if r_string() was reached and returned nil. Also, optimizations.
+
+local math_abs = math.abs
+
+local string_find = string.find
+local string_gfind = string.gfind
+local string_sub = string.sub
+local string_gsub = string.gsub
+
+--------------------------------------------------------------------------------
+
+function to_str(what)
+	return what == nil and "<nil>" or tostring(what)
+end
+
+function copy_table(dest, src)
+	for k, v in pairs (src) do
+		if type(v) == "table" then
+			dest[k] = {}
+			copy_table(dest[k], v)
+		else
+			dest[k] = v
+		end
+	end
+end
+
+function graph_distance(vid1, vid2)
+	local gg = game_graph()
+	return gg:vertex(vid1):game_point():distance_to(gg:vertex(vid2):game_point())
+end
+
+function vector_cmp(a, b)
+	return a.x == b.x and a.y == b.y and a.z == b.z
+end
+
+function vector_cmp_prec(a, b, d)
+	return math_abs(a.x - b.x) <= d and math_abs(a.y - b.y) <= d and math_abs(a.z - b.z) <= d
+end
+
+function vector_copy_by_val(vec)
+	return vector():set(vec)
+end
+
+--------------------------------------------------------------------------------
+
+function cfg_get_bool(ini, section, field, object, is_mandatory, default)
+
+	-- Tolerate nil as falsey by commenting this out:
+--	if is_mandatory == nil then
+--		abort("[utils.cfg_get_bool]: Object '%s': Nil value supplied for parameter 'is_mandatory', boolean expected.", object and object:name() or "nil")
+--	end
+
+	if section and ini:section_exist(section) and ini:line_exist(section, field) then
+		return ini:r_bool(section, field) -- field values "1" and "true" (in any case) evaluate to true; other numbers evaluate to false, as do "nil" and "test"
+	end
+
+	if not is_mandatory then
+		if default then
+			-- Tolerate a non-boolean default value by commenting this out:
+			if default ~= true then
+				abort("[utils.cfg_get_bool]: Object '%s': Default value supplied for field '%s' in section '%s' is not boolean.", object and object:name() or "nil", tostring(field), tostring(section))
+			end
+			return default
+		end
+		return false
+	end
+
+	abort("[utils.cfg_get_bool]: Object '%s': Attempted to read a non-existent boolean field '%s' in section '%s'.", object and object:name() or "nil", tostring(field), tostring(section))
+end
+
+function cfg_get_string(ini, section, field, object, is_mandatory, gulag_name, default)
+--[[
+	-- Tolerate nil as falsey by commenting this out:
+	if is_mandatory == nil or gulag_name == nil then
+		abort("[utils.cfg_get_string]: Object '%s': Nil value supplied for at least one of parameters 'is_mandatory' and 'gulag_name', boolean expected.", object and object:name() or "nil")
+	end
+
+	if section and ini:section_exist(section) and ini:line_exist(section, field) then
+		if gulag_name == "" or not gulag_name then
+			return ini:r_string(section, field) -- nil if field is empty (that is, no value supplied for it)
+		end
+		return gulag_name .. "_" .. ini:r_string(section, field)
+	end
+]]
+	local str = section and ini:section_exist(section) and ini:line_exist(section, field) and ini:r_string(section, field) -- false or nil or a string
+	if str then
+		if gulag_name == "" or not gulag_name then
+			return str
+		end
+		return gulag_name.."_"..str
+	end
+
+	if not is_mandatory then
+		return default
+	end
+
+	abort("[utils.cfg_get_string]: Object '%s': Attempted to read a non-existent string value of field '%s' in section '%s'.", object and object:name() or "nil", tostring(field), tostring(section))
+end
+
+function cfg_get_number(ini, section, field, object, is_mandatory, default)
+
+	-- Tolerate nil as falsey by commenting this out:
+--	if is_mandatory == nil then
+--		abort("[utils.cfg_get_number]: Object '%s': Nil value supplied for parameter 'is_mandatory', boolean expected.", object and object:name() or "nil")
+--	end
+
+	if section and ini:section_exist(section) and ini:line_exist(section, field) then
+		return ini:r_float(section, field) -- "nil" and "a1" evaluate to 0; "2a" and "2" evaluate to 2
+	end
+
+	if not is_mandatory then
+		return default
+	end
+
+	abort("[utils.cfg_get_number]: Object '%s': Attempted to read a non-existent number field '%s' in section '%s'.", object and object:name() or "nil", tostring(field), tostring(section))
+end
+
+--------------------------------------------------------------------------------
+
+function stalker_at_waypoint(stalker, patrol_path, path_point)
+	return stalker:position():distance_to_sqr(patrol_path:point(path_point)) <= 0.13
+end
+
+function stalker_stop(stalker)
+	stalker:set_movement_type(move.stand)
+end
+
+function parse_waypoint_data(pathname, wpflags, wpname)
+
+	local rslt = {flags = wpflags}
+	local first_pipe_idx = string_find(wpname, "|", 1, true)
+
+	if first_pipe_idx == nil then
+		return rslt
+	end
+
+	local params = string_sub(wpname, first_pipe_idx + 1)
+
+	if params == "" then
+		return rslt
+	end
+
+--	for param in string_gfind(params, "([%w%+~_\\%=%{%}%s%-%,%*]+)|*") do
+	for param in string_gfind(params, "([^|]+)|*") do
+--[[
+		if param == "" then -- this test always fails since the capture is for a non-empty string
+			abort("[utils.parse_waypoint_data]: Path '%s', waypoint '%s': syntax error in waypoint name", pathname, wpname)
+		end
+]]
+		local t_pos = string_find(param, "=", 1, true)
+
+		if t_pos == nil then
+			abort("[utils.parse_waypoint_data]: Path '%s', waypoint '%s': syntax error while parsing param '%s': no assignment operator ('=') found", pathname, wpname, param)
+		end
+
+		local fld = string_sub(param, 1, t_pos - 1)
+		local val = string_sub(param, t_pos + 1)
+
+		if fld == "" then -- or not fld -- fld is never nil or false
+			abort("[utils.parse_waypoint_data]: Path '%s', waypoint '%s': syntax error while parsing param '%s': no field specified", pathname, wpname, param)
+		end
+
+		if val == "" then -- or not val -- val is never nil or false since string.sub() returns the empty string by default, and val should never be empty
+--			val = "true"
+			abort("[utils.parse_waypoint_data]: Path '%s', waypoint '%s': syntax error while parsing param '%s': no value specified", pathname, wpname, param)
+		end
+
+		if fld == "a" then
+			if string_find(val, "{", 1, true) then
+				rslt[fld] = xr_logic.parse_condlist(nil, nil, nil, val) -- (db.actor, "waypoint_data", "anim_state", val)
+			else
+				rslt[fld] = {{section = val, infop_check = {}, infop_set = {}}}
+			end
+		else
+			rslt[fld] = val
+		end
+	end
+
+	return rslt
+end
+
+function path_parse_waypoints(pathname)
+
+	if not pathname then
+		return nil
+	end
+
+	local ptr = patrol(pathname)
+	local cnt = ptr:count()
+	local rslt = {}
+
+	for pt = 0, cnt - 1 do
+		rslt[pt] = parse_waypoint_data(pathname, ptr:flags(pt), ptr:name(pt))
+--		if not rslt[pt] then -- this test always fails; parse_waypoint_data() always returns a table
+--			abort("[utils.path_parse_waypoints]: error while parsing point %d of path '%s'", pt, pathname)
+--		end
+	end
+
+	return rslt
+end
+
+function path_parse_waypoints_from_arglist(pathname, num_points, ...)
+
+	local arg = {...}
+
+	if not pathname then
+		return nil
+	end
+
+	local ptr = patrol(pathname)
+	local cnt = ptr:count()
+
+	if cnt ~= num_points then
+		abort("[utils.path_parse_waypoints_from_arglist]: path '%s' has %d points, but %d points were expected", pathname, cnt, num_points)
+	end
+
+	local rslt = {}
+
+	local cur_arg
+	local fl
+	for pt = 0, cnt-1 do
+		cur_arg = arg[pt + 1]
+		if not cur_arg then
+			abort("[utils.path_parse_waypoints_from_arglist]: script error [1] while processing point %d of path '%s'", pt, pathname)
+		end
+		fl = flags32()
+		fl:assign(cur_arg[1])
+		rslt[pt] = parse_waypoint_data(pathname, fl, cur_arg[2])
+--		if not rslt[pt] then -- this test always fails; parse_waypoint_data() always returns a table
+--			abort("[utils.path_parse_waypoints_from_arglist]: script error [2] while processing point %d of path '%s'", pt, pathname)
+--		end
+	end
+
+	return rslt
+end
+
+function get_scheme_by_section(section)
+	local scheme = string_gsub(section, "%d", "") -- section might be e.g. '[walker1@way_name]'
+	local at = string_find(scheme, "@", 1, true)
+	if at then
+		scheme = string_sub(scheme, 1, at - 1)
+	end
+	return scheme
+end
+
+function parse_params(params)
+	local rslt = {}
+	local n = 1
+	for fld in string_gfind(params, "%s*([^|]+)%s*") do
+		rslt[n] = fld
+		n = n + 1
+	end
+	return rslt
+end
+
+function npc_in_zone(npc, zone)
+	return npc ~= nil and zone ~= nil and zone:inside(npc:position())
+end
+
+local CTime_0
+
+if not editor() then
+	CTime_0 = game.CTime()
+end
+
+function w_CTime(p, t)
+
+	if t == nil then
+		p:w_u8(-1)
+		return
+	end
+
+	if (CTime == nil) or (t ~= CTime_0) then
+		local Y, M, D, h, m, s, ms = 0, 0, 0, 0, 0, 0, 0
+		Y, M, D, h, m, s, ms = t:get( Y, M, D, h, m, s, ms )
+
+		p:w_u8 ( Y - 2000 )
+		p:w_u8 ( M )
+		p:w_u8 ( D )
+		p:w_u8 ( h )
+		p:w_u8 ( m )
+		p:w_u8 ( s )
+		p:w_u16( ms )
+	else
+		p:w_u8 ( 0 )
+	end
+end
+
+function r_CTime(p)
+
+	local Y = p:r_u8()
+	if Y == 255 then
+		return nil
+	end
+
+	if Y ~= 0 then
+		local t = game.CTime()
+		local M, D, h, m, s, ms = p:r_u8(), p:r_u8(), p:r_u8(), p:r_u8(), p:r_u8(), p:r_u16()
+		t:set( Y + 2000,  M, D, h, m, s, ms)
+		return t
+	else
+		return 0
+	end
+end
+
+--------------------------------------------------------------------------------
+
+function send_to_nearest_accessible_vertex(npc, v_id)
+	if not npc:accessible(v_id) then
+		local vtemp = vector()
+		v_id, vtemp = npc:accessible_nearest(level.vertex_position(v_id), vtemp)
+	end
+	npc:set_dest_level_vertex_id(v_id)
+	return v_id
+end
+
+function level_changing()
+	local sim = alife()
+	if not sim then
+		return false
+	end
+	return game_graph():vertex(sim:actor().m_game_vertex_id):level_id() ~= sim:level_id()
+end
+
+function parse_data_1v(npc, s)
+	local t = {}
+	if s then
+		for name in string_gfind(s, "(|*%d+|[^|]+)|*") do
+			local t_pos = string_find(name, "|", 1, true)
+			local dist = string_sub(name, 1, t_pos - 1)
+			local state = string_sub(name, t_pos + 1)
+			dist = tonumber(dist)
+			t[dist] =
+			{
+				dist = dist,
+				state = state ~= "" and xr_logic.parse_condlist(nil, nil, nil, state) or nil
+			}
+		end
+	end
+	return t
+end
+
+function parse_names(s)
+	local t = {}
+	local c = 0
+	for name in string_gfind(s, "([%w_%-.\\]+)%p*") do
+		c = c + 1
+		t[c] = name
+	end
+	return t
+end
+
+function parse_spawns(str)
+	local t = utils.parse_names(str)
+	local n = #t
+	local ret_table = {}
+	local k = 1
+	local c = 0
+	while k <= n do
+		local spawn = {}
+		spawn.section = t[k]
+		if t[k + 1] ~= nil then
+			local p = tonumber(t[k + 1])
+			if p then
+				spawn.prob = p
+				k = k + 2
+			else
+				spawn.prob = 1
+				k = k + 1
+			end
+		else
+			spawn.prob = 1
+			k = k + 1
+		end
+		c = c + 1
+		ret_table[c] = spawn
+	end
+	return ret_table
+end
+
+function r_2nums(spawn_ini, section, line, def1, def2)
+	if spawn_ini:line_exist(section, line) then
+		local t = utils.parse_names(spawn_ini:r_string(section, line))
+		local n = #t
+		if n == 0 then
+			return def1, def2
+		elseif n == 1 then
+			return t[1], def2
+		else
+			return t[1], t[2]
+		end
+	else
+		return def1, def2
+	end
+end
+
+function parse_target(target)
+	local pos = string_find(target, ",", 1, true)
+	if pos then
+		return string_sub(target, 1, pos - 1), string_sub(target, pos + 1)
+	else
+		return target, nil
+	end
+end

@@ -1,0 +1,859 @@
+-- DC170507: Optimization.
+
+local props =
+{
+	-- MANAGER
+
+	["end"]                         = 1,
+	["locked"]                      = 2,
+	["locked_external"]             = 3,
+
+	-- WEAPON
+
+	["weapon"]                      = 11,
+	["weapon_locked"]               = 12,
+	["weapon_strapped"]             = 13,
+	["weapon_strapped_now"]         = 14,
+	["weapon_unstrapped"]           = 15,
+	["weapon_unstrapped_now"]       = 16,
+	["weapon_none"]                 = 17,
+	["weapon_none_now"]             = 18,
+	["weapon_drop"]                 = 19,
+	["weapon_fire"]                 = 20,
+
+	-- MOVEMENT
+
+	["movement"]                    = 21,
+	["movement_walk"]               = 22,
+	["movement_run"]                = 23,
+	["movement_stand"]              = 24,
+	["movement_stand_now"]          = 25,
+
+	-- MENTAL STATES
+
+	["mental"]                      = 31,
+	["mental_free"]                 = 32,
+	["mental_free_now"]             = 33,
+	["mental_danger"]               = 34,
+	["mental_danger_now"]           = 35,
+	["mental_panic"]                = 36,
+	["mental_panic_now"]            = 37,
+
+	-- BODYSTATES
+
+	["bodystate"]                   = 41,
+	["bodystate_crouch"]            = 42,
+	["bodystate_standing"]          = 43,
+	["bodystate_crouch_now"]        = 44,
+	["bodystate_standing_now"]      = 45,
+
+	-- DIRECTION
+
+	["direction"]                   = 51,
+	["direction_search"]            = 52,
+	["direction_turning"]           = 53,
+
+	-- ANIMSTATE
+
+	["animstate"]                   = 61,
+	["animstate_locked"]            = 62,
+	["animstate_idle"]              = 63,
+	["animstate_idle_now"]          = 64,
+	["animstate_sit"]               = 65,
+	["animstate_sit_now"]           = 66,
+	["animstate_sit_knee"]          = 67,
+	["animstate_sit_knee_now"]      = 68,
+	["animstate_sit_ass"]           = 69,
+	["animstate_sit_ass_now"]       = 70,
+	["animstate_sleep"]             = 71,
+	["animstate_sleep_now"]         = 72,
+	["animstate_wounded"]           = 73,
+	["animstate_wounded_now"]       = 74,
+	["animstate_wounded_heavy"]     = 75,
+	["animstate_wounded_heavy_now"] = 76,
+
+	-- ANIMATION
+
+	["animation"]                   = 81,
+	["animation_locked"]            = 82,
+	["animation_play"]              = 83,
+	["animation_play_now"]          = 84,
+	["animation_none"]              = 85,
+	["animation_none_now"]          = 86,
+	["animation_reset"]             = 87
+}
+
+local ops =
+{
+	["end"]                         = 1,
+	["locked"]                      = 2,
+	["locked_external"]             = 3,
+
+	["weapon_strapp"]               = 11,
+	["weapon_unstrapp"]             = 12,
+	["weapon_none"]                 = 13,
+	["weapon_fire"]                 = 14,
+	["weapon_drop"]                 = 15,
+
+	["movement"]                    = 21,
+	["movement_walk"]               = 22,
+	["movement_run"]                = 23,
+	["movement_stand"]              = 24,
+	["movement_walk_turn"]		    = 25,
+	["movement_walk_search"]	    = 26,
+	["movement_stand_turn"]		    = 27,
+	["movement_stand_search"]	    = 28,
+	["movement_run_turn"]		    = 29,
+	["movement_run_search"]		    = 30,
+
+	["mental_free"]                 = 31,
+	["mental_danger"]               = 32,
+	["mental_panic"]                = 33,
+
+	["bodystate_crouch"]            = 41,
+	["bodystate_standing"]          = 42,
+	["bodystate_crouch_danger"]     = 43,
+	["bodystate_standing_free"]     = 44,
+
+	["direction_turn"]              = 51,
+	["direction_search"]            = 52,
+
+	["animstate_wait"]              = 61,
+	["animstate_2sit"]              = 62,
+	["animstate_2sit_knee"]         = 63,
+	["animstate_2sit_ass"]          = 64,
+	["animstate_2wounded"]          = 65,
+	["animstate_2idle"]             = 66,
+	["animstate_2sleep"]            = 67,
+	["animstate_clear_anim"]        = 68,
+	["animstate_2wounded_heavy"]    = 69,
+	["animstate_stand_up"]          = 70,
+
+	["animation_start"]             = 71,
+	["animation_stop"]              = 72,
+	["animation_reset"]             = 73,
+	["animation_clear_anim"]        = 74,
+
+	["walk_turn"]				    = 75,
+	["walk_search"]				    = 76,
+	["stand_turn"]				    = 77,
+	["stand_search"]			    = 78
+}
+
+local wp_end_true = world_property(1, true)
+local wp_end_false = world_property(1, false)
+local wp_locked_true = world_property(2, true)
+local wp_locked_false = world_property(2, false)
+local wp_locked_external_true = world_property(3, true)
+local wp_locked_external_false = world_property(3, false)
+
+local wp_weapon_true = world_property(11, true)
+local wp_weapon_strapped_true = world_property(13, true)
+local wp_weapon_unstrapped_true = world_property(15, true)
+local wp_weapon_none_true = world_property(17, true)
+local wp_weapon_drop_true = world_property(19, true)
+
+local wp_movement_true = world_property(21, true)
+local wp_movement_false = world_property(21, false)
+local wp_movement_walk_true = world_property(22, true)
+local wp_movement_run_true = world_property(23, true)
+local wp_movement_stand_true = world_property(24, true)
+local wp_movement_stand_now_true = world_property(25, true)
+
+local wp_mental_true = world_property(31, true)
+local wp_mental_false = world_property(31, false)
+local wp_mental_free_true = world_property(32, true)
+local wp_mental_free_false = world_property(32, false)
+local wp_mental_danger_true = world_property(34, true)
+local wp_mental_danger_now_true = world_property(35, true)
+local wp_mental_panic_true = world_property(36, true)
+
+local wp_bodystate_true = world_property(41, true)
+local wp_bodystate_false = world_property(41, false)
+local wp_bodystate_crouch_true = world_property(42, true)
+local wp_bodystate_standing_true = world_property(43, true)
+local wp_bodystate_crouch_now_false = world_property(44, false)
+local wp_bodystate_standing_now_true = world_property(45, true)
+local wp_bodystate_standing_now_false = world_property(45, false)
+
+local wp_direction_true = world_property(51, true)
+local wp_direction_false = world_property(51, false)
+local wp_direction_search_true = world_property(52, true)
+local wp_direction_search_false = world_property(52, false)
+
+local wp_animstate_true = world_property(61, true)
+local wp_animstate_false = world_property(61, false)
+local wp_animstate_idle_true = world_property(63, true)
+local wp_animstate_idle_now_true = world_property(64, true)
+local wp_animstate_idle_now_false = world_property(64, false)
+local wp_animstate_sit_true = world_property(65, true)
+local wp_animstate_sit_knee_true = world_property(67, true)
+local wp_animstate_sit_ass_true = world_property(69, true)
+local wp_animstate_sleep_true = world_property(71, true)
+local wp_animstate_wounded_true = world_property(73, true)
+local wp_animstate_wounded_heavy_true = world_property(75, true)
+
+local wp_animation_true = world_property(81, true)
+local wp_animation_false = world_property(81, false)
+local wp_animation_play_true = world_property(83, true)
+local wp_animation_none_true = world_property(85, true)
+local wp_animation_none_now_true = world_property(86, true)
+local wp_animation_none_now_false = world_property(86, false)
+local wp_animation_reset_true = world_property(87, true)
+local wp_animation_reset_false = world_property(87, false)
+
+function goap_graph(st, npc)
+
+	st.npc = npc
+
+	local planner = state_mgr.action_planner()
+	planner:setup(npc)
+
+	st.planner = planner
+	st.properties = props
+	st.operators = ops
+
+	--------------------------------------------------------------------------------
+	-- EVALUATORS
+	--------------------------------------------------------------------------------
+
+	planner:add_evaluator(1, state_mgr.eva_state_mgr_end(st))
+	planner:add_evaluator(2, state_mgr.eva_state_mgr_locked(st))
+	planner:add_evaluator(3, state_mgr.eva_state_mgr_locked_external(st))
+
+	planner:add_evaluator(11, state_mgr_weapon.eva_state_mgr_weapon(st))
+	planner:add_evaluator(12, state_mgr_weapon.eva_state_mgr_weapon_locked())
+	planner:add_evaluator(13, state_mgr_weapon.eva_state_mgr_weapon_strapped(st))
+	planner:add_evaluator(14, state_mgr_weapon.eva_state_mgr_weapon_strapped_now())
+	planner:add_evaluator(15, state_mgr_weapon.eva_state_mgr_weapon_unstrapped(st))
+	planner:add_evaluator(16, state_mgr_weapon.eva_state_mgr_weapon_unstrapped_now())
+	planner:add_evaluator(17, state_mgr_weapon.eva_state_mgr_weapon_none(st))
+	planner:add_evaluator(18, state_mgr_weapon.eva_state_mgr_weapon_none_now())
+	planner:add_evaluator(19, state_mgr_weapon.eva_state_mgr_weapon_drop(st))
+	planner:add_evaluator(20, state_mgr_weapon.eva_state_mgr_weapon_fire(st))
+
+	planner:add_evaluator(21, state_mgr_movement.eva_state_mgr_movement(st))
+	planner:add_evaluator(22, state_mgr_movement.eva_state_mgr_movement_walk(st))
+	planner:add_evaluator(23, state_mgr_movement.eva_state_mgr_movement_run(st))
+	planner:add_evaluator(24, state_mgr_movement.eva_state_mgr_movement_stand(st))
+	planner:add_evaluator(25, state_mgr_movement.eva_state_mgr_movement_stand_now())
+
+	planner:add_evaluator(31, state_mgr_mental.eva_state_mgr_mental(st))
+	planner:add_evaluator(32, state_mgr_mental.eva_state_mgr_mental_free(st))
+	planner:add_evaluator(33, state_mgr_mental.eva_state_mgr_mental_free_now())
+	planner:add_evaluator(34, state_mgr_mental.eva_state_mgr_mental_danger(st))
+	planner:add_evaluator(35, state_mgr_mental.eva_state_mgr_mental_danger_now())
+	planner:add_evaluator(36, state_mgr_mental.eva_state_mgr_mental_panic(st))
+	planner:add_evaluator(37, state_mgr_mental.eva_state_mgr_mental_panic_now())
+
+	planner:add_evaluator(41, state_mgr_bodystate.eva_state_mgr_bodystate(st))
+	planner:add_evaluator(42, state_mgr_bodystate.eva_state_mgr_bodystate_crouch(st))
+	planner:add_evaluator(43, state_mgr_bodystate.eva_state_mgr_bodystate_standing(st))
+	planner:add_evaluator(44, state_mgr_bodystate.eva_state_mgr_bodystate_crouch_now())
+	planner:add_evaluator(45, state_mgr_bodystate.eva_state_mgr_bodystate_standing_now())
+
+	planner:add_evaluator(51, state_mgr_direction.eva_state_mgr_direction(st))
+	planner:add_evaluator(52, state_mgr_direction.eva_state_mgr_direction_search(st))
+	planner:add_evaluator(53, state_mgr_direction.eva_state_mgr_direction_turning())
+
+	st.animstate = state_mgr_animstate.body_state(npc)
+
+	planner:add_evaluator(61, state_mgr_animstate.eva_state_mgr_animstate(st))
+	planner:add_evaluator(62, state_mgr_animstate.eva_state_mgr_animstate_locked(st)) -- "state_mgr_animstate_busy"
+	planner:add_evaluator(63, state_mgr_animstate.eva_state_mgr_animstate_idle(st))
+	planner:add_evaluator(64, state_mgr_animstate.eva_state_mgr_animstate_idle_now(st))
+	planner:add_evaluator(65, state_mgr_animstate.eva_state_mgr_animstate_sit(st))
+	planner:add_evaluator(66, state_mgr_animstate.eva_state_mgr_animstate_sit_now(st))
+	planner:add_evaluator(67, state_mgr_animstate.eva_state_mgr_animstate_sit_knee(st))
+	planner:add_evaluator(68, state_mgr_animstate.eva_state_mgr_animstate_sit_knee_now(st))
+	planner:add_evaluator(69, state_mgr_animstate.eva_state_mgr_animstate_sit_ass(st))
+	planner:add_evaluator(70, state_mgr_animstate.eva_state_mgr_animstate_sit_ass_now(st))
+	planner:add_evaluator(71, state_mgr_animstate.eva_state_mgr_animstate_sleep(st))
+	planner:add_evaluator(72, state_mgr_animstate.eva_state_mgr_animstate_sleep_now(st))
+	planner:add_evaluator(73, state_mgr_animstate.eva_state_mgr_animstate_wounded(st))
+	planner:add_evaluator(74, state_mgr_animstate.eva_state_mgr_animstate_wounded_now(st))
+	planner:add_evaluator(75, state_mgr_animstate.eva_state_mgr_animstate_wounded_heavy(st))
+	planner:add_evaluator(76, state_mgr_animstate.eva_state_mgr_animstate_wounded_heavy_now(st))
+
+	local st_animation = state_mgr_animation.animation(npc, st)
+	st.animation = st_animation
+	npc:set_callback(callback.script_animation, st_animation.anim_callback, st_animation)
+
+	planner:add_evaluator(81, state_mgr_animation.eva_state_mgr_animation(st))
+	planner:add_evaluator(82, state_mgr_animation.eva_state_mgr_animation_locked(st))
+	planner:add_evaluator(83, state_mgr_animation.eva_state_mgr_animation_play(st))
+	planner:add_evaluator(84, state_mgr_animation.eva_state_mgr_animation_play_now(st))
+	planner:add_evaluator(85, state_mgr_animation.eva_state_mgr_animation_none(st))
+	planner:add_evaluator(86, state_mgr_animation.eva_state_mgr_animation_none_now(st))
+	planner:add_evaluator(87, state_mgr_animation.eva_state_mgr_animation_reset(st))
+
+	--------------------------------------------------------------------------------
+	-- ACTIONS
+	--------------------------------------------------------------------------------
+
+	local wp_end_true = wp_end_true
+	local wp_locked_false = wp_locked_false
+	local wp_locked_external_false = wp_locked_external_false
+
+	local wp_weapon_true = wp_weapon_true
+
+	local wp_movement_true = wp_movement_true
+	local wp_movement_false = wp_movement_false
+	local wp_movement_walk_true = wp_movement_walk_true
+	local wp_movement_run_true = wp_movement_run_true
+	local wp_movement_stand_true = wp_movement_stand_true
+
+	local wp_mental_true = wp_mental_true
+	local wp_mental_false = wp_mental_false
+	local wp_mental_danger_now_true = wp_mental_danger_now_true
+
+	local wp_bodystate_true = wp_bodystate_true
+	local wp_bodystate_false = wp_bodystate_false
+	local wp_bodystate_crouch_true = wp_bodystate_crouch_true
+	local wp_bodystate_standing_true = wp_bodystate_standing_true
+	local wp_bodystate_crouch_now_false = wp_bodystate_crouch_now_false
+	local wp_bodystate_standing_now_true = wp_bodystate_standing_now_true
+	local wp_bodystate_standing_now_false = wp_bodystate_standing_now_false
+
+	local wp_direction_true = wp_direction_true
+	local wp_direction_false = wp_direction_false
+	local wp_direction_search_true = wp_direction_search_true
+	local wp_direction_search_false = wp_direction_search_false
+
+	local wp_animstate_true = wp_animstate_true
+	local wp_animstate_false = wp_animstate_false
+	local wp_animstate_idle_now_true = wp_animstate_idle_now_true
+
+	local wp_animation_true = wp_animation_true
+	local wp_animation_false = wp_animation_false
+	local wp_animation_play_true = wp_animation_play_true
+	local wp_animation_none_now_true = wp_animation_none_now_true
+
+	--------------------------------------------------------------------------------
+	-- WEAPON
+	--------------------------------------------------------------------------------
+
+	-- UNSTRAPP
+
+	local action = state_mgr_weapon.act_state_mgr_weapon_unstrapp(st)
+	action:add_precondition    (wp_locked_false)
+	action:add_precondition    (wp_locked_external_false)
+	action:add_precondition    (wp_movement_true)
+	action:add_precondition    (wp_bodystate_true)
+	action:add_precondition    (wp_mental_true)
+	action:add_precondition    (wp_weapon_unstrapped_true)
+	action:add_precondition    (wp_animstate_idle_now_true)
+	action:add_precondition    (wp_animation_none_now_true)
+	action:add_effect          (wp_weapon_true)
+	planner:add_action         (12, action) -- weapon_unstrapp
+
+	-- STRAPP
+
+	action = state_mgr_weapon.act_state_mgr_weapon_strapp(st)
+	action:add_precondition    (wp_locked_false)
+	action:add_precondition    (wp_locked_external_false)
+	action:add_precondition    (wp_movement_true)
+	action:add_precondition    (wp_bodystate_true)
+	action:add_precondition    (wp_mental_true)
+	action:add_precondition    (wp_weapon_strapped_true)
+	action:add_precondition    (wp_animstate_idle_now_true)
+	action:add_precondition    (wp_animation_none_now_true)
+	action:add_effect          (wp_weapon_true)
+	planner:add_action         (11, action) -- weapon_strapp
+
+	-- NONE
+
+	action = state_mgr_weapon.act_state_mgr_weapon_none()
+	action:add_precondition    (wp_locked_false)
+	action:add_precondition    (wp_locked_external_false)
+	action:add_precondition    (wp_movement_true)
+	action:add_precondition    (wp_bodystate_true)
+	action:add_precondition    (wp_mental_true)
+	action:add_precondition    (wp_weapon_none_true)
+	action:add_precondition    (wp_animation_none_now_true)
+	action:add_effect          (wp_weapon_true)
+	planner:add_action         (13, action) -- weapon_none
+
+	-- DROP
+
+	action = state_mgr_weapon.act_state_mgr_weapon_drop(st)
+	action:add_precondition    (wp_locked_false)
+	action:add_precondition    (wp_locked_external_false)
+	action:add_precondition    (wp_movement_true)
+	action:add_precondition    (wp_bodystate_true)
+	action:add_precondition    (wp_mental_true)
+	action:add_precondition    (wp_weapon_drop_true)
+	action:add_precondition    (wp_animation_none_now_true)
+	action:add_effect          (wp_weapon_true)
+	planner:add_action         (15, action) -- weapon_drop
+
+	--------------------------------------------------------------------------------
+	-- MOVEMENT
+	--------------------------------------------------------------------------------
+
+	-- WALK
+
+	action = state_mgr_movement.act_state_mgr_movement_walk()
+	action:add_precondition    (wp_locked_false)
+	action:add_precondition    (wp_locked_external_false)
+	action:add_precondition    (wp_movement_false)
+	action:add_precondition    (wp_bodystate_true)
+	action:add_precondition    (wp_mental_true)
+--'	action:add_precondition    (wp_weapon_true)
+	action:add_precondition    (wp_movement_walk_true)
+	action:add_precondition    (wp_animstate_idle_now_true)
+	action:add_precondition    (wp_animation_none_now_true)
+	action:add_effect          (wp_movement_true)
+	planner:add_action         (22, action) -- movement_walk
+
+	-- WALK_turn
+
+	action = state_mgr_movement.act_state_mgr_movement_walk_turn(st)
+	action:add_precondition    (wp_locked_false)
+	action:add_precondition    (wp_locked_external_false)
+	action:add_precondition    (wp_movement_false)
+	action:add_precondition    (wp_direction_false)
+	action:add_precondition    (wp_direction_search_false)
+	action:add_precondition    (wp_bodystate_true)
+	action:add_precondition    (wp_mental_true)
+--'	action:add_precondition    (wp_weapon_true)
+	action:add_precondition    (wp_movement_walk_true)
+	action:add_precondition    (wp_animstate_idle_now_true)
+	action:add_precondition    (wp_animation_none_now_true)
+	action:add_effect          (wp_movement_true)
+	action:add_effect          (wp_direction_true)
+	planner:add_action         (25, action) -- movement_walk_turn
+
+	-- WALK_search
+
+	action = state_mgr_movement.act_state_mgr_movement_walk_search(st)
+	action:add_precondition    (wp_locked_false)
+	action:add_precondition    (wp_locked_external_false)
+	action:add_precondition    (wp_movement_false)
+	action:add_precondition    (wp_direction_false)
+	action:add_precondition    (wp_direction_search_true)
+	action:add_precondition    (wp_bodystate_true)
+	action:add_precondition    (wp_mental_true)
+--'	action:add_precondition    (wp_weapon_true)
+	action:add_precondition    (wp_movement_walk_true)
+	action:add_precondition    (wp_animstate_idle_now_true)
+	action:add_precondition    (wp_animation_none_now_true)
+	action:add_effect          (wp_movement_true)
+	action:add_effect          (wp_direction_true)
+	planner:add_action         (26, action) -- movement_walk_search
+
+	-- RUN
+
+	action = state_mgr_movement.act_state_mgr_movement_run()
+	action:add_precondition    (wp_locked_false)
+	action:add_precondition    (wp_locked_external_false)
+	action:add_precondition    (wp_movement_false)
+	action:add_precondition    (wp_bodystate_true)
+	action:add_precondition    (wp_mental_true)
+--'	action:add_precondition    (wp_weapon_true)
+	action:add_precondition    (wp_movement_run_true)
+	action:add_precondition    (wp_animstate_idle_now_true)
+	action:add_precondition    (wp_animation_none_now_true)
+	action:add_effect          (wp_movement_true)
+	planner:add_action         (23, action) -- movement_run
+
+	-- RUN_turn
+
+	action = state_mgr_movement.act_state_mgr_movement_run() -- "state_mgr_movement_run_turn"
+	action:add_precondition    (wp_locked_false)
+	action:add_precondition    (wp_locked_external_false)
+	action:add_precondition    (wp_movement_false)
+	action:add_precondition    (wp_direction_false)
+	action:add_precondition    (wp_direction_search_false)
+	action:add_precondition    (wp_bodystate_true)
+	action:add_precondition    (wp_mental_true)
+--'	action:add_precondition    (wp_weapon_true)
+	action:add_precondition    (wp_movement_run_true)
+	action:add_precondition    (wp_animstate_idle_now_true)
+	action:add_precondition    (wp_animation_none_now_true)
+	action:add_effect          (wp_movement_true)
+	action:add_effect          (wp_direction_true)
+	planner:add_action         (29, action) -- movement_run_turn
+
+	-- RUN_search
+
+	action = state_mgr_movement.act_state_mgr_movement_run() -- "state_mgr_movement_run_search"
+	action:add_precondition    (wp_locked_false)
+	action:add_precondition    (wp_locked_external_false)
+	action:add_precondition    (wp_movement_false)
+	action:add_precondition    (wp_direction_false)
+	action:add_precondition    (wp_direction_search_true)
+	action:add_precondition    (wp_bodystate_true)
+	action:add_precondition    (wp_mental_true)
+--'	action:add_precondition    (wp_weapon_true)
+	action:add_precondition    (wp_movement_run_true)
+	action:add_precondition    (wp_animstate_idle_now_true)
+	action:add_precondition    (wp_animation_none_now_true)
+	action:add_effect          (wp_movement_true)
+	action:add_effect          (wp_direction_true)
+	planner:add_action         (30, action) -- movement_run_search
+
+	-- STAND
+
+	action = state_mgr_movement.act_state_mgr_movement_stand()
+	action:add_precondition    (wp_locked_external_false)
+	action:add_precondition    (wp_movement_false)
+	action:add_precondition    (wp_movement_stand_true)
+	action:add_precondition    (wp_mental_true)
+	action:add_effect          (wp_movement_true)
+	planner:add_action         (24, action) -- movement_stand
+
+	-- STAND_turn
+
+	action = state_mgr_movement.act_state_mgr_movement_stand_turn(st)
+	action:add_precondition    (wp_locked_external_false)
+	action:add_precondition    (wp_movement_false)
+	action:add_precondition    (wp_direction_false)
+	action:add_precondition    (wp_direction_search_false)
+	action:add_precondition    (wp_movement_stand_true)
+	action:add_precondition    (wp_mental_true)
+	action:add_effect          (wp_movement_true)
+	action:add_effect          (wp_direction_true)
+	planner:add_action         (27, action) -- movement_stand_turn
+
+	-- STAND_search
+
+	action = state_mgr_movement.act_state_mgr_movement_stand_search(st)
+	action:add_precondition    (wp_locked_external_false)
+	action:add_precondition    (wp_movement_false)
+	action:add_precondition    (wp_direction_false)
+	action:add_precondition    (wp_direction_search_true)
+	action:add_precondition    (wp_movement_stand_true)
+	action:add_precondition    (wp_mental_true)
+	action:add_effect          (wp_movement_true)
+	action:add_effect          (wp_direction_true)
+	planner:add_action         (28, action) -- movement_stand_search
+
+	--------------------------------------------------------------------------------
+	-- DIRECTION
+	--------------------------------------------------------------------------------
+
+	-- TURN
+
+	action = state_mgr_direction.act_state_mgr_direction_turn(st)
+	action:add_precondition    (wp_locked_false)
+	action:add_precondition    (wp_locked_external_false)
+	action:add_precondition    (wp_direction_false)
+	action:add_precondition    (wp_direction_search_false)
+--'	action:add_precondition    (wp_weapon_true)
+	action:add_precondition    (wp_animation_none_now_true)
+	action:add_precondition    (wp_animstate_idle_now_true)
+    action:add_precondition    (wp_movement_true)
+	action:add_effect          (wp_direction_true)
+	planner:add_action         (51, action) -- direction_turn
+
+	-- SEARCH
+
+	action = state_mgr_direction.act_state_mgr_direction_search(st)
+	action:add_precondition    (wp_locked_false)
+	action:add_precondition    (wp_locked_external_false)
+	action:add_precondition    (wp_direction_false)
+	action:add_precondition    (wp_direction_search_true)
+--'	action:add_precondition    (wp_weapon_true)
+	action:add_precondition    (wp_animation_none_now_true)
+	action:add_precondition    (wp_animstate_idle_now_true)
+    action:add_precondition    (wp_movement_true)
+	action:add_effect          (wp_direction_true)
+	planner:add_action         (52, action) -- direction_search
+
+	--------------------------------------------------------------------------------
+	-- MENTAL STATES
+	--------------------------------------------------------------------------------
+
+	-- FREE
+
+	action = state_mgr_mental.act_state_mgr_mental_free()
+	action:add_precondition    (wp_locked_external_false)
+	action:add_precondition    (wp_mental_false)
+--'	action:add_precondition    (wp_weapon_true)
+--'	action:add_precondition    (wp_movement_true)
+	action:add_precondition    (wp_animstate_idle_now_true)
+	action:add_precondition    (wp_animation_none_now_true)
+	action:add_precondition    (wp_mental_free_true)
+	action:add_precondition    (wp_bodystate_true)
+	action:add_precondition    (wp_bodystate_standing_now_true)
+	action:add_effect          (wp_mental_true)
+	planner:add_action         (31, action) -- mental_free
+
+	-- DANGER
+
+	action = state_mgr_mental.act_state_mgr_mental_danger()
+	action:add_precondition    (wp_mental_false)
+	action:add_precondition    (wp_locked_external_false)
+--'	action:add_precondition    (wp_weapon_true)
+--'	action:add_precondition    (wp_movement_true)
+	action:add_precondition    (wp_animstate_idle_now_true)
+	action:add_precondition    (wp_animation_none_now_true)
+	action:add_precondition    (wp_mental_danger_true)
+	action:add_effect          (wp_mental_true)
+	action:add_effect          (wp_mental_danger_now_true)
+	planner:add_action         (32, action) -- mental_danger
+
+	-- PANIC
+
+	action = state_mgr_mental.act_state_mgr_mental_panic()
+	action:add_precondition    (wp_locked_external_false)
+	action:add_precondition    (wp_mental_false)
+--'	action:add_precondition    (wp_weapon_true)
+	action:add_precondition    (wp_animstate_idle_now_true)
+	action:add_precondition    (wp_animation_none_now_true)
+	action:add_precondition    (wp_mental_panic_true)
+	action:add_effect          (wp_mental_true)
+	planner:add_action         (33, action) -- mental_panic
+
+	--------------------------------------------------------------------------------
+	-- BODYSTATES
+	--------------------------------------------------------------------------------
+
+	-- CROUCH
+
+	action = state_mgr_bodystate.act_state_mgr_bodystate_crouch()
+	action:add_precondition    (wp_locked_external_false)
+	action:add_precondition    (wp_bodystate_false)
+--'	action:add_precondition    (wp_weapon_true)
+--'	action:add_precondition    (wp_movement_true)
+	action:add_precondition    (wp_bodystate_crouch_now_false)
+	action:add_precondition    (wp_bodystate_crouch_true)
+	action:add_precondition    (wp_mental_danger_now_true)
+	action:add_effect          (wp_bodystate_true)
+	planner:add_action         (41, action) -- bodystate_crouch
+
+	-- CROUCH_danger
+
+	action = state_mgr_bodystate.act_state_mgr_bodystate_crouch_danger()
+	action:add_precondition    (wp_locked_external_false)
+	action:add_precondition    (wp_bodystate_false)
+	action:add_precondition    (wp_mental_false)
+--'	action:add_precondition    (wp_weapon_true)
+--'	action:add_precondition    (wp_movement_true)
+	action:add_precondition    (wp_bodystate_crouch_now_false)
+	action:add_precondition    (wp_bodystate_crouch_true)
+	action:add_effect          (wp_bodystate_true)
+	action:add_effect          (wp_mental_true)
+	planner:add_action         (43, action) -- bodystate_crouch_danger
+
+	--  STAND
+
+	action = state_mgr_bodystate.act_state_mgr_bodystate_standing()
+	action:add_precondition    (wp_locked_external_false)
+	action:add_precondition    (wp_bodystate_false)
+--'	action:add_precondition    (wp_weapon_true)
+--'	action:add_precondition    (wp_movement_true)
+	action:add_precondition    (wp_bodystate_standing_now_false)
+	action:add_precondition    (wp_bodystate_standing_true)
+	action:add_effect          (wp_bodystate_true)
+	action:add_effect          (wp_bodystate_standing_now_true)
+	planner:add_action         (42, action) -- bodystate_standing
+
+	--  STAND_free
+
+	action = state_mgr_bodystate.act_state_mgr_bodystate_standing_free()
+	action:add_precondition    (wp_locked_external_false)
+	action:add_precondition    (wp_bodystate_false)
+	action:add_precondition    (wp_mental_false)
+--'	action:add_precondition    (wp_weapon_true)
+--'	action:add_precondition    (wp_movement_true)
+	action:add_precondition    (wp_bodystate_standing_now_false)
+	action:add_precondition    (wp_bodystate_standing_true)
+	action:add_precondition    (wp_mental_free_false)
+	action:add_effect          (wp_bodystate_true)
+	action:add_effect          (wp_bodystate_standing_now_true)
+	action:add_effect          (wp_mental_true)
+	planner:add_action         (44, action) -- bodystate_standing_free
+
+	--------------------------------------------------------------------------------
+	-- ANIMSTATES
+	--------------------------------------------------------------------------------
+
+	action = state_mgr_animstate.act_state_mgr_animstate_2sit(st)
+	action:add_precondition    (wp_locked_false)
+	action:add_precondition    (wp_locked_external_false)
+	action:add_precondition    (wp_animstate_false)
+	action:add_precondition    (wp_animation_none_now_true)
+	action:add_precondition    (wp_direction_true)
+	action:add_precondition    (wp_mental_true)
+	action:add_precondition    (wp_weapon_true)
+	action:add_precondition    (wp_movement_true)
+	action:add_precondition    (wp_animstate_sit_true)
+	action:add_effect          (wp_animstate_true)
+	planner:add_action         (62, action) -- animstate_2sit
+
+	action = state_mgr_animstate.act_state_mgr_animstate_2sit_knee(st)
+	action:add_precondition    (wp_locked_false)
+	action:add_precondition    (wp_locked_external_false)
+	action:add_precondition    (wp_animstate_false)
+	action:add_precondition    (wp_animation_none_now_true)
+	action:add_precondition    (wp_direction_true)
+	action:add_precondition    (wp_mental_true)
+	action:add_precondition    (wp_weapon_true)
+	action:add_precondition    (wp_movement_true)
+	action:add_precondition    (wp_animstate_sit_knee_true)
+	action:add_effect          (wp_animstate_true)
+	planner:add_action         (63, action) -- animstate_2sit_knee
+
+	action = state_mgr_animstate.act_state_mgr_animstate_2sit_ass(st)
+	action:add_precondition    (wp_locked_false)
+	action:add_precondition    (wp_locked_external_false)
+	action:add_precondition    (wp_animstate_false)
+	action:add_precondition    (wp_animation_none_now_true)
+	action:add_precondition    (wp_direction_true)
+	action:add_precondition    (wp_mental_true)
+	action:add_precondition    (wp_weapon_true)
+	action:add_precondition    (wp_movement_true)
+	action:add_precondition    (wp_animstate_sit_ass_true)
+	action:add_effect          (wp_animstate_true)
+	planner:add_action         (64, action) -- animstate_2sit_ass
+
+	action = state_mgr_animstate.act_state_mgr_animstate_2wounded(st)
+	action:add_precondition    (wp_locked_false)
+	action:add_precondition    (wp_locked_external_false)
+	action:add_precondition    (wp_animstate_false)
+	action:add_precondition    (wp_animation_none_now_true)
+	action:add_precondition    (wp_direction_true)
+	action:add_precondition    (wp_mental_true)
+	action:add_precondition    (wp_weapon_true)
+	action:add_precondition    (wp_movement_true)
+	action:add_precondition    (wp_animstate_wounded_true)
+	action:add_effect          (wp_animstate_true)
+	planner:add_action         (65, action) -- animstate_2wounded
+
+	action = state_mgr_animstate.act_state_mgr_animstate_2wounded_heavy(st)
+	action:add_precondition    (wp_locked_false)
+	action:add_precondition    (wp_locked_external_false)
+	action:add_precondition    (wp_animstate_false)
+	action:add_precondition    (wp_animation_none_now_true)
+	action:add_precondition    (wp_direction_true)
+	action:add_precondition    (wp_mental_true)
+	action:add_precondition    (wp_weapon_true)
+	action:add_precondition    (wp_movement_true)
+	action:add_precondition    (wp_animstate_wounded_heavy_true)
+	action:add_effect          (wp_animstate_true)
+	planner:add_action         (69, action) -- animstate_2wounded_heavy
+
+	action = state_mgr_animstate.act_state_mgr_animstate_2sleep(st)
+	action:add_precondition    (wp_locked_false)
+	action:add_precondition    (wp_locked_external_false)
+	action:add_precondition    (wp_animstate_false)
+	action:add_precondition    (wp_animation_none_now_true)
+	action:add_precondition    (wp_direction_true)
+	action:add_precondition    (wp_weapon_true)
+	action:add_precondition    (wp_mental_true)
+	action:add_precondition    (wp_movement_true)
+	action:add_precondition    (wp_animstate_sleep_true)
+	action:add_effect          (wp_animstate_true)
+	planner:add_action         (67, action) -- animstate_2sleep
+
+	action = state_mgr_animstate.act_state_mgr_animstate_2idle(st)
+	action:add_precondition    (wp_locked_false)
+	action:add_precondition    (wp_locked_external_false)
+	action:add_precondition    (wp_animstate_false)
+	action:add_precondition    (wp_animation_none_now_true)
+	action:add_precondition    (wp_movement_stand_now_true)
+	action:add_precondition    (wp_animstate_idle_true)
+	action:add_effect          (wp_animstate_true)
+	planner:add_action         (66, action) -- animstate_2idle
+
+	action = state_mgr_animstate.act_state_mgr_animstate_2idle(st) -- "state_mgr_stand_up"
+	action:add_precondition    (wp_locked_false)
+	action:add_precondition    (wp_locked_external_false)
+	action:add_precondition    (wp_animstate_idle_now_false)
+	action:add_effect          (wp_animstate_idle_now_true)
+	planner:add_action         (70, action) -- animstate_stand_up
+
+	--------------------------------------------------------------------------------
+	-- ANIMATION
+	--------------------------------------------------------------------------------
+
+	-- START
+
+	action = state_mgr_animation.act_state_mgr_animation_start(st)
+	action:add_precondition    (wp_locked_false)
+	action:add_precondition    (wp_locked_external_false)
+	action:add_precondition    (wp_animstate_true)
+	action:add_precondition    (wp_direction_true)
+	action:add_precondition    (wp_weapon_true)
+	action:add_precondition    (wp_movement_true)
+	action:add_precondition    (wp_mental_true)
+	action:add_precondition    (wp_bodystate_true)
+	action:add_precondition    (wp_animation_reset_false)
+	action:add_precondition    (wp_animation_false)
+	action:add_precondition    (wp_animation_play_true)
+	action:add_effect          (wp_animation_true)
+	planner:add_action         (71, action) -- animation_start
+
+	-- RESET
+
+	action = state_mgr_animation.act_state_mgr_animation_reset(st)
+	action:add_precondition    (wp_locked_false)
+	action:add_precondition    (wp_locked_external_false)
+	action:add_precondition    (wp_animstate_true)
+	action:add_precondition    (wp_direction_true)
+	action:add_precondition    (wp_weapon_true)
+	action:add_precondition    (wp_movement_true)
+	action:add_precondition    (wp_mental_true)
+	action:add_precondition    (wp_bodystate_true)
+	action:add_precondition    (wp_animation_reset_true)
+	action:add_precondition    (wp_animation_false)
+	action:add_precondition    (wp_animation_play_true)
+	action:add_effect          (wp_animation_true)
+	planner:add_action         (73, action) -- animation_reset
+
+	-- STOP
+
+	action = state_mgr_animation.act_state_mgr_animation_stop(st)
+	action:add_precondition    (wp_locked_false)
+	action:add_precondition    (wp_locked_external_false)
+	action:add_precondition    (wp_animstate_true)
+	action:add_precondition    (wp_animation_false)
+	action:add_precondition    (wp_animation_none_true)
+	action:add_effect          (wp_animation_true)
+	planner:add_action         (72, action) -- animation_stop
+
+	-- CLEAR
+
+	action = state_mgr_animation.act_state_mgr_animation_stop(st) -- "state_mgr_clear_anim"
+	action:add_precondition    (wp_locked_false)
+	action:add_precondition    (wp_locked_external_false)
+	action:add_precondition    (wp_animation_none_now_false)
+	action:add_effect          (wp_animation_none_now_true)
+	planner:add_action         (74, action) -- animation_clear_anim
+
+	-- LOCKED
+
+	action = state_mgr.act_state_mgr_locked()
+	action:add_precondition    (wp_locked_true)
+	action:add_effect          (wp_locked_false)
+	planner:add_action         (2, action) -- locked
+
+	action = state_mgr.act_state_mgr_locked() -- "state_mgr_locked_external"
+	action:add_precondition    (wp_locked_external_true)
+	action:add_effect          (wp_locked_external_false)
+	planner:add_action         (3, action) -- locked_external
+
+	-- END
+
+	action = state_mgr.act_state_mgr_end(st)
+	action:add_precondition    (wp_end_false)
+	action:add_precondition    (wp_weapon_true)
+	action:add_precondition    (wp_movement_true)
+	action:add_precondition    (wp_mental_true)
+	action:add_precondition    (wp_bodystate_true)
+	action:add_precondition    (wp_direction_true)
+	action:add_precondition    (wp_animstate_true)
+	action:add_precondition    (wp_animation_true)
+	action:add_effect          (wp_end_true)
+	planner:add_action         (1, action) -- end
+
+	local goal = world_state()
+	goal:add_property(wp_end_true)
+	planner:set_goal_world_state(goal)
+
+	if npc.debug_planner ~= nil then
+		npc:debug_planner(planner)
+	end
+end

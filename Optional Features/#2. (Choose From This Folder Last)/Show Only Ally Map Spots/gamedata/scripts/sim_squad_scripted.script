@@ -1,6 +1,15 @@
 -- function printf()
 -- end
 
+local math_random = math.random
+
+local function get_string_field(ini, section, field, default)
+	if ini:line_exist(section, field) then
+		return ini:r_string(section, field) or default -- string if field has a value, else default
+	end
+	return default
+end
+
 class "sim_squad_scripted" (sim_squad_generic.sim_squad_generic)
 
 function sim_squad_scripted:__init(sim_board, player_id, squad_id, settings_id) super (sim_board, player_id, squad_id)
@@ -8,20 +17,29 @@ function sim_squad_scripted:__init(sim_board, player_id, squad_id, settings_id) 
 	self.settings_id = settings_id or squad_id
 end
 
-function sim_squad_scripted:init_squad(smart)
-	local squad_ltx = sim_board.squad_ltx
-	local settings_id = self.settings_id
-	sim_squad_generic.sim_squad_generic.init_squad(self, smart)
-	self.action_condlist = xr_logic.parse_condlist(self, "assign_action", "target_smart", utils.cfg_get_string(squad_ltx, settings_id, "target_smart", self, false, "", ""))
-	self.death_condlist = xr_logic.parse_condlist(self, "death_condlist", "on_death", utils.cfg_get_string(squad_ltx, settings_id, "on_death", self, false, "", ""))
-	self.attack_power = xr_logic.parse_condlist(self, "attack_power", "attack_power", utils.cfg_get_string(squad_ltx, settings_id, "attack_power", self, false, "", ""))
-	self.invulnerability = xr_logic.parse_condlist(self, "invulnerability", "invulnerability", utils.cfg_get_string(squad_ltx, settings_id, "invulnerability", self, false, "", ""))
-	self.relationship = utils.cfg_get_string(squad_ltx, settings_id, "relationship", self, false, "", nil)
-	self.sympathy = utils.cfg_get_number(squad_ltx, settings_id, "sympathy", self, false, nil)
-	self.show_spot = xr_logic.parse_condlist(self, "show_spot", "show_spot", utils.cfg_get_string(squad_ltx, settings_id, "show_spot", self, false, "", "true"))
-	self.always_walk = utils.cfg_get_bool(squad_ltx, settings_id, "always_walk", self, false)
+function sim_squad_scripted:init_squad() -- smart)
+
+--	sim_squad_generic.sim_squad_generic.init_squad(self, smart)
+
+	local squad_ltx				= sim_board.squad_ltx
+	local settings_id			= self.settings_id
+	local parse_condlist		= xr_logic.parse_condlist
+
+	if not squad_ltx:section_exist(settings_id) then
+		abort("[sim_squad_scripted:init_squad]: Squad section '%s' does not exist in misc\\squad_descr.ltx or any of its includes.", settings_id)
+	end
+
+	self.action_condlist		= parse_condlist(nil, nil, nil, get_string_field(squad_ltx, settings_id, "target_smart", ""))
+	self.death_condlist			= parse_condlist(nil, nil, nil, get_string_field(squad_ltx, settings_id, "on_death", ""))
+	self.attack_power			= parse_condlist(nil, nil, nil, get_string_field(squad_ltx, settings_id, "attack_power", ""))
+	self.invulnerability		= parse_condlist(nil, nil, nil, get_string_field(squad_ltx, settings_id, "invulnerability", ""))
+	self.show_spot				= parse_condlist(nil, nil, nil, get_string_field(squad_ltx, settings_id, "show_spot", "true"))
+	self.relationship			= get_string_field(squad_ltx, settings_id, "relationship", nil)
+	self.sympathy				= squad_ltx:line_exist(settings_id, "sympathy") and squad_ltx:r_float(settings_id, "sympathy") or nil
+	self.always_walk			= false -- utils.cfg_get_bool(squad_ltx, settings_id, "always_walk", self, false) -- unused in vanilla, defaults to false
+
 	if not xr_surge_hide.surge_activated then
-		self.show_disabled = xr_logic.pick_section_from_condlist(db.actor, self, self.show_spot) == "false"
+		self.show_disabled		= xr_logic.pick_section_from_condlist(db.actor, self, self.show_spot) == "false"
 	end
 end
 
@@ -31,12 +49,10 @@ function sim_squad_scripted:create_npc(spawn_smart)
 
 	local squad_ltx = sim_board.squad_ltx
 	local settings_id = self.settings_id
-	local spawn_point = utils.cfg_get_string(squad_ltx, settings_id, "spawn_point", self, false, "")
-	local base_spawn_position = spawn_smart.position
-	local base_lvi = spawn_smart.m_level_vertex_id
-	local base_gvi = spawn_smart.m_game_vertex_id
+	local spawn_point = get_string_field(squad_ltx, settings_id, "spawn_point", nil) -- in vanilla, default was ""
+	local base_spawn_position, base_lvi, base_gvi
 
-	if spawn_point ~= nil then
+	if spawn_point ~= nil then -- this test always passed in vanilla because spawn_point defaulted to ""; it now defaults to nil as seemingly intended
 		base_spawn_position = patrol(spawn_point):point(0)
 		base_lvi = patrol(spawn_point):level_vertex_id(0)
 		base_gvi = patrol(spawn_point):game_vertex_id(0)
@@ -46,27 +62,36 @@ function sim_squad_scripted:create_npc(spawn_smart)
 			base_spawn_position = patrol(spawn_point):point(0)
 			base_lvi = patrol(spawn_point):level_vertex_id(0)
 			base_gvi = patrol(spawn_point):game_vertex_id(0)
+		else
+			base_spawn_position = spawn_smart.position
+			base_lvi = spawn_smart.m_level_vertex_id
+			base_gvi = spawn_smart.m_game_vertex_id
 		end
 	end
 
-	local spawn_sections_ltx = system_ini()
-	local spawn_sections = utils.parse_names(utils.cfg_get_string(squad_ltx, settings_id, "npc", self, true, ""))
+	local spawn_sections_str = get_string_field(squad_ltx, settings_id, "npc", nil)
+	if not spawn_sections_str then
+		abort("[sim_squad_scripted:create_npc]: Field 'npc' is missing or without a supplied value in section '%s' in misc\\squad_descr.ltx or one of its includes.", settings_id)
+	end
+
+	local spawn_sections = utils.parse_names(spawn_sections_str)
+	local ltx = system_ini()
 	local sim = alife()
-	local rand = math.random
 
-	for k, v in pairs (spawn_sections) do
+	for k, npc_section in pairs (spawn_sections) do
 
-		local custom_data = utils.cfg_get_string(spawn_sections_ltx, v, "custom_data", self, false, "", "stalker_custom_data.ltx")
-
-		if custom_data ~= "stalker_custom_data.ltx" then
-			abort("[sim_squad_scripted.create_npc]: Invalid NPC spawn_section used: '%s'. You cannot use NPCs with custom_data in squads.", tostring(v))
+		if ltx:section_exist(npc_section) and ltx:line_exist(npc_section, "custom_data") then
+			local custom_data = ltx:r_string(npc_section, "custom_data") or "stalker_custom_data.ltx"
+			if custom_data ~= "stalker_custom_data.ltx" then
+				abort("[sim_squad_scripted:create_npc]: Invalid NPC spawn section: '%s'. You cannot use NPCs with custom_data in squads.", tostring(npc_section))
+			end
 		end
 
 		local position = base_spawn_position
-		position.x = position.x + rand(-2, 2)
-		position.z = position.z + rand(-2, 2)
+		position.x = position.x + math_random(-2, 2)
+		position.z = position.z + math_random(-2, 2)
 
-		local obj = sim:create(v, position, base_lvi, base_gvi)
+		local obj = sim:create(npc_section, position, base_lvi, base_gvi)
 		local obj_id = obj.id
 
 		obj.squad_id = self.squad_id
@@ -121,7 +146,7 @@ function sim_squad_scripted:get_script_target()
 	local point = self.board.smarts_by_names[nt]
 
 	if point == nil then
-		abort("[sim_squad_scripted.get_script_target]: Invalid next point '%s' for squad with ID '%s'.", tostring(nt), tostring(self.squad_id))
+		abort("[sim_squad_scripted:get_script_target]: Invalid next point '%s' for squad with ID '%s'.", tostring(nt), tostring(self.squad_id))
 	end
 
 	return point.id
@@ -170,7 +195,7 @@ function sim_squad_scripted:update_current_action()
 ]]
 	return self.current_action:update()
 end
-
+--[[
 function sim_squad_scripted:check_invulnerability()
 
 	if self.squad_online ~= true then
@@ -181,21 +206,21 @@ function sim_squad_scripted:check_invulnerability()
 	local st = db.storage
 
 	for npc_id in pairs (self.squad_npc) do
-		local npc_st = st[npc_id]
-		if npc_st ~= nil then
-			local npc = npc_st.object
-			if npc ~= nil then
-				if npc:invulnerable() ~= invulnerabilty and utils.cfg_get_bool(npc_st.ini, npc_st.active_section, "invulnerable", npc, false, nil) == nil then
+		local npc = st[npc_id]
+		npc = npc and npc.object
+		if npc ~= nil then
+			if npc:invulnerable() ~= invulnerability then -- typo: was "invulnerabilty", which has value nil, so test would always pass since npc:invulnerable() returns boolean
+				if utils.cfg_get_bool(npc_st.ini, npc_st.active_section, "invulnerable", npc, false, nil) == nil then -- cfg_get_bool() never returns nil, so this test would always fail in vanilla
 					npc:invulnerable(invulnerability)
 				end
 			end
 		end
 	end
 end
-
+]]
 function sim_squad_scripted:update()
 
-	self:check_invulnerability()
+--	self:check_invulnerability() -- broken in vanilla, but stalker_generic.reset_invulnerability() achieves the intended effect on every section switch anyway, for *all* NPCs
 
 	if not xr_surge_hide.surge_activated then
 		self.show_disabled = xr_logic.pick_section_from_condlist(db.actor, self, self.show_spot) == "false"
@@ -306,7 +331,11 @@ function sim_squad_scripted:load(packet)
 	sim_squad_generic.sim_squad_generic.load(self, packet)
 
 	set_save_marker(packet, "load", false, "sim_squad_scripted")
-
+--[[
+	local smart_id = self.smart_id
+	local smart_info = smart_id and self.board.smarts[smart_id]
+	self:init_squad(smart_info and smart_info.smrt)
+]]
 	self:init_squad()
 
 	self.next_target = packet:r_u8()

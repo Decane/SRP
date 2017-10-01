@@ -1,153 +1,107 @@
 squad_ltx = ini_file("misc\\squad_descr.ltx")
+
 local board = nil
+local string_sub = string.sub
+local table_sort = table.sort
+local table_remove = table.remove
 
 local squad_by_level = {
 
-	marsh			= 1,
-	escape			= 2,
-	garbage			= 3,
-	agroprom		= 4,
-	darkvalley		= 5,
-	agroprom_underground	= 6,
-	yantar			= 7,
-	red_forest		= 8,
-	military		= 9,
-	limansk			= 10,
-	hospital		= 11,
-	stancia_2		= 12
+	marsh                = 1,
+	escape               = 2,
+	garbage              = 3,
+	agroprom             = 4,
+	darkvalley           = 5,
+	agroprom_underground = 6,
+	yantar               = 7,
+	red_forest           = 8,
+	military             = 9,
+	limansk              = 10,
+	hospital             = 11,
+	stancia_2            = 12
 }
 
 sim_fight = {
 
-	csky			= "renegade",
-	renegade		= "csky",
-	stalker			= "bandit",
-	bandit			= "stalker",
-	dolg			= "freedom",
-	freedom			= "dolg"	-- "duty"
+	csky       = "renegade",
+	renegade   = "csky",
+	stalker    = "bandit",
+	bandit     = "stalker",
+	dolg       = "freedom",
+	freedom    = "dolg"
 }
 
 sim_level_cluster = {
 
-	marsh			= 1,
-	escape			= 2,
-	garbage			= 2,
-	darkvalley		= 2,
-	agroprom		= 2,
-	agroprom_underground	= 3,
-	yantar			= 2,
-	red_forest		= 2,
-	military		= 2,
-	limansk			= 4,
-	hospital		= 5,
-	stancia_2		= 6
-}
-
-faction_cluster	= {
-
-	csky			= 1,
-	stalker			= 2,
-	bandit			= 2,
-	dolg			= 2,
-	freedom			= 2
-}
-
-local actor_communitites = {
-
-	csky			= "actor_csky",
-	dolg			= "actor_dolg",
-	freedom			= "actor_freedom",
-	bandit			= "actor_bandit",
-	stalker			= "actor_stalker",
-	none			= "actor"
-}
-
-faction_activity = {
-
-	csky		= {	[00] = 00, [01] = 00, [02] = 00, [03] = 00, [04] = 00, [05] = 00,
-				[06] = 00, [07] = 00, [08] = 00, [09] = 01, [10] = 01, [11] = 01,
-				[12] = 01, [13] = 01, [14] = 01, [15] = 01, [16] = 01, [17] = 01,
-				[18] = 01, [19] = 01, [20] = 00, [21] = 00, [22] = 00, [23] = 00},
-
-	dolg		= {	[00] = 00, [01] = 00, [02] = 00, [03] = 00, [04] = 01, [05] = 01,
-				[06] = 01, [07] = 01, [08] = 01, [09] = 01, [10] = 01, [11] = 01,
-				[12] = 01, [13] = 01, [14] = 01, [15] = 01, [16] = 01, [17] = 01,
-				[18] = 01, [19] = 01, [20] = 01, [21] = 01, [22] = 00, [23] = 00},
-
-	freedom		= {	[00] = 00, [01] = 00, [02] = 00, [03] = 00, [04] = 01, [05] = 01,
-				[06] = 01, [07] = 01, [08] = 01, [09] = 01, [10] = 01, [11] = 01,
-				[12] = 01, [13] = 01, [14] = 01, [15] = 01, [16] = 01, [17] = 01,
-				[18] = 01, [19] = 01, [20] = 01, [21] = 01, [22] = 00, [23] = 00},
-
-	stalker		= {	[00] = 00, [01] = 00, [02] = 00, [03] = 00, [04] = 01, [05] = 01,
-				[06] = 01, [07] = 01, [08] = 01, [09] = 01, [10] = 01, [11] = 01,
-				[12] = 01, [13] = 01, [14] = 01, [15] = 01, [16] = 01, [17] = 01,
-				[18] = 01, [19] = 01, [20] = 01, [21] = 01, [22] = 00, [23] = 00},
-
-	bandit		= {	[00] = 00, [01] = 00, [02] = 00, [03] = 00, [04] = 00, [05] = 00,
-				[06] = 00, [07] = 00, [08] = 00, [09] = 00, [10] = 01, [11] = 00,
-				[12] = 01, [13] = 01, [14] = 01, [15] = 01, [16] = 01, [17] = 01,
-				[18] = 01, [19] = 01, [20] = 01, [21] = 01, [22] = 00, [23] = 00},
-
-	renegade	= {	[00] = 00, [01] = 00, [02] = 00, [03] = 00, [04] = 00, [05] = 00,
-				[06] = 00, [07] = 00, [08] = 00, [09] = 00, [10] = 01, [11] = 01,
-				[12] = 01, [13] = 01, [14] = 01, [15] = 01, [16] = 01, [17] = 01,
-				[18] = 01, [19] = 01, [20] = 00, [21] = 00, [22] = 00, [23] = 00},
-
-	army		= {	[00] = 00, [01] = 00, [02] = 00, [03] = 00, [04] = 00, [05] = 00,
-				[06] = 00, [07] = 00, [08] = 00, [09] = 00, [10] = 00, [11] = 00,
-				[12] = 00, [13] = 00, [14] = 00, [15] = 00, [16] = 00, [17] = 00,
-				[18] = 00, [19] = 00, [20] = 00, [21] = 00, [22] = 00, [23] = 00},
-
-	killer		= {	[00] = 00, [01] = 00, [02] = 00, [03] = 00, [04] = 00, [05] = 00,
-				[06] = 00, [07] = 00, [08] = 00, [09] = 00, [10] = 00, [11] = 00,
-				[12] = 00, [13] = 00, [14] = 00, [15] = 00, [16] = 00, [17] = 00,
-				[18] = 00, [19] = 00, [20] = 00, [21] = 00, [22] = 00, [23] = 00},
-
-	monolith	= {	[00] = 00, [01] = 00, [02] = 00, [03] = 00, [04] = 00, [05] = 00,
-				[06] = 00, [07] = 00, [08] = 00, [09] = 00, [10] = 00, [11] = 00,
-				[12] = 00, [13] = 00, [14] = 00, [15] = 00, [16] = 00, [17] = 00,
-				[18] = 00, [19] = 00, [20] = 00, [21] = 00, [22] = 00, [23] = 00},
-
-	zombied		= {	[00] = 00, [01] = 00, [02] = 00, [03] = 00, [04] = 00, [05] = 00,
-				[06] = 00, [07] = 00, [08] = 00, [09] = 00, [10] = 00, [11] = 00,
-				[12] = 00, [13] = 00, [14] = 00, [15] = 00, [16] = 00, [17] = 00,
-				[18] = 00, [19] = 00, [20] = 00, [21] = 00, [22] = 00, [23] = 00},
-
-	monster		= {	[00] = 01, [01] = 01, [02] = 01, [03] = 01, [04] = 01, [05] = 01,
-				[06] = 01, [07] = 01, [08] = 01, [09] = 01, [10] = 01, [11] = 01,
-				[12] = 01, [13] = 01, [14] = 01, [15] = 01, [16] = 01, [17] = 01,
-				[18] = 01, [19] = 01, [20] = 01, [21] = 01, [22] = 01, [23] = 01}
+	marsh                = 1,
+	escape               = 2,
+	garbage              = 2,
+	darkvalley           = 2,
+	agroprom             = 2,
+	agroprom_underground = 3,
+	yantar               = 2,
+	red_forest           = 2,
+	military             = 2,
+	limansk              = 4,
+	hospital             = 5,
+	stancia_2            = 6
 }
 
 function calc_point(point, prev_point, squad, src_smart_id, tgt_smart_id, arhive, front)
 
-	local squad_faction = squad.player_id
-	local point_forbidden_to = point.forbidden_point
-	local point_value = prev_point.value
 	local point_id = point.id
 
-	if point_forbidden_to ~= nil and point_forbidden_to == squad_faction then
-		point_value = point_value + 3000
-	else
-		local board = get_sim_board()
-		if sim_level_cluster[point.smart_level] == sim_level_cluster[board.smarts[src_smart_id].smrt.smart_level] then
-			if is_point_avail(point, squad_faction) then
-				local point_faction = point.player_name
-				if point_faction == "none" then
-					point_value = point_value + 1
+	if arhive[point_id] ~= nil then -- never true when point_id == tgt_smart_id (tested below), so moved here for speed
+		return false
+	end
+
+	local point_value = prev_point.value
+
+	local board = get_sim_board()
+	if sim_level_cluster[point.smart_level] == sim_level_cluster[board.smarts[src_smart_id].smrt.smart_level] then
+		local squad_faction = squad.player_id
+		if is_point_avail(point, squad_faction) then
+			local point_faction = point.player_name
+			if point_faction == "none" then
+				point_value = point_value + 1
 --[[
-					local respawn_point = point.respawn_sector
-					if respawn_point ~= nil then
-						local respawn_faction = xr_logic.pick_section_from_condlist(db.actor_proxy, point, respawn_point)
-						if board.players[respawn_faction] then
-							if not game_relations.is_factions_enemies(squad_faction, respawn_faction) then	-- if point is empty but is respawn point for non-hostiles, can't go there
-								point_value = point_value + 1000
-								dbgmsg("Made "..smart_names.get_smart_terrain_name(point).." inaccessible to "..squad_faction.." because it's a spawn point for "..respawn_faction)
-							end
+				local respawn_point = point.respawn_sector
+				if respawn_point ~= nil then
+					local respawn_faction = xr_logic.pick_section_from_condlist(db.actor_proxy, point, respawn_point)
+					if board.players[respawn_faction] then
+						if not game_relations.is_factions_enemies(squad_faction, respawn_faction) then	-- if point is empty but is respawn point for non-hostiles, can't go there
+							point_value = point_value + 1000
+							dbgmsg("Made "..smart_names.get_smart_terrain_name(point).." inaccessible to "..squad_faction.." because it's a spawn point for "..respawn_faction)
 						end
 					end
+				end
 ]]
+				local friendly_squad_quan = board:get_smart_squad_quantity(point, board.players[squad_faction])
+				if friendly_squad_quan >= point.squad_capacity then
+					point_value = point_value + 1000
+				else
+					local neutral_squad_quan = board:get_neutral_attackers_quantity(point, squad_faction)
+					if neutral_squad_quan ~= 0 then
+						point_value = point_value + 1000
+					end
+				end
+			elseif point_faction == squad_faction then
+				local friendly_squad_quan = board:get_smart_squad_quantity(point, board.players[squad_faction]) + board:get_smart_population(point)
+				if friendly_squad_quan < point.squad_capacity then
+					point_value = point_value + 1
+				else
+					point_value = point_value + 1000
+				end
+			else
+				if game_relations.is_factions_enemies(squad_faction, point_faction) then
+					local enemy_power = 0
+					for k, v in pairs (board.smarts[point_id].squads) do
+						enemy_power = enemy_power + v.squad_power
+					end
+					point_value = point_value + enemy_power
+					if point.combat_manager:point_under_attack() then
+						point_value = point_value + 100
+					end
 					local friendly_squad_quan = board:get_smart_squad_quantity(point, board.players[squad_faction])
 					if friendly_squad_quan >= point.squad_capacity then
 						point_value = point_value + 1000
@@ -157,60 +111,36 @@ function calc_point(point, prev_point, squad, src_smart_id, tgt_smart_id, arhive
 							point_value = point_value + 1000
 						end
 					end
-				elseif point_faction == squad_faction then
-					local friendly_squad_quan = board:get_smart_squad_quantity(point, board.players[squad_faction]) + board:get_smart_population(point)
-					if friendly_squad_quan < point.squad_capacity then
-						point_value = point_value + 1
-					else
-						point_value = point_value + 1000
-					end
 				else
-					if game_relations.is_factions_enemies(squad_faction, point_faction) then
-						local enemy_power = 0
-						for k, v in pairs (board.smarts[point_id].squads) do
-							enemy_power = enemy_power + v.squad_power
-						end
-						point_value = point_value + enemy_power
-						if point.combat_manager:point_under_attack() then
-							point_value = point_value + 100
-						end
-						local friendly_squad_quan = board:get_smart_squad_quantity(point, board.players[squad_faction])
-						if friendly_squad_quan >= point.squad_capacity then
-							point_value = point_value + 1000
-						else
-							local neutral_squad_quan = board:get_neutral_attackers_quantity(point, squad_faction)
-							if neutral_squad_quan ~= 0 then
-								point_value = point_value + 1000
-							end
-						end
-					else
-						point_value = point_value + 1000
-					end
+					point_value = point_value + 1000
 				end
-			else
-				point_value = point_value + 2000
-				if point.player_name == squad_faction then
-					for k, rogue_squad in pairs (board.smarts[point_id].squads) do
-						local current_action = rogue_squad.current_action
-						if current_action ~= nil then
-							if current_action.name == "stay_point" then
-								if not rogue_squad:get_script_target() then
-									for nearest_smart_id, nearest_smart in pairs (board:get_nearest_smarts(point)) do
-										if is_point_avail(nearest_smart, squad_faction) then
-											local nearest_smart_owner = nearest_smart.player_name
-											local friendly_squad_quan
-											if nearest_smart_owner == "none" or game_relations.is_factions_enemies(squad_faction, nearest_smart_owner) then
-												friendly_squad_quan = board:get_smart_squad_quantity(nearest_smart, board.players[squad_faction])
-											elseif nearest_smart_owner == squad_faction then
-												friendly_squad_quan = board:get_smart_squad_quantity(nearest_smart, board.players[squad_faction]) + board:get_smart_population(nearest_smart)
-											end
-											if friendly_squad_quan ~= nil then
-												if friendly_squad_quan < nearest_smart.squad_capacity then
---													dbgmsg("Assigned "..rogue_squad.squad_id.." to: "..smart_names.get_smart_terrain_name(nearest_smart))
-													rogue_squad.current_action = sim_squad_generic.sim_attack_point(rogue_squad, nearest_smart_id, true)
-													rogue_squad.current_action:make()
-													break
-												end
+			end
+		else
+			point_value = point_value + 2000
+
+			-- Now handled in sim_squad_generic:get_next_action(), where it belongs:
+--[[
+			if point.player_name == squad_faction then
+				for k, rogue_squad in pairs (board.smarts[point_id].squads) do
+					local current_action = rogue_squad.current_action
+					if current_action ~= nil then
+						if current_action.name == "stay_point" then
+							if not rogue_squad:get_script_target() then
+								for nearest_smart_id, nearest_smart in pairs (board:get_nearest_smarts(point)) do
+									if is_point_avail(nearest_smart, squad_faction) then
+										local nearest_smart_owner = nearest_smart.player_name
+										local friendly_squad_quan
+										if nearest_smart_owner == "none" or game_relations.is_factions_enemies(squad_faction, nearest_smart_owner) then
+											friendly_squad_quan = board:get_smart_squad_quantity(nearest_smart, board.players[squad_faction])
+										elseif nearest_smart_owner == squad_faction then
+											friendly_squad_quan = board:get_smart_squad_quantity(nearest_smart, board.players[squad_faction]) + board:get_smart_population(nearest_smart)
+										end
+										if friendly_squad_quan ~= nil then
+											if friendly_squad_quan < nearest_smart.squad_capacity then
+--												dbgmsg("Assigned "..rogue_squad.squad_id.." to: "..smart_names.get_smart_terrain_name(nearest_smart))
+												rogue_squad.current_action = sim_squad_generic.sim_attack_point(rogue_squad, nearest_smart_id, true)
+												rogue_squad.current_action:make()
+												break
 											end
 										end
 									end
@@ -220,77 +150,73 @@ function calc_point(point, prev_point, squad, src_smart_id, tgt_smart_id, arhive
 					end
 				end
 			end
-		else
-			point_value = point_value + 2000
+]]
 		end
+	else
+		point_value = point_value + 2000
 	end
 
 	if point_id == tgt_smart_id then
-		arhive[point_id] = {id = point_id, value = point_value, prev = prev_point.id}
+		local prev_point_id = prev_point.id
+		arhive[point_id] = {id = point_id, value = point_value, prev = prev_point_id}
+		arhive[prev_point_id] = prev_point -- moved here from iterate_point()
 		return true
 	end
 
-	if arhive[point_id] ~= nil then
-		return false
-	end
-
-	local exist = false
-
-	for k, v in pairs (front) do
-		if v.id == point_id then
-			exist = k
-			break
+	for i = 1, #front do
+		local front_point = front[i]
+		if front_point.id == point_id then
+			if front_point.value > point_value then
+				front_point.value = point_value
+				front_point.prev = prev_point.id
+			end
+			return false
 		end
 	end
 
-	if exist ~= false then
-		if front[exist].value > point_value then
-			front[exist].value = point_value
-			front[exist].prev = prev_point.id
-		end
-		return false
-	end
-
---	table.insert(front, {id = point_id, value = point_value, prev = prev_point.id})
 	front[#front + 1] = {id = point_id, value = point_value, prev = prev_point.id}
 
 	return false
 end
 
-function iterate_point(squad, src_smart_id, tgt_smart_id, arhive, front)
+function iterate_point(squad, src_smart_id, tgt_smart_id, arhive, front) -- initially: arhive empty, front contains just source smart which isn't also target smart
 
-	table.sort(front, function(a, b) return a.value < b.value end)
+	table_sort(front, function(a, b) return a.value < b.value end)
 
-	local next_point = front[1]
+	local front_point = front[1]
 
-	if next_point == nil then
+	if front_point == nil then
 		local sim = alife()
 		local src_smart_name, tgt_smart_name = sim:object(src_smart_id):name(), sim:object(tgt_smart_id):name()
 		abort("[sim_board.iterate_point]: Path between '%s' and '%s' does not exist for squad with ID '%s'.", tostring(src_smart_name), tostring(tgt_smart_name), tostring(squad.squad_id))
 	end
 
-	local nearest_points = get_sim_board():get_nearest_smarts(next_point)
+	local nearest_points = get_sim_board():get_nearest_smarts(front_point)
 
 	for k, nearest_point in pairs (nearest_points) do
-		if calc_point(nearest_point, next_point, squad, src_smart_id, tgt_smart_id, arhive, front) == true then
-			arhive[next_point.id] = next_point -- front[1]
+		if calc_point(nearest_point, front_point, squad, src_smart_id, tgt_smart_id, arhive, front) == true then
+--			arhive[front_point.id] = front_point -- front[1] -- moved to calc_point()
 			return true
 		end
 	end
 
-	local next_point_id = next_point.id
-	if next_point_id ~= src_smart_id then
-		arhive[next_point_id] = next_point -- front[1]
-	end
+--	if front_point.id ~= src_smart_id then -- having this commented prevents src_smart_id being re-added into front in calc_point() if one of its neighbors points back to it
+		arhive[front_point.id] = front_point -- front[1] -- any front point whose neighbor wasn't the target ends up in arhive
+--	end
 
-	table.remove(front, 1)
+	table_remove(front, 1)
 
 	return iterate_point(squad, src_smart_id, tgt_smart_id, arhive, front)
 end
 
-function calc_conductor_point(point, prev_point, npc, src_smart_id, tgt_smart_id, arhive, front)
+function calc_conductor_point(point, prev_point, npc_community, src_smart_id, tgt_smart_id, arhive, front)
 
-	local npc_community = npc:character_community()
+	local point_id = point.id
+
+	if arhive[point_id] ~= nil then -- never true when point_id == tgt_smart_id (tested below), so moved here for speed
+		return false
+	end
+
 	local point_value = prev_point.value
 	local point_faction = point.player_name
 
@@ -304,67 +230,55 @@ function calc_conductor_point(point, prev_point, npc, src_smart_id, tgt_smart_id
 		end
 	end
 
-	local point_id = point.id
-
 	if point_id == tgt_smart_id then
-		arhive[point_id] = {id = point_id, value = point_value, prev = prev_point.id}
+		local prev_point_id = prev_point.id
+		arhive[point_id] = {id = point_id, value = point_value, prev = prev_point_id}
+		arhive[prev_point_id] = prev_point -- moved here from iterate_conductor_point()
 		return true
 	end
 
-	if arhive[point_id] ~= nil then
-		return false
-	end
-
-	local exist = false
-
-	for k, v in pairs (front) do
-		if v.id == point_id then
-			exist = k
-			break
+	for i = 1, #front do
+		local front_point = front[i]
+		if front_point.id == point_id then
+			if front_point.value > point_value then
+				front_point.value = point_value
+				front_point.prev = prev_point.id
+			end
+			return false
 		end
 	end
 
-	if exist ~= false then
-		if front[exist].value > point_value then
-			front[exist].value = point_value
-			front[exist].prev = prev_point.id
-		end
-		return false
-	end
-
---	table.insert(front, {id = point_id, value = point_value, prev = prev_point.id})
 	front[#front + 1] = {id = point_id, value = point_value, prev = prev_point.id}
 
 	return false
 end
 
-function iterate_conductor_point(npc, src_smart_id, tgt_smart_id, arhive, front)
+function iterate_conductor_point(npc_community, src_smart_id, tgt_smart_id, arhive, front)
 
-	table.sort(front, function(a, b) return a.value < b.value end)
+	table_sort(front, function(a, b) return a.value < b.value end)
 
-	local next_point = front[1]
+	local front_point = front[1]
 
-	if next_point == nil then
+	if front_point == nil then
 		return false
 	end
 
-	local nearest_points = get_sim_board():get_nearest_smarts(next_point)
+	local nearest_points = get_sim_board():get_nearest_smarts(front_point)
 
 	for k, nearest_point in pairs (nearest_points) do
-		if calc_conductor_point(nearest_point, next_point, npc, src_smart_id, tgt_smart_id, arhive, front) == true then
-			arhive[next_point.id] = next_point -- front[1]
+		if calc_conductor_point(nearest_point, front_point, npc_community, src_smart_id, tgt_smart_id, arhive, front) == true then
+--			arhive[front_point.id] = front_point -- front[1] -- moved to calc_conductor_point()
 			return true
 		end
 	end
 
-	local next_point_id = next_point.id
-	if next_point_id ~= src_smart_id then
-		arhive[next_point_id] = next_point -- front[1]
-	end
+--	if front_point.id ~= src_smart_id then -- having this commented prevents src_smart_id being re-added into front in calc_conductor_point() if one of its neighbors points back to it
+		arhive[front_point.id] = front_point -- front[1] -- any front point whose neighbor wasn't the target ends up in arhive
+--	end
 
-	table.remove(front, 1)
+	table_remove(front, 1)
 
-	return iterate_conductor_point(npc, src_smart_id, tgt_smart_id, arhive, front)
+	return iterate_conductor_point(npc_community, src_smart_id, tgt_smart_id, arhive, front)
 end
 
 class "sim_board"
@@ -392,7 +306,7 @@ end
 
 function sim_board:set_actor_community(new_faction_name)
 
-	db.actor:set_character_community(actor_communitites[new_faction_name], 0, 0)
+	db.actor:set_character_community(new_faction_name == "none" and "actor" or "actor_"..new_faction_name, 0, 0)
 
 	local tm = task_manager.get_task_manager()
 
@@ -412,7 +326,7 @@ function sim_board:set_actor_community(new_faction_name)
 			checked_faction.brain:calculate_expansion_targets()
 		end
 
-		for kk, squad in pairs (checked_faction.squads) do	-- update world map icons
+		for kk, squad in pairs (checked_faction.squads) do -- update world map icons
 			squad:refresh()
 		end
 	end
@@ -449,7 +363,14 @@ function sim_board:register_smart(smart)
 		abort("[sim_board.register_smart]: Smart '%s' already exists in sim_board.smarts.", smart:name())
 	end
 
-	self_smarts[smart_id] = {smrt = smart, targets = {}, dangers = {}, squads = {}, stayed_squad_quan = 0}
+	self_smarts[smart_id] =
+	{
+		smrt = smart,
+		targets = {},
+--		dangers = {}, -- not used
+		squads = {},
+		stayed_squad_quan = 0
+	}
 
 	self.smarts_by_names[smart:name()] = smart
 
@@ -513,8 +434,8 @@ function sim_board:get_spawn_smart(faction)
 						population_okay = true
 					end
 				elseif smart_faction == "none" then
-					if self:get_smart_squad_quantity(smart, faction) == 0 then			-- can't respawn on empty smart if our squads moving to it!
-						if self:get_neutral_attackers_quantity(smart, faction_name) == 0 then	-- can't respawn on empty smart if neutrals moving to it!
+					if self:get_smart_squad_quantity(smart, faction) == 0 then -- can't respawn on empty smart if our squads moving to it!
+						if self:get_neutral_attackers_quantity(smart, faction_name) == 0 then -- can't respawn on empty smart if neutrals moving to it!
 							population_okay = true
 						end
 					end
@@ -543,7 +464,7 @@ function sim_board:create_squad(faction_id, squad_class, spawn_smart, sq_id, set
 
 	local squad = squad_class(self, faction_id, squad_id, settings_id)
 
-	squad:init_squad(spawn_smart)
+	squad:init_squad()
 
 	self_squads[squad_id] = squad
 
@@ -583,7 +504,7 @@ function sim_board:remove_squad(squad)
 		squad.board:exit_smart(squad, self.smarts[squad.smart_id].smrt)		-- run this separately instead
 	end
 
-	if squad.sim_combat_id ~= nil then				-- squad.sim_combat_id is guaranteed to be nil here
+	if squad.sim_combat_id ~= nil then						-- squad.sim_combat_id is guaranteed to be nil here
 		src_smart.combat_manager:unregister_squad(squad)	-- so this would never execute, nor should it (src_smart = nil --> crash)
 	end
 ]]
@@ -778,28 +699,23 @@ end
 function sim_board:build_cross_table(smart)
 
 	local ini = smart:spawn_ini()
-	local ttt = utils.cfg_get_string(ini, "smart_terrain", "targets", smart, true, "", "")
---[[
-	local targets
-	if ttt == nil then
-		targets = {}
-	else
-		targets = parse_names(ttt)
-	end
-]]
-	local targets = (ttt == nil) and {} or parse_names(ttt)
+	local targets_str = ini:section_exist("smart_terrain") and ini:line_exist("smart_terrain", "targets") and ini:r_string("smart_terrain", "targets")
 
+	if not targets_str then -- false if section or line doesn't exist; nil if the value of the 'targets' field is empty (that is, no targets supplied)
+		return
+	end
+
+	local targets = parse_names(targets_str)
 	local smarts_by_name = self.smarts_by_names
-	local self_smarts = self.smarts
-	local smart_id = smart.id
-	for k, target_smart_name in pairs (targets) do
-		local target_smart = smarts_by_name[target_smart_name]
+	local smart_targets = self.smarts[smart.id].targets
+
+	for i = 1, #targets do
+		local target_smart = smarts_by_name[targets[i]]
 		if target_smart == nil then
-			abort("[sim_board.build_cross_table]: Invalid target '%s' for smart '%s'.", tostring(target_smart_name), smart:name())
+			abort("[sim_board.sim_board:build_cross_table]: Invalid target '%s' for smart '%s'.", tostring(targets[i]), smart:name())
 		end
-		local target_smart_id = target_smart.id
-		self_smarts[smart_id].targets[target_smart_id] = target_smart
-		self_smarts[target_smart_id].dangers[smart_id] = smart
+		smart_targets[target_smart.id] = target_smart
+--		self.smarts[target_smart.id].dangers[smart.id] = smart -- dangers unused in vanilla
 	end
 end
 
@@ -811,19 +727,19 @@ function sim_board:get_smart_by_name(name)
 	return self.smarts_by_names[name]
 end
 
-function sim_board:get_smart_player(smart)
-	return smart.player_name
-end
+-- function sim_board:get_smart_player(smart)
+--	return smart.player_name
+-- end
 
 function sim_board:get_smart_population(smart)
 	return self.smarts[smart.id].stayed_squad_quan
 end
 
-function sim_board:get_smart_squad_quantity(smart, faction)	-- returns how many of faction's squads are currently attacking the smart
+function sim_board:get_smart_squad_quantity(smart, faction) -- returns how many of faction's squads are currently attacking the smart
 	return faction.current_attack_quantity[smart.id] or 0
 end
 
-function sim_board:get_neutral_attackers_quantity(smart, our_name)	-- returns how many neutral squads are currently attacking the smart
+function sim_board:get_neutral_attackers_quantity(smart, our_name) -- returns how many neutral squads are currently attacking the smart
 	local quantity = 0
 	for faction_name, faction in pairs (self.players) do
 		if faction_name ~= our_name then
@@ -842,35 +758,27 @@ function sim_board:find_path(src_smart_id, tgt_smart_id, squad)
 		return {{id = src_smart_id, value = 0}}
 	end
 
---	local front = {}
---	table.insert(front, {id = src_smart_id, value = 0, prev = true})
-
 	local front = {{id = src_smart_id, value = 0, prev = true}}
-
 	local arhive = {}
+	iterate_point(squad, src_smart_id, tgt_smart_id, arhive, front)
 
-	local is_founded = iterate_point(squad, src_smart_id, tgt_smart_id, arhive, front)
+	-- iterate_point() either returns true or aborts, so this test is useless:
+--	local is_founded = iterate_point(squad, src_smart_id, tgt_smart_id, arhive, front)
+--	if is_founded == false then
+--		abort("[sim_board.sim_board:find_path]: Path from '%s' to '%s' does not exist for squad with ID '%s'.", tostring(src_smart_id), tostring(tgt_smart_id), tostring(squad.squad_id))
+--	end
 
-	if is_founded == false then
-		abort("[sim_board.find_path]: Path from '%s' to '%s' does not exist for squad with ID '%s'.", tostring(src_smart_id), tostring(tgt_smart_id), tostring(squad.squad_id))
-	end
-
-	local step = tgt_smart_id
-
---	local path = {}
---	table.insert(path, {id = step, value = arhive[step].value})
-
-	local path = {{id = step, value = arhive[step].value}}
-
+	local path = {{id = tgt_smart_id, value = arhive[tgt_smart_id].value}}
 	local c = 1
-	while arhive[step].prev ~= src_smart_id do
-		step = arhive[step].prev
---		table.insert(path, {id = step, value = arhive[step].value})
+	local step = arhive[tgt_smart_id].prev
+
+	while step ~= src_smart_id do
 		c = c + 1
 		path[c] = {id = step, value = arhive[step].value}
+		step = arhive[step].prev
 	end
 
-	table.sort(path, function(a, b) return a.value < b.value end)
+	table_sort(path, function(a, b) return a.value < b.value end)
 
 	return path
 end
@@ -881,29 +789,21 @@ function sim_board:find_conductor_path(src_smart_id, tgt_smart_id, npc)
 		return {{id = src_smart_id, value = 0}}
 	end
 
---	local front = {}
---	table.insert(front, {id = src_smart_id, value = 0, prev = true})
-
 	local front = {{id = src_smart_id, value = 0, prev = true}}
-
 	local arhive = {}
-
-	local is_founded = iterate_conductor_point(npc, src_smart_id, tgt_smart_id, arhive, front)
-
-	local step = tgt_smart_id
+	local is_founded = iterate_conductor_point(npc:character_community(), src_smart_id, tgt_smart_id, arhive, front)
 	local path = {}
 
 	if is_founded then
---		table.insert(path, {id = step, value = arhive[step].value})
-		path = {{id = step, value = arhive[step].value}}
+		path[1] = {id = tgt_smart_id, value = arhive[tgt_smart_id].value}
 		local c = 1
-		while arhive[step].prev ~= src_smart_id do
-			step = arhive[step].prev
---			table.insert(path, {id = step, value = arhive[step].value})
+		local step = arhive[tgt_smart_id].prev
+		while step ~= src_smart_id do
 			c = c + 1
 			path[c] = {id = step, value = arhive[step].value}
+			step = arhive[step].prev
 		end
-		table.sort(path, function(a, b) return a.value < b.value end)
+		table_sort(path, function(a, b) return a.value < b.value end)
 	end
 
 	return path
@@ -915,8 +815,8 @@ end
 
 function sim_board:reset_nearest_squads(smart)
 	local self_smarts = self.smarts
-	for k, nearest_smart in pairs (self:get_nearest_smarts(smart)) do
-		for kk, squad in pairs (self_smarts[nearest_smart.id].squads) do
+	for nearest_smart_id, nearest_smart in pairs (self:get_nearest_smarts(smart)) do
+		for kk, squad in pairs (self_smarts[nearest_smart_id].squads) do
 			local squad_action = squad.current_action
 			if squad_action ~= nil then
 				if squad_action.name == "stay_point" then
@@ -967,10 +867,10 @@ local function outta_my_way_fools(faction_name, point_name)
 	return false
 end
 
-function is_point_avail(point, faction_id)
+function is_point_avail(point, faction_id) -- returns nil, true, or false (false forbids a squad from going to the point; nil forbids even staying there)
 
 	if point.no_mutant == true and faction_id == "monster" then
-		return false
+		return nil
 	end
 
 	if faction_id == "csky" then
@@ -981,14 +881,14 @@ function is_point_avail(point, faction_id)
 
 			local point_name = point:name()
 			if point_name == "mar_smart_terrain_10_5" or point_name == "mar_smart_terrain_11_11" or point_name == "mar_smart_terrain_12_2" then
-				return false
+				return nil
 			end
 
 		elseif csky_exp == "expansion_1" then
 
 			local point_name = point:name()
 			if point_name == "mar_smart_terrain_11_11" or point_name == "mar_smart_terrain_12_2" then
-				return false
+				return nil
 			end
 		end
 
@@ -998,21 +898,20 @@ function is_point_avail(point, faction_id)
 
 		if point_name == "gar_smart_terrain_1_5" or point_name == "gar_smart_terrain_1_7" or point_name == "gar_smart_terrain_8_3" or point_name == "gar_smart_terrain_8_7" then
 
-			return false
+			return nil
 
 		elseif point_name == "gar_smart_terrain_3_5" then
 
 			local stalker_exp = sim_faction.get_current_expansion("stalker")
 
 			if stalker_exp == "expansion_0" or stalker_exp == "expansion_1" or stalker_exp == "expansion_2" or stalker_exp == "expansion_3" then
-				return false
+				return nil
 			end
 		end
 
-		local find = string.find
-		if find(point_name, "gar_smart_terrain_") or find(point_name, "agr_smart_terrain_") then
+		if string_sub(point_name, 1, 4) == "gar_" or string_sub(point_name, 1, 4) == "agr_" then
 			if outta_my_way_fools("dolg", point_name) or outta_my_way_fools("freedom", point_name) then
-				return false
+				return nil
 			end
 		end
 
@@ -1021,13 +920,12 @@ function is_point_avail(point, faction_id)
 		local point_name = point:name()
 
 		if point_name == "gar_smart_terrain_3_5" or point_name == "gar_smart_terrain_3_8" or point_name == "gar_smart_terrain_5_8" or (point_name == "red_smart_terrain_3_2" and not has_alife_info("red_forester_search_compas_task")) then
-			return false
+			return nil
 		end
 
-		local find = string.find
-		if find(point_name, "gar_smart_terrain_") or find(point_name, "agr_smart_terrain_") then
+		if string_sub(point_name, 1, 4) == "gar_" or string_sub(point_name, 1, 4) == "agr_" then
 			if outta_my_way_fools("stalker", point_name) then
-				return false
+				return nil
 			end
 		end
 	end

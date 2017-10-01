@@ -1,20 +1,16 @@
-----------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 -- Remark
-----------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 
-local state_initial = 0
-local state_animation = 1
-local state_sound = 2
-local state_finish = 3
+local state_initial        = 0
+local state_animation      = 1
+local state_sound          = 2
 
-local body_state_free = 0
-local body_state_danger = 1
-
----------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 
 class "evaluator_need_remark" (property_evaluator)
 
-function evaluator_need_remark:__init(storage, name) super(nil, name)
+function evaluator_need_remark:__init(storage) super()
 	self.st = storage
 end
 
@@ -22,11 +18,11 @@ function evaluator_need_remark:evaluate()
 	return xr_logic.is_active(self.object, self.st)
 end
 
-----------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 
 class "action_remark_activity" (action_base)
 
-function action_remark_activity:__init (npc_name, action_name, storage) super(nil, action_name)
+function action_remark_activity:__init(storage) super()
 	self.st = storage
 end
 
@@ -42,21 +38,21 @@ function action_remark_activity:activate_scheme()
 
 	local self_st = self.st
 
-	self_st.signals = {}
-	self.sound_end_signalled = false
+	self_st.signals           = {}
+	self.sound_end_signalled  = false
 	self.action_end_signalled = false
-	self.anim_end_signalled = false
-	self.anim_scheduled = true
+	self.anim_end_signalled   = false
+--	self.anim_scheduled       = true
 
 	if self_st.snd_anim_sync == false and self_st.snd ~= nil then
-		self.snd_scheduled = true
+		self.snd_scheduled    = true
 	else
-		self.snd_scheduled = false
+		self.snd_scheduled    = false
 	end
 
-	self.snd_started = false
-	self.state = state_initial
-	self.tips_sound = nil
+--	self.snd_started          = false
+	self.state                = state_initial
+	self.tips_sound           = nil
 end
 
 function action_remark_activity:get_target()
@@ -66,7 +62,7 @@ function action_remark_activity:get_target()
 	if self_st.target_init == false then
 		self_st.target_position, self_st.target_id, self_st.target_init = initialize_gulag_target(self.object, self_st.target)
 --		if st.target_init == false then
-		if self_st.target_init == false then 	--nv 120127 added self. per castl
+		if self_st.target_init == false then -- nv120127 added "self." per castl
 			return nil
 		end
 	end
@@ -100,26 +96,17 @@ function action_remark_activity:update()
 
 	if self.state == state_initial then
 
-		local cb = {obj = self, func = self.time_callback, turn_end_func = self.turn_end_callback}
-		local synsound
-		local self_st = self.st
-
-		if self_st.snd_anim_sync == true then
-			self.snd_started = true
-			synsound = self_st.snd
-		else
-			synsound = nil
-		end
-
 		local target = self:get_target()
 		if target == nil then
 			return
 		end
 
+		local cb = {obj = self, func = self.time_callback, turn_end_func = self.turn_end_callback}
+		local self_st = self.st
 		local sobj = self.object
 		local anim = xr_logic.pick_section_from_condlist(db.actor, sobj, self_st.anim)
 
-		state_mgr.set_state(sobj, anim, cb, 0, target, {animation = self_st.anim_reset}, synsound)
+		state_mgr.set_state(sobj, anim, cb, 0, target, {animation = self_st.anim_reset}, self_st.snd_anim_sync == true and self_st.snd or nil)
 		self.state = state_animation
 
 --	elseif self.state == state_animation then
@@ -129,16 +116,18 @@ function action_remark_activity:update()
 		local self_st = self.st
 
 		if self.snd_scheduled == true then
-			self.snd_started = true
+--			self.snd_started = true
 			xr_sound.set_sound_play(self.object:id(), self_st.snd)
 		end
 
+		local sigs = self_st.signals
+
 		if self.anim_end_signalled == false then
 			self.anim_end_signalled = true
-			self_st.signals["anim_end"] = true
+			sigs["anim_end"] = true
 		end
 
-		if self_st.signals["sound_end"] == true or self_st.signals["theme_end"] == true then
+		if sigs["sound_end"] == true or sigs["theme_end"] == true then
 			if self.sound_end_signalled == false then
 				self.sound_end_signalled = true
 			end
@@ -146,7 +135,7 @@ function action_remark_activity:update()
 
 		if self.sound_end_signalled == true and self.anim_end_signalled == true then
 			if self.action_end_signalled == false then
-				self_st.signals["action_end"] = true
+				sigs["action_end"] = true
 				self.action_end_signalled = true
 			end
 		end
@@ -173,36 +162,42 @@ function action_remark_activity:finalize()
 	action_base.finalize(self)
 end
 
-----------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 -- Remark Binder
-----------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+
+local xr_evaluators_id_zmey_remark_base_1           = xr_evaluators_id.zmey_remark_base + 1
+local xr_actions_id_zmey_remark_base_1              = xr_actions_id.zmey_remark_base + 1
+local xr_actions_id_alife                           = xr_actions_id.alife
+
+local wp_stalker_ids_property_alive_true            = world_property(stalker_ids.property_alive, true)
+local wp_stalker_ids_property_danger_false          = world_property(stalker_ids.property_danger, false)
+local wp_stalker_ids_property_enemy_false           = world_property(stalker_ids.property_enemy, false)
+local wp_stalker_ids_property_anomaly_false         = world_property(stalker_ids.property_anomaly, false)
+local wp_xr_evaluators_id_smartcover_action_3_false = world_property(xr_evaluators_id.smartcover_action + 3, false)
+local wp_xr_evaluators_id_zmey_remark_base_1_true   = world_property(xr_evaluators_id_zmey_remark_base_1, true)
+local wp_xr_evaluators_id_zmey_remark_base_1_false  = world_property(xr_evaluators_id_zmey_remark_base_1, false)
 
 function add_to_binder(npc, ini, scheme, section, storage)
 
-	local operators	= {}
-	local properties = {}
 	local manager = npc:motivation_action_manager()
+	manager:add_evaluator(xr_evaluators_id_zmey_remark_base_1, this.evaluator_need_remark(storage))
 
-	properties["event"]		= xr_evaluators_id.reaction
-	properties["need_remark"]	= xr_evaluators_id.zmey_remark_base + 1
-	operators["action_remark"]	= xr_actions_id.zmey_remark_base + 1
+	local new_action = this.action_remark_activity(storage)
+	new_action:add_precondition(wp_stalker_ids_property_alive_true)
+	new_action:add_precondition(wp_stalker_ids_property_danger_false)
+	new_action:add_precondition(wp_stalker_ids_property_enemy_false)
+	new_action:add_precondition(wp_stalker_ids_property_anomaly_false)
+	new_action:add_precondition(wp_xr_evaluators_id_smartcover_action_3_false)
+	new_action:add_precondition(wp_xr_evaluators_id_zmey_remark_base_1_true)
 
-	-- evaluators
-
-	manager:add_evaluator(properties["need_remark"], this.evaluator_need_remark(storage, "remark_need_remark"))
-	local new_action = this.action_remark_activity(npc, "action_remark_activity", storage)
-	new_action:add_precondition(world_property(stalker_ids.property_alive, true))
-	new_action:add_precondition(world_property(stalker_ids.property_danger,false))
-	new_action:add_precondition(world_property(stalker_ids.property_enemy, false))
-	new_action:add_precondition(world_property(stalker_ids.property_anomaly,false))
-	new_action:add_precondition(world_property(xr_evaluators_id.smartcover_action + 3, false))
-	new_action:add_precondition(world_property(properties["need_remark"], true))
 	xr_motivator.addCommonPrecondition(new_action)
-	new_action:add_effect(world_property(properties["need_remark"], false))
-	manager:add_action(operators["action_remark"], new_action)
+	new_action:add_effect(wp_xr_evaluators_id_zmey_remark_base_1_false)
+	manager:add_action(xr_actions_id_zmey_remark_base_1, new_action)
 	xr_logic.subscribe_action_for_events(npc, storage, new_action)
-	new_action = manager:action(xr_actions_id.alife)
-	new_action:add_precondition(world_property(properties["need_remark"], false))
+
+	new_action = manager:action(xr_actions_id_alife)
+	new_action:add_precondition(wp_xr_evaluators_id_zmey_remark_base_1_false)
 end
 
 function parse_target(target)
@@ -238,23 +233,25 @@ function initialize_gulag_target(npc, target)
 	return nil, nil, false
 end
 
-function set_scheme(npc, ini, scheme, section)	--, gulag_name)
+function set_scheme(npc, ini, scheme, section) --, gulag_name)
 
 	local st = xr_logic.assign_storage_and_bind(npc, ini, scheme, section)
 
-	st.logic		= xr_logic.cfg_get_switch_conditions(ini, section, npc)
+	st.logic			= xr_logic.cfg_get_switch_conditions(ini, section, npc)
 	st.snd_anim_sync	= utils.cfg_get_bool(ini, section, "snd_anim_sync", npc, false)
-	st.snd			= utils.cfg_get_string(ini, section, "snd", npc, false, "", nil)
-	st.anim			= xr_logic.parse_condlist(npc, "anim", "anim", utils.cfg_get_string(ini, section, "anim", npc, false, "", "wait"))
-	st.tips_id		= utils.cfg_get_string(ini, section, "tips", npc, false, "")
-	if st.tips_id then
-		st.sender	= utils.cfg_get_string(ini, section, "tips_sender", npc, false, "")
-	end
-	st.anim_reset		= utils.cfg_get_bool(ini, section, "anim_reset", npc, false, true)
+	st.snd				= utils.cfg_get_string(ini, section, "snd", npc, false, "", nil)
+	st.anim				= xr_logic.parse_condlist(npc, "anim", "anim", utils.cfg_get_string(ini, section, "anim", npc, false, "", "wait"))
+	st.tips_id			= utils.cfg_get_string(ini, section, "tips", npc, false, "")
 
-	st.target		= utils.cfg_get_string(ini, section, "target", npc, false, "", "nil")
+	if st.tips_id then
+		st.sender		= utils.cfg_get_string(ini, section, "tips_sender", npc, false, "")
+	end
+
+	st.anim_reset		= utils.cfg_get_bool(ini, section, "anim_reset", npc, false, true)
+	st.target			= utils.cfg_get_string(ini, section, "target", npc, false, "", "nil")
 	st.target_id		= nil
 	st.target_position	= nil
+
 	if st.target and st.target ~= "nil" then
 		if st.target == "actor" then
 			st.target_actor = true

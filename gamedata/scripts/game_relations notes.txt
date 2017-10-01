@@ -1,0 +1,70 @@
+general_goodwill = personal_goodwill {-3000, 9000} + community_goodwill {-3000, 1000} + community_to_community {-infinite, infinite} + reputation_goodwill {0, 0} + rank_goodwill {0, 0}
+
+-----------------------------------------------------------------------------
+
+(1) Method 'set_relation' sets the personal_goodwill of the object to which the method is applied to:
+
+1000  (if the method's first argument is 'game_object.friend')
+0     (if the method's first argument is 'game_object.neutral')
+-1000 (if the method's first argument is 'game_object.enemy')
+
+Example:
+
+	self.object:set_relation(game_object.friend, db.actor)
+
+Suppose that self.object's community_goodwill, personal_goodwill, and community_to_community to the player are -380, 0, and 0 respectively. Then its general_goodwill will be -380 + 1000 + 0 = 620 after applying the method above.
+
+-----------------------------------------------------------------------------
+
+(2) Method 'set_goodwill' works exactly the same way as 'set_relation' except that you now set the numerical goodwill amount instead of relying on 'game_object.<relation>'. Consequently, the method can be used to alter general_goodwill by maxima of -12000 (if the starting personal_goodwill is 9000) and 12000 (if the starting personal_goodwill is -3000) instead of -10000 and 4000 as in the case of set_relation.
+
+Example 1:
+
+	self.object:set_goodwill(-8000, db.actor)
+
+Suppose that self.object's community_goodwill, personal_goodwill, and community_to_community to the player are -380, 0, and 0, respectively. Then its general_goodwill will be -380 + -3000 + 0 = -3380 after applying the method above. Note: personal_goodwill becomes -3000 instead of -8000 because it is bounded to {-3000, 9000}.
+
+Example 2:
+
+	self.object:set_goodwill(12000, db.actor)
+
+Suppose that self.object's community_goodwill, personal_goodwill, and community_to_community to the player are 1000, 0, and 0, respectively. Then its general_goodwill will be 1000 + 9000 + 0 = 10000 after applying the method above.
+
+-----------------------------------------------------------------------------
+
+(3) Function 'relation_registry.set_community_goodwill' does exactly what it says: it sets the community_goodwill of its first argument towards its second argument to the numerical value evaluated to by its third argument.
+
+Example:
+
+	relation_registry.set_community_goodwill(self.object:character_community(), db.actor:character_community(), 0)
+
+Suppose that self.object's faction's community_goodwill to the player(*) is -380 and that self.object's general_goodwill is -1419. Then its community_goodwill and general_goodwill will be 0 and -1039, respectively, after executing the function above.
+
+(*) The player's faction, technically, but since the player always has his own faction (e.g. 'actor_csky' instead of 'csky') of which he is the only member, the distinction is irrelevant here.
+
+-----------------------------------------------------------------------------
+
+(4) Method 'set_community_goodwill' does exactly the same thing as function 'relation_registry.set_community_goodwill'. Note that the method is applied to the object to which the desired faction goodwill is directed to.
+
+Example 1:
+
+	db.actor:set_community_goodwill(self.object:character_community(), 1000)
+	db.actor:set_community_goodwill(self.object:character_community(), 2000)
+
+Each sets self.object's faction's community_goodwill to the player to 1000. Suppose that self.object's community_goodwill to the player is -380 and its general_goodwill is -1419. Then its community_goodwill and general_goodwill will be 1000 and -39, respectively, after applying the methods above. (The second method doesn't change anything after the first one has been executed because the community_goodwill upper limit is 1000.)
+
+Example 2:
+
+	db.actor:set_community_goodwill(self.object:character_community(), -8000)
+
+Sets self.object's community_goodwill to -3000. Suppose that self.object's community_goodwill to the player is -380 and its general_goodwill is -1419. Then its community_goodwill and general_goodwill will be -3000 and -4039, respectively, after applying the method above.
+
+-----------------------------------------------------------------------------
+
+(5) Function 'relation_registry.set_community_relation' sets the community_to_community relation of its first argument towards its second argument to the numerical value evaluated to by its third argument.
+
+Example:
+
+	relation_registry.set_community_relation(self.object:character_community(), db.actor:character_community(), -20000)
+
+Suppose that self.object's community_to_community to the player is 0 and its general_goodwill is -1409. Then its community_to_community and general_goodwill will be -20000 and -21409, respectively, after executing the function above.

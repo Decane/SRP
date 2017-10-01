@@ -1,19 +1,21 @@
+-- DC170520: Optimization.
+
 class "se_stalker" (cse_alife_human_stalker)
 
 --------------------
 
 function se_stalker:__init (section) super (section)
-	self.ini = nil
---	self.ini_initialized = false
---	self.smart_terrain_conditions = nil
+	self.ini                                  = nil
+--	self.ini_initialized                      = false
+--	self.smart_terrain_conditions             = nil
 --	self.smart_terrain_conditions_initialized = false
-	self.job_online = nil
-	self.job_online_condlist = nil
-	self.death_droped = false
-	self.squad_id = nil
---	self.m_registred = false
-	self.sim_forced_online = false
-	self.treasure_processed = false				-- SRP
+--	self.job_online                           = nil
+--	self.job_online_condlist                  = nil
+	self.death_droped                         = false
+	self.squad_id                             = nil
+--	self.m_registred                          = false
+	self.sim_forced_online                    = false
+	self.treasure_processed                   = false -- SRP
 end
 
 --------------------
@@ -40,11 +42,11 @@ function se_stalker:can_switch_offline()
 	if self.sim_forced_online == true then
 		return false
 	end
-
+--[[
 	if self.job_online_condlist ~= nil then
 		return xr_logic.pick_section_from_condlist(db.actor_proxy, self, self.job_online) ~= true
 	end
-
+]]
 	return cse_alife_human_stalker.can_switch_offline(self)
 end
 
@@ -59,11 +61,11 @@ function se_stalker:can_switch_online()
 	if self.sim_forced_online == true then
 		return true
 	end
-
+--[[
 	if self.job_online_condlist ~= nil then
 		return xr_logic.pick_section_from_condlist(db.actor_proxy, self, self.job_online) == true
 	end
-
+]]
 	if self.ini == nil or self.spawner == nil then
 		return cse_alife_human_stalker.can_switch_online(self)
 	end
@@ -110,7 +112,7 @@ end
 function se_stalker:STATE_Write(packet)
 
 	cse_alife_human_stalker.STATE_Write (self, packet)
-
+--[[
 	if self.job_online == true then
 		packet:w_u8(0)
 	elseif self.job_online == false then
@@ -121,6 +123,8 @@ function se_stalker:STATE_Write(packet)
 		packet:w_u8(3)
 		packet:w_stringZ(self.job_online_condlist)
 	end
+]]
+	packet:w_u8(2) -- TODO: Comment out when new game requirement
 
 	packet:w_bool(self.death_droped )
 
@@ -132,7 +136,7 @@ function se_stalker:STATE_Write(packet)
 
 	packet:w_bool(self.sim_forced_online)
 
-	packet:w_bool(self.treasure_processed)			-- SRP
+	packet:w_bool(self.treasure_processed) -- SRP
 end
 
 --------------------
@@ -141,8 +145,8 @@ function se_stalker:STATE_Read(packet, size)
 
 	cse_alife_human_stalker.STATE_Read (self, packet, size)
 
-	local t = packet:r_u8()
-
+	local t = packet:r_u8() -- TODO: Comment out when new game requirement
+--[[
 	if t == 0 then
 		self.job_online = true
 	elseif t == 1 then
@@ -153,7 +157,7 @@ function se_stalker:STATE_Read(packet, size)
 		self.job_online_condlist = packet:r_stringZ()
 		self.job_online = xr_logic.parse_condlist(nil, "se_stalker:STATE_Read", "job_online", self.job_online_condlist)
 	end
-
+]]
 	self.death_droped = packet:r_bool()
 
 	if self.script_version >= 7 then
@@ -167,9 +171,10 @@ function se_stalker:STATE_Read(packet, size)
 		self.sim_forced_online = packet:r_bool()
 	end
 
-	if packet:r_elapsed() ~= 0 then				-- SRP
-		self.treasure_processed = packet:r_bool()	-- SRP
-	end							-- SRP
+	-- SRP:
+	if packet:r_elapsed() ~= 0 then
+		self.treasure_processed = packet:r_bool()
+	end
 end
 
 --------------------
@@ -251,7 +256,7 @@ function se_stalker:on_death(killer)
 	if self.squad_id ~= nil then
 		local squad = self.board.squads[self.squad_id]
 		if squad == nil then
-			abort("There is no squad with ID [%s]", self.squad_id)
+			abort("[se_stalker.se_stalker:on_death]: There is no squad with ID '%s'.", self.squad_id)
 		end
 		squad:on_npc_death(self)
 	end

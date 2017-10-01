@@ -7,10 +7,10 @@
 teleported_to_another_level = false
 level_changed = false
 
-local temp_points_table = {}		-- unlocalized in vanilla
-local selected_point = ""		-- ditto
-local teleport_point = nil		-- ditto
-local teleport_look = nil		-- ditto
+local temp_points_table = {} -- unlocalized in vanilla
+local selected_point = ""    -- ditto
+local teleport_point = nil   -- ditto
+local teleport_look = nil    -- ditto
 local talked_npc_id = nil
 
 function init_guiders_dialog(dialog)
@@ -18,7 +18,7 @@ function init_guiders_dialog(dialog)
 	-- where can you teleport me?
 
 	local phrase = dialog:AddPhrase("st_tm_guide_0", "0", "", -10000)
-	local script = phrase:GetPhraseScript()					-- unlocalized in vanilla
+	local script = phrase:GetPhraseScript() -- unlocalized in vanilla
 	script:AddAction("guiders.action_fill_temp_teleport_points")
 	script:AddAction("dialog_manager.action_disable_phrase")
 
@@ -67,6 +67,7 @@ function init_guiders_dialog(dialog)
 	phrase = dialog:AddPhrase("st_tm_guide_211", "211", "21", -10000)
 	script = phrase:GetPhraseScript()
 	script:AddPrecondition("guiders.actor_has_enough_cash")
+	script:AddPrecondition("guiders.precondition_emission_not_happening")
 	script:AddAction("guiders.action_payment")
 	script:AddAction("guiders.action_teleport_to_point")
 	script:AddAction("dialogs.break_dialog")
@@ -76,14 +77,22 @@ function init_guiders_dialog(dialog)
 	phrase = dialog:AddPhrase("st_tm_guide_212", "212", "21", -10000)
 	script = phrase:GetPhraseScript()
 	script:AddPrecondition("guiders.actor_has_enough_cash")
+	script:AddPrecondition("guiders.precondition_emission_not_happening")
 --	script:AddAction("dialogs.break_dialog")
 
 	-- oops, out of cash
 
-	phrase = dialog:AddPhrase("st_tm_guide_3", "213", "21", -10000)
+	phrase = dialog:AddPhrase("st_tm_guide_213", "213", "21", -10000)
 	script = phrase:GetPhraseScript()
 	script:AddPrecondition("guiders.actor_hasnt_enough_cash")
+	script:AddPrecondition("guiders.precondition_emission_not_happening")
 --	script:AddAction("dialogs.break_dialog")
+
+	-- oops, emission incoming
+
+	phrase = dialog:AddPhrase("st_tm_guide_214", "214", "21", -10000)
+	script = phrase:GetPhraseScript()
+	script:AddPrecondition("guiders.precondition_emission_happening")
 end
 
 function action_fill_temp_teleport_points(fs, npc, dn, pi)
@@ -179,11 +188,11 @@ function precondition_emission_not_happening()
 	return not precondition_emission_happening()
 end
 
-function precondition_teleport_points_not_available()		-- (fs, ss, dn, ppi, pi)
-	return not precondition_teleport_points_available()	-- (fs, ss, dn, ppi, pi)
+function precondition_teleport_points_not_available() -- (fs, ss, dn, ppi, pi)
+	return not precondition_teleport_points_available() -- (fs, ss, dn, ppi, pi)
 end
 
-function precondition_teleport_points_available()		-- (fs, ss, dn, ppi, pi)
+function precondition_teleport_points_available() -- (fs, ss, dn, ppi, pi)
 --[[
 	local n = 0
 	for k, v in pairs (temp_points_table) do
@@ -191,7 +200,7 @@ function precondition_teleport_points_available()		-- (fs, ss, dn, ppi, pi)
 	end
 	return n > 0
 ]]
-	for k, v in pairs (temp_points_table) do
+	for k in pairs (temp_points_table) do
 		return true
 	end
 	return false

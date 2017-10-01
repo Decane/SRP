@@ -1,52 +1,52 @@
-local global_animations = {		-- unlocalized in vanilla
+local global_animations = { -- unlocalized in vanilla
 
-	desk_idle			= {"idle", "idle_1", "palci", "zatylok"},
---	desk_talk			= {"idle"},
-	desk_to_chair_hack		= {"idle_spinka"},
-	desk_to_listen			= {"idle_chitaet"},
-	desk_to_diagonal		= {"perehod_0"},
+	desk_idle                = {"idle", "idle_1", "palci", "zatylok"},
+--	desk_talk                = {"idle"},
+	desk_to_chair_hack       = {"idle_spinka"},
+	desk_to_listen           = {"idle_chitaet"},
+	desk_to_diagonal         = {"perehod_0"},
 
-	chair_hack_idle			= {"idle_2", "idle_2_def_0"},
-	chair_hack_talk			= {"idle_2_talk_0", "idle_2_talk_1", "idle_2_talk_2", "idle_2_talk_3"},
-	chair_hack_to_diagonal		= {"idle_2_to_idle_0"},
-	chair_hack_to_desk		= {"spinka_idle"},
+	chair_hack_idle          = {"idle_2", "idle_2_def_0"},
+	chair_hack_talk          = {"idle_2_talk_0", "idle_2_talk_1", "idle_2_talk_2", "idle_2_talk_3"},
+	chair_hack_to_diagonal   = {"idle_2_to_idle_0"},
+	chair_hack_to_desk       = {"spinka_idle"},
 
-	compute_idle			= {"idle_1_spec_think_0", "idle_1_spec_think_1"},
-	compute_idle_to_diagonal	= {"idle_1_to_idle_0"},
+	compute_idle             = {"idle_1_spec_think_0", "idle_1_spec_think_1"},
+	compute_idle_to_diagonal = {"idle_1_to_idle_0"},
 
-	diagonal_idle			= {"idle_0_def_0", "idle_0_spec_click_0", "idle_0_spec_scratch_0"},
-	diagonal_idle_short		= {"idle_0_def_0"},
-	diagonal_talk			= {"idle_0_talk_0", "idle_0_talk_1", "idle_0_talk_2", "idle_0_talk_3"},
-	diagonal_to_chair_hack		= {"idle_0_to_idle_2"},
-	diagonal_to_compute		= {"idle_0_to_idle_1"},
-	diagonal_to_desk		= {"perehod_1"},
+	diagonal_idle            = {"idle_0_def_0", "idle_0_spec_click_0", "idle_0_spec_scratch_0"},
+	diagonal_idle_short      = {"idle_0_def_0"},
+	diagonal_talk            = {"idle_0_talk_0", "idle_0_talk_1", "idle_0_talk_2", "idle_0_talk_3"},
+	diagonal_to_chair_hack   = {"idle_0_to_idle_2"},
+	diagonal_to_compute      = {"idle_0_to_idle_1"},
+	diagonal_to_desk         = {"perehod_1"},
 
---	first_phrase			= {"vstuplenie"},
+--	first_phrase             = {"vstuplenie"},
 
-	listen_idle			= {"chitaet"},
-	listen_to_desk			= {"chitaet_idle"},
+	listen_idle              = {"chitaet"},
+	listen_to_desk           = {"chitaet_idle"},
 
-	hello				= {"hello"},
+	hello                    = {"hello"},
 
-	forester_sit			= {"sit"},
-	forester_beard			= {"beard_in", "beard", "beard_out"},
-	forester_reaction		= {"reaction_in", "reaction", "reaction_out"},
-	forester_see			= {"see_in", "see", "see_out"},
-	forester_talk_1			= {"sit_talk_1_in", "sit_talk_1", "sit_talk_1_out"},
-	forester_talk_2			= {"sit_talk_2_in", "sit_talk_2", "sit_talk_2_out"},
-	forester_talk_3			= {"sit_talk_3_in", "sit_talk_3", "sit_talk_3_out"}
+	forester_sit             = {"sit"},
+	forester_beard           = {"beard_in", "beard", "beard_out"},
+	forester_reaction        = {"reaction_in", "reaction", "reaction_out"},
+	forester_see             = {"see_in", "see", "see_out"},
+	forester_talk_1          = {"sit_talk_1_in", "sit_talk_1", "sit_talk_1_out"},
+	forester_talk_2          = {"sit_talk_2_in", "sit_talk_2", "sit_talk_2_out"},
+	forester_talk_3          = {"sit_talk_3_in", "sit_talk_3", "sit_talk_3_out"}
 }
 
-local head_animations = {	-- unlocalized in vanilla
+local head_animations = { -- unlocalized in vanilla
 
-	forester_talk_1		= {"sit_talk_1_in", "sit_talk_1", "sit_talk_1_out"},
-	forester_talk_2		= {"sit_talk_2_in", "sit_talk_2", "sit_talk_2_out"},
-	forester_talk_3		= {"sit_talk_3_in", "sit_talk_3", "sit_talk_3_out"},
-	forester_reaction	= {"reaction_in", "reaction", "reaction_out"},
-	normal			= {"talk_0", "talk_1", "talk_4"},
-	angry			= {"talk_3", "talk_2", "talk_1"},
-	good			= {"talk_glad_0"}
---	first_phrase		= {"vstuplenie_head"}
+	forester_talk_1          = {"sit_talk_1_in", "sit_talk_1", "sit_talk_1_out"},
+	forester_talk_2          = {"sit_talk_2_in", "sit_talk_2", "sit_talk_2_out"},
+	forester_talk_3          = {"sit_talk_3_in", "sit_talk_3", "sit_talk_3_out"},
+	forester_reaction        = {"reaction_in", "reaction", "reaction_out"},
+	normal                   = {"talk_0", "talk_1", "talk_4"},
+	angry                    = {"talk_3", "talk_2", "talk_1"},
+	good                     = {"talk_glad_0"}
+--	first_phrase             = {"vstuplenie_head"}
 }
 
 ----------------------------------------------------------------------------------------------------
@@ -73,35 +73,37 @@ end
 function mob_trader:reset_scheme()
 
 	local sobj = self.object
+	local self_st = self.st
 
-	self.st.signals = {}
+	self_st.signals = {}
 
 	sobj:set_callback(callback.trader_global_anim_request, self.on_global_anim_request, self)
 	sobj:set_callback(callback.trader_head_anim_request, self.on_head_anim_request, self)
 	sobj:set_callback(callback.trader_sound_end, self.on_sound_end, self)
---	sobj:set_callback(callback.use_object, self.use_callback, self)
+	sobj:set_callback(callback.use_object, self.use_callback, self)
 
 	-- start global animation
 	sobj:set_trader_global_anim(self:select_global_animation())
 
 	-- start sound and head animation
-	if self.st.sound_phrase then
-		if has_alife_info("esc_in_sid_door_zone") or has_alife_info("red_in_forester_door_zone") then	-- SRP hack to prevent Sid / Forester voice bugs
-			local snd = mob_sound.pick_sound_from_set(sobj, self.st.sound_phrase, {})
+	if self_st.sound_phrase then
+		if has_alife_info("esc_in_sid_door_zone") or has_alife_info("red_in_forester_door_zone") then -- SRP hack to prevent Sid / Forester voice bugs
+			local snd = mob_sound.pick_sound_from_set(sobj, self_st.sound_phrase, {})
 			sobj:set_trader_sound(snd, self:select_head_animation())
 		end
 	end
 
-	if self.st.anim_head == nil then
-		self.st.anim_head = "normal"
+	if self_st.anim_head == nil then
+		self_st.anim_head = "normal"
 	end
 
-	db.trader = sobj
+--	db.trader = sobj
 end
---[[
+
 function mob_trader:use_callback()
+	trade_manager.update(self.object)
 end
-]]
+
 function mob_trader:update(delta)
 	if xr_logic.try_switch_to_another_section(self.object, self.st, db.actor) then
 		return
@@ -125,8 +127,9 @@ end
 ---------------------------------------------------------------------------------------------------------------------
 
 function mob_trader:on_global_anim_request()
-	self.st.signals["animation_end"] = true
-	if not self.st.play_once then
+	local self_st = self.st
+	self_st.signals["animation_end"] = true
+	if not self_st.play_once then
 		self.object:set_trader_global_anim(self:select_global_animation())
 	end
 end
@@ -147,9 +150,9 @@ function mob_trader:deactivate()
 	sobj:set_callback(callback.trader_global_anim_request, nil)
 	sobj:set_callback(callback.trader_head_anim_request, nil)
 	sobj:set_callback(callback.trader_sound_end, nil)
---	sobj:set_callback(callback.use_object, nil)
+	sobj:set_callback(callback.use_object, nil)
 	self.st.signals = {}
-	db.trader = nil
+--	db.trader = nil
 end
 
 ---------------------------------------------------------------------------------------------------------------------
@@ -159,13 +162,13 @@ function add_to_binder(npc, ini, scheme, section, storage)
 	xr_logic.subscribe_action_for_events(npc, storage, new_action)
 end
 
-function set_scheme(npc, ini, scheme, section)	--, gulag_name)
+function set_scheme(npc, ini, scheme, section) --, gulag_name)
 
-	local st	= xr_logic.assign_storage_and_bind(npc, ini, scheme, section)
-	st.logic	= xr_logic.cfg_get_switch_conditions(ini, section, npc)
-	st.anim_global	= utils.cfg_get_string(ini, section, "anim_global", npc, true,	"")
-	st.can_talk	= utils.cfg_get_bool(ini, section, "can_talk", npc, false, true)
-	st.tip_text	= utils.cfg_get_string(ini, section, "tip_text", npc, false, "", "character_use")
+	local st       = xr_logic.assign_storage_and_bind(npc, ini, scheme, section)
+	st.logic       = xr_logic.cfg_get_switch_conditions(ini, section, npc)
+	st.anim_global = utils.cfg_get_string(ini, section, "anim_global", npc, true, "")
+	st.can_talk    = utils.cfg_get_bool(ini, section, "can_talk", npc, false, true)
+	st.tip_text    = utils.cfg_get_string(ini, section, "tip_text", npc, false, "", "character_use")
 
 	if st.tip_text == nil then
 		st.tip_text = ""
@@ -174,11 +177,11 @@ function set_scheme(npc, ini, scheme, section)	--, gulag_name)
 	npc:set_tip_text(st.tip_text)
 
 	if ini:line_exist(section, "sound_phrase") then
-		st.anim_head	= utils.cfg_get_string(ini, section, "anim_head", npc, false, "")
-		st.sound_phrase	= utils.cfg_get_string(ini, section, "sound_phrase", npc, false, "")
+		st.anim_head    = utils.cfg_get_string(ini, section, "anim_head", npc, false, "")
+		st.sound_phrase = utils.cfg_get_string(ini, section, "sound_phrase", npc, false, "")
 	else
-		st.anim_head	= nil
-		st.sound_phrase	= nil
+		st.anim_head    = nil
+		st.sound_phrase = nil
 	end
 
 	--' check if play once animation

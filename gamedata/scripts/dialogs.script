@@ -122,11 +122,11 @@ function relocate_item_section(victim, section, type, amount)
 			amount = 1
 		end
 		if type == "in" then
-			if quest_section[section] == true and victim:object(section) ~= nil then
-				for i = 1, amount do
-					victim:transfer_item(victim:object(section), actor)
-				end
-			else
+--			if quest_section[section] == true and victim:object(section) ~= nil then
+--				for i = 1, amount do
+--					victim:transfer_item(victim:object(section), actor)
+--				end
+--			else
 				local sim = alife()
 				local vec = vector()
 				local actor_id = actor:id()
@@ -134,7 +134,7 @@ function relocate_item_section(victim, section, type, amount)
 --					alife():create(section, actor:position(), actor:level_vertex_id(), actor:game_vertex_id(), actor:id())
 					sim:create(section, vec, 0, 0, actor_id)
 				end
-			end
+--			end
 		elseif type == "out" then
 			for i = 1, amount do
 				actor:transfer_item(actor:object(section), victim)
@@ -402,11 +402,11 @@ function relocate_item_section_to_actor(first_speaker, second_speaker, section, 
 
 	local actor = db.actor
 
-	if quest_section[section] == true and npc:object(section) ~= nil then
-		for i = 1, amount do
-			npc:transfer_item(npc:object(section), actor)
-		end
-	else
+--	if quest_section[section] == true and npc:object(section) ~= nil then
+--		for i = 1, amount do
+--			npc:transfer_item(npc:object(section), actor)
+--		end
+--	else
 		local sim = alife()
 		local vec = vector()
 		local actor_id = actor:id()
@@ -414,7 +414,7 @@ function relocate_item_section_to_actor(first_speaker, second_speaker, section, 
 --			alife():create(section, actor:position(), actor:level_vertex_id(), actor:game_vertex_id(), actor:id())
 			sim:create(section, vec, 0, 0, actor_id)
 		end
-	end
+--	end
 
 	if ammo_section[section] == true then
 		local ltx = system_ini()

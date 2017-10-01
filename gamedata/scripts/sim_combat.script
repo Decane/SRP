@@ -1,3 +1,5 @@
+-- DC170501: Fixed a rare crash on reload (systematic if objects_per_update in alife.ltx is set high enough) when db.actor:position() is called in update_actor() and db.actor is nil.
+
 local ACTOR_COME_DEFENCE_DIST = 30*30
 local ACTOR_COME_ATTACK_DIST = 30*30
 local SQUAD_COME_ATTACK_OFFLINE_DIST = 5*5
@@ -345,7 +347,11 @@ function CCombat_manager:update_actor()
 					data._inited_defend_time = game_time
 				end
 			end
-			self.cover_manager:calculate_covers(db.actor:position())
+			 -- DC170501:
+			local actor = db.actor
+			if actor then
+				self.cover_manager:calculate_covers(actor:position())
+			end
 		end
 	end
 end

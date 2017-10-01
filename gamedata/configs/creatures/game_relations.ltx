@@ -1,52 +1,52 @@
 [game_relations]
-rating		= novice, 300, experienced, 600, veteran, 900, master
-monster_rating	= weak, 400, normal, 800, strong
-reputation	= terrible, -1000, very_bad, -150, bad, -50, neutral, 50, good, 150, very_good, 1000, excellent
+rating                    = novice, 300, experienced, 600, veteran, 900, master
+monster_rating            = weak, 400, normal, 800, strong
+reputation                = terrible, -1000, very_bad, -150, bad, -50, neutral, 50, good, 150, very_good, 1000, excellent
 
-rating_names	 = novice, 300, experienced, 600, veteran, 900, master
-reputation_names = terrible, -1000, very_bad, -150, bad, -50, neutral, 50, good, 150, very_good, 1000, excellent
-goodwill_names	 = enemy, -400, indifferent, 500, friendly
+rating_names              = novice, 300, experienced, 600, veteran, 900, master
+reputation_names          = terrible, -1000, very_bad, -150, bad, -50, neutral, 50, good, 150, very_good, 1000, excellent
+goodwill_names            = enemy, -400, indifferent, 500, friendly
 
 attitude_neutal_threshold = -999
 attitude_friend_threshold = 999
 
-goodwill_enemy	= -1000
-goodwill_neutal	= 0
-goodwill_friend	= 1000
+goodwill_enemy            = -1000
+goodwill_neutal           = 0
+goodwill_friend           = 1000
 
 communities = actor, 0, actor_bandit, 1, actor_dolg, 2, actor_freedom,3, actor_stalker, 4, arena_enemy, 5, bandit, 6, csky, 7, dolg, 8, ecolog, 9, freedom, 10, killer, 11, army, 12, monolith, 13, monster, 14, stalker, 15, trader, 16, zombied, 17, actor_csky, 18, renegade, 19
 
 [communities_relations]
-;	       |actor|actor_bandit|actor_dolg|actor_freedom|actor_stalker|arena_enemy|bandit| csky| dolg|ecolog|freedom|killer|    army|monolith|monster|stalker|trader| zombied|actor_csky|renegade|
-;====================================================================================================================================================================================================
-actor         =     0,           0,         0,            0,            0,      -5000,     0,    0,    0,     0,      0, -1000,   -5000,   -5000,  -5000,      0,     0,   -5000,         0,   -5000
-actor_bandit  =     0,           0,         0,            0,            0,      -5000,  1000,    0,-5000,     0,      0, -1000,   -5000,   -5000,  -5000,  -5000,     0,   -5000,     -5000,    1000
-actor_dolg    =     0,       	 0,         0,            0,            0,      -5000, -5000,    0, 1000,     0,  -5000, -1000,   -5000,   -5000,  -5000,      0,     0,   -5000,         0,   -5000
-actor_freedom =     0,           0,         0,            0,            0,      -5000,     0,    0,-5000,     0,   1000, -1000,   -5000,   -5000,  -5000,      0,     0,   -5000,         0,       0
-actor_stalker =     0,           0,         0,            0,            0,      -5000, -5000,    0,    0,     0,      0, -1000,   -5000,   -5000,  -5000,   1000,     0,   -5000,         0,   -5000
-arena_enemy   = -5000,       -5000,     -5000,        -5000,        -5000,          0, -5000,-5000,-5000,     0,  -5000, -5000,   -5000,   -5000,  -5000,  -5000,     0,   -5000,     -5000,   -5000
-bandit        =     0,        1000,     -5000,            0,        -5000,      -5000,  5000,-5000,-5000,     0,  -5000,     0,   -5000,   -5000,  -5000,  -1000,     0,   -5000,         0,    1000
-csky          =     0,           0,         0,            0,            0,      -5000, -5000, 1000,    0,     0,      0,     0,   -5000,   -5000,  -5000,      0,     0,   -5000,      1000,   -5000
-dolg          =     0,       -5000,      1000,        -5000,            0,      -5000, -5000,    0, 5000,     0,  -5000,     0,   -5000,   -5000,  -5000,      0,     0,   -5000,         0,   -5000
-ecolog        =     0,           0,         0,            0,            0,          0,     0,    0,    0,     0,      0,     0,       0,       0,      0,      0,     0,       0,         0,       0
-freedom       =     0,           0,     -5000,         1000,            0,      -5000, -5000,    0,-5000,     0,   5000, -5000,   -5000,   -5000,  -5000,      0,     0,   -5000,         0,   -5000
-killer        = -1000,       -1000,     -1000,        -1000,        -1000,      -5000,     0,    0,    0,     0,  -5000,  1000,   -5000,   -5000,  -5000,      0,     0,   -5000,         0,   -5000
-army	      = -5000,       -5000,     -5000,        -5000,        -5000,      -5000, -5000,    0,-5000,     0,  -5000, -5000,    1000,   -5000,  -5000,  -1000,     0,   -5000,     -5000,   -5000
-monolith      = -5000,       -5000,     -5000,        -5000,        -5000,      -5000, -5000,-5000,-5000,     0,  -5000, -5000,   -5000,    1000,  -5000,  -5000,     0,    1000,     -5000,   -5000
-monster       = -5000,       -5000,     -5000,        -5000,        -5000,      -5000, -5000,-5000,-5000,     0,  -5000, -5000,   -5000,   -5000,      0,  -5000,     0,   -5000,     -5000,   -5000
-stalker       =     0,       -5000,         0,            0,         1000,      -5000, -1000,    0,    0,     0,      0,     0,   -1000,   -5000,  -5000,   5000,     0,   -5000,         0,       0
-trader        =     0,           0,         0,            0,            0,          0,     0,    0,    0,     0,      0,     0,       0,       0,      0,      0,     0,       0,         0,       0
-zombied       = -5000,       -5000,     -5000,        -5000,        -5000,      -5000, -5000,-5000,-5000,     0,  -5000, -5000,   -5000,    1000,  -5000,  -5000,     0,    1000,     -5000,   -5000
-actor_csky    =     0,           0,         0,            0,            0,      -5000,     0, 1000,    0,     0,      0,     0,   -5000,   -5000,  -5000,      0,     0,   -5000,         0,   -5000
-renegade      = -5000,        1000,     -5000,            0,        -5000,      -5000,  1000,-5000,-5000,     0,  -5000, -5000,   -5000,   -5000,  -5000,      0,     0,   -5000,     -5000,    1000
+;              |actor|actor_bandit|actor_dolg|actor_freedom|actor_stalker|arena_enemy|bandit|  csky|  dolg|ecolog|freedom|killer|  army|monolith|monster|stalker|trader|zombied|actor_csky|renegade
+;==================================================================================================================================================================================================
+actor         =     0,           0,         0,            0,            0,      -5000,     0,     0,     0,     0,      0, -1000, -5000,   -5000,  -5000,      0,     0,  -5000,         0,   -5000
+actor_bandit  =     0,           0,         0,            0,            0,      -5000,  1000,     0, -5000,     0,      0, -1000, -5000,   -5000,  -5000,  -5000,     0,  -5000,     -5000,    1000
+actor_dolg    =     0,           0,         0,            0,            0,      -5000, -5000,     0,  1000,     0,  -5000, -1000, -5000,   -5000,  -5000,      0,     0,  -5000,         0,   -5000
+actor_freedom =     0,           0,         0,            0,            0,      -5000,     0,     0, -5000,     0,   1000, -1000, -5000,   -5000,  -5000,      0,     0,  -5000,         0,       0
+actor_stalker =     0,           0,         0,            0,            0,      -5000, -5000,     0,     0,     0,      0, -1000, -5000,   -5000,  -5000,   1000,     0,  -5000,         0,   -5000
+arena_enemy   = -5000,       -5000,     -5000,        -5000,        -5000,          0, -5000, -5000, -5000,     0,  -5000, -5000, -5000,   -5000,  -5000,  -5000,     0,  -5000,     -5000,   -5000
+bandit        =     0,        1000,     -5000,            0,        -5000,      -5000,  5000, -5000, -5000,     0,  -5000,     0, -5000,   -5000,  -5000,  -1000,     0,  -5000,         0,    1000
+csky          =     0,           0,         0,            0,            0,      -5000, -5000,  1000,     0,     0,      0,     0, -5000,   -5000,  -5000,      0,     0,  -5000,      1000,   -5000
+dolg          =     0,       -5000,      1000,        -5000,            0,      -5000, -5000,     0,  5000,     0,  -5000,     0, -5000,   -5000,  -5000,      0,     0,  -5000,         0,   -5000
+ecolog        =     0,           0,         0,            0,            0,          0,     0,     0,     0,     0,      0,     0,     0,       0,      0,      0,     0,      0,         0,       0
+freedom       =     0,           0,     -5000,         1000,            0,      -5000, -5000,     0, -5000,     0,   5000, -5000, -5000,   -5000,  -5000,      0,     0,  -5000,         0,   -5000
+killer        = -1000,       -1000,     -1000,        -1000,        -1000,      -5000,     0,     0,     0,     0,  -5000,  1000, -5000,   -5000,  -5000,      0,     0,  -5000,         0,   -5000
+army          = -5000,       -5000,     -5000,        -5000,        -5000,      -5000, -5000,     0, -5000,     0,  -5000, -5000,  1000,   -5000,  -5000,  -1000,     0,  -5000,     -5000,   -5000
+monolith      = -5000,       -5000,     -5000,        -5000,        -5000,      -5000, -5000, -5000, -5000,     0,  -5000, -5000, -5000,    1000,  -5000,  -5000,     0,   1000,     -5000,   -5000
+monster       = -5000,       -5000,     -5000,        -5000,        -5000,      -5000, -5000, -5000, -5000,     0,  -5000, -5000, -5000,   -5000,      0,  -5000,     0,  -5000,     -5000,   -5000
+stalker       =     0,       -5000,         0,            0,         1000,      -5000, -1000,     0,     0,     0,      0,     0, -1000,   -5000,  -5000,   5000,     0,  -5000,         0,       0
+trader        =     0,           0,         0,            0,            0,          0,     0,     0,     0,     0,      0,     0,     0,       0,      0,      0,     0,      0,         0,       0
+zombied       = -5000,       -5000,     -5000,        -5000,        -5000,      -5000, -5000, -5000, -5000,     0,  -5000, -5000, -5000,    1000,  -5000,  -5000,     0,   1000,     -5000,   -5000
+actor_csky    =     0,           0,         0,            0,            0,      -5000,     0,  1000,     0,     0,      0,     0, -5000,   -5000,  -5000,      0,     0,  -5000,         0,   -5000
+renegade      = -5000,        1000,     -5000,            0,        -5000,      -5000,  1000, -5000, -5000,     0,  -5000, -5000, -5000,   -5000,  -5000,      0,     0,  -5000,     -5000,    1000
 
 [actor_communities]
-actor		= actor, actor
-actor_csky	= csky, renegade
-actor_bandit	= bandit, stalker
-actor_dolg	= dolg, freedom
-actor_freedom	= freedom, dolg
-actor_stalker	= stalker, bandit
+actor         = actor, actor
+actor_csky    = csky, renegade
+actor_bandit  = bandit, stalker
+actor_dolg    = dolg, freedom
+actor_freedom = freedom, dolg
+actor_stalker = stalker, bandit
 
 [pda_rank_communities]
 dolg
@@ -62,106 +62,106 @@ zombied
 monster
 
 [rank_relations]
-;		novice| experienced| veteran| master|
-;====================================================
-novice		=    0,		  0,	   0,	   0
-experienced	=    0,		  0,	   0,	   0
-veteran		=    0,		  0,	   0,	   0
-master		=    0,		  0,	   0,	   0
+;            |novice|experienced|veteran|master
+;==============================================
+novice      =      0,          0,      0,     0
+experienced =      0,          0,      0,     0
+veteran     =      0,          0,      0,     0
+master      =      0,          0,      0,     0
 
 [reputation_relations]
-;		 terrible| very_bad| bad| neutral| good| very_good| excellent|
-;=============================================================================
-terrible	=	0,	  0,   0,	0,    0,	 0,	    0
-very_bad	=	0,	  0,   0,	0,    0,	 0,	    0
-bad		=	0,	  0,   0,	0,    0,	 0,	    0
-neutral		=	0,	  0,   0,	0,    0,	 0,	    0
-good		=	0,	  0,   0,	0,    0,	 0,	    0
-very_good	=	0,	  0,   0,	0,    0,	 0,	    0
-excellent	=	0,	  0,   0,	0,    0,	 0,	    0
+;            |terrible|very_bad|bad|neutral|good|very_good|excellent
+;===================================================================
+terrible    =        0,       0,  0,      0,   0,        0,        0
+very_bad    =        0,       0,  0,      0,   0,        0,        0
+bad         =        0,       0,  0,      0,   0,        0,        0
+neutral     =        0,       0,  0,      0,   0,        0,        0
+good        =        0,       0,  0,      0,   0,        0,        0
+very_good   =        0,       0,  0,      0,   0,        0,        0
+excellent   =        0,       0,  0,      0,   0,        0,        0
 
 [rank_kill_points]
-novice		= 0
-experienced	= 0
-veteran		= 0
-master		= 0
+novice       = 0
+experienced  = 0
+veteran      = 0
+master       = 0
 
 [communities_sympathy]
-actor		= 0
-actor_bandit	= 0
-actor_dolg	= 0
-actor_freedom	= 0
-actor_stalker	= 0
-arena_enemy	= 0
-bandit		= 0.2
-csky		= 0.01
-dolg		= 0.01
-ecolog		= 0
-freedom		= 0.01
-killer		= 0.01
-army		= 0
-monolith	= 0
-monster		= 0
-stalker		= 0.01
-trader		= 0
-zombied		= 0
-actor_csky	= 0
-renegade	= 0.01
+actor         = 0
+actor_bandit  = 0
+actor_dolg    = 0
+actor_freedom = 0
+actor_stalker = 0
+arena_enemy   = 0
+bandit        = 0.2
+csky          = 0.01
+dolg          = 0.01
+ecolog        = 0
+freedom       = 0.01
+killer        = 0.01
+army          = 0
+monolith      = 0
+monster       = 0
+stalker       = 0.01
+trader        = 0
+zombied       = 0
+actor_csky    = 0
+renegade      = 0.01
 
 [action_points]
-personal_goodwill_limits	= -3000, 1000
-community_goodwill_limits	= -3000, 1000
+personal_goodwill_limits  = -3000, 9000
+community_goodwill_limits = -3000, 1000
 
 ;-------------------------------------------------------
 
-community_member_kill_goodwill	= -1000
-friend_kill_goodwill		= -2000
-neutral_kill_goodwill		= -1000
-enemy_kill_goodwill		= -1
+community_member_kill_goodwill          = -1000
+friend_kill_goodwill                    = -2000
+neutral_kill_goodwill                   = -1000
+enemy_kill_goodwill                     = -1
 
-free_community_member_attack_goodwill	= -500
-free_friend_attack_goodwill		= -2000
-free_neutral_attack_goodwill		= -1000
-free_enemy_attack_goodwill		= -1
+free_community_member_attack_goodwill   = -500
+free_friend_attack_goodwill             = -2000
+free_neutral_attack_goodwill            = -1000
+free_enemy_attack_goodwill              = -1
 
-danger_community_member_attack_goodwill	= -200
-danger_friend_attack_goodwill		= -200
-danger_neutral_attack_goodwill		= -200
-danger_enemy_attack_goodwill		= -1
+danger_community_member_attack_goodwill = -200
+danger_friend_attack_goodwill           = -200
+danger_neutral_attack_goodwill          = -200
+danger_enemy_attack_goodwill            = -1
 
-friend_kill_reputation	= -40
-neutral_kill_reputation	= -15
-enemy_kill_reputation	= 0
+friend_kill_reputation                  = -40
+neutral_kill_reputation                 = -15
+enemy_kill_reputation                   = 0
 
-free_friend_attack_reputation	= -20
-free_neutral_attack_reputation	= -10
-free_enemy_attack_reputation	= 0
+free_friend_attack_reputation           = -20
+free_neutral_attack_reputation          = -10
+free_enemy_attack_reputation            = 0
 
-danger_friend_attack_reputation		= 0
-danger_neutral_attack_reputation	= 0
-danger_enemy_attack_reputation		= 0
+danger_friend_attack_reputation         = 0
+danger_neutral_attack_reputation        = 0
+danger_enemy_attack_reputation          = 0
 
-community_member_fight_help_goodwill	= 1000
-friend_fight_help_goodwill		= 200
-neutral_fight_help_goodwill		= 200
-enemy_fight_help_goodwill		= 1
+community_member_fight_help_goodwill    = 1000
+friend_fight_help_goodwill              = 200
+neutral_fight_help_goodwill             = 200
+enemy_fight_help_goodwill               = 1
 
-friend_fight_help_reputation	= 10
-neutral_fight_help_reputation	= 10
-enemy_fight_help_reputation	= 0
+friend_fight_help_reputation            = 10
+neutral_fight_help_reputation           = 10
+enemy_fight_help_reputation             = 0
 
-min_attack_delta_time	= 1
-fight_remember_time	= 0.2
+min_attack_delta_time                   = 1
+fight_remember_time                     = 0.2
 
 [ranks_properties]
-immunities_novice_k		= 1
-immunities_experienced_k	= 1
+immunities_novice_k      = 1
+immunities_experienced_k = 1
 
-visibility_novice_k		= 1
-visibility_experienced_k	= 1
+visibility_novice_k      = 1
+visibility_experienced_k = 1
 
-dispersion_novice_k		= 1
-dispersion_experienced_k	= 0.1
+dispersion_novice_k      = 1
+dispersion_experienced_k = 0.1
 
 [smart_terrain_rank_change]
 min = 1
@@ -174,28 +174,28 @@ max = 30
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 [monster_communities]
-communities = actor, 255, human, 255, zoo_monster, 39, boar, 40, bloodsucker, 41, flesh, 42,  dog, 43, pseudodog, 44, cat, 45, chimera, 46, giant, 47, zombie, 48,  burer, 49, controller, 50, poltergeist, 51, snork, 52, fracture, 53, bird, 54, rat, 55, tushkano, 56
+communities = actor, 255, human, 255, zoo_monster, 39, boar, 40, bloodsucker, 41, flesh, 42, dog, 43, pseudodog, 44, cat, 45, chimera, 46, giant, 47, zombie, 48, burer, 49, controller, 50, poltergeist, 51, snork, 52, fracture, 53, bird, 54, rat, 55, tushkano, 56
 
 [monster_relations]
-;			     actor,	     human,    zoo_monstr,	      boar,    bloodsucker,		     flesh,	       dog,	 pseudodog,	       cat,	   chimera,	     giant,	    zombie,	     burer,	controller,	       poltergeist,		     snork,	  fracture,	     bird,	       rat,	  tushkano
-;==========================================================================================================================================================================================================================================================================================================================================================================
-actor			=	 1,		 1,	        0,		-1,		-1,			-1,		-1,		-1,		-1,		-1,		-1,		-1,		-1,		-1,			-1,			-1,		-1,		0,		 0,		-1
-human			= 	 0,		 1,		0,		-1,		-1,			-1,		-1,		-1,		-1,		-1,		-1,		-1,		-1,		-1,			-1,			-1,		-1,		0,		 0,		-1
-zoo_monster		=	 0,		 0,		0,		 0,		 0,			 0,		 0,		 0,		 0,		 0,		 0,		 0,		 0,		 0,			 0,			 0,		 0,		0,		 0,		 0
-boar			=	-2,		-2,		0,		 1,		-1,			 0,		-1,		-1,		 0,		 0,		-1,		 0,		 0,		-1,			-1,			-1,		 0,		0,		 0,		 0
-bloodsucker		=	-2,		-2,		0,		-1,		 1,			-1,		-1,		-1,		 0,		 0,		 0,		 0,		 0,		 0,			 0,			 0,		 0,		0,		 0,		 0
-flesh			=	-2,		-2,		0,		 0,		-1,			 1,		-1,		-1,		 0,		 0,		-1,		 0,		 0,		-1,			-1,			 0,		 0,		0,		 0,		 0
-dog			=	-2,		-2,		0,		-1,		-1,			-1,		 1,		 0,		 0,		 0,		-1,		 0,		-1,		-1,			-1,			-1,		 0,		0,		 0,		 0
-pseudodog		=	-2,		-2,		0,		-1,		-1,			-1,		 0,		 1,		 0,		 0,		-1,		 0,		-1,		 0,			-1,			-1,		 0,		0,		 0,		 0
-cat			=	-2,		-2,		0,		 0,		 0,			 0,		 0,		 0, 		 1,		 0,		 0,		 0,		 0,		 0,			 0,			 0,		 0,		0,		 0,		 0
-chimera			=	-2,		-2,		0,		 0,		 0,			 0,		 0,		 0,		 0, 		 1,		 0,		 0,		 0,		 0,			 0,			 0,		 0,		0,		 0,		 0
-giant			=	-2,		-2,		0,		-1,		 0,			-1,		-1,		-1,		 0,		 0,		 1,		 0,		 0,		 0,			 0,			 0,		 0,		0,		 0,		 0
-zombie			=	-2,		-2,		0,		 0,		 0,			 0,		 0,		 0,		 0,		 0,		 0,		 1,		 0,		 0,			 0,			 0,		 0,		0,		 0,		 0
-burer			=	-2,		-2,		0,		 0,		 0,			-1,		-1,		-1,		 0,		 0,		 0,		 0,		 1,		 0,			 0,			 0,		 0,		0,		 0,		 0
-controller		=	-2,		-2,		0,		-1,		 0,			-1,		-1,		 0,		 0,		 0,		 0,		 0,		 0,		 1,			 0,			-1,		 0,		0,		 0,		 0
-poltergeist		=	-2,		-2,		0,		-1,		 0,		        -1,		-1,		-1,		 0,		 0,		 0,		 0,		 0,		 0,			 1,			 0,		 0,		0,		 0,		 0
-snork			=	-2,		-2,		0,		-1,		 0,			 0,		-1,		-1,		 0,		 0,		 0,		 0,		 0,		-1,			 0,			 1,		 0,		0,		 0,		 0
-fracture		=	-2,		-2,		0,		 0,		 0,			 0,		 0,		 0,		 0,		 0,		 0,		 0,		 0,		 0,			 0,			 0,		 1,		0,		 0,		 0
-bird			=	 0,		 0,		0,		 0,		 0,			 0,		 0,		 0,		 0,		 0,		 0,		 0,		 0,		 0,			 0,			 0,		 0,		1,		 0,		 0
-rat			=	-2,		-1,		0,		 0,		 0,			 0,		 0,		 0,		 0,		 0,		 0,		 0,		 0,		 0,			 0,			 0,		 0, 		0,		 1,		 0
-tushkano		=	-2,		-1,		0,		 0,		 0,			 0,		 0,		 0,		 0,		 0,		 0,		 0,		 0,		 0,			 0,			 0,		 0,		0,		 0,		 1
+;            |actor|human|zoo_monstr|boar|bloodsucker|flesh|dog|pseudodog|cat|chimera|giant|zombie|burer|controller|poltergeist|snork|fracture|bird|rat|tushkano
+;===============================================================================================================================================================
+actor       =     1,    1,         0,  -1,         -1,   -1, -1,       -1, -1,     -1,   -1,    -1,   -1,        -1,         -1,   -1,      -1,   0,  0,      -1
+human       =     0,    1,         0,  -1,         -1,   -1, -1,       -1, -1,     -1,   -1,    -1,   -1,        -1,         -1,   -1,      -1,   0,  0,      -1
+zoo_monster =     0,    0,         0,   0,          0,    0,  0,        0,  0,      0,    0,     0,    0,         0,          0,    0,       0,   0,  0,       0
+boar        =    -2,   -2,         0,   1,         -1,    0, -1,       -1,  0,      0,   -1,     0,    0,        -1,         -1,   -1,       0,   0,  0,       0
+bloodsucker =    -2,   -2,         0,  -1,          1,   -1, -1,       -1,  0,      0,    0,     0,    0,         0,          0,    0,       0,   0,  0,       0
+flesh       =    -2,   -2,         0,   0,         -1,    1, -1,       -1,  0,      0,   -1,     0,    0,        -1,         -1,    0,       0,   0,  0,       0
+dog         =    -2,   -2,         0,  -1,         -1,   -1,  1,        0,  0,      0,   -1,     0,   -1,        -1,         -1,   -1,       0,   0,  0,       0
+pseudodog   =    -2,   -2,         0,  -1,         -1,   -1,  0,        1,  0,      0,   -1,     0,   -1,         0,         -1,   -1,       0,   0,  0,       0
+cat         =    -2,   -2,         0,   0,          0,    0,  0,        0,  1,      0,    0,     0,    0,         0,          0,    0,       0,   0,  0,       0
+chimera     =    -2,   -2,         0,   0,          0,    0,  0,        0,  0,      1,    0,     0,    0,         0,          0,    0,       0,   0,  0,       0
+giant       =    -2,   -2,         0,  -1,          0,   -1, -1,       -1,  0,      0,    1,     0,    0,         0,          0,    0,       0,   0,  0,       0
+zombie      =    -2,   -2,         0,   0,          0,    0,  0,        0,  0,      0,    0,     1,    0,         0,          0,    0,       0,   0,  0,       0
+burer       =    -2,   -2,         0,   0,          0,   -1, -1,       -1,  0,      0,    0,     0,    1,         0,          0,    0,       0,   0,  0,       0
+controller  =    -2,   -2,         0,  -1,          0,   -1, -1,        0,  0,      0,    0,     0,    0,         1,          0,   -1,       0,   0,  0,       0
+poltergeist =    -2,   -2,         0,  -1,          0,   -1, -1,       -1,  0,      0,    0,     0,    0,         0,          1,    0,       0,   0,  0,       0
+snork       =    -2,   -2,         0,  -1,          0,    0, -1,       -1,  0,      0,    0,     0,    0,        -1,          0,    1,       0,   0,  0,       0
+fracture    =    -2,   -2,         0,   0,          0,    0,  0,        0,  0,      0,    0,     0,    0,         0,          0,    0,       1,   0,  0,       0
+bird        =     0,    0,         0,   0,          0,    0,  0,        0,  0,      0,    0,     0,    0,         0,          0,    0,       0,   1,  0,       0
+rat         =    -2,   -1,         0,   0,          0,    0,  0,        0,  0,      0,    0,     0,    0,         0,          0,    0,       0,   0,  1,       0
+tushkano    =    -2,   -1,         0,   0,          0,    0,  0,        0,  0,      0,    0,     0,    0,         0,          0,    0,       0,   0,  0,       1

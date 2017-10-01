@@ -25,11 +25,11 @@ function empty(container)
 end
 
 schemes = {}
-stypes = {}
+-- stypes = {}
 
-function load_scheme(filename, scheme, stype)
+function load_scheme(filename, scheme) --, stype)
 	schemes[scheme] = filename
-	stypes[scheme] = stype
+--	stypes[scheme] = stype
 	-- nv130308 pre-load schemes for early validation
 	-- this prefetches the logic and reports problems before loading any save
 	if not _G[filename] then
@@ -44,12 +44,8 @@ dev_debug = false
 
 function abort(fmt, ...)
 	local reason = string.format(fmt, ...)
-	assert(false, "Abort(): "..reason)
-	get_console():execute("quit")
-	dbglog("ABORT() called: %s", reason)
---	assert("ERROR: "..reason)
---	error_log("ERROR: "..reason)
---	log(string.format("%s", nil))
+	error_log(debug.traceback("Abort(): "..reason.."\n"))
+	error(reason, 2)
 end
 
 function dbglog(fmt, ...)
@@ -187,14 +183,14 @@ function has_alife_info(info_id)
 ]]
 	return aa ~= nil and aa:has_info(0, info_id) or false
 end
-
+--[[
 function reset_action(npc, script_name)
 	if npc:get_script() then
 		npc:script(false, script_name)
 	end
 	npc:script(true, script_name)
 end
---[[
+
 class "script_object"
 
 function script_object.__init(self, name, script, ...)
@@ -578,10 +574,9 @@ function local_hours()
 end
 ]]
 function parse_names(s)
---	local ins = table.insert
-	local t, c = {}, 0
+	local t = {}
+	local c = 0
 	for name in string.gfind(s, "([%w_\\]+)%p*") do
---		ins(t, name)
 		c = c + 1
 		t[c] = name
 	end
@@ -626,16 +621,12 @@ function empty(container)	-- duplicate
 end
 ]]
 function parse_nums(s)
-
---	local ins = table.insert
-	local t, c, tonum = {}, 0, tonumber
-
+	local t = {}
+	local c = 0
 	for entry in string.gfind(s, "([%-%d%.]+)%,*") do
---		ins(t, tonum(entry))
 		c = c + 1
-		t[c] = tonum(entry)
+		t[c] = tonumber(entry)
 	end
-
 	return t
 end
 
@@ -671,15 +662,17 @@ function vector_rotate_y(v, angle)
 	angle = angle * 0.017453292519943295769236907684886
 	local c = math.cos(angle)
 	local s = math.sin(angle)
-	return vector():set(v.x * c - v.z * s, v.y, v.x * s + v.z * c)
+	local v_x = v.x
+	local v_z = v.z
+	return vector():set(v_x * c - v_z * s, v.y, v_x * s + v_z * c)
 end
-
+--[[
 function clear_table(t)
 	while #t > 0 do
 		table.remove(t, #t)
 	end
 end
---[[
+
 function new_point(center_id, position_id, radius, min_radius)
 	local rand = math.random
 	local dir = vector():set(rand(-1000, 1000) / 1000, 0.0001, rand(-1000, 1000) / 1000)
@@ -793,14 +786,14 @@ function switch_offline(npc)
 end
 
 -------------------------------------------------------------------------------------------
-
+--[[
 function get_actor_id()
 	local actor = level.actor()
 --	if (actor == nil) then return -1 end
 --	return actor:id()
 	return actor == nil and -1 or actor:id()
 end
-
+]]
 -------------------------------------------------------------------------------------------
 
 local monster_classes = {}
@@ -916,7 +909,7 @@ end
 
 function on_actor_psy()
 end
-
+--[[
 function set_actor_rank(rank)
 	if rank == "novice" then
 		db.actor:set_character_rank(0)
@@ -941,77 +934,85 @@ function get_texture_info(id_name, id_default)
 
 	return task_info:get_file_name(), r
 end
-
+]]
 function start_game_callback()
 
 	aa = alife()
 
 	monster_classes = {
 
-	[clsid.bloodsucker_s]		= true,
-	[clsid.boar_s]			= true,
-	[clsid.dog_s]			= true,
-	[clsid.flesh_s]			= true,
-	[clsid.pseudodog_s]		= true,
-	[clsid.burer_s]			= true,
-	[clsid.cat_s]			= true,
-	[clsid.chimera_s]		= true,
-	[clsid.controller_s]		= true,
-	[clsid.fracture_s]		= true,
-	[clsid.poltergeist_s]		= true,
-	[clsid.gigant_s]		= true,
-	[clsid.zombie_s]		= true,
-	[clsid.snork_s]			= true,
-	[clsid.tushkano_s]		= true,
-	[clsid.psy_dog_s]		= true,
-	[clsid.psy_dog_phantom_s]	= true}
+	[clsid.bloodsucker_s]        = true,
+	[clsid.boar_s]               = true,
+	[clsid.dog_s]                = true,
+	[clsid.flesh_s]              = true,
+	[clsid.pseudodog_s]          = true,
+--	[clsid.burer_s]              = true,
+--	[clsid.cat_s]                = true,
+--	[clsid.chimera_s]            = true,
+	[clsid.controller_s]         = true,
+--	[clsid.fracture_s]           = true,
+	[clsid.poltergeist_s]        = true,
+	[clsid.gigant_s]             = true,
+--	[clsid.zombie_s]             = true,
+	[clsid.snork_s]              = true,
+	[clsid.tushkano_s]           = true,
+	[clsid.psy_dog_s]            = true,
+	[clsid.psy_dog_phantom_s]    = true
+
+	}
 
 	stalker_classes = {
 
-	[clsid.script_actor]		= true,
-	[clsid.script_stalker]		= true}
+	[clsid.script_actor]         = true,
+	[clsid.script_stalker]       = true
+
+	}
 
 	weapon_classes = {
 
-	[clsid.wpn_vintorez_s]		= true,
-	[clsid.wpn_ak74_s]		= true,
-	[clsid.wpn_lr300_s]		= true,
-	[clsid.wpn_hpsa_s]		= true,
-	[clsid.wpn_pm_s]		= true,
-	[clsid.wpn_shotgun_s]		= true,
-	[clsid.wpn_bm16_s]		= true,
-	[clsid.wpn_svd_s]		= true,
-	[clsid.wpn_svu_s]		= true,
-	[clsid.wpn_rpg7_s]		= true,
-	[clsid.wpn_rg6_s]		= true,		-- nv130224 added per castl
-	[clsid.wpn_val_s]		= true,
-	[clsid.wpn_walther_s]		= true,
-	[clsid.wpn_usp45_s]		= true,
-	[clsid.wpn_groza_s]		= true,
-	[clsid.wpn_knife_s]		= true,
-	[clsid.wpn_grenade_launcher]	= true,
-	[clsid.wpn_grenade_f1]		= true,
-	[clsid.wpn_grenade_rpg7]	= true,
-	[clsid.wpn_grenade_rgd5]	= true,
-	[clsid.wpn_grenade_fake]	= true}
+	[clsid.wpn_vintorez_s]       = true,
+	[clsid.wpn_ak74_s]           = true,
+	[clsid.wpn_lr300_s]          = true,
+	[clsid.wpn_hpsa_s]           = true,
+	[clsid.wpn_pm_s]             = true,
+	[clsid.wpn_shotgun_s]        = true,
+	[clsid.wpn_bm16_s]           = true,
+	[clsid.wpn_svd_s]            = true,
+	[clsid.wpn_svu_s]            = true,
+	[clsid.wpn_rpg7_s]           = true,
+	[clsid.wpn_rg6_s]            = true, -- nv130224 added per castl
+	[clsid.wpn_val_s]            = true,
+	[clsid.wpn_walther_s]        = true,
+	[clsid.wpn_usp45_s]          = true,
+	[clsid.wpn_groza_s]          = true,
+	[clsid.wpn_knife_s]          = true,
+	[clsid.wpn_grenade_launcher] = true,
+	[clsid.wpn_grenade_f1]       = true,
+	[clsid.wpn_grenade_rpg7]     = true,
+	[clsid.wpn_grenade_rgd5]     = true,
+	[clsid.wpn_grenade_fake]     = true
+
+	}
 
 	artefact_classes = {
 
-	[clsid.art_bast_artefact]	= true,
-	[clsid.art_black_drops]		= true,
-	[clsid.art_dummy]		= true,
-	[clsid.art_electric_ball]	= true,
-	[clsid.art_faded_ball]		= true,
-	[clsid.art_galantine]		= true,
-	[clsid.art_gravi]		= true,
-	[clsid.art_gravi_black]		= true,
-	[clsid.art_mercury_ball]	= true,
-	[clsid.art_needles]		= true,
-	[clsid.art_rusty_hair]		= true,
-	[clsid.art_thorn]		= true,
-	[clsid.art_zuda]		= true,
-	[clsid.artefact]		= true,
-	[clsid.artefact_s]		= true}
+	[clsid.art_bast_artefact]    = true,
+	[clsid.art_black_drops]      = true,
+	[clsid.art_dummy]            = true,
+	[clsid.art_electric_ball]    = true,
+	[clsid.art_faded_ball]       = true,
+	[clsid.art_galantine]        = true,
+	[clsid.art_gravi]            = true,
+	[clsid.art_gravi_black]      = true,
+	[clsid.art_mercury_ball]     = true,
+	[clsid.art_needles]          = true,
+	[clsid.art_rusty_hair]       = true,
+	[clsid.art_thorn]            = true,
+	[clsid.art_zuda]             = true,
+	[clsid.artefact]             = true,
+	[clsid.artefact_s]           = true
+
+	}
 
 	smart_names.init_smart_names_table()
 	task_manager.clear_task_manager()
@@ -1023,7 +1024,8 @@ function start_game_callback()
 --	sim_objects.clear()
 	sim_board.clear()
 	sr_light.clean_up()
-	release_body_manager.init()	-- SRP
+	death_manager.init_drop_settings() -- SRP
+	release_body_manager.init() -- SRP
 end
 
 function gi(info)
@@ -1031,37 +1033,37 @@ function gi(info)
 end
 
 ammo_section = {
-	["ammo_9x18_fmj"]	= true,
---	["ammo_9x18_pbp"]	= true,
-	["ammo_9x18_pmm"]	= true,
-	["ammo_9x19_fmj"]	= true,
-	["ammo_9x19_pbp"]	= true,
-	["ammo_5.45x39_fmj"]	= true,
-	["ammo_5.45x39_ap"]	= true,
-	["ammo_5.56x45_ss190"]	= true,
-	["ammo_5.56x45_ap"]	= true,
---	["ammo_5.7x28_fmj"]	= true,
---	["ammo_5.7x28_ap"]	= true,
-	["ammo_7.62x54_7h1"]	= true,
-	["ammo_7.62x54_ap"]	= true,
-	["ammo_7.62x54_7h14"]	= true,
-	["ammo_9x39_pab9"]	= true,
-	["ammo_gauss"]		= true,
-	["ammo_9x39_ap"]	= true,
-	["ammo_9x39_sp5"]	= true,
-	["ammo_11.43x23_fmj"]	= true,
+	["ammo_9x18_fmj"]       = true,
+--	["ammo_9x18_pbp"]       = true,
+	["ammo_9x18_pmm"]       = true,
+	["ammo_9x19_fmj"]       = true,
+	["ammo_9x19_pbp"]       = true,
+	["ammo_5.45x39_fmj"]    = true,
+	["ammo_5.45x39_ap"]     = true,
+	["ammo_5.56x45_ss190"]  = true,
+	["ammo_5.56x45_ap"]     = true,
+--	["ammo_5.7x28_fmj"]     = true,
+--	["ammo_5.7x28_ap"]      = true,
+	["ammo_7.62x54_7h1"]    = true,
+	["ammo_7.62x54_ap"]     = true,
+	["ammo_7.62x54_7h14"]   = true,
+	["ammo_9x39_pab9"]      = true,
+	["ammo_gauss"]          = true,
+	["ammo_9x39_ap"]        = true,
+	["ammo_9x39_sp5"]       = true,
+	["ammo_11.43x23_fmj"]   = true,
 	["ammo_11.43x23_hydro"] = true,
-	["ammo_12x70_buck"]	= true,
-	["ammo_12x76_dart"]	= true,
-	["ammo_12x76_zhekan"]	= true,
-	["ammo_pkm_100"]	= true,
-	["ammo_og-7b"]		= true,	-- SRP
-	["ammo_vog-25p"]	= true,	-- SRP
-	["ammo_vog-25"]		= true,	-- SRP
-	["ammo_m209"]		= true	-- SRP
+	["ammo_12x70_buck"]     = true,
+	["ammo_12x76_dart"]     = true,
+	["ammo_12x76_zhekan"]   = true,
+	["ammo_pkm_100"]        = true,
+	["ammo_og-7b"]          = true, -- SRP
+	["ammo_vog-25p"]        = true, -- SRP
+	["ammo_vog-25"]         = true, -- SRP
+	["ammo_m209"]           = true  -- SRP
 }
 
-quest_section = {}
+-- quest_section = {}
 
 function get_param_string(src_string, obj)
 	local script_ids = db.script_ids[obj:id()]
@@ -1077,26 +1079,24 @@ local save_markers = {}
 
 function set_save_marker(p, mode, check, prefix)
 
-	local result = ""
-	result = result .. "_" .. prefix
+	local result = "_" .. prefix
 
 	if check == true then
 		if save_markers[result] == nil then
-			abort("Trying to check without marker %s", result)
+			abort("[_G.set_save_marker]: Missing save marker '%s'.", result)
 		end
-
 		if mode == "save" then
 			local dif = p:w_tell() - save_markers[result]
 			if dif >= 10240 then
-				abort("You are saving too much, dif = %s", dif)
+				abort("[_G.set_save_marker]: You are saving too much, dif = %s", dif)
 			end
 			p:w_u16(dif)
 		else
 			local c_dif = p:r_tell() - save_markers[result]
-			local dif = p:r_u16()
+			local dif   = p:r_u16()
 			if dif ~= c_dif then
-				abort("INCORRECT LOAD [%s].[%s][%s]", result, dif, c_dif)
-			end
+				abort("[_G.set_save_marker]: Save marker mismatch '%s' %.0f ~= %.0f.", result, dif, c_dif)
+			 end
 		end
 		return
 	end
@@ -1104,16 +1104,16 @@ function set_save_marker(p, mode, check, prefix)
 	if mode == "save" then
 		save_markers[result] = p:w_tell()
 		if p:w_tell() > 16000 then
-			abort("You are saving too much, p:w_tell() = %s", p:w_tell())
+			abort("[_G.set_save_marker]: You are saving too much, p:w_tell() = %s", p:w_tell())
 		end
 	else
 		save_markers[result] = p:r_tell()
 	end
 end
 
-function vec_to_str(vector)
-	if vector == nil then return "nil" end
-	return string.format("[%d:%d:%d]", vector.x, vector.y, vector.z)
+function vec_to_str()
+--	if vector == nil then return "nil" end
+--	return string.format("[%d:%d:%d]", vector.x, vector.y, vector.z)
 end
 
 function change_team_sqaud_group(se_obj, team, squad, group)

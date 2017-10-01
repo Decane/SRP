@@ -271,12 +271,11 @@ function faction_brain_human:reset_actor_tasks()
 	local faction_rand_tasks = faction.random_tasks
 	local faction_target_smarts = faction.target_smart_value
 	local tm = task_manager.get_task_manager()
-	local task
 
 	for k, v in pairs (faction_rand_tasks) do
 		if faction_target_smarts[k] == nil then
 			if obstacle_points[k] == nil then
-				task = tm:get_task_by_entity_id(v)
+				local task = tm:get_task_by_entity_id(v)
 				if task ~= nil then
 					if task.actor_helped == true then
 						if faction.board.smarts[k].smrt.player_name == "none" then
@@ -300,7 +299,7 @@ function faction_brain_human:reset_actor_tasks()
 	for k, v in pairs (obstacle_points) do
 		if faction_rand_tasks[k] == nil then
 			if utils.graph_distance(act_vx, v.m_game_vertex_id) <= 300 then
-				task = tm:get_tasks_by_smart(k)
+				local task = tm:get_tasks_by_smart(k)
 				if task ~= nil then
 					if task.target == k then
 						return
@@ -316,6 +315,15 @@ function faction_brain_human:reset_actor_tasks()
 		end
 	end
 end
+
+local faction_cluster =
+{
+	csky      = 1,
+	stalker   = 2,
+	bandit    = 2,
+	dolg      = 2,
+	freedom   = 2
+}
 
 function faction_brain_human:init_player_task(target_data)
 
@@ -341,7 +349,7 @@ function faction_brain_human:init_player_task(target_data)
 		end
 	end
 
-	if sim_board.faction_cluster[faction_name] ~= sim_board.sim_level_cluster[smart.smart_level] then
+	if faction_cluster[faction_name] ~= sim_board.sim_level_cluster[smart.smart_level] then
 		return
 	end
 

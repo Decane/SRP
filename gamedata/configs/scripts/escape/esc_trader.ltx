@@ -1,6 +1,6 @@
 ; Decane 17.03.2013: Re-wrote script.
 ;        27.07.2013: Added checks to force section switch at regular intervals in case one gets stuck.
-;	 12.11.2014: Minimized performance hit when player is not in bunker.
+;        12.11.2014: Minimized performance hit when player is not in bunker.
 
 [logic]
 active = mob_trader@new_idle1
@@ -74,7 +74,7 @@ on_info = {+esc_in_sid_door_zone} mob_trader@new_idle2
 anim_global = desk_idle
 on_signal = animation_end | {~25} mob_trader@new_idle1_to_idle3, {~50} mob_trader@new_idle1_to_idle5, {~75} mob_trader@new_idle1_to_idle2, mob_trader@new_idle1_to_idle1
 on_info = {-esc_in_sid_door_zone} mob_trader@inactive
-on_info2 = {!talking !npc_talking +esc_player_sleeps} mob_trader@angry_1 %-esc_player_sleeps%
+on_info2 = {+esc_player_sleeps} mob_trader@angry_1 %-esc_player_sleeps%
 on_info3 = {+esc_actor_come_first -esc_trader_hello_first_played} mob_trader@hello_first %+esc_trader_hello_first_played +esc_trader_hello_played%
 on_info4 = {+esc_actor_come_first +esc_trader_hello_first_played -esc_trader_hello_played -esc_actor_inside_traders_dung} mob_trader@new_hello %+esc_trader_hello_played%
 on_info5 = {+esc_actor_come_first -esc_trader_hello_played +esc_actor_inside_traders_dung -esc_take_habar_complete} mob_trader@hello_search %+esc_trader_hello_played%
@@ -91,7 +91,7 @@ on_game_timer = 100 | mob_trader@new_idle1_to_idle3
 anim_global = diagonal_idle
 on_signal = animation_end | {~25} mob_trader@new_idle2_to_idle3, {~50} mob_trader@new_idle2_to_idle4, {~75} mob_trader@new_idle2_to_idle1, mob_trader@new_idle2_to_idle2
 on_info = {-esc_in_sid_door_zone} mob_trader@inactive
-on_info2 = {!talking !npc_talking +esc_player_sleeps} mob_trader@angry_2 %-esc_player_sleeps%
+on_info2 = {+esc_player_sleeps} mob_trader@angry_2 %-esc_player_sleeps%
 on_info3 = {+esc_actor_come_first -esc_trader_hello_first_played} mob_trader@hello_first %+esc_trader_hello_first_played +esc_trader_hello_played%
 on_info4 = {+esc_actor_come_first +esc_trader_hello_first_played -esc_trader_hello_played -esc_actor_inside_traders_dung} mob_trader@new_hello %+esc_trader_hello_played%
 on_info5 = {+esc_actor_come_first -esc_trader_hello_played +esc_actor_inside_traders_dung -esc_take_habar_complete} mob_trader@hello_search %+esc_trader_hello_played%
@@ -108,7 +108,7 @@ on_game_timer = 100 | mob_trader@new_idle2_to_idle3
 anim_global = chair_hack_idle
 on_signal = animation_end | {~30} mob_trader@new_idle3_to_idle2, {~70} mob_trader@new_idle3_to_idle1, mob_trader@new_idle3_to_idle3
 on_info = {-esc_in_sid_door_zone} mob_trader@inactive
-on_info2 = {!talking !npc_talking +esc_player_sleeps} mob_trader@angry_3 %-esc_player_sleeps%
+on_info2 = {+esc_player_sleeps} mob_trader@angry_3 %-esc_player_sleeps%
 on_info3 = {+esc_actor_come_first -esc_trader_hello_first_played} mob_trader@hello_first %+esc_trader_hello_first_played +esc_trader_hello_played%
 on_info4 = {+esc_actor_come_first +esc_trader_hello_first_played -esc_trader_hello_played -esc_actor_inside_traders_dung} mob_trader@new_hello %+esc_trader_hello_played%
 on_info5 = {+esc_actor_come_first -esc_trader_hello_played +esc_actor_inside_traders_dung -esc_take_habar_complete} mob_trader@hello_search %+esc_trader_hello_played%
@@ -125,7 +125,7 @@ on_game_timer = 100 | mob_trader@new_idle3_to_idle2
 anim_global = compute_idle
 on_signal = animation_end | {~40} mob_trader@new_idle4_to_idle2, mob_trader@new_idle4_to_idle4
 on_info = {-esc_in_sid_door_zone} mob_trader@inactive
-on_info2 = {!talking !npc_talking +esc_player_sleeps} mob_trader@angry_4 %-esc_player_sleeps%
+on_info2 = {+esc_player_sleeps} mob_trader@angry_4 %-esc_player_sleeps%
 on_info3 = {+esc_actor_come_first -esc_trader_hello_first_played} mob_trader@hello_first %+esc_trader_hello_first_played +esc_trader_hello_played%
 on_info4 = {+esc_actor_come_first +esc_trader_hello_first_played -esc_trader_hello_played -esc_actor_inside_traders_dung} mob_trader@new_hello %+esc_trader_hello_played%
 on_info5 = {+esc_actor_come_first -esc_trader_hello_played +esc_actor_inside_traders_dung -esc_take_habar_complete} mob_trader@hello_search %+esc_trader_hello_played%
@@ -142,7 +142,7 @@ on_game_timer = 100 | mob_trader@new_idle4_to_idle2
 anim_global = listen_idle
 on_signal = animation_end | {~45} mob_trader@new_idle5_to_idle1, mob_trader@new_idle5_to_idle5
 on_info = {-esc_in_sid_door_zone} mob_trader@inactive
-on_info2 = {!talking !npc_talking +esc_player_sleeps} mob_trader@angry_5 %-esc_player_sleeps%
+on_info2 = {+esc_player_sleeps} mob_trader@angry_5 %-esc_player_sleeps%
 on_info3 = {+esc_actor_come_first -esc_trader_hello_first_played} mob_trader@hello_first %+esc_trader_hello_first_played +esc_trader_hello_played%
 on_info4 = {+esc_actor_come_first +esc_trader_hello_first_played -esc_trader_hello_played -esc_actor_inside_traders_dung} mob_trader@new_hello %+esc_trader_hello_played%
 on_info5 = {+esc_actor_come_first -esc_trader_hello_played +esc_actor_inside_traders_dung -esc_take_habar_complete} mob_trader@hello_search %+esc_trader_hello_played%

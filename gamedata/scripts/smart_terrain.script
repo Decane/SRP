@@ -179,7 +179,7 @@ function se_smart_terrain:read_params()
 	self.important_point	= get_bool(ini, sect, "important_point", self, false)
 	self.mutant_lair	= get_bool(ini, sect, "mutant_lair", self, false)
 	self.no_mutant		= get_bool(ini, sect, "no_mutant", self, false)
-	self.forbidden_point	= get_string(ini, sect, "forbidden_point", self, false, "")
+--	self.forbidden_point	= get_string(ini, sect, "forbidden_point", self, false, "") -- unused in vanilla
 	self.def_restr		= get_string(ini, sect, "def_restr", self, false, "", nil)
 	self.att_restr		= get_string(ini, sect, "att_restr", self, false, "", nil)
 	self.spawn_point	= get_string(ini, sect, "spawn_point", self, false, "")
@@ -525,7 +525,7 @@ function se_smart_terrain:setup_logic(obj)
 		abort("[smart_terrain.se_smart_terrain:setup_logic]: [smart_terrain %s] section = %s, don't use section 'nil'!", self:name(), sect)
 	end
 
-	xr_logic.activate_by_section(obj, ltx, sect, job.prefix_name or self:name(), false)
+	xr_logic.activate_by_section(obj, ltx, sect, false)
 end
 
 function se_smart_terrain:getJob(obj_id)
@@ -884,6 +884,19 @@ function se_smart_terrain:update()
 	self:update_jobs()
 end
 
+function setup_gulag_and_logic_on_spawn(obj, st, se_obj, stype, loaded)
+	local strn_id = se_obj.m_smart_terrain_id
+	if strn_id ~= nil and strn_id ~= 65535 then
+		local strn = alife():object(strn_id)
+		local need_setup_logic = (not loaded) and (strn.npc_info[obj:id()].begin_job == true)
+		if need_setup_logic then
+			strn:setup_logic(obj)
+			return
+		end
+	end
+	xr_logic.initialize_obj(obj, st, loaded, db.actor, stype)
+end
+--[[
 function setup_gulag_and_logic_on_spawn(obj, st, sobject, stype, loaded)
 	local sim = alife()
 	local obj_id = obj:id()
@@ -905,7 +918,7 @@ function setup_gulag_and_logic_on_spawn(obj, st, sobject, stype, loaded)
 --		xr_logic.initialize_obj(obj, st, loaded, db.actor, stype)
 --	end
 end
-
+]]
 function on_death(obj)
 	local sim = alife()
 	if sim then

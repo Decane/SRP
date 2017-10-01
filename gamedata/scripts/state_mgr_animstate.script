@@ -1,0 +1,455 @@
+-- DC170507: Optimization.
+
+local state_lib_states = state_lib.states
+
+--------------------------------------------------------------------------------
+
+class "eva_state_mgr_animstate" (property_evaluator)
+
+function eva_state_mgr_animstate:__init(st) super ()
+	self.st = st
+end
+
+function eva_state_mgr_animstate:evaluate()
+	local self_st = self.st
+	local animstate = state_lib_states[self_st.target_state].animstate
+	return animstate == nil or animstate == self_st.animstate:state()
+end
+
+--------------------------------------------------------------------------------
+
+class "eva_state_mgr_animstate_locked" (property_evaluator)
+
+function eva_state_mgr_animstate_locked:__init(st) super ()
+	self.st = st
+end
+
+function eva_state_mgr_animstate_locked:evaluate()
+	return self.st.animstate:state() == "busy"
+end
+
+--------------------------------------------------------------------------------
+
+class "eva_state_mgr_animstate_idle" (property_evaluator)
+
+function eva_state_mgr_animstate_idle:__init(st) super ()
+	self.st = st
+end
+
+function eva_state_mgr_animstate_idle:evaluate()
+	return state_lib_states[self.st.target_state].animstate == "stand"
+end
+
+--------------------------------------------------------------------------------
+
+class "eva_state_mgr_animstate_idle_now" (property_evaluator)
+
+function eva_state_mgr_animstate_idle_now:__init(st) super ()
+	self.st = st
+end
+
+function eva_state_mgr_animstate_idle_now:evaluate()
+	return self.st.animstate:state() == "stand"
+end
+
+--------------------------------------------------------------------------------
+
+class "eva_state_mgr_animstate_sit" (property_evaluator)
+
+function eva_state_mgr_animstate_sit:__init(st) super ()
+	self.st = st
+end
+
+function eva_state_mgr_animstate_sit:evaluate()
+	return state_lib_states[self.st.target_state].animstate == "sit"
+end
+
+--------------------------------------------------------------------------------
+
+class "eva_state_mgr_animstate_sit_now" (property_evaluator)
+
+function eva_state_mgr_animstate_sit_now:__init(st) super ()
+	self.st = st
+end
+
+function eva_state_mgr_animstate_sit_now:evaluate()
+	return self.st.animstate:state() == "sit"
+end
+
+--------------------------------------------------------------------------------
+
+class "eva_state_mgr_animstate_sit_knee" (property_evaluator)
+
+function eva_state_mgr_animstate_sit_knee:__init(st) super ()
+	self.st = st
+end
+
+function eva_state_mgr_animstate_sit_knee:evaluate()
+	return state_lib_states[self.st.target_state].animstate == "sit_knee"
+end
+
+--------------------------------------------------------------------------------
+
+class "eva_state_mgr_animstate_sit_knee_now" (property_evaluator)
+
+function eva_state_mgr_animstate_sit_knee_now:__init(st) super ()
+	self.st = st
+end
+
+function eva_state_mgr_animstate_sit_knee_now:evaluate()
+	return self.st.animstate:state() == "sit_knee"
+end
+
+--------------------------------------------------------------------------------
+
+class "eva_state_mgr_animstate_sit_ass" (property_evaluator)
+
+function eva_state_mgr_animstate_sit_ass:__init(st) super ()
+	self.st = st
+end
+
+function eva_state_mgr_animstate_sit_ass:evaluate()
+	return state_lib_states[self.st.target_state].animstate == "sit_ass"
+end
+
+--------------------------------------------------------------------------------
+
+class "eva_state_mgr_animstate_sit_ass_now" (property_evaluator)
+
+function eva_state_mgr_animstate_sit_ass_now:__init(st) super ()
+	self.st = st
+end
+
+function eva_state_mgr_animstate_sit_ass_now:evaluate()
+	return self.st.animstate:state() == "sit_ass"
+end
+
+--------------------------------------------------------------------------------
+
+class "eva_state_mgr_animstate_sleep" (property_evaluator)
+
+function eva_state_mgr_animstate_sleep:__init(st) super ()
+	self.st = st
+end
+
+function eva_state_mgr_animstate_sleep:evaluate()
+	return state_lib_states[self.st.target_state].animstate == "sleep"
+end
+
+--------------------------------------------------------------------------------
+
+class "eva_state_mgr_animstate_sleep_now" (property_evaluator)
+
+function eva_state_mgr_animstate_sleep_now:__init(st) super ()
+	self.st = st
+end
+
+function eva_state_mgr_animstate_sleep_now:evaluate()
+	return self.st.animstate:state() == "sleep"
+end
+
+--------------------------------------------------------------------------------
+
+class "eva_state_mgr_animstate_wounded" (property_evaluator)
+
+function eva_state_mgr_animstate_wounded:__init(st) super ()
+	self.st = st
+end
+
+function eva_state_mgr_animstate_wounded:evaluate()
+	return state_lib_states[self.st.target_state].animstate == "wounded"
+end
+
+--------------------------------------------------------------------------------
+
+class "eva_state_mgr_animstate_wounded_now" (property_evaluator)
+
+function eva_state_mgr_animstate_wounded_now:__init(st) super ()
+	self.st = st
+end
+
+function eva_state_mgr_animstate_wounded_now:evaluate()
+	return self.st.animstate:state() == "wounded"
+end
+
+--------------------------------------------------------------------------------
+
+class "eva_state_mgr_animstate_wounded_heavy" (property_evaluator)
+
+function eva_state_mgr_animstate_wounded_heavy:__init(st) super ()
+	self.st = st
+end
+
+function eva_state_mgr_animstate_wounded_heavy:evaluate()
+	return state_lib_states[self.st.target_state].animstate == "wounded_heavy"
+end
+
+--------------------------------------------------------------------------------
+
+class "eva_state_mgr_animstate_wounded_heavy_now" (property_evaluator)
+
+function eva_state_mgr_animstate_wounded_heavy_now:__init(st) super ()
+	self.st = st
+end
+
+function eva_state_mgr_animstate_wounded_heavy_now:evaluate()
+	return self.st.animstate:state() == "wounded_heavy"
+end
+
+--------------------------------------------------------------------------------
+
+class "act_state_mgr_animstate_2sit" (action_base)
+
+function act_state_mgr_animstate_2sit:__init(st) super ()
+	self.st = st
+end
+
+function act_state_mgr_animstate_2sit:initialize()
+	action_base.initialize(self)
+	self.st.animstate:set_state("sit")
+end
+
+function act_state_mgr_animstate_2sit:execute()
+	action_base.execute(self)
+end
+
+function act_state_mgr_animstate_2sit:finalize()
+	action_base.finalize(self)
+end
+
+--------------------------------------------------------------------------------
+
+class "act_state_mgr_animstate_2sit_knee" (action_base)
+
+function act_state_mgr_animstate_2sit_knee:__init(st) super ()
+	self.st = st
+end
+
+function act_state_mgr_animstate_2sit_knee:initialize()
+	action_base.initialize(self)
+	self.st.animstate:set_state("sit_knee")
+end
+
+function act_state_mgr_animstate_2sit_knee:execute()
+	action_base.execute(self)
+end
+
+function act_state_mgr_animstate_2sit_knee:finalize()
+	action_base.finalize(self)
+end
+
+--------------------------------------------------------------------------------
+
+class "act_state_mgr_animstate_2sit_ass" (action_base)
+
+function act_state_mgr_animstate_2sit_ass:__init(st) super ()
+	self.st = st
+end
+
+function act_state_mgr_animstate_2sit_ass:initialize()
+	action_base.initialize(self)
+	self.st.animstate:set_state("sit_ass")
+end
+
+function act_state_mgr_animstate_2sit_ass:execute()
+	action_base.execute(self)
+end
+
+function act_state_mgr_animstate_2sit_ass:finalize()
+	action_base.finalize(self)
+end
+
+--------------------------------------------------------------------------------
+
+class "act_state_mgr_animstate_2idle" (action_base)
+
+function act_state_mgr_animstate_2idle:__init(st) super ()
+	self.st = st
+end
+
+function act_state_mgr_animstate_2idle:initialize()
+	action_base.initialize(self)
+	self.st.animstate:set_state("stand")
+end
+
+function act_state_mgr_animstate_2idle:execute()
+	action_base.execute(self)
+end
+
+function act_state_mgr_animstate_2idle:finalize()
+	action_base.finalize(self)
+end
+
+--------------------------------------------------------------------------------
+
+class "act_state_mgr_animstate_2sleep" (action_base)
+
+function act_state_mgr_animstate_2sleep:__init(st) super ()
+	self.st = st
+end
+
+function act_state_mgr_animstate_2sleep:initialize()
+	action_base.initialize(self)
+	self.st.animstate:set_state("sleep")
+end
+
+function act_state_mgr_animstate_2sleep:execute()
+	action_base.execute(self)
+end
+
+function act_state_mgr_animstate_2sleep:finalize()
+	action_base.finalize(self)
+end
+
+--------------------------------------------------------------------------------
+
+class "act_state_mgr_animstate_2wounded" (action_base)
+
+function act_state_mgr_animstate_2wounded:__init(st) super ()
+	self.st = st
+end
+
+function act_state_mgr_animstate_2wounded:initialize()
+	action_base.initialize(self)
+	self.st.animstate:set_state("wounded")
+end
+
+function act_state_mgr_animstate_2wounded:execute()
+	action_base.execute(self)
+end
+
+function act_state_mgr_animstate_2wounded:finalize()
+	action_base.finalize(self)
+end
+
+--------------------------------------------------------------------------------
+
+class "act_state_mgr_animstate_2wounded_heavy" (action_base)
+
+function act_state_mgr_animstate_2wounded_heavy:__init(st) super ()
+	self.st = st
+end
+
+function act_state_mgr_animstate_2wounded_heavy:initialize()
+	action_base.initialize(self)
+	self.st.animstate:set_state("wounded_heavy")
+end
+
+function act_state_mgr_animstate_2wounded_heavy:execute()
+	action_base.execute(self)
+end
+
+function act_state_mgr_animstate_2wounded_heavy:finalize()
+	action_base.finalize(self)
+end
+
+--------------------------------------------------------------------------------
+
+class "body_state"
+
+local transfer_anim =
+{
+	stand		= { sit			= {nrm = {"idle_0_to_sit_0"}},
+					sit_knee	= {nrm = {"idle_0_to_sit_1"}},
+					sit_ass		= {nrm = {"idle_0_to_sit_2"}},
+					sleep		= {nrm = {"idle_0_to_sit_0", "sit_to_sleep_0"}}},
+
+	sit			= { sit_knee	= {nrm = {"sit_idle_0_to_sit_idle_1"}},
+					sit_ass		= {nrm = {"sit_idle_0_to_sit_idle_2"}},
+					stand		= {nrm = {"sit_0_to_idle_0"}, lazy = {"sit_0_lazy_idle_0"}},
+					sleep		= {nrm = {"sit_0_to_sleep_0"}}},
+
+	sit_knee	= { sit			= {nrm = {"sit_idle_1_to_sit_idle_0"}},
+					sit_ass		= {nrm = {"sit_idle_1_to_sit_idle_2"}},
+					stand		= {nrm = {"sit_1_to_idle_0"}, lazy ={"sit_1_lazy_idle_0"}},
+					sleep		= {nrm = {"sit_idle_1_to_sleep_0"}}},
+
+	sit_ass		= { sit			= {nrm = {"sit_idle_2_to_sit_idle_0"}},
+					sit_knee	= {nrm = {"sit_idle_2_to_sit_idle_1"}},
+					stand		= {nrm = {"sit_2_to_idle_0"}, lazy = {"sit_2_lazy_idle_0"}},
+					sleep		= {nrm = {"sit_2_to_sleep_0"}}},
+
+	sleep		= {	stand		= {nrm = {"sleep_to_sit_0", "sit_0_to_idle_0"}, lazy = {"sleep_to_sit_0", "sit_0_lazy_idle_0"}},
+					sit			= {nrm = {"sleep_0_to_sit_0"}},
+					sit_knee	= {nrm = {"sleep_0_to_sit_idle_1"}},
+					sit_ass		= {nrm = {"sleep_0_to_sit_2"}}}
+}
+
+local idle_anim =
+{
+	sit			= "sit_0_idle_0",
+	sit_knee	= "sit_1_idle_0",
+	sit_ass		= "sit_2_idle_0",
+	sleep		= "sleep_idle_0"
+}
+
+function body_state:__init(npc)
+	self.npc = npc
+	self.target_state = "stand"
+	self.current_state = "stand"
+end
+
+function body_state:update()
+	local target_state = self.target_state
+	if target_state ~= self.current_state then
+		if idle_anim[target_state] ~= nil then
+			if self.npc:animation_count() <= 1 then
+				self.current_state = target_state
+			end
+		else
+			if self.npc:animation_count() == 0 then
+				self.current_state = target_state
+			end
+		end
+	end
+end
+
+function body_state:state()
+	return self.current_state
+end
+
+function body_state:set_state(id)
+
+	local npc = self.npc
+
+	npc:clear_animations()
+
+	local anims_trans = transfer_anim[self.current_state]
+	if anims_trans ~= nil then
+		local anim_trans = anims_trans[id]
+		if anim_trans ~= nil then
+			local lazy = anim_trans.lazy ~= nil
+			if lazy == true and (npc:best_enemy() ~= nil or npc:best_danger() ~= nil) then
+				lazy = false
+			end
+			if lazy == true	then
+				for k, anim in pairs (anim_trans.lazy) do
+					npc:add_animation(anim, true, false)
+				end
+			else
+				for k, anim in pairs (anim_trans.nrm) do
+					npc:add_animation(anim, true, false)
+				end
+			end
+		end
+	end
+
+	local anim_idle = idle_anim[id]
+	if anim_idle ~= nil then
+		npc:add_animation(anim_idle, true, false)
+	end
+
+	self.current_state = "busy"
+	self.target_state = id
+end
+
+function body_state:add_idle_animation()
+	local anim_idle = idle_anim[self.current_state]
+	if anim_idle ~= nil then
+		self.npc:add_animation(anim_idle, true, false)
+	end
+end
+
+function body_state:idle_animation_present()
+	return idle_anim[self.current_state] ~= nil
+end

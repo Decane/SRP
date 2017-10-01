@@ -1,0 +1,362 @@
+-- DC170507: Optimization.
+
+local state_lib_states = state_lib.states
+local object_strap = object.strap
+local object_idle = object.idle
+local object_drop = object.drop
+local object_aim1 = object.aim1
+local anim_danger = anim.danger
+local move_stand = move.stand
+
+local strappable_clsids =
+{
+	[clsid.wpn_vintorez_s] = true,
+	[clsid.wpn_ak74_s]     = true,
+	[clsid.wpn_lr300_s]    = true,
+	[clsid.wpn_shotgun_s]  = true,
+	[clsid.wpn_bm16_s]     = true,
+	[clsid.wpn_svd_s]      = true,
+	[clsid.wpn_svu_s]      = true,
+	[clsid.wpn_rpg7_s]     = true,
+	[clsid.wpn_val_s]      = true,
+	[clsid.wpn_groza_s]    = true
+}
+
+local function strappable_weapon(wpn)
+	local id = wpn and wpn:clsid() -- get_clsid(wpn)
+	if id == nil then
+		return false
+	else
+		return strappable_clsids[id] == true
+	end
+end
+
+--------------------------------------------------------------------------------
+
+class "eva_state_mgr_weapon" (property_evaluator)
+
+function eva_state_mgr_weapon:__init(st) super ()
+	self.st = st
+end
+
+function eva_state_mgr_weapon:evaluate()
+
+	local weapon = state_lib_states[self.st.target_state].weapon
+
+	if weapon == nil then
+		return true
+	end
+
+	local sobj = self.object
+	local bestweapon = sobj:best_weapon()
+
+	if not isWeapon(bestweapon) then
+		return true
+	end
+
+	local activeitem = sobj:active_item()
+
+	if weapon == "strapped" then
+		if strappable_weapon(bestweapon) then
+			if sobj:weapon_strapped() then
+				return true
+			end
+		else
+			if activeitem == nil then
+				return true
+			end
+		end
+	end
+
+	if (weapon == "unstrapped" or weapon == "fire" or weapon == "sniper_fire")
+	and sobj:weapon_unstrapped() == true
+	and activeitem ~= nil
+	and bestweapon ~= nil
+	and activeitem:id() == bestweapon:id() then
+--		local temp = "false"
+--		if (sobj:weapon_unstrapped() == true) then
+--			temp = "true"
+--		end
+		return true
+	end
+
+	return activeitem == nil and (weapon == "none" or weapon == "drop")
+end
+
+--------------------------------------------------------------------------------
+
+class "eva_state_mgr_weapon_locked" (property_evaluator)
+
+function eva_state_mgr_weapon_locked:__init() super ()
+--	self.st = st
+end
+
+function eva_state_mgr_weapon_locked:evaluate()
+	local sobj = self.object
+	return not (sobj:weapon_unstrapped() or sobj:weapon_strapped())
+end
+
+--------------------------------------------------------------------------------
+
+class "eva_state_mgr_weapon_strapped" (property_evaluator)
+
+function eva_state_mgr_weapon_strapped:__init(st) super ()
+	self.st = st
+end
+
+function eva_state_mgr_weapon_strapped:evaluate()
+	return state_lib_states[self.st.target_state].weapon == "strapped"
+end
+
+--------------------------------------------------------------------------------
+
+class "eva_state_mgr_weapon_strapped_now" (property_evaluator)
+
+function eva_state_mgr_weapon_strapped_now:__init() super ()
+end
+
+function eva_state_mgr_weapon_strapped_now:evaluate()
+	local sobj = self.object
+	local best_wpn = sobj:best_weapon()
+	if not isWeapon(best_wpn) then
+		return true
+	end
+	return sobj:weapon_strapped() or (not strappable_weapon(best_wpn) and sobj:active_item() == nil)
+end
+
+--------------------------------------------------------------------------------
+
+class "eva_state_mgr_weapon_unstrapped" (property_evaluator)
+
+function eva_state_mgr_weapon_unstrapped:__init(st) super ()
+	self.st = st
+end
+
+function eva_state_mgr_weapon_unstrapped:evaluate()
+	local wpn_state = state_lib_states[self.st.target_state].weapon
+	return wpn_state == "unstrapped" or wpn_state == "fire" or wpn_state == "sniper_fire"
+end
+
+--------------------------------------------------------------------------------
+
+class "eva_state_mgr_weapon_unstrapped_now" (property_evaluator)
+
+function eva_state_mgr_weapon_unstrapped_now:__init() super ()
+end
+
+function eva_state_mgr_weapon_unstrapped_now:evaluate()
+	local sobj = self.object
+	if sobj:weapon_unstrapped() then
+		local active_item = sobj:active_item()
+		if active_item ~= nil then
+			local best_wpn = sobj:best_weapon()
+			if best_wpn ~= nil and active_item:id() == best_wpn:id() then
+				return true
+			end
+		end
+	end
+	return false
+end
+
+--------------------------------------------------------------------------------
+
+class "eva_state_mgr_weapon_none" (property_evaluator)
+
+function eva_state_mgr_weapon_none:__init(st) super ()
+	self.st = st
+end
+
+function eva_state_mgr_weapon_none:evaluate()
+	return state_lib_states[self.st.target_state].weapon == "none"
+end
+
+--------------------------------------------------------------------------------
+
+class "eva_state_mgr_weapon_none_now" (property_evaluator)
+
+function eva_state_mgr_weapon_none_now:__init() super ()
+end
+
+function eva_state_mgr_weapon_none_now:evaluate()
+	return self.object:active_item() == nil
+end
+
+--------------------------------------------------------------------------------
+
+class "eva_state_mgr_weapon_drop" (property_evaluator)
+
+function eva_state_mgr_weapon_drop:__init(st) super ()
+	self.st = st
+end
+
+function eva_state_mgr_weapon_drop:evaluate()
+	return state_lib_states[self.st.target_state].weapon == "drop"
+end
+
+--------------------------------------------------------------------------------
+
+class "eva_state_mgr_weapon_fire" (property_evaluator)
+
+function eva_state_mgr_weapon_fire:__init(st) super ()
+	self.st = st
+end
+
+function eva_state_mgr_weapon_fire:evaluate()
+	local wpn_state = state_lib_states[self.st.target_state].weapon
+	return wpn_state == "fire" or wpn_state == "sniper_fire"
+end
+
+--------------------------------------------------------------------------------
+
+class "act_state_mgr_weapon_unstrapp" (action_base)
+
+function act_state_mgr_weapon_unstrapp:__init(st) super ()
+	self.st = st
+end
+
+function act_state_mgr_weapon_unstrapp:initialize()
+	action_base.initialize(self)
+	local sobj = self.object
+	local target_state = self.st.target_state
+	sobj:set_item(get_idle_state(target_state), get_weapon(sobj, target_state))
+end
+
+function act_state_mgr_weapon_unstrapp:execute()
+	action_base.execute(self)
+end
+
+function act_state_mgr_weapon_unstrapp:finalize()
+	action_base.finalize(self)
+end
+
+--------------------------------------------------------------------------------
+
+class "act_state_mgr_weapon_strapp" (action_base)
+
+function act_state_mgr_weapon_strapp:__init(st) super ()
+	self.st = st
+end
+
+function act_state_mgr_weapon_strapp:initialize()
+	action_base.initialize(self)
+	local sobj = self.object
+	local weap = get_weapon(sobj, self.st.target_state)
+	if strappable_weapon(weap) then
+		sobj:set_item(object_strap, weap)
+	else
+		sobj:set_item(object_idle, nil)
+	end
+end
+
+function act_state_mgr_weapon_strapp:execute()
+	action_base.execute(self)
+end
+
+function act_state_mgr_weapon_strapp:finalize()
+	action_base.finalize(self)
+end
+
+--------------------------------------------------------------------------------
+
+class "act_state_mgr_weapon_none" (action_base)
+
+function act_state_mgr_weapon_none:__init() super ()
+--	self.st = st
+end
+
+function act_state_mgr_weapon_none:initialize()
+	action_base.initialize(self)
+	self.object:set_item(object_idle, nil)
+end
+
+function act_state_mgr_weapon_none:execute()
+	action_base.execute(self)
+end
+
+function act_state_mgr_weapon_none:finalize()
+	action_base.finalize(self)
+end
+
+--------------------------------------------------------------------------------
+
+class "act_state_mgr_weapon_drop" (action_base)
+
+function act_state_mgr_weapon_drop:__init(st) super ()
+	self.st = st
+end
+
+function act_state_mgr_weapon_drop:initialize()
+	action_base.initialize(self)
+	local sobj = self.object
+	local weap = get_weapon(sobj, self.st.target_state)
+	if strappable_weapon(weap) then
+		sobj:set_item(object_drop, weap)
+	else
+		sobj:set_item(object_idle, nil)
+	end
+end
+
+function act_state_mgr_weapon_drop:execute()
+	action_base.execute(self)
+end
+
+function act_state_mgr_weapon_drop:finalize()
+	action_base.finalize(self)
+end
+
+--------------------------------------------------------------------------------
+
+function get_idle_state(target_state)
+	local target_lib_state = state_lib_states[target_state]
+	if target_lib_state.mental == anim_danger and target_lib_state.movement == move_stand and target_lib_state.animation == nil then
+		return object_aim1
+	else
+		return object_idle
+	end
+end
+
+function get_weapon(obj, target_state)
+	local target_lib_state_wpn_slot = state_lib_states[target_state].weapon_slot
+	if target_lib_state_wpn_slot == nil then
+		return obj:best_weapon()
+	else
+		return obj:item_in_slot(target_lib_state_wpn_slot)
+	end
+end
+
+local state_queue_params =
+{
+	barricade_0_attack = {5,  300, 0},
+	barricade_1_attack = {5,  300, 0},
+	barricade_2_attack = {5,  300, 0},
+	barricade_3_attack = {5,  300, 0},
+	cover_left_attack  = {4,  830, 0},
+	cover_right_attack = {4,  830, 0},
+	cover_up_attack    = {4,  830, 0},
+	bloodsucker_panic  = {30, 100, 0}
+}
+
+function get_queue_params(npc, st)
+	local a = state_queue_params[st.animation]
+	local npc_st = db.storage[npc:id()]
+	if a ~= nil then
+		local weap = npc:best_weapon()
+		local old_aim_time = npc:aim_time(weap)
+		if old_aim_time ~= 0 then
+			npc_st.old_aim_time = old_aim_time
+			npc:aim_time(weap, 0)
+		end
+		local st_old_aim_time = npc_st.old_aim_time
+		if st_old_aim_time ~= nil then
+			npc:aim_time(weap, st_old_aim_time)
+			npc_st.old_aim_time = nil
+		end
+		return a[1], a[2]
+	end
+	local st_old_aim_time = npc_st.old_aim_time
+	if st_old_aim_time ~= nil then
+		npc:aim_time(npc:best_weapon(), st_old_aim_time)
+		npc_st.old_aim_time = nil
+	end
+	return 3, 1000
+end

@@ -33,7 +33,7 @@ function main_menu:InitControls()
 	self:Register    (self.message_box, "msg_box")
 	local _ver       = xml:InitStatic("static_version", self)
 	local mm         = _G.main_menu.get_main_menu()
-	self.version     = "v" .. mm:GetGSVer() .. " - SRP v1.1.2"
+	self.version     = "v" .. mm:GetGSVer() .. " - SRP v1.1.3"
 	_ver:SetText     (self.version)
 	_ver_static      = _ver
 end

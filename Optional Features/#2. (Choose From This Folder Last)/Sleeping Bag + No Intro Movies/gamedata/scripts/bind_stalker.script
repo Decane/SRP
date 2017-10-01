@@ -8,7 +8,7 @@ end
 
 task_update = false
 delayed_alife_release_objects = {}
-to_delayed_alife_release_objects = {}
+local to_delayed_alife_release_objects = {}
 
 local game_difficulty_by_num = {[0] = "gd_novice", [1] = "gd_stalker", [2] = "gd_veteran", [3] = "gd_master"}
 local zones_needing_weapon_hide = 0
@@ -43,11 +43,13 @@ function actor_binder:net_spawn(data)
 
 	self.weather_manager:reset()
 
-	death_manager.init_drop_settings()
+	local level_name = level.name()
+
+	death_manager.init_level_drop_settings(level_name) -- SRP
 
 	self.task_manager = task_manager.get_task_manager()
 
-	if level.name() ~= "marsh" then
+	if level_name ~= "marsh" then
 		sim_board.get_sim_board():start_sim()
 	end
 
@@ -84,12 +86,12 @@ function actor_binder:net_destroy()
 --	sobj:set_callback(callback.article_info, nil)
 	sobj:set_callback(callback.on_item_take, nil)
 	sobj:set_callback(callback.on_item_drop, nil)
-	sobj:set_callback(callback.trade_sell_buy_item, nil)	-- SRP
+	sobj:set_callback(callback.trade_sell_buy_item, nil) -- SRP
 	sobj:set_callback(callback.task_state, nil)
 --	sobj:set_callback(callback.level_border_enter, nil)
 --	sobj:set_callback(callback.level_border_exit, nil)
 	sobj:set_callback(callback.take_item_from_box, nil)
---	sobj:set_callback(callback.use_object, nil)		-- SRP
+--	sobj:set_callback(callback.use_object, nil) -- SRP
 
 	if sr_psy_antenna.psy_antenna then
 		sr_psy_antenna.psy_antenna:destroy()
@@ -106,11 +108,11 @@ function actor_binder:reinit()
 	object_binder.reinit(self)
 
 	local sobj = self.object
-	local act_id = sobj:id()
+	local t = {}
 
-	db.storage[act_id] = {}
+	db.storage[sobj:id()] = t
 
-	self.st = db.storage[act_id]
+	self.st = t
 	self.st.pstor = nil
 
 	self.next_restrictors_update_time = -10000
@@ -124,12 +126,11 @@ function actor_binder:reinit()
 --	sobj:set_callback(callback.level_border_enter, self.level_border_enter, self)
 --	sobj:set_callback(callback.level_border_exit, self.level_border_exit, self)
 	sobj:set_callback(callback.take_item_from_box, self.take_item_from_box, self)
---	sobj:set_callback(callback.use_object, self.on_use_item, self)			-- SRP
+--	sobj:set_callback(callback.use_object, self.on_use_item, self) -- SRP
 end
 ----------------------------------------------------------------------------------------------------------------------
 function actor_binder:take_item_from_box(box, item)
-	local box_name = box:name()
-	treasure_manager.take_item_from_box(box, box_name, item)
+	treasure_manager.take_item_from_box(box, box:name(), item)
 end
 ----------------------------------------------------------------------------------------------------------------------
 --[[
@@ -175,7 +176,7 @@ function actor_binder:on_item_take(obj)
 		artefact:FollowByPath("NULL", 0, vector():set(500, 500, 500))
 		if bind_anomaly_zone.parent_zones_by_artefact_id[obj_id] ~= nil then
 			bind_anomaly_zone.parent_zones_by_artefact_id[obj_id]:on_artefact_take()
-			bind_anomaly_zone.parent_zones_by_artefact_id[obj_id] = nil			-- SRP
+			bind_anomaly_zone.parent_zones_by_artefact_id[obj_id] = nil -- SRP
 		end
 	end
 	for k, v in pairs (self.task_manager.task_info) do
@@ -239,12 +240,12 @@ function manage_autosaves()
 		if level_name == sg:level_name() then
 			-- update_path info per fluffy22
 			local savedir = fs:update_path(fs_path, "")
-			local level_prefix = string.sub(level_name, 1, 3)	-- use prefix, not full name
-			if level_name == "agroprom_underground" then		-- agroprom underground has same prefix as agroprom, so use "agru" instead of "agr" for it
+			local level_prefix = string.sub(level_name, 1, 3) -- use prefix, not full name
+			if level_name == "agroprom_underground" then -- agroprom underground has same prefix as agroprom, so use "agru" instead of "agr" for it
 				level_prefix = "agru"
 			end
 			if has_alife_info("stc_final_movie") then
-				level_prefix = "fp_"..level_prefix		-- prefix saves made in freeplay mode with "fp_"
+				level_prefix = "fp_"..level_prefix -- prefix saves made in freeplay mode with "fp_"
 			end
 			local lvl_autosave = level_prefix.."_autosave"
 			local lvl_autosave_sav = lvl_autosave..".sav"
@@ -375,7 +376,7 @@ function actor_binder:update(delta)
 			end
 		end
 
-		if xr_surge_hide.start_surge then	-- moved this block here - no need to run it every update
+		if xr_surge_hide.start_surge then -- moved this block here - no need to run it every update
 
 			if not xr_surge_hide.weather_surge then
 				xr_surge_hide.weather_surge = true
@@ -541,7 +542,7 @@ function actor_binder:save(packet)
 		packet:w_u16(k)
 	end
 
-	-- We must also do the above procedure for the to_ table, otherwise its contents will be lost on save/reload.
+	-- For compatibility with existing saves:
 
 	n = 0
 	for k in pairs (to_delayed_alife_release_objects) do
@@ -578,7 +579,7 @@ function actor_binder:load(reader)
 	local game_difficulty = reader:r_u8()
 	get_console():execute("g_game_difficulty "..game_difficulty_by_num[game_difficulty])
 
-	local stored_input_time = reader:r_bool()	-- reader:r_u8()
+	local stored_input_time = reader:r_bool() -- reader:r_u8()
 	if stored_input_time == true then
 		self.st.disable_input_time = utils.r_CTime(reader)
 	end
@@ -619,14 +620,14 @@ function actor_binder:load(reader)
 
 	n = reader:r_u8()
 	for i = 1, n do
-		to_delayed_alife_release_objects[reader:r_u16()] = true
+		delayed_alife_release_objects[reader:r_u16()] = true
 	end
 
-	-- Load the saved contents of the to_ table.
+	-- For compatibility with existing saves. Load the contents of to_delayed_alife_release_objects into delayed_alife_release_objects (might be a mix of mutants and NPCs):
 
 	n = reader:r_u8()
 	for i = 1, n do
-		to_delayed_alife_release_objects[reader:r_u16()] = true
+		delayed_alife_release_objects[reader:r_u16()] = true
 	end
 
 	n = reader:r_u8()

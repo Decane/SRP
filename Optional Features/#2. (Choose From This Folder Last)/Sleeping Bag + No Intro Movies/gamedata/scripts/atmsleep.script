@@ -4,30 +4,30 @@
 -- "Sleep for ClearSky" v 1.0
 ----------------------------------------------------
 
-local sleep_activ	= false
-local sleep_time	= 1		-- Time of sleep.
-local min_sleep_time	= 1		-- Min value of time.
-local max_sleep_time	= 12		-- Max value of time.
+local sleep_activ    = false
+local sleep_time     = 1     -- Time of sleep.
+local min_sleep_time = 1     -- Min value of time.
+local max_sleep_time = 12    -- Max value of time.
 
-local best_enemy	= nil		-- Best enamy.
-local danger		= 0		-- Danger value.
+local best_enemy     = nil   -- Best enamy.
+local danger         = 0     -- Danger value.
 
 local mutants = {
 
-	[clsid.bloodsucker_s]	= 1,
-	[clsid.boar_s]		= 2,
-	[clsid.dog_s]		= 4,
-	[clsid.flesh_s]		= 2,
-	[clsid.pseudodog_s]	= 3,
---	[clsid.burer_s]		= 1,
---	[clsid.cat_s]		= 2,
---	[clsid.chimera_s]	= 1,
---	[clsid.fracture_s]	= 2,
-	[clsid.gigant_s]	= 1,
---	[clsid.zombie_s]	= 3,
-	[clsid.snork_s]		= 3,
-	[clsid.tushkano_s]	= 5,
-	[clsid.psy_dog_s]	= 4
+	[clsid.bloodsucker_s] = 1,
+	[clsid.boar_s]        = 2,
+	[clsid.dog_s]         = 4,
+	[clsid.flesh_s]       = 2,
+	[clsid.pseudodog_s]   = 3,
+--	[clsid.burer_s]       = 1,
+--	[clsid.cat_s]         = 2,
+--	[clsid.chimera_s]     = 1,
+--	[clsid.fracture_s]    = 2,
+	[clsid.gigant_s]      = 1,
+--	[clsid.zombie_s]      = 3,
+	[clsid.snork_s]       = 3,
+	[clsid.tushkano_s]    = 5,
+	[clsid.psy_dog_s]     = 4
 }
 
 ------------------------------------------------------------------------------------------------
@@ -81,7 +81,7 @@ function sleep_stop()
 	surprise()
 	level.set_time_factor(system_ini():r_float("alife", "time_factor"))
 	local weather_manager = level_weathers.get_weather_manager()
-	weather_manager:reset()								-- reset weather
+	weather_manager:reset() -- reset weather
 	level.add_cam_effector("camera_effects\\prison_1.anm", 25, false, "")
 	level.add_cam_effector("camera_effects\\hit_back_left.anm", 26, false, "")
 end
@@ -93,6 +93,7 @@ end
 function sleep_start(slptime)
 	game.start_tutorial("atmdream")
 	db.actor:stop_talk()
+	get_hud():HideActorMenu()
 	level.set_time_factor(slptime * 480)
 	health_cr(slptime)
 	sleep_activ = true
@@ -116,23 +117,23 @@ function surprise()
 	local lvid = db.actor:level_vertex_id()
 	local gvid = db.actor:game_vertex_id()
 	level.add_pp_effector("teleport.ppe", 2006, false)
-	if danger > 100 then									-- actor death
+	if danger > 100 then                                                         -- actor death
 		if best_enemy == nil then
-			sim_create("bloodsucker_redhunter", db.actor:position(), lvid, gvid)	-- spawn default mutant
+			sim_create("bloodsucker_redhunter", db.actor:position(), lvid, gvid) -- spawn default mutant
 		else
-			sim_create(best_enemy:section(), db.actor:position(), lvid, gvid)	-- spawn the nearest enemy
+			sim_create(best_enemy:section(), db.actor:position(), lvid, gvid)    -- spawn the nearest enemy
 		end
 		db.actor:kill(db.actor)
 		return
 	end
-	if danger * 10 >= math.random(1, 1000) then		-- mutants spawn
-		if best_enemy == nil then			-- mutants not near actor
+	if danger * 10 >= math.random(1, 1000) then                                  -- mutants spawn
+		if best_enemy == nil then                                                -- mutants not near actor
 			for i = 1, 2 do
 				local dir = dirs[math.random(1, #dirs)]
 				local start_point_id = level.vertex_in_direction(lvid, dir, math.random(15, 20))
 				local sobj = sim_create("bloodsucker_redhunter", level.vertex_position(start_point_id), start_point_id, gvid)
 			end
-		elseif best_enemy:alive() then			-- nearby to actor
+		elseif best_enemy:alive() then                                           -- nearby to actor
 			local amount = math.random(1, 2)
 			if mutants[get_clsid(best_enemy)] then
 				amount = mutants[get_clsid(best_enemy)]
@@ -142,11 +143,11 @@ function surprise()
 				local start_point_id = level.vertex_in_direction(lvid, dir, math.random(15, 20))
 				local sobj = sim_create(best_enemy:section(), level.vertex_position(start_point_id), start_point_id, gvid)
 			end
-		else						-- corpse
+		else                                                                     -- corpse
 			local amount = 2
-			local mutant = "bloodsucker_redhunter"		-- default mutant
+			local mutant = "bloodsucker_redhunter"                               -- default mutant
 			if mutants[get_clsid(best_enemy)] then
-				mutant = best_enemy:section()			-- the nearest enemy
+				mutant = best_enemy:section()                                    -- the nearest enemy
 				amount = mutants[get_clsid(best_enemy)]
 			end
 			for i = 1, amount do
@@ -241,13 +242,13 @@ end
 function UISleep:set_level_danger()
 	danger = analyzer():evaluation()
 	if danger <= 0 then
-		self.fearbar:SetOriginalRect(Frect():set(0,0,0,0))	-- empty
+		self.fearbar:SetOriginalRect(Frect():set(0,0,0,0)) -- empty
 	else
-		local c = 21	-- rectangle (x1, y1, x2, y2)
+		local c = 21 -- rectangle (x1, y1, x2, y2)
 		local i = 195
 		local j = 206
 		local k = 203
-		local j2 = c + (j - c) * (danger / 100)
+		local j2 = c + (j - c) * (danger / 100) -- 21 + 1.85 * danger
 		if j2 > j then 
 			j2 = j
 		end
@@ -276,11 +277,11 @@ end
 ------------------------------------------------------------------------------------------------
 
 function UISleep:init_callbacks()
-	self:AddCallback("button_sleep",	ui_events.BUTTON_CLICKED,		self.sleep,		self)
-	self:AddCallback("button_quit",		ui_events.BUTTON_CLICKED,		self.ui_quit,		self)
-	self:AddCallback("button_right",	ui_events.BUTTON_CLICKED,		self.add_to_time,	self)
-	self:AddCallback("button_left",		ui_events.BUTTON_CLICKED,		self.sub_to_time,	self)
-	self:AddCallback("message_box",		ui_events.MESSAGE_BOX_OK_CLICKED,	self.OnMsgOk,		self)
+	self:AddCallback("button_sleep", ui_events.BUTTON_CLICKED,         self.sleep,       self)
+	self:AddCallback("button_quit",  ui_events.BUTTON_CLICKED,         self.ui_quit,     self)
+	self:AddCallback("button_right", ui_events.BUTTON_CLICKED,         self.add_to_time, self)
+	self:AddCallback("button_left",  ui_events.BUTTON_CLICKED,         self.sub_to_time, self)
+	self:AddCallback("message_box",  ui_events.MESSAGE_BOX_OK_CLICKED, self.OnMsgOk,     self)
 end
 
 ------------------------------------------------------------------------------------------------
@@ -351,9 +352,9 @@ end
 class "analyzer"
 
 function analyzer:__init()
-	self.danger	= 0
-	self.objects	= {}
-	self.actorpos	= db.actor:position()
+--	self.danger   = 0
+--	self.objects  = {}
+--	self.actorpos = db.actor:position()
 end
 
 ------------------------------------------------------------------------------------------------
@@ -361,51 +362,43 @@ end
 ------------------------------------------------------------------------------------------------
 
 function analyzer:evaluation()
+	local danger = 0
 	local min_dist = 300
 	local object_by_id = level.object_by_id
-	local actor_pos = self.actorpos
-	local T = self.objects
-	local obj_count = #T
-	for key, val in pairs (db.storage) do		-- search for enemies
-		local obj = object_by_id(key)
-		if obj and (IsStalker(obj) or IsMonster(obj)) then
-			local dist_to_actor = obj:position():distance_to(actor_pos)
-			if dist_to_actor <= 150 then
-				if dist_to_actor < min_dist and IsMonster(obj) then
-					min_dist = dist_to_actor
-					best_enemy = obj
+	local actor = db.actor
+	local actor_pos = actor:position()
+	local obj
+	for npc_id in pairs (db.storage) do                                     -- iterate over online entities
+		obj = object_by_id(npc_id)
+		if obj then
+			if IsMonster(obj) then
+				local dist = obj:position():distance_to(actor_pos)
+				if dist <= 150 then
+					if dist < min_dist then
+						min_dist = dist
+						best_enemy = obj                                    -- nearest mutant within 150m of player is best_enemy
+					end
+					if obj:alive() then
+						danger = danger + (700 / dist)                      -- live mutant increases danger by 700 / dist
+					else
+						danger = danger + (300 / dist)                      -- mutant corpse increases danger by 300 / dist
+					end
 				end
-				obj_count = obj_count + 1
-				T[obj_count] = obj
---				table.insert(T, obj)
+			elseif IsStalker(obj) then
+				local dist = obj:position():distance_to(actor_pos)
+				if dist <= 150 then
+					if obj:alive() then
+						if obj:relation(actor) == game_object.enemy then
+							danger = danger + (700 / dist)                  -- live human enemy increases danger by 700 / dist
+						elseif dist <= 30 then
+							danger = danger - 12                            -- live human non-enemy within 30m decreases danger by 12
+						end
+					else
+						danger = danger + (300 / dist)                      -- human corpse increases danger by 300 / dist
+					end
+				end
 			end
 		end
 	end
-	if #T < 1 then
-		return 0
-	end
-	for key, obj in pairs (T) do					-- evaluate danger
-		local dist = obj:position():distance_to(actor_pos)
-		if IsStalker(obj) then
-			if obj:alive() then
-				if obj:relation(db.actor) == game_object.enemy then
-					self.danger = self.danger + (70 / (dist / 10))		-- human enemy
-				elseif dist <= 30 then
-					self.danger = self.danger - 12				-- human non-enemy closeby
-				end
-			else
-				self.danger = self.danger + (30 / (dist / 10))			-- human corpse
-			end
-		else										-- elseif IsMonster(obj) then
-			if obj:alive() then
-				self.danger = self.danger + (70 / (dist / 10))			-- mutant
-			else
-				self.danger = self.danger + (30 / (dist / 10))			-- mutant corpse
-			end
-		end
-	end
-	if self.danger < 0 then
-		return 0
-	end
-	return self.danger
+	return danger < 0 and 0 or danger
 end
