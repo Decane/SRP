@@ -4,103 +4,103 @@
 	<!-- Dialogs -->
 
 	<string id="st_tm_guide_4">
-		<text>Nowhere during an emission, are you crazy?</text>
+		<text>Никуда во время выброса, ты что сумасшедший?</text>
 	</string>
 	<string id="st_tm_guide_22">
-		<text>Nowhere, I changed my mind.</text>
+		<text>Никуда, я передумал.</text>
 	</string>
 	<string id="st_tm_guide_213">
-		<text>Whoops, I can’t afford this.</text>
+		<text>Упс, я не могу себе этого позволить.</text>
 	</string>
 	<string id="st_tm_guide_214">
-		<text>On second thought, maybe now is not a good time to travel.</text>
+		<text>Подумай хорошенько, возможно, сейчас не самое подходящее время для путешествий.</text>
 	</string>
 	<string id="gar_bandit_robbery_112">
-		<text>I don’t think so.</text>
+		<text>Я так не думаю.</text>
 	</string>
 	<string id="gar_bandit_robbery_122">
-		<text>Not today.</text>
+		<text>Не сегодня.</text>
 	</string>
 	<string id="hello_mil_killer_112">
-		<text>Looking for information about the situation here. Can you tell me anything?</text>
+		<text>Ищу информацию о ситуации здесь. Ты можешь мне что-нибудь рассказать?</text>
 	</string>
 
 	<!-- Prompts -->
 
 	<string id="tips_wait_conversation_finish">
-		<text>You must wait for the transmission to finish.</text>
+		<text>Вы должны дождаться завершения передачи.</text>
 	</string>
 	<string id="tips_wait_emission_finish">
-		<text>You must wait for the emission to finish.</text>
+		<text>Ты должен дождаться завершения выброса.</text>
 	</string>
 	<string id="no_sleep_during_emission">
-		<text>You cannot sleep through an emission!</text>
+		<text>Ты не можешь спать во время выброса!</text>
 	</string>
 	<string id="nothing_to_repair">
-		<text>Nothing to repair!</text>
+		<text>Нечего ремонтировать!</text>
 	</string>
 
 	<!-- NPCs -->
 
 	<string id="yan_levshas_crew">
-		<text>Lefty’s crew member</text>
+		<text>Участник команды Левша</text>
 	</string>
 
 	<!-- Equipment -->
 
 	<string id="st_mar_quest_wpn_pm_1_name">
-		<text>Modified PM</text>
+		<text>Модифицированный ПМ</text>
 	</string>
 	<string id="st_mar_quest_wpn_pm_1_descr">
-		<text>A modified Makarov PM, valuable to Clear Sky.</text>
+		<text>Модифицированный Пистолет Макарова, важный для «Чистого Неба».</text>
 	</string>
 	<string id="st_mar_quest_wpn_ak74u_1_name">
-		<text>Special AKS-74U</text>
+		<text>Особый АКС74У</text>
 	</string>
 	<string id="st_mar_quest_novice_outfit_1_name">
-		<text>Experimental suit</text>
+		<text>Экспериментальный костюм</text>
 	</string>
 	<string id="st_mar_quest_novice_outfit_1_descr">
-		<text>An experimental suit saturated with anomalous jelly.</text>
+		<text>Экспериментальный костюм, пропитанный аномалией «холодец».</text>
 	</string>
 
 	<!-- Locations -->
 
 	<string id="agroprom_underground">
-		<text>Agroprom Underground</text>
+		<text>Подземелья «Агропрома»</text>
 	</string>
 
 	<!-- Optionals -->
 
 	<string id="st_sleepingbag">
-		<text>Sleeping bag</text>
+		<text>Спальный мешок</text>
 	</string>
 	<string id="st_sleepingbag_descr">
-		<text>A portable sleeping bag.</text>
+		<text>Переносной спальный мешок.</text>
 	</string>
 
 	<!-- Squad Stages -->
 
 	<string id="st_stage_idle">
-		<text>(idle)</text>
+		<text>(бездействие)</text>
 	</string>
 	<string id="st_stage_wait">
-		<text>(waiting)</text>
+		<text>(ожидание)</text>
 	</string>
 	<string id="st_stage_defence">
-		<text>(defending)</text>
+		<text>(защита)</text>
 	</string>
 	<string id="st_stage_combat">
-		<text>(in combat)</text>
+		<text>(в бою)</text>
 	</string>
 	<string id="st_stage_post_combat">
-		<text>(post-combat)</text>
+		<text>(после боя)</text>
 	</string>
 	<string id="st_stage_move">
-		<text>(moving)</text>
+		<text>(перемещение)</text>
 	</string>
 	<string id="st_stage_prepare">
-		<text>(preparing)</text>
+		<text>(подготовка)</text>
 	</string>
 
 </string_table>

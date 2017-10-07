@@ -475,8 +475,8 @@ AMK Team, angrydog, Angus McFisticuffs, Anonymous, antifrost, Armada, Atempad, b
 barin, BobBQ, burger, Canzah, castl, CeeJay.dk, Control volume, Danila_STALKER,
 dDefinder, Decane, DerHeiligeApfel, DEXXX, Fangion, Gosuke, GSC Game World, IG2007,
 InnerGround, jjwalker (Cameron Sneed), Kill_the_Strelok, Lobstris, MacroN, Marked_2,
-MrSeyker, notanumber (nandersen), NatVac, OGSM Team, pavlov, PhoenixHeart, Red7204,
-RoboMook, SetaKat (fluffy22), smoq2, smrtphoneusr, Tariq, Vandal, Xetrill
+MrSeyker, notanumber (nandersen), NatVac, OGSM Team, olegj5, pavlov, PhoenixHeart,
+Red7204, RoboMook, SetaKat (fluffy22), smoq2, smrtphoneusr, Tariq, Vandal, Xetrill
 
  • Useful feedback and testing:
 

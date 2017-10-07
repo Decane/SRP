@@ -23,6 +23,7 @@ v1.1.3
 + Made a couple of drop-boxes in the Abandoned Hospital destructible that mistakenly were not so in the unmodded game. - Decane
 + Fixed the incorrect parsing of hyphenated item names appearing as dependees for ammo in section 'item_dependence' in death_generic.ltx. - Decane
 + Improved error diagnostics on _g.abort() invocation - a Lua stack traceback is now printed by default. - Decane
++ Russian translation. - olegj5
 + (ZRP import) Fixed the use_object callback for doors and buttons being reset on scheme switch. - NatVac
 + (ZRP import) Fixed NPCs sharing a common global variable in state_mgr.evaluator_state_mgr_idle_alife:evaluate() to determine their individual behavior. - NatVac per Alundaio
 + (ZRP import) Prevented NPCs dying of collision damage when spawning at the same spot as another NPC. - bardak
