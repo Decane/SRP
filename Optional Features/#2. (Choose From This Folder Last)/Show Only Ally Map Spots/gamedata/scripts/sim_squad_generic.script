@@ -204,11 +204,12 @@ function sim_squad_generic:create_npc(spawn_smart)
 
 	local custom_resource = nil
 	local min_npc, max_npc = 3, 5
+	local spawn_level = spawn_smart.smart_level
 
 	if self.player_id == "monster" then
 
 		local min, max = 0, 5
-		local monster_resource = monster_resource_by_level[spawn_smart.smart_level]
+		local monster_resource = monster_resource_by_level[spawn_level]
 
 		if monster_resource ~= nil then
 			min = monster_resource[1]
@@ -231,7 +232,7 @@ function sim_squad_generic:create_npc(spawn_smart)
 		position.x = position.x + math_random(-2, 2)
 		position.z = position.z + math_random(-2, 2)
 
-		local spawn_section = faction:get_spawn_section(spawn_smart, custom_resource)
+		local spawn_section = faction:get_spawn_section(spawn_level, custom_resource)
 		local obj = sim:create(spawn_section, position, base_lvi, base_gvi)
 		local obj_id = obj.id
 

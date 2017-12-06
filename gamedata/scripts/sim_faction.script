@@ -364,7 +364,7 @@ function se_sim_faction:update()
 --	self:refresh()
 end
 
-function se_sim_faction:get_spawn_section(spawn_smart, custom_resource)
+function se_sim_faction:get_spawn_section(level_name, custom_resource)
 
 	local resource_spawn_data
 	if custom_resource ~= nil then
@@ -387,7 +387,6 @@ function se_sim_faction:get_spawn_section(spawn_smart, custom_resource)
 		end
 	end
 
-	local level_name = spawn_smart.smart_level
 	local level_spawn_data = self.spawn_by_level[level_name]
 
 	if level_spawn_data == nil then
