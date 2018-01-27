@@ -23,6 +23,8 @@ local monster_num_by_resource = {
 
 local math_random = math.random
 local math_ceil = math.ceil
+local string_sub = string.sub
+local table_remove = table.remove
 
 class "sim_squad_generic"
 
@@ -542,15 +544,16 @@ local function pave_way_off_smart(board, front, archive)
 	local num_front = #front
 	for i = 1, num_front do
 		local front_smart = front[i]
+		local front_smart_owner = front_smart.owner
 		for neighbor_smart_id, neighbor_smart in pairs (board:get_nearest_smarts(front_smart.smart)) do
-			if archive[neighbor_smart_id] == nil and sim_board.is_point_avail(neighbor_smart, front_smart.owner) then
+			if front_smart_owner ~= "none" and archive[neighbor_smart_id] == nil and sim_board.is_point_avail(neighbor_smart, front_smart_owner) then
 				archive[neighbor_smart_id] = true
 				local neighbor_smart_owner = neighbor_smart.player_name
 				local friends_at_neighbor
-				if neighbor_smart_owner == "none" or game_relations.is_factions_enemies(front_smart.owner, neighbor_smart_owner) then
-					friends_at_neighbor = board:get_smart_squad_quantity(neighbor_smart, board.players[front_smart.owner])
-				elseif neighbor_smart_owner == front_smart.owner then
-					friends_at_neighbor = board:get_smart_squad_quantity(neighbor_smart, board.players[front_smart.owner]) + board:get_smart_population(neighbor_smart)
+				if neighbor_smart_owner == "none" or game_relations.is_factions_enemies(front_smart_owner, neighbor_smart_owner) then
+					friends_at_neighbor = board:get_smart_squad_quantity(neighbor_smart, board.players[front_smart_owner])
+				elseif neighbor_smart_owner == front_smart_owner then
+					friends_at_neighbor = board:get_smart_squad_quantity(neighbor_smart, board.players[front_smart_owner]) + board:get_smart_population(neighbor_smart)
 				end
 				if friends_at_neighbor ~= nil then
 					if friends_at_neighbor < neighbor_smart.squad_capacity then
@@ -558,9 +561,10 @@ local function pave_way_off_smart(board, front, archive)
 						local sim_avail_table = {}
 						while step ~= nil do
 							local step_squad = step.squad
-							sim_avail_table[step.smart_id] = {step.smart, step.smart.sim_avail}
---							dbglog("Booting squad '%s' from smart '%s' with population %d, friendly movers %d, and sim_avail [%s] to smart '%s' with population %d and friendly movers %d", step_squad.squad_id, smart_names.get_smart_terrain_name(step.smart), board:get_smart_population(step.smart), board:get_smart_squad_quantity(step.smart, board.players[step_squad.player_id]), tostring(step.smart.sim_avail), smart_names.get_smart_terrain_name(step_target), board:get_smart_population(step_target), board:get_smart_squad_quantity(step_target, board.players[step_squad.player_id]))
-							step.smart.sim_avail = {{section = "false", infop_check = {}, infop_set = {}}} -- pseudo-hack to temporarily make the smart left by step_squad unavailable for unwanted visitors in case a race condition would otherwise send them there
+							local step_smart = step.smart
+							sim_avail_table[step.smart_id] = {step_smart, step_smart.sim_avail}
+--							dbglog("Booting squad '%s' from smart '%s' with population %d, friendly movers %d, and sim_avail [%s] to smart '%s' with population %d and friendly movers %d", step_squad.squad_id, smart_names.get_smart_terrain_name(step_smart), board:get_smart_population(step_smart), board:get_smart_squad_quantity(step_smart, board.players[step_squad.player_id]), tostring(step_smart.sim_avail), smart_names.get_smart_terrain_name(step_target), board:get_smart_population(step_target), board:get_smart_squad_quantity(step_target, board.players[step_squad.player_id]))
+							step_smart.sim_avail = {{section = "false", infop_check = {}, infop_set = {}}} -- pseudo-hack to temporarily make the smart left by step_squad unavailable for unwanted visitors in case a race condition would otherwise send them there
 --[[
 							-- TODO: Is this necessary? Maybe e.g. if step_squad is in combat when booted off their smart...
 							-- Update: Nope. Combat manager unregistration is done in sim_attack_point:make() if necessary, and step_squad.current_action is guaranteed to be nil or sim_stay_point, which doesn't need finalization. TODO: Check: Also, not necessary to set current_action to nil from sim_stay_point.
@@ -574,7 +578,7 @@ local function pave_way_off_smart(board, front, archive)
 ]]
 							step_squad.current_action = sim_attack_point(step_squad, step_target_id, true)
 							step_squad.current_action:make()
-							step, step_target_id, step_target = step.prev, step.smart_id, step.smart
+							step, step_target_id, step_target = step.prev, step.smart_id, step_smart
 						end
 						for k, smart_data in pairs (sim_avail_table) do
 --							dbglog("Reinstating sim_avail setting for smart '%s' to [%s]", smart_names.get_smart_terrain_name(smart_data[1]), tostring(smart_data[2]))
@@ -593,7 +597,7 @@ local function pave_way_off_smart(board, front, archive)
 		end
 	end
 	for i = 1, num_front do
-		table.remove(front, 1)
+		table_remove(front, 1)
 	end
 	if #front == 0 then
 --		dbglog("Algorithm failed to unblock faction war!")
@@ -1314,7 +1318,7 @@ function sim_squad_generic:refresh()
 		return
 	end
 	local actor = db.actor
-	local actor_faction = string.sub(actor and actor:character_community() or alife():actor():community(), 7)	-- actor faction always named 'actor_*', so to match '*', get sub-string from index 7
+	local actor_faction = string_sub(actor and actor:character_community() or alife():actor():community(), 7) -- actor faction always named 'actor_*', so to match '*', get sub-string from index 7
 	if self.player_id ~= actor_faction then
 		self:show_mini_only()
 		return
