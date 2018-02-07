@@ -545,7 +545,7 @@ local function pave_way_off_smart(board, front, archive)
 		local front_smart = front[i]
 		local front_smart_owner = front_smart.owner
 		for neighbor_smart_id, neighbor_smart in pairs (board:get_nearest_smarts(front_smart.smart)) do
-			if front_smart_owner ~= "none" and archive[neighbor_smart_id] == nil and sim_board.is_point_avail(neighbor_smart, front_smart_owner) then
+			if archive[neighbor_smart_id] == nil and sim_board.is_point_avail(neighbor_smart, front_smart_owner) then
 				archive[neighbor_smart_id] = true
 				local neighbor_smart_owner = neighbor_smart.player_name
 				local friends_at_neighbor
@@ -586,7 +586,9 @@ local function pave_way_off_smart(board, front, archive)
 						return true
 					end
 					for k, neighbor_squad in pairs (board.smarts[neighbor_smart_id].squads) do
-						if not neighbor_squad:get_script_target() then
+						local neighbor_squad_action = neighbor_squad.current_action
+						-- Only if at least one neighbor_squad is stationary does it make sense to add neighbor_smart to front:
+						if (neighbor_squad_action == nil or neighbor_squad_action.name == "stay_point") and not neighbor_squad:get_script_target() then
 							front[#front + 1] = {smart = neighbor_smart, smart_id = neighbor_smart_id, owner = neighbor_smart_owner, squad = neighbor_squad, prev = front_smart}
 							break
 						end
@@ -654,6 +656,7 @@ function sim_squad_generic:get_next_action()
 
 	if sim_board.is_point_avail(smart, squad_faction) == nil then
 		if not self:get_script_target() then
+			-- get_next_action() is called only when self.current_action = nil, so squad_faction is definitely smart's owner
 			local front = {{smart = smart, smart_id = smart_id, owner = squad_faction, squad = self}}
 			local archive = {[smart_id] = true}
 --			dbglog("Squad '%s' forbidden from smart '%s' - about to attempt to boot off", self.squad_id, smart_names.get_smart_terrain_name(smart))
