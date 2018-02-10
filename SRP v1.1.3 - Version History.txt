@@ -23,6 +23,7 @@ v1.1.3
 + Fixed the issue where a squad commander icon could overlap with a trader icon on the map. - Decane
 + Made a couple of drop-boxes in the Abandoned Hospital destructible that mistakenly were not so in the unmodded game. - Decane
 + Fixed the incorrect parsing of hyphenated item names appearing as dependees for ammo in section 'item_dependence' in death_generic.ltx. - Decane
++ Fixed a typo in Sakharov's trade config that prevented the right multiplier being applied to the sell-price of shotgun ammo. - warcatt00
 + Improved error diagnostics on _g.abort() invocation - a Lua stack traceback is now printed by default. - Decane
 + Russian translation. - olegj5
 + (ZRP import) Fixed the use_object callback for doors and buttons being reset on scheme switch. - NatVac
