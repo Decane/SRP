@@ -7,6 +7,21 @@ local DEATH_IDLE_TIME = 10*60
 local path_fields = {"path_walk", "path_main", "path_home", "center_point"}
 local valid_territory = {default = true, base = true, resource = true, territory = true}
 
+local math_max = math.max
+local table_sort = table.sort
+
+local _sort_by_job_prior_asc = function(a, b) return a.job_prior < b.job_prior end
+local _sort_by_prior_desc = function(a, b) return a._prior > b._prior end
+
+local function sort_jobs(jobs)
+	for k, v in pairs (jobs) do
+		if v.jobs ~= nil then
+			sort_jobs(v.jobs)
+		end
+	end
+	table_sort(jobs, _sort_by_prior_desc)
+end
+
 local function job_avail_to_npc(npc_info, job_info, smart)
 
 --	local job = smart.job_data[job_info.job_id]
@@ -226,7 +241,8 @@ end
 function se_smart_terrain:register_npc(obj)
 
 	if self.b_registred == false then
-		table.insert(self.npc_to_register, obj)
+--		table.insert(self.npc_to_register, obj)
+		self.npc_to_register[#self.npc_to_register + 1] = obj
 		return
 	end
 
@@ -302,17 +318,6 @@ function se_smart_terrain:load_jobs()
 	self.jobs = gulag_general.load_job(self)
 
 	self.ltx, self.ltx_name = xr_gulag.loadLtx(self:name())
-
-	local sort = table.sort
-
-	local function sort_jobs(jobs)
-		for k, v in pairs (jobs) do
-			if v.jobs ~= nil then
-				sort_jobs(v.jobs)
-			end
-		end
-		sort(jobs, function(a, b) return a._prior > b._prior end)
-	end
 
 	sort_jobs(self.jobs)
 
@@ -464,7 +469,7 @@ function se_smart_terrain:update_jobs(object)
 		return
 	end
 
-	table.sort(self.npc_info, function(a, b) return a.job_prior < b.job_prior end)
+	table_sort(self.npc_info, _sort_by_job_prior_asc)
 
 	for k, v in pairs (self.npc_info) do
 
@@ -865,7 +870,7 @@ function se_smart_terrain:update()
 	local actor = db.actor
 	if actor ~= nil then
 		local distance = actor:position():distance_to_sqr(self.position)
-		local idle_time = math.max(60, 0.003 * distance)
+		local idle_time = math_max(60, 0.003 * distance)
 		self.check_time = current_time + idle_time
 	else
 		self.check_time = current_time + 10

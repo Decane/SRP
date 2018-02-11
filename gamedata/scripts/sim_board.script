@@ -47,6 +47,8 @@ sim_level_cluster = {
 	stancia_2            = 6
 }
 
+local _sort_by_value_asc = function(a, b) return a.value < b.value end
+
 function calc_point(point, prev_point, squad, src_smart_id, tgt_smart_id, arhive, front)
 
 	local point_id = point.id
@@ -181,7 +183,7 @@ end
 
 function iterate_point(squad, src_smart_id, tgt_smart_id, arhive, front) -- initially: arhive empty, front contains just source smart which isn't also target smart
 
-	table_sort(front, function(a, b) return a.value < b.value end)
+	table_sort(front, _sort_by_value_asc)
 
 	local front_point = front[1]
 
@@ -255,7 +257,7 @@ end
 
 function iterate_conductor_point(npc_community, src_smart_id, tgt_smart_id, arhive, front)
 
-	table_sort(front, function(a, b) return a.value < b.value end)
+	table_sort(front, _sort_by_value_asc)
 
 	local front_point = front[1]
 
@@ -778,7 +780,7 @@ function sim_board:find_path(src_smart_id, tgt_smart_id, squad)
 		step = arhive[step].prev
 	end
 
-	table_sort(path, function(a, b) return a.value < b.value end)
+	table_sort(path, _sort_by_value_asc)
 
 	return path
 end
@@ -803,7 +805,7 @@ function sim_board:find_conductor_path(src_smart_id, tgt_smart_id, npc)
 			path[c] = {id = step, value = arhive[step].value}
 			step = arhive[step].prev
 		end
-		table_sort(path, function(a, b) return a.value < b.value end)
+		table_sort(path, _sort_by_value_asc)
 	end
 
 	return path

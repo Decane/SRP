@@ -1,7 +1,15 @@
 class "se_sim_faction"	(cse_alife_smart_zone)
 
+local table_sort = table.sort
+local table_remove = table.remove
+local math_random = math.random
+
+local _sort_by_squad_dist_asc = function(a, b) return a.squads[1].dist < b.squads[1].dist end
+local _sort_by_dist_asc = function(a, b) return a.dist < b.dist end
+local _sort_by_target_dist_asc = function(a, b) return a.dist_to_target < b.dist_to_target end
+
 function se_sim_faction:__init (section) super (section)
---	self.sid = math.random(100000)
+--	self.sid = math_random(100000)
 	self.squad_population_max = 0
 	self.resource_level = 0	
 	self.glory_level = 0
@@ -101,13 +109,13 @@ function se_sim_faction:read_params()
 
 		i = i + 1
 
---		table.insert(self.expansion_level, t)	-- faster to use the method below
+--		table.insert(self.expansion_level, t) -- faster to use the method below
 		T[i] = t
 
 		section = "expansion_"..i
 	end
 
-	table.sort(T, function(a, b) return a.id < b.id end)
+	table_sort(T, function(a, b) return a.id < b.id end)
 
 	if setting_ini:section_exist("secondary_targets") then
 		n = setting_ini:line_count("secondary_targets")
@@ -150,9 +158,9 @@ function se_sim_faction:on_register()
 		board_squads[squad.squad_id] = squad
 	end
 
-	self:fill_start_position()			-- executes once at the start of every new game
+	self:fill_start_position() -- executes once at the start of every new game
 
-	for k, v in pairs (faction_squads) do		-- loads all squad map spots on initialization
+	for k, v in pairs (faction_squads) do -- loads all squad map spots on initialization
 		v:refresh()
 	end
 
@@ -235,7 +243,7 @@ function se_sim_faction:update()
 					local sim = alife()
 					if squad_population < squad_population_max then
 						local spawn_smart
---						for i = squad_population, squad_population_max do		-- suppose squad_population = 3, squad_population_max = 5; then with GSC's code, we spawn squads for i = 3, 4, and 5 -- that makes 3(!) squads, which is 1 too many!
+--						for i = squad_population, squad_population_max do -- suppose squad_population = 3, squad_population_max = 5; then with GSC's code, we spawn squads for i = 3, 4, and 5 -- that makes 3(!) squads, which is 1 too many!
 						for i = 1, (squad_population_max - squad_population) do
 							spawn_smart = board:get_spawn_smart(self)
 							if spawn_smart ~= nil then
@@ -331,7 +339,7 @@ function se_sim_faction:update()
 												end
 											end
 											if c > 0 then												-- if there are squads available to be assigned to the advance_point:
-												table.sort(avail_squads, function(a, b) return a.dist_to_target < b.dist_to_target end)		-- sort the squads in order of distance to target
+												table_sort(avail_squads, _sort_by_target_dist_asc)		-- sort the squads in order of distance to target
 --												for i = 1, #avail_squads do
 --													dbglog(i..": "..avail_squads[i].squad_id..", "..avail_squads[i].dist_to_target)
 --												end
@@ -397,7 +405,7 @@ function se_sim_faction:get_spawn_section(level_name, custom_resource)
 	for k, v in pairs (resource_spawn_data) do
 		for kk, vv in pairs (level_spawn_data) do
 			if v.section == vv.section then
---				table.insert(spawn_data, {section = v.section, prob = v.prob * vv.prob})	-- table.insert is slow in loops, use the method below instead
+--				table.insert(spawn_data, {section = v.section, prob = v.prob * vv.prob}) -- table.insert is slow in loops, use the method below instead
 				c = c + 1
 				spawn_data[c] = {section = v.section, prob = v.prob * vv.prob}
 				break
@@ -412,7 +420,7 @@ function se_sim_faction:get_spawn_section(level_name, custom_resource)
 
 	local spawn_section = nil
 
-	sum = math.random(0, sum)
+	sum = math_random(0, sum)
 	for k, v in pairs (spawn_data) do
 		sum = sum - v.prob
 		if sum <= 0 then
@@ -462,6 +470,7 @@ end
 function se_sim_faction:calculate_squad_tasks()
 
 	self.squad_target_cache = {}
+
 	local squad_need_task = {}
 	local distance_table = {}
 
@@ -470,9 +479,9 @@ function se_sim_faction:calculate_squad_tasks()
 	end
 
 	local c = 0
-	local sort, script_target = table.sort
+
 	for k, squad in pairs (self.squads) do								-- for all squads:
-		script_target = squad:get_script_target()
+		local script_target = squad:get_script_target()
 		if script_target ~= nil then
 			self.squad_target_cache[squad.squad_id] = script_target				-- if squad has script target then assign squad to that target and
 			if self.target_smart_value[script_target] ~= nil then							-- if script target is a registered target smart then
@@ -526,7 +535,7 @@ function se_sim_faction:calculate_squad_tasks()
 		end
 
 		if num > 0 then										-- if at least one squad is in the same level cluster as registered target smart then
-			sort(t, function(a, b) return a.dist < b.dist end)				-- sort 't' by squad distance to registered target smart in ascending order
+			table_sort(t, _sort_by_dist_asc)				-- sort 't' by squad distance to registered target smart in ascending order
 --			table.insert(distance_table, {target_smart = target_smart, squads = t})		-- and add {target_smart, squad infos from 't'} to distance_table
 			c = c + 1
 			distance_table[c] = {target_smart = target_smart, squads = t}
@@ -544,16 +553,16 @@ function se_sim_faction:calculate_squad_tasks()
 				end
 			end
 
-			table.remove(distance_table[k].squads, del_id)
+			table_remove(distance_table[k].squads, del_id)
 
 			if #distance_table[k].squads < 1 then
 				table.insert(remove_table, k)
 			end
 		end
 
-		sort(remove_table, function(a, b) return a > b end)
+		table_sort(remove_table, function(a, b) return a > b end)
 		for k, v in pairs (remove_table) do
-			table.remove(distance_table, v)							-- remove from distance_table any smart for which no squads left available
+			table_remove(distance_table, v)							-- remove from distance_table any smart for which no squads left available
 		end
 	end
 
@@ -564,7 +573,7 @@ function se_sim_faction:calculate_squad_tasks()
 		if distance_table[1].squads[1] == nil then
 			break
 		else
-			sort(distance_table, function(a, b) return a.squads[1].dist < b.squads[1].dist end)
+			table_sort(distance_table, _sort_by_squad_dist_asc)
 		end
 
 		v1 = distance_table[1]
@@ -572,46 +581,46 @@ function se_sim_faction:calculate_squad_tasks()
 		tmp_squad_id = v1_squads1.squad_id
 
 		if v1.target_smart.num >= v1.target_smart.cap then
-			table.remove(distance_table, 1)
+			table_remove(distance_table, 1)
 		else
 			self.squad_target_cache[tmp_squad_id] = v1.target_smart.smart_id
 			v1.target_smart.num = v1.target_smart.num + 1
 			if v1.target_smart.num >= v1.target_smart.cap then
-				table.remove(distance_table, 1)
+				table_remove(distance_table, 1)
 			end
 
 			clear_squad(tmp_squad_id)
 		end
 	end
 ]]
-	local rem, tmp_squad_id = table.remove
 
-	while #distance_table > 0 do									-- while there are elements in distance_table:
+	while #distance_table > 0 do -- while there are elements in distance_table:
 
 --		if tostring(self.player_name) == "csky" then
 --			dbglog("Iteration time is "..tostring(time_global())..".")
 --		end
 
-		sort(distance_table, function(a, b) return a.squads[1].dist < b.squads[1].dist end)	-- sort distance_table in ascending order by distance between smart and closest squad
+		table_sort(distance_table, _sort_by_squad_dist_asc) -- sort distance_table in ascending order by distance between smart and closest squad
 
-		tmp_squad_id = distance_table[1].squads[1].squad_id					-- first element in table will be smart-squad pair with least distance between them
-													-- often that means smart-squad pair with *no* distance between them
-													-- i.e. pair wherewith squad is already on smart
+		local tmp_squad_id = distance_table[1].squads[1].squad_id -- first element in table will be smart-squad pair with least distance between them
+		                                                          -- often that means smart-squad pair with *no* distance between them
+		                                                          -- i.e. pair wherewith squad is already on smart
 
-		self.squad_target_cache[tmp_squad_id] = distance_table[1].target_smart.smart_id		-- assign nearest squad to smart in first element of distance_table
+		self.squad_target_cache[tmp_squad_id] = distance_table[1].target_smart.smart_id -- assign nearest squad to smart in first element of distance_table
 
 --		if tostring(self.player_name) == "csky" then
 --			dbglog("Assigned "..game.translate_string(self.player_name).." squad with ID "..tostring(tmp_squad_id).." to ["..game.translate_string("st_name_"..distance_table[1].target_smart.smart:name()).."].")
 --		end
 
-		distance_table[1].target_smart.num = distance_table[1].target_smart.num + 1		-- increase number of squads assigned to it by 1
-		if distance_table[1].target_smart.num >= distance_table[1].target_smart.cap then	-- if number of squads assigned to it now meets or exceeds its capacity,
+		distance_table[1].target_smart.num = distance_table[1].target_smart.num + 1 -- increase number of squads assigned to it by 1
+
+		if distance_table[1].target_smart.num >= distance_table[1].target_smart.cap then -- if number of squads assigned to it now meets or exceeds its capacity,
 
 --			if tostring(self.player_name) == "csky" then
 --				dbglog("Removed ["..game.translate_string("st_name_"..distance_table[1].target_smart.smart:name()).."] from distance_table since its capacity ("..tostring(distance_table[1].target_smart.cap)..") is saturated ("..tostring(distance_table[1].target_smart.num)..").")
 --			end
 
-			rem(distance_table, 1)								-- remove it from distance_table
+			table_remove(distance_table, 1) -- remove it from distance_table
 		end
 
 		for i = #distance_table, 1, -1 do
@@ -621,7 +630,7 @@ function se_sim_faction:calculate_squad_tasks()
 --						dbglog("Made "..game.translate_string(self.player_name).." squad with ID "..tostring(tmp_squad_id).." unassignable to ["..game.translate_string("st_name_"..distance_table[i].target_smart.smart:name()).."].")
 --					end
 
-					rem(distance_table[i].squads, j)				-- remove the assigned squad wherever it occurs in distance_table
+					table_remove(distance_table[i].squads, j) -- remove the assigned squad wherever it occurs in distance_table
 					break
 				end
 			end
@@ -630,7 +639,7 @@ function se_sim_faction:calculate_squad_tasks()
 --					dbglog("Removed ["..game.translate_string("st_name_"..distance_table[i].target_smart.smart:name()).."] from distance_table since no "..game.translate_string(self.player_name).." squad is assignable to it.")
 --				end
 
-				rem(distance_table, i)							-- remove any smarts from distance_table to which no squad is assignable
+				table_remove(distance_table, i) -- remove any smarts from distance_table to which no squad is assignable
 			end
 		end
 	end
@@ -638,7 +647,7 @@ end
 
 function se_sim_faction:register_squad(squad)
 --	table.insert(self.squads, squad)
-	self.squads[#self.squads + 1] = squad		-- more efficient
+	self.squads[#self.squads + 1] = squad -- more efficient
 end
 
 function se_sim_faction:unregister_squad(squad)
@@ -653,7 +662,7 @@ function se_sim_faction:unregister_squad(squad)
 		abort("[sim_faction.unregister_squad]: Cannot delete squad with ID '%s' because it does not exist.", tostring(squad.squad_id))
 	end
 	self:clear_squad_target(squad)
-	table.remove(self.squads, delete_id)
+	table_remove(self.squads, delete_id)
 end
 
 function se_sim_faction:calculate_absolute_power()
@@ -847,7 +856,7 @@ function se_sim_faction:STATE_Write(packet)
 
 	for k, v in pairs (self.squad_target_cache) do
 		packet:w_stringZ(k)
-		packet:w_u16(tonumber(v))	-- smart IDs should always be number types so coercion should not be necessary here
+		packet:w_u16(tonumber(v)) -- smart IDs should always be number types so coercion should not be necessary here
 	end
 
 	n = 0
@@ -883,7 +892,7 @@ function se_sim_faction:STATE_Write(packet)
 
 	for k, v in pairs (self.squads) do
 		packet:w_stringZ(v.squad_id)
-		packet:w_stringZ(tostring(v.settings_id))	-- v.settings_id might be nil so this gets coerced into a string
+		packet:w_stringZ(tostring(v.settings_id)) -- v.settings_id might be nil so this gets coerced into a string
 		if v.name == "sim_squad_scripted" then
 			packet:w_bool(true)
 		else
@@ -956,16 +965,16 @@ function se_sim_faction:STATE_Read(packet, size)
 	local our_faction = self.player_name
 	local sim_squad_scripted = sim_squad_scripted.sim_squad_scripted
 	local sim_squad_generic = sim_squad_generic.sim_squad_generic
-	local squad_id, settings_id, squad, flag
 
 	n = packet:r_u16()
 	for i = 1, n do
-		squad_id = packet:r_stringZ()
-		settings_id = packet:r_stringZ()
+		local squad_id = packet:r_stringZ()
+		local settings_id = packet:r_stringZ()
 		if settings_id == "nil" then
 			settings_id = nil
 		end
-		flag = packet:r_bool()
+		local flag = packet:r_bool()
+		local squad
 		if flag == true then
 			squad = sim_squad_scripted(board, our_faction, squad_id, settings_id)
 		else
