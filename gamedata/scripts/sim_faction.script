@@ -474,35 +474,39 @@ function se_sim_faction:calculate_squad_tasks()
 	local squad_need_task = {}
 	local distance_table = {}
 
-	for k, target_smart in pairs (self.target_smart_value) do					-- for all registered target smarts, set number of squads assigned to that smart to 0
+	for k, target_smart in pairs (self.target_smart_value) do -- for all registered target smarts, set number of squads assigned to that smart to 0
 		target_smart.num = 0
 	end
 
 	local c = 0
 
-	for k, squad in pairs (self.squads) do								-- for all squads:
+	for k, squad in pairs (self.squads) do -- for all squads:
 		local script_target = squad:get_script_target()
 		if script_target ~= nil then
-			self.squad_target_cache[squad.squad_id] = script_target				-- if squad has script target then assign squad to that target and
-			if self.target_smart_value[script_target] ~= nil then							-- if script target is a registered target smart then
-				self.target_smart_value[script_target].num = self.target_smart_value[script_target].num + 1	-- increase number of squads going to that target smart by 1
+			self.squad_target_cache[squad.squad_id] = script_target -- if squad has script target then assign squad to that target and
+			if self.target_smart_value[script_target] ~= nil then -- if script target is a registered target smart then
+				self.target_smart_value[script_target].num = self.target_smart_value[script_target].num + 1 -- increase number of squads going to that target smart by 1
 			end
 		else
---			table.insert(squad_need_task, squad)							-- else insert this squad to table squad_need_task
 			c = c + 1
-			squad_need_task[c] = squad
---			dbglog("Inserted "..game.translate_string(self.player_name).." squad with ID "..tostring(squad.squad_id).." to squad_need_task.")
+			squad_need_task[c] = squad -- else insert this squad to table squad_need_task
+--			dbglog("Inserted "..self.player_name.." squad with ID "..tostring(squad.squad_id).." to squad_need_task.")
 		end
 	end
 
+	local level_cluster = sim_board.sim_level_cluster
+	local board_smarts = self.board.smarts
+	local graph_distance = utils.graph_distance
+
 	c = 0
 
-	for k, target_smart in pairs (self.target_smart_value) do					-- for all registered target smarts:
+	for k, target_smart in pairs (self.target_smart_value) do -- for all registered target smarts:
 
-		local t = {}
-		local num = 0
+		local squads = {}
+		local num_squads = 0
+		local target_smart_obj = target_smart.smart
 
-		for kk, squad in pairs (squad_need_task) do						-- for all squads in need of task (i.e. any squad not assigned to a script target):
+		for kk, squad in pairs (squad_need_task) do -- for all squads in need of task (i.e. any squad not assigned to a script target):
 
 			if squad.smart_id == nil then
 				abort("[sim_faction.calculate_squad_tasks]: Squad with ID '%s' has no registered source smart.", tostring(squad.squad_id))
@@ -512,133 +516,66 @@ function se_sim_faction:calculate_squad_tasks()
 			local is_stay = false
 			local squad_location
 
-			if squad.current_action == nil or squad.current_action.name == "stay_point" then	-- if squad is idling around then:
+			if squad.current_action == nil or squad.current_action.name == "stay_point" then -- if squad is idling around then:
 				is_stay = true
-				squad_location = self.board.smarts[squad.smart_id].smrt				-- 'squad_location' = squad's current smart
+				squad_location = board_smarts[squad.smart_id].smrt -- 'squad_location' = squad's current smart
 			else
-				squad_location = self.board.smarts[squad.current_action.dest_smrt_id].smrt	-- else 'squad_location' = squad's target smart (prevents squad from being re-assigned on way there)
+				squad_location = board_smarts[squad.current_action.dest_smrt_id].smrt -- else 'squad_location' = squad's target smart (prevents squad from being re-assigned on way there)
 			end
 
-			if sim_board.sim_level_cluster[squad_location.smart_level] == sim_board.sim_level_cluster[target_smart.smart.smart_level] then	-- if registered target smart is in the same level cluster as squad's 'squad_location' then
+			if level_cluster[squad_location.smart_level] == level_cluster[target_smart_obj.smart_level] then -- if registered target smart is in the same level cluster as 'squad_location' then
 
-				local gr_dist = utils.graph_distance(squad_location.m_game_vertex_id, target_smart.smart.m_game_vertex_id)
+				local gr_dist = graph_distance(squad_location.m_game_vertex_id, target_smart_obj.m_game_vertex_id)
 
-				if is_stay == false then
-					gr_dist = gr_dist + 1							-- if squad is not idling around then increase graph distance between
-				end										-- registered target smart and squad's 'squad_location' by 1
-
---				table.insert(t, {squad_id = squad.squad_id, squad = squad, dist = gr_dist})	-- add squad info to table 't'
-
-				num = num + 1
-				t[num] = {squad_id = squad.squad_id, squad = squad, dist = gr_dist}
-			end
-		end
-
-		if num > 0 then										-- if at least one squad is in the same level cluster as registered target smart then
-			table_sort(t, _sort_by_dist_asc)				-- sort 't' by squad distance to registered target smart in ascending order
---			table.insert(distance_table, {target_smart = target_smart, squads = t})		-- and add {target_smart, squad infos from 't'} to distance_table
-			c = c + 1
-			distance_table[c] = {target_smart = target_smart, squads = t}
-		end
-	end
---[[													-- this block-commented code is obsolete but has been kept for reference
-	local function clear_squad(squad_id)
-		local remove_table, del_id = {}
-		for k, v in pairs (distance_table) do
-			del_id = nil
-			for kk, vv in pairs (v.squads) do
-				if vv.squad_id == squad_id then
-					del_id = kk							-- if this squad is in distance_table, make it unassignable for every smart
-					break
+				if is_stay == false then -- if squad is not idling around then increase graph distance between
+					gr_dist = gr_dist + 1 -- registered target smart and 'squad_location' by 1
 				end
-			end
 
-			table_remove(distance_table[k].squads, del_id)
-
-			if #distance_table[k].squads < 1 then
-				table.insert(remove_table, k)
+				num_squads = num_squads + 1
+				squads[num_squads] = {squad_id = squad.squad_id, dist = gr_dist} -- add squad info to table 'squads'
 			end
 		end
 
-		table_sort(remove_table, function(a, b) return a > b end)
-		for k, v in pairs (remove_table) do
-			table_remove(distance_table, v)							-- remove from distance_table any smart for which no squads left available
+		if num_squads > 0 then -- if at least one squad is in the same level cluster as registered target smart then
+			table_sort(squads, _sort_by_dist_asc) -- sort 'squads' by squad distance to registered target smart in ascending order
+			c = c + 1
+			distance_table[c] = {target_smart = target_smart, squads = squads} -- and add {target_smart, squad infos from 'squads'} to distance_table
 		end
 	end
 
-	local v1, v1_squads1, tmp_squad_id
+	while #distance_table > 0 do -- while there are target smarts with available squads unassigned to them:
 
-	while #distance_table > 0 do
+--		dbglog("Iteration time is "..tostring(time_global())..".")
 
-		if distance_table[1].squads[1] == nil then
-			break
-		else
-			table_sort(distance_table, _sort_by_squad_dist_asc)
-		end
+		table_sort(distance_table, _sort_by_squad_dist_asc) -- sort distance_table in ascending order of distance between smart and closest squad
 
-		v1 = distance_table[1]
-		v1_squads1 = v1.squads[1]
-		tmp_squad_id = v1_squads1.squad_id
-
-		if v1.target_smart.num >= v1.target_smart.cap then
-			table_remove(distance_table, 1)
-		else
-			self.squad_target_cache[tmp_squad_id] = v1.target_smart.smart_id
-			v1.target_smart.num = v1.target_smart.num + 1
-			if v1.target_smart.num >= v1.target_smart.cap then
-				table_remove(distance_table, 1)
-			end
-
-			clear_squad(tmp_squad_id)
-		end
-	end
-]]
-
-	while #distance_table > 0 do -- while there are elements in distance_table:
-
---		if tostring(self.player_name) == "csky" then
---			dbglog("Iteration time is "..tostring(time_global())..".")
---		end
-
-		table_sort(distance_table, _sort_by_squad_dist_asc) -- sort distance_table in ascending order by distance between smart and closest squad
-
+		local tmp_smart = distance_table[1].target_smart
 		local tmp_squad_id = distance_table[1].squads[1].squad_id -- first element in table will be smart-squad pair with least distance between them
 		                                                          -- often that means smart-squad pair with *no* distance between them
 		                                                          -- i.e. pair wherewith squad is already on smart
 
-		self.squad_target_cache[tmp_squad_id] = distance_table[1].target_smart.smart_id -- assign nearest squad to smart in first element of distance_table
+		self.squad_target_cache[tmp_squad_id] = tmp_smart.smart_id -- assign nearest squad to smart in first element of distance_table
 
---		if tostring(self.player_name) == "csky" then
---			dbglog("Assigned "..game.translate_string(self.player_name).." squad with ID "..tostring(tmp_squad_id).." to ["..game.translate_string("st_name_"..distance_table[1].target_smart.smart:name()).."].")
---		end
+--		dbglog("Assigned "..self.player_name.." squad with ID "..tostring(tmp_squad_id).." to ["..game.translate_string("st_name_"..tmp_smart.smart:name()).."].")
 
-		distance_table[1].target_smart.num = distance_table[1].target_smart.num + 1 -- increase number of squads assigned to it by 1
+		tmp_smart.num = tmp_smart.num + 1 -- increase number of squads assigned to it by 1
 
-		if distance_table[1].target_smart.num >= distance_table[1].target_smart.cap then -- if number of squads assigned to it now meets or exceeds its capacity,
-
---			if tostring(self.player_name) == "csky" then
---				dbglog("Removed ["..game.translate_string("st_name_"..distance_table[1].target_smart.smart:name()).."] from distance_table since its capacity ("..tostring(distance_table[1].target_smart.cap)..") is saturated ("..tostring(distance_table[1].target_smart.num)..").")
---			end
-
+		if tmp_smart.num >= tmp_smart.cap then -- if number of squads assigned to it now meets or exceeds its capacity,
+--			dbglog("Removed ["..game.translate_string("st_name_"..tmp_smart.smart:name()).."] from distance_table since its capacity ("..tostring(tmp_smart.cap)..") is saturated ("..tostring(tmp_smart.num)..").")
 			table_remove(distance_table, 1) -- remove it from distance_table
 		end
 
 		for i = #distance_table, 1, -1 do
-			for j = #distance_table[i].squads, 1, -1 do
-				if distance_table[i].squads[j].squad_id == tmp_squad_id then
---					if tostring(self.player_name) == "csky" then
---						dbglog("Made "..game.translate_string(self.player_name).." squad with ID "..tostring(tmp_squad_id).." unassignable to ["..game.translate_string("st_name_"..distance_table[i].target_smart.smart:name()).."].")
---					end
-
-					table_remove(distance_table[i].squads, j) -- remove the assigned squad wherever it occurs in distance_table
+			local smart_data = distance_table[i]
+			for j = #smart_data.squads, 1, -1 do
+				if smart_data.squads[j].squad_id == tmp_squad_id then
+--					dbglog("Made "..self.player_name.." squad with ID "..tostring(tmp_squad_id).." unassignable to ["..game.translate_string("st_name_"..smart_data.target_smart.smart:name()).."].")
+					table_remove(smart_data.squads, j) -- remove the assigned squad wherever it occurs in distance_table
 					break
 				end
 			end
-			if #distance_table[i].squads == 0 then
---				if tostring(self.player_name) == "csky" then
---					dbglog("Removed ["..game.translate_string("st_name_"..distance_table[i].target_smart.smart:name()).."] from distance_table since no "..game.translate_string(self.player_name).." squad is assignable to it.")
---				end
-
+			if #smart_data.squads == 0 then
+--				dbglog("Removed ["..game.translate_string("st_name_"..smart_data.target_smart.smart:name()).."] from distance_table since no "..self.player_name.." squad is assignable to it.")
 				table_remove(distance_table, i) -- remove any smarts from distance_table to which no squad is assignable
 			end
 		end
