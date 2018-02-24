@@ -9,7 +9,7 @@ end
 
 function CCover_manager:register_squad(squad)
 	local faction_name = squad.player_id
-	if faction_name ~= "monster" and faction_name ~= "zombied" then		-- prevent zombies from behaving like stalkers
+	if faction_name ~= "monster" and faction_name ~= "zombied" then -- prevent zombies from behaving like stalkers
 		self.squads[squad.squad_id] = true
 		self.is_invalid = false
 	end
@@ -30,52 +30,24 @@ function CCover_manager:calculate_covers(position)
 	end
 
 	self.is_invalid = true
+	self.cover_table = {}
 
-	local npc_table = {}
 	local board_squads = self.board.squads
 	local st = db.storage
 
 	for squad_id in pairs (self.squads) do
-		local squad = board_squads[squad_id]
-		for npc_id in pairs (squad.squad_npc) do
-			local st_obj = st[npc_id]
-			st_obj = st_obj and st_obj.object
-			if st_obj ~= nil then
-				npc_table[st_obj] = npc_id
+		for npc_id in pairs (board_squads[squad_id].squad_npc) do
+			local npc_obj = st[npc_id]
+			npc_obj = npc_obj and npc_obj.object
+			if npc_obj ~= nil then
+				npc_obj:register_in_combat()
+				local cover = npc_obj:find_best_cover(position)
+				if cover ~= nil then
+					self.cover_table[npc_id] = {cover_vertex_id = cover:level_vertex_id(), cover_position = cover:position(), look_pos = position, is_smart_cover = cover:is_smart_cover()}
+				end
+				npc_obj:unregister_in_combat()
 			end
 		end
-	end
---[[
-	for npc_obj in pairs (npc_table) do
-		npc_obj:register_in_combat()
-	end
-
-	self.cover_table = {}
-
-	for npc_obj in pairs (npc_table) do
-		npc_obj:find_best_cover(position)
-	end
-
-	for npc_obj, npc_id in pairs (npc_table) do
-		local cover = npc_obj:find_best_cover(position)
-		if cover ~= nil then
-			self.cover_table[npc_id] = {cover_vertex_id = cover:level_vertex_id(), cover_position = cover:position(), look_pos = position, is_smart_cover = cover:is_smart_cover()}
-		end
-	end
-
-	for npc_obj in pairs (npc_table) do
-		npc_obj:unregister_in_combat()
-	end
-]]
-	self.cover_table = {}
-
-	for npc_obj, npc_id in pairs (npc_table) do	-- more efficient to do it all in one loop
-		npc_obj:register_in_combat()
-		local cover = npc_obj:find_best_cover(position)
-		if cover ~= nil then
-			self.cover_table[npc_id] = {cover_vertex_id = cover:level_vertex_id(), cover_position = cover:position(), look_pos = position, is_smart_cover = cover:is_smart_cover()}
-		end
-		npc_obj:unregister_in_combat()
 	end
 end
 
@@ -135,7 +107,7 @@ function has_smart_cover(se_obj, smrttrn)
 	if cover.is_smart_cover then
 
 		local npc_obj = db.storage[npc_id]
-		npc_obj = npc_obj and npc_obj.object	-- also check that NPC *object* ~= nil, otherwise method 'suitable_smart_cover' below might be applied to a nil value
+		npc_obj = npc_obj and npc_obj.object -- also check that NPC *object* ~= nil, otherwise method 'suitable_smart_cover' below might be applied to a nil value
 		if npc_obj == nil then
 			return false
 		end
@@ -155,7 +127,7 @@ function has_smart_cover(se_obj, smrttrn)
 	return false
 end
 
-function has_cover(se_obj, smrttrn)	-- in vanilla, 'npc_id' is undefined in this function, making it return true whenever cover.is_smart_cover == true
+function has_cover(se_obj, smrttrn) -- in vanilla, 'npc_id' is undefined in this function, making it return true whenever cover.is_smart_cover == true
 
 	local cmanager = smrttrn.combat_manager.cover_manager
 	local npc_id = se_obj.id
