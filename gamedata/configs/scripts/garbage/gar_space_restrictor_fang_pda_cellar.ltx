@@ -1,3 +1,11 @@
+; DC180304: Fixed the issue where the game could corrupt during the Fang basement mugging scene at the Flea Market, resulting in a crash upon (i) attempting to load any savegame subsequently created in the Garbage and (ii) attempting to enter the Garbage from another level:
+;
+; 0023:0658486E xrGame.dll
+; 0023:065849D9 xrGame.dll
+; 0023:065DEEE1 xrGame.dll
+;
+; Prevented this from happening by deleting '=destroy_object(700)' from section '[sr_idle@unconscious_talk_4_time]'. Why this fixes the problem remains unknown.
+
 [logic]
 active = sr_idle@ko
 
@@ -13,7 +21,7 @@ on_info = {+gar_story_ambush_talk_4_played} sr_idle@unconscious_talk_4_time %=ru
 on_timer = 20000 | {-gar_story_ambush_talk_4_played} sr_idle@unconscious_talk_4_time %=run_postprocess(gar_ambush_wake)%
 
 [sr_idle@unconscious_talk_4_time]
-on_timer = 3000 | sr_idle@unconscious_stop_1 %=take_money(all) =relocate_actor_inventory_to_box(727) +gar_story_ambush_remove =destroy_object(700) =teleport_actor(gar_bandit_ambush_teleport_walk:gar_bandit_ambush_teleport_look)%
+on_timer = 3000 | sr_idle@unconscious_stop_1 %=take_money(all) =relocate_actor_inventory_to_box(727) +gar_story_ambush_remove =teleport_actor(gar_bandit_ambush_teleport_walk:gar_bandit_ambush_teleport_look)%
 
 [sr_idle@unconscious_stop_1]
 on_timer = 1000 | sr_idle@unconscious_stop_2 %=play_sound(pda_alarm)%

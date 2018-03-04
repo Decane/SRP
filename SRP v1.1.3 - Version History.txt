@@ -8,6 +8,7 @@ This file provides a comprehensive changelog / version history for the SRP.
 v1.1.3
 
 + Script optimizations. - Decane, NatVac
++ Fixed the issue where the game would occasionally corrupt during the Fang basement mugging scene at the Flea Market in the Garbage. - Decane
 + Fixed a rare crash upon reloading a savegame: sim_combat.script:348: attempt to index field 'actor' (a nil value). - Decane
 + Fixed a rare crash upon a smart terrain being captured: sim_squad_generic.script:471: attempt to index field 'current_action' (a nil value). - Decane
 + Fixed a rare crash: xr_kamp.script:433: bad argument #1 to 'random' (interval is empty). - Decane

@@ -81,6 +81,7 @@ Issues addressed:
 Crash fixes:
 
 + Fixed instability and savegame corruption in Limansk.
++ Fixed occasional savegame corruption during the Fang basement mugging scene in the Garbage.
 + Fixed some memory leaks which could eventually crash the game and/or corrupt a save file.
 + Fixed a crash in Agroprom if Orest strays from his spot by the loner base window.
 + Fixed a crash in the Red Forest if the trader in the mine strays from his spot at the desk.
@@ -452,14 +453,6 @@ Bugs still in the game:
   System Error:
   ----------------------------------------
   0x00000012 - There are no more files.
-
-• The game may corrupt during the Fang basement mugging scene at the Flea Market, resulting in a crash upon (i) attempting to load any savegame subsequently created in the Garbage and (ii) attempting to enter the Garbage from another level:
-
-  0023:0658486E xrGame.dll
-  0023:065849D9 xrGame.dll
-  0023:065DEEE1 xrGame.dll
-
-  To prevent this from happening, delete '=destroy_object(700)' (without the quotes) from gamedata\configs\scripts\garbage\gar_space_restrictor_fang_pda_cellar.ltx, save the edited file, and then load a savegame from before you first entered the basement.
 
 
 ====================================
