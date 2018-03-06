@@ -206,7 +206,7 @@ function se_smart_terrain:read_params()
 
 	self.sim_avail		= sim_avail
 
-	self.respawn		= get_string(ini, sect, "respawn", self, false, "", nil)
+--	self.respawn		= get_string(ini, sect, "respawn", self, false, "", nil)
 
 	self.surge_hide_avaliable = get_bool(ini, sect, "surge_hide_avaliable", self, false, false)
 
