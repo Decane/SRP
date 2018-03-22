@@ -120,6 +120,25 @@ local function enable_generic_schemes(ini, npc, stype, section)
 	end
 end
 
+function issue_event(npc, st, event_fn, ...)
+
+	if not st or not st.actions then
+		return
+	end
+
+--	local activation_count = 0
+--	local action_ptr, is_active = 0, 0
+
+	for action_ptr, is_active in pairs (st.actions) do
+		if is_active and action_ptr[event_fn] then
+			action_ptr[event_fn](action_ptr, ...)
+--			activation_count = activation_count + 1
+		end
+	end
+end
+
+local issue_event = issue_event
+
 function configure_schemes(npc, ini, ini_filename, stype, section_logic, gulag_name) -- section_logic is a logic section name, e.g. 'logic' or 'logic@work1'
 
 	local npc_id = npc:id()
@@ -176,24 +195,13 @@ function configure_schemes(npc, ini, ini_filename, stype, section_logic, gulag_n
 	return actual_ini -- st.ini
 end
 
-function determine_section_to_activate(npc, ini, section_logic, actor)
-
-	if not ini:section_exist(section_logic) then
-		return "nil"
-	end
-
-	local active_section_cond = cfg_get_condlist(ini, section_logic, "active", npc)
-
-	if not active_section_cond then
-		return "nil"
-	else
-		local active_section = pick_section_from_condlist(actor, npc, active_section_cond.condlist)
-		if not active_section then
-			abort("[xr_logic.determine_section_to_activate]: Active section '%s' of NPC '%s' has no conditionless else clause.", tostring(section_logic), npc:name())
-		end
-		return active_section
+function mob_release(mob)
+	if mob:get_script() then
+		mob:script(false, script_name())
 	end
 end
+
+local mob_release = mob_release
 
 local function reset_generic_schemes_on_scheme_switch(npc, scheme, section, st)
 
@@ -259,6 +267,101 @@ local function reset_generic_schemes_on_scheme_switch(npc, scheme, section, st)
 		end
 	end
 end
+
+local function parse_func_params(str)
+	local lst = {}
+	local c = 0
+	for par in string_gfind(str, "%s*([^:]+)%s*") do -- can't cope with colon-preceding whitespace in str - e.g. " foo : bar : baz " would yield 'foo ', 'bar ', 'baz '
+		c = c + 1
+		lst[c] = tonumber(par) or par
+	end
+	return lst
+end
+
+local function parse_infop(rslt, str)
+	local infop_n = 1
+	for s in string_gfind(str, "%s*([-+~=!][^-+~=!%s]+)%s*") do
+		local sign = string_sub(s, 1, 1)
+		local infop_name = string_sub(s, 2)
+		local params = nil
+		local at = string_find(infop_name, "%(")
+		if at then
+			if string_sub(infop_name, -1) ~= ")" then
+				abort("[xr_logic.parse_infop]: Invalid condlist '%s': Terminating character of '%s' is not a closing parenthesis.", str, infop_name)
+			end
+			if at < string_len(infop_name) - 1 then
+				params = parse_func_params(string_sub(infop_name, at + 1, -2))
+			else
+				params = {}
+			end
+			infop_name = string_sub(infop_name, 1, at - 1)
+		end
+		if sign == "+" then
+			rslt[infop_n] = { name = infop_name, required = true }
+		elseif sign == "-" then
+			rslt[infop_n] = { name = infop_name, required = false }
+		elseif sign == "~" then
+			rslt[infop_n] = { prob = tonumber(infop_name) }
+		elseif sign == "=" then
+			rslt[infop_n] = { func = infop_name, expected = true, params = params }
+		elseif sign == "!" then
+			rslt[infop_n] = { func = infop_name, expected = false, params = params }
+		else
+			abort("[xr_logic.parse_infop]: Invalid condlist '%s': First character of '%s' is not '+', '-', '~', '=', or '!'.", str, s) -- never reached; see regex capture in loop initialization
+		end
+		infop_n = infop_n + 1
+	end
+end
+
+function parse_condlist(npc, section, field, src)
+
+	local lst = {}
+	local n = 1
+
+	for fld in string_gfind(src, "%s*([^,]+)%s*") do
+
+		local chk_tbl = {}
+		local at, to, infop_check_lst = string_find(fld, "{%s*(.*)%s*}")
+		local remainings
+
+		if infop_check_lst then
+			remainings = string_sub(fld, 1, at - 1) .. string_sub(fld, to + 1)
+			parse_infop(chk_tbl, infop_check_lst)
+		else
+			remainings = fld
+		end
+
+		local set_tbl = {}
+		local newsect, infop_set_lst
+		at, to, infop_set_lst = string_find(remainings, "%%%s*(.*)%s*%%")
+
+		if infop_set_lst then
+			newsect = string_sub(remainings, 1, at - 1) .. string_sub(remainings, to + 1)
+			parse_infop(set_tbl, infop_set_lst)
+		else
+			newsect = remainings
+		end
+
+		newsect = string_match(newsect, "%s*(%S*)")
+--		at, to, newsect = string_find(newsect, "%s*(.*)%s*") -- always matches the empty string at a minimum, which does not evaluate to false in a boolean context
+--		if not newsect then
+--			abort_syntax_error_in_cond(npc, section, field) -- hence, never reached; needs matching against e.g. "%s*(%S+)" to be of any use, but then section-less condlists would crash the game
+--		end
+
+		lst[n] =
+		{
+			section     = newsect,
+			infop_check = chk_tbl,
+			infop_set   = set_tbl
+		}
+
+		n = n + 1
+	end
+
+	return lst
+end
+
+local parse_condlist = parse_condlist
 
 local function cfg_get_overrides(ini, section, npc, st)
 
@@ -401,23 +504,6 @@ function unsubscribe_action_from_events(npc, storage, new_action)
 	storage.actions[new_action] = nil
 end
 
-function issue_event(npc, st, event_fn, ...)
-
-	if not st or not st.actions then
-		return
-	end
-
---	local activation_count = 0
---	local action_ptr, is_active = 0, 0
-
-	for action_ptr, is_active in pairs (st.actions) do
-		if is_active and action_ptr[event_fn] then
-			action_ptr[event_fn](action_ptr, ...)
---			activation_count = activation_count + 1
-		end
-	end
-end
-
 function check_action(npc, st, event_fn, p)
 
 	if not st or not st.actions then
@@ -508,6 +594,45 @@ function pick_section_from_condlist(actor, npc, condlist)
 	return nil
 end
 
+function cfg_get_condlist(ini, section, field) --, npc)
+
+	local str = get_string(ini, section, field)
+	if not str then
+		return nil
+	end
+--[[
+	local par = utils.parse_params(str)
+	if not par[1] then
+		abort_syntax_error_in_cond(npc, section, field)
+	end
+]]
+	return {name = field, condlist = parse_condlist(nil, nil, nil, str)} -- (npc, section, field, str)}
+end
+
+local cfg_get_condlist = cfg_get_condlist
+local pick_section_from_condlist = pick_section_from_condlist
+
+function determine_section_to_activate(npc, ini, section_logic, actor)
+
+	if not ini:section_exist(section_logic) then
+		return "nil"
+	end
+
+	local active_section_cond = cfg_get_condlist(ini, section_logic, "active") --, npc)
+
+	if not active_section_cond then
+		return "nil"
+	else
+		local active_section = pick_section_from_condlist(actor, npc, active_section_cond.condlist)
+		if not active_section then
+			abort("[xr_logic.determine_section_to_activate]: Active section '%s' of NPC '%s' has no conditionless else clause.", tostring(section_logic), npc:name())
+		end
+		return active_section
+	end
+end
+
+local activate_by_section = activate_by_section
+
 function switch_to_section(npc, ini, section)
 
 	if section == "" or section == nil then
@@ -558,6 +683,8 @@ end
 	on_npc_in_zone          0                       14
 	on_npc_not_in_zone      0                       1
 ]]
+
+local switch_to_section = switch_to_section
 
 function try_switch_to_another_section(npc, st, actor)
 
@@ -658,99 +785,6 @@ local function abort_syntax_error_in_cond(npc, section, field) -- nv130116 make 
 	abort("[xr_logic.abort_syntax_error_in_cond]: Syntax error in switch condition/effect list value of field '%s' in section '%s' for NPC '%s'.", tostring(field), tostring(section), npc and npc:name() or "nil")
 end
 
-local function parse_func_params(str)
-	local lst = {}
-	local c = 0
-	for par in string_gfind(str, "%s*([^:]+)%s*") do -- can't cope with colon-preceding whitespace in str - e.g. " foo : bar : baz " would yield 'foo ', 'bar ', 'baz '
-		c = c + 1
-		lst[c] = tonumber(par) or par
-	end
-	return lst
-end
-
-local function parse_infop(rslt, str)
-	local infop_n = 1
-	for s in string_gfind(str, "%s*([-+~=!][^-+~=!%s]+)%s*") do
-		local sign = string_sub(s, 1, 1)
-		local infop_name = string_sub(s, 2)
-		local params = nil
-		local at = string_find(infop_name, "%(")
-		if at then
-			if string_sub(infop_name, -1) ~= ")" then
-				abort("[xr_logic.parse_infop]: Invalid condlist '%s': Terminating character of '%s' is not a closing parenthesis.", str, infop_name)
-			end
-			if at < string_len(infop_name) - 1 then
-				params = parse_func_params(string_sub(infop_name, at + 1, -2))
-			else
-				params = {}
-			end
-			infop_name = string_sub(infop_name, 1, at - 1)
-		end
-		if sign == "+" then
-			rslt[infop_n] = { name = infop_name, required = true }
-		elseif sign == "-" then
-			rslt[infop_n] = { name = infop_name, required = false }
-		elseif sign == "~" then
-			rslt[infop_n] = { prob = tonumber(infop_name) }
-		elseif sign == "=" then
-			rslt[infop_n] = { func = infop_name, expected = true, params = params }
-		elseif sign == "!" then
-			rslt[infop_n] = { func = infop_name, expected = false, params = params }
-		else
-			abort("[xr_logic.parse_infop]: Invalid condlist '%s': First character of '%s' is not '+', '-', '~', '=', or '!'.", str, s) -- never reached; see regex capture in loop initialization
-		end
-		infop_n = infop_n + 1
-	end
-end
-
-function parse_condlist(npc, section, field, src)
-
-	local lst = {}
-	local n = 1
-
-	for fld in string_gfind(src, "%s*([^,]+)%s*") do
-
-		local chk_tbl = {}
-		local at, to, infop_check_lst = string_find(fld, "{%s*(.*)%s*}")
-		local remainings
-
-		if infop_check_lst then
-			remainings = string_sub(fld, 1, at - 1) .. string_sub(fld, to + 1)
-			parse_infop(chk_tbl, infop_check_lst)
-		else
-			remainings = fld
-		end
-
-		local set_tbl = {}
-		local newsect, infop_set_lst
-		at, to, infop_set_lst = string_find(remainings, "%%%s*(.*)%s*%%")
-
-		if infop_set_lst then
-			newsect = string_sub(remainings, 1, at - 1) .. string_sub(remainings, to + 1)
-			parse_infop(set_tbl, infop_set_lst)
-		else
-			newsect = remainings
-		end
-
-		newsect = string_match(newsect, "%s*(%S*)")
---		at, to, newsect = string_find(newsect, "%s*(.*)%s*") -- always matches the empty string at a minimum, which does not evaluate to false in a boolean context
---		if not newsect then
---			abort_syntax_error_in_cond(npc, section, field) -- hence, never reached; needs matching against e.g. "%s*(%S+)" to be of any use, but then section-less condlists would crash the game
---		end
-
-		lst[n] =
-		{
-			section     = newsect,
-			infop_check = chk_tbl,
-			infop_set   = set_tbl
-		}
-
-		n = n + 1
-	end
-
-	return lst
-end
-
 local function cfg_get_number_and_condlist_s(str, section, field, cond, npc)
 --[[
 	local str = get_string_field(ini, section, field)
@@ -847,21 +881,6 @@ local function cfg_get_number_string_and_condlist_s(str, section, field, cond, n
 	return t
 end
 
-function cfg_get_condlist(ini, section, field) --, npc)
-
-	local str = get_string(ini, section, field)
-	if not str then
-		return nil
-	end
---[[
-	local par = utils.parse_params(str)
-	if not par[1] then
-		abort_syntax_error_in_cond(npc, section, field)
-	end
-]]
-	return {name = field, condlist = parse_condlist(nil, nil, nil, str)} -- (npc, section, field, str)}
-end
-
 local function cfg_get_condlist_s(str, section, field, cond) --, npc)
 	return {name = cond, condlist = parse_condlist(nil, nil, nil, str)} -- (npc, section, field, str)}
 end
@@ -938,12 +957,6 @@ end -- array now arranged roughly in descending order of frequency of condition 
 
 function generic_scheme_overrides(npc)
 	return db.storage[npc:id()].overrides
-end
-
-function mob_release(mob)
-	if mob:get_script() then
-		mob:script(false, script_name())
-	end
 end
 
 function mob_capture(mob, reset_actions)
@@ -1085,6 +1098,8 @@ function pstor_load_all(obj, reader)
 	end
 end
 
+local pstor_save_all = pstor_save_all
+
 function save_obj(obj, packet)
 
 	local object_name = "object"..obj:name()
@@ -1138,6 +1153,8 @@ function save_obj(obj, packet)
 
 	set_save_marker(packet, "save", true, object_name)
 end
+
+local pstor_load_all = pstor_load_all
 
 function load_obj(obj, reader)
 
@@ -1203,6 +1220,9 @@ local function get_customdata_or_ini_file(npc, filename)
 		return ini_file(filename)
 	end
 end
+
+local configure_schemes = configure_schemes
+local determine_section_to_activate = determine_section_to_activate
 
 function initialize_obj(obj, st, loaded, actor, stype)
 	if not loaded then
