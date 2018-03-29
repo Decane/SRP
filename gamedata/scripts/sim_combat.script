@@ -1,4 +1,5 @@
 -- DC170501: Fixed a rare crash on reload (systematic if objects_per_update in alife.ltx is set high enough) when db.actor:position() is called in update_actor() and db.actor is nil.
+-- DC180329: Lowered SQUAD_IN_ACTOR_ATTACK_TIME from 500 to 50 to prevent prematurely registering player's help in 'defend' tasks if player was spotted by enemy long before task was assigned.
 
 local math_max = math.max
 local math_random = math.random
@@ -8,7 +9,7 @@ local ACTOR_COME_ATTACK_DIST = 30*30
 local SQUAD_COME_ATTACK_OFFLINE_DIST = 5*5
 local SQUAD_WAIT_ATTACK_ONLINE = 50
 local SQUAD_WAIT_ATTACK_OFFLINE = 50
-local SQUAD_IN_ACTOR_ATTACK_TIME = 500
+local SQUAD_IN_ACTOR_ATTACK_TIME = 50 -- DC180329
 local DEFENDER_DELAY_UNTIL_ATTACK = 300
 local TASK_DISTANCE = 150*150
 
@@ -115,14 +116,14 @@ function CCombat_manager:squad_go_offline(squad)
 	end
 end
 
-function CCombat_manager:hit_callback(squad, is_attack)
-	self:enemy_actor_callback(squad)
+function CCombat_manager:hit_callback(victim_squad, is_attack)
+	self:enemy_actor_callback(victim_squad)
 	local tm = task_manager.get_task_manager()
 	local self_smart_id = self.smart.id
 	local task = tm:get_tasks_by_smart(self_smart_id)
 	if task ~= nil then
 		if task.target == self_smart_id then
-			task:actor_help(squad.squad_id)
+			task:actor_help(victim_squad.squad_id)
 		end
 	end
 	if is_attack then
@@ -336,8 +337,8 @@ function CCombat_manager:update_actor()
 					else
 						sq:issue_order("alife_we_spoted")
 					end
+					data._stage = "combat"
 				end
-				data._stage = "combat"
 			end
 			self.actor_combat = true
 		else
