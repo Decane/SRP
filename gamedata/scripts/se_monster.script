@@ -164,7 +164,7 @@ end
 
 function se_monster:on_register()
 
-	cse_alife_monster_base.on_register( self )
+	cse_alife_monster_base.on_register(self)
 
 	local board = sim_board.get_sim_board()
 	self.board = board
@@ -213,7 +213,7 @@ function se_monster:on_death(killer)
 		if squad == nil then
 			abort("[se_monster.se_monster:on_death]: There is no squad with ID '%s'.", self.squad_id)
 		end
-		squad:on_npc_death(self)
+		squad:on_npc_death(self, killer.id)
 	end
 end
 
@@ -221,7 +221,7 @@ end
 --[[
 function se_monster:fill_exclusives()
 	self:get_ini()
-	self.smart_terrain_conditions = smart_terrain.read_smart_terrain_conditions( self )
+	self.smart_terrain_conditions = smart_terrain.read_smart_terrain_conditions(self)
 	if self.smart_terrain_conditions then
 		for name, condlist in pairs(self.smart_terrain_conditions) do
 			smart_terrain.exclusives[name] = (smart_terrain.exclusives[name] or 0) + 1

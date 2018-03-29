@@ -135,9 +135,7 @@ end
 
 function generic_object_binder:death_callback(victim, culprit)
 
-	local act = db.actor
-
-	if culprit:id() == act:id() then
+	if culprit:id() == db.actor:id() then
 		xr_statistic.addKillCount(victim)
 		xr_statistic.inc_killed_monsters_counter()
 	end
@@ -152,16 +150,16 @@ function generic_object_binder:death_callback(victim, culprit)
 	if self_st.active_section then
 		xr_logic.issue_event(victim, self_st[self_st.active_scheme], "death_callback", victim, culprit)
 	end
-
+--[[
 	local h = hit()
 	h.draftsman = victim
 	h.type = hit.fire_wound
-	h.direction = act:position():sub(victim:position())
+	h.direction = db.actor:position():sub(victim:position())
 	h:bone("pelvis")
 	h.power = 1
 	h.impulse = 10
 	victim:hit(h)
-
+]]
 	victim:set_patrol_extrapolate_callback(nil)             -- SRP
 	victim:set_callback(callback_patrol_path_in_point, nil) -- SRP
 	victim:set_callback(callback_hit, nil)                  -- SRP
@@ -186,14 +184,17 @@ function generic_object_binder:hit_callback(victim, amount, local_direction, hit
 	end
 
 	if amount > 0 then
-		sim_combat.hit_callback(victim:id(), hitter:id())
+		if hitter:id() == db.actor:id() then
+			sim_combat.hit_callback(victim:id())
+		end
 	end
-
+--[[
 	if string.find(victim:name(), "bloodsucker_jumper") ~= nil then
 		if hitter:id() ~= db.actor:id() then
 			victim.health = victim.health + amount
 		end
 	end
+]]
 end
 
 local stype_mobile = modules.stype_mobile

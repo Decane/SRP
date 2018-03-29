@@ -231,10 +231,12 @@ function motivator_binder:hit_callback(victim, amount, local_direction, hitter, 
 	end
 
 	if amount > 0 then
-		local id = victim:id()
+		local victim_id = victim:id()
 --		sr_territory.issue_event(victim, "hit_callback", victim, amount, local_direction, hitter, bone_index)
-		xr_wounded.hit_callback(id)
-		sim_combat.hit_callback(id, hitter:id())
+		xr_wounded.hit_callback(victim_id)
+		if hitter:id() == db.actor:id() then
+			sim_combat.hit_callback(victim_id)
+		end
 	end
 end
 

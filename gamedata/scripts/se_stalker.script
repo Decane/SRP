@@ -126,7 +126,7 @@ function se_stalker:STATE_Write(packet)
 ]]
 	packet:w_u8(2) -- TODO: Comment out when new game requirement
 
-	packet:w_bool(self.death_droped )
+	packet:w_bool(self.death_droped)
 
 	if self.squad_id == nil then
 		packet:w_stringZ("nil")
@@ -258,7 +258,7 @@ function se_stalker:on_death(killer)
 		if squad == nil then
 			abort("[se_stalker.se_stalker:on_death]: There is no squad with ID '%s'.", self.squad_id)
 		end
-		squad:on_npc_death(self)
+		squad:on_npc_death(self, killer.id)
 	end
 end
 

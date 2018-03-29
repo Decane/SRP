@@ -317,7 +317,7 @@ function sim_squad_generic:remove_npc(npc_id)
 	sim:release(npc, true)
 end
 
-function sim_squad_generic:on_npc_death(npc)
+function sim_squad_generic:on_npc_death(npc, killer_id)
 
 	local npc_id = npc.id
 
@@ -343,6 +343,26 @@ function sim_squad_generic:on_npc_death(npc)
 
 	local st_npc = db.storage[npc_id]
 	if st_npc ~= nil then
+		if killer_id == db.actor:id() then
+			local victim_squad = st_npc.squad_obj
+			local combat_smart_id = nil
+			if victim_squad ~= nil then
+				local victim_action = victim_squad.current_action
+				if victim_action and victim_action.name == "attack_point" then
+					combat_smart_id = victim_action.dest_smrt_id
+				else
+					combat_smart_id = victim_squad.smart_id
+				end
+			else
+				combat_smart_id = self.smart_id
+			end
+			local task = task_manager.get_task_manager():get_tasks_by_smart(combat_smart_id)
+			if task ~= nil then
+				if task.target == combat_smart_id then
+					task:actor_help(self.squad_id)
+				end
+			end
+		end
 		st_npc.squad_obj = nil
 	end
 
@@ -381,6 +401,7 @@ function sim_squad_generic:on_npc_death(npc)
 		self.board:remove_squad(self)
 		return
 	end
+
 	self:refresh()
 end
 

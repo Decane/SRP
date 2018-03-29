@@ -1,5 +1,8 @@
 -- DC170501: Fixed a rare crash on reload (systematic if objects_per_update in alife.ltx is set high enough) when db.actor:position() is called in update_actor() and db.actor is nil.
 
+local math_max = math.max
+local math_random = math.random
+
 local ACTOR_COME_DEFENCE_DIST = 30*30
 local ACTOR_COME_ATTACK_DIST = 30*30
 local SQUAD_COME_ATTACK_OFFLINE_DIST = 5*5
@@ -112,10 +115,7 @@ function CCombat_manager:squad_go_offline(squad)
 	end
 end
 
-function CCombat_manager:hit_callback(squad, attacker_id, is_attack)
-	if attacker_id ~= db.actor:id() then
-		return
-	end
+function CCombat_manager:hit_callback(squad, is_attack)
 	self:enemy_actor_callback(squad)
 	local tm = task_manager.get_task_manager()
 	local self_smart_id = self.smart.id
@@ -643,7 +643,6 @@ function CCombat_manager:update_squad(id, data)
 			end
 			local GG
 			local my_squad_level_id
-			local max
 			local data_squad_pow
 			local casualities
 			local squad_faction = squad.player_id
@@ -654,10 +653,9 @@ function CCombat_manager:update_squad(id, data)
 						GG = GG or game_graph()
 						my_squad_level_id = my_squad_level_id or GG:vertex(sim:object(squad.commander_id).m_game_vertex_id):level_id()
 						if my_squad_level_id == GG:vertex(sim:object(enemy_squad.commander_id).m_game_vertex_id):level_id() then
-							max = max or math.max
 							data_squad_pow = data_squad_pow or data._squad_power
-							casualities = casualities or math.random(data_squad_pow / 5, data_squad_pow / 3)
-							vv._squad_power = max(0, vv._squad_power - casualities)
+							casualities = casualities or math_random(data_squad_pow / 5, data_squad_pow / 3)
+							vv._squad_power = math_max(0, vv._squad_power - casualities)
 							if enemy_squad.squad_power > vv._squad_power then
 --								if not enemy_squad.squad_online then
 									for npc_id in pairs (enemy_squad.squad_npc) do
@@ -873,19 +871,19 @@ function CCombat_manager:load(packet)
 	set_save_marker(packet, "load", true, "CCombat_manager")
 end
 
-function hit_callback(victim_id, attacker_id)
-	local my_squad = db.storage[victim_id].squad_obj
-	local my_action = my_squad and my_squad.current_action
-	if my_action ~= nil then
+function hit_callback(victim_id)
+	local victim_squad = db.storage[victim_id].squad_obj
+	if victim_squad ~= nil then
 		local combat_smart = nil
 		local is_attacker = true
-		if my_action.name == "attack_point" then
-			combat_smart = sim_board.get_sim_board().smarts[my_action.dest_smrt_id].smrt
+		local victim_action = victim_squad.current_action
+		if victim_action and victim_action.name == "attack_point" then
+			combat_smart = sim_board.get_sim_board().smarts[victim_action.dest_smrt_id].smrt
 		else
-			combat_smart = sim_board.get_sim_board().smarts[my_squad.smart_id].smrt
+			combat_smart = sim_board.get_sim_board().smarts[victim_squad.smart_id].smrt
 			is_attacker = false
 		end
-		combat_smart.combat_manager:hit_callback(my_squad, attacker_id, is_attacker)
+		combat_smart.combat_manager:hit_callback(victim_squad, is_attacker)
 	end
 end
 
