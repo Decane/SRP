@@ -53,6 +53,7 @@ local callback_hit = callback.hit
 local callback_death = callback.death
 local callback_use_object = callback.use_object
 local stalker_ids_property_anomaly = stalker_ids.property_anomaly
+local stalker_ids_action_combat_planner = stalker_ids.action_combat_planner
 
 function motivator_binder:net_spawn(sobject)
 
@@ -177,8 +178,7 @@ function motivator_binder:net_destroy()
 		xr_logic.issue_event(npc, st[st.active_scheme], "net_destroy", npc)
 	end
 
-	db.del_obj(npc)
-
+--	db.del_obj(npc) -- done below
 	db.storage[id] = nil
 
 	self:clear_callbacks()
@@ -352,83 +352,86 @@ function motivator_binder:update(delta)
 	end
 
 	local global_time = time_global()
+
 	if global_time > self.update_time then
 		sr_light.check_light(npc)
+		local npc_pos = npc:position()
+		for k, v in pairs (bloodsuckers_restr) do -- moved this loop here, no need to run it every update
+			if v:inside(npc_pos) and npc_alive then
+				if bloodsucker_zone_enter[k] == nil then
+					bloodsucker_zone_enter[k] = npc
+				end
+			else
+				if bloodsucker_zone_enter[k] ~= nil then
+					bloodsucker_zone_enter[k] = nil
+				end
+			end
+		end
 		self.update_time = global_time + 1000
 	end
 
-	local actor = db.actor
-	local st = db.storage[id]
-	local st_combat = st.combat
-
-	if st.active_scheme ~= nil and npc_alive then
-		local switched = false
-		local manager = npc:motivation_action_manager()
-		if manager:initialized() and manager:current_action_id() == stalker_ids.action_combat_planner then
-			local overrides = st.overrides
-			if overrides then
-				local overrides_on_combat = overrides.on_combat
-				if overrides_on_combat then
-					xr_logic.pick_section_from_condlist(actor, npc, overrides_on_combat.condlist)
-				end
-				if st_combat and st_combat.logic and not xr_logic.try_switch_to_another_section(npc, st_combat, actor) then
---					if overrides.combat_type then
---						set_combat_type(npc, actor, overrides) -- undefined global function; maybe should be xr_combat.set_combat_type?
---					end
-				else
-					switched = true
-				end
---			else
---				set_combat_type(npc, actor, st_combat) -- undefined global function; maybe should be xr_combat.set_combat_type?
-			end
-		end
-		if not switched then
-			xr_logic.try_switch_to_another_section(npc, st[st.active_scheme], actor)
-		end
-	else
-		xr_combat.set_combat_type(npc, actor, st_combat)
-	end
-
-	local npc_pos = npc:position()
-	for k, v in pairs (bloodsuckers_restr) do
-		if v:inside(npc_pos) and npc_alive then
-			if bloodsucker_zone_enter[k] == nil then
-				bloodsucker_zone_enter[k] = npc
-			end
-		else
-			if bloodsucker_zone_enter[k] ~= nil then
-				bloodsucker_zone_enter[k] = nil
-			end
-		end
-	end
-
 	local npc_st = self.st
-	local npc_state_mgr = npc_st.state_mgr
-
-	npc_st.active_sector = sr_danger.select_active_sectors(npc)
 
 	if npc_alive then
+
+		local actor = db.actor
+		local st_combat = npc_st.combat
+
+		if npc_st.active_scheme ~= nil then
+			local switched = false
+			local manager = npc:motivation_action_manager()
+			if manager:initialized() and manager:current_action_id() == stalker_ids_action_combat_planner then
+				local overrides = npc_st.overrides
+				if overrides then
+					local overrides_on_combat = overrides.on_combat
+					if overrides_on_combat then
+						xr_logic.pick_section_from_condlist(actor, npc, overrides_on_combat.condlist)
+					end
+					if st_combat and st_combat.logic and not xr_logic.try_switch_to_another_section(npc, st_combat, actor) then
+--						if overrides.combat_type then
+--							set_combat_type(npc, actor, overrides) -- undefined global function; maybe should be xr_combat.set_combat_type?
+--						end
+					else
+						switched = true
+					end
+--				else
+--					set_combat_type(npc, actor, st_combat) -- undefined global function; maybe should be xr_combat.set_combat_type?
+				end
+			end
+			if not switched then
+				xr_logic.try_switch_to_another_section(npc, npc_st[npc_st.active_scheme], actor)
+			end
+		else
+			xr_combat.set_combat_type(npc, actor, st_combat)
+		end
+
+		npc_st.active_sector = sr_danger.select_active_sectors(npc)
+
+		local npc_state_mgr = npc_st.state_mgr
+
 		if npc_state_mgr then
 			npc_state_mgr:update()
 --			if npc_state_mgr.combat == false and npc_state_mgr.alife == false then
 --				trade_manager.update(npc)
 --			end
 		end
+
 		xr_sound.update(id)
+
 		if npc:is_talk_enabled() then
 			npc:set_tip_text("character_use")
 		else
 			npc:set_tip_text("")
 		end
 	else
-		if npc_state_mgr then
+		if npc_st.state_mgr then
 			npc_st.state_mgr = nil
 		end
 		npc:set_tip_text_default()
 		self.death_recorded = true
 	end
 
-	local squad = st.squad_obj
+	local squad = npc_st.squad_obj
 	if squad ~= nil then
 		if squad.commander_id == id then
 			squad:update()

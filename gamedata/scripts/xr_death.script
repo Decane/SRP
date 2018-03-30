@@ -5,8 +5,8 @@ function action_process_death:__init(obj, storage)
 	self.st = storage
 end
 
-function action_process_death:death_callback(victim, who)
-
+function action_process_death:death_callback(victim) --, who)
+--[[
 	-- nv140501 if no enemy known before they die suddenly, then no killer known when save reloaded
 
 	-- if who ~= nil then
@@ -15,7 +15,7 @@ function action_process_death:death_callback(victim, who)
 	else
 		db.storage[victim:id()].death.killer = -1
 	end
-
+]]
 	local act = db.actor
 
 	if act then

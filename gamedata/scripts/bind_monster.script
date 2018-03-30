@@ -146,7 +146,17 @@ function generic_object_binder:death_callback(victim, culprit)
 	if mob_death then
 		xr_logic.issue_event(victim, mob_death, "death_callback", victim, culprit)
 	end
+--[[
+	The if-statement below is superfluous in vanilla as there are no schemes in vanilla that:
 
+	(i) have a death_callback
+	(ii) apply to entities that have bind_monster as their object binder (traders and mutants)
+
+	Mob_death is an exception but anyway gets its own explicit death_callback call above.
+	Despite the superfluity, we leave the if-statement uncommented, as otherwise modders who
+	add such a scheme to the game would need to remember to uncomment the statement below.
+	Without doing so, their scheme's death_callback would not fire.
+]]
 	if self_st.active_section then
 		xr_logic.issue_event(victim, self_st[self_st.active_scheme], "death_callback", victim, culprit)
 	end

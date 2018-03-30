@@ -395,7 +395,7 @@ Bugs still in the game:
 • The reload animation for shotguns sometimes glitches and shows the wrong number of shells being loaded into the shotgun.
 • The player's nightvision gets disabled when a new suit of armor enters the player's inventory.
 • The player's HUD arm texture, along with the player's third-person character model, reverts back to the default (leather jacket) texture upon reloading a savegame or picking up another suit.
-• Bullet tracers may be visible through geometry on some hardware in DX10/10.1 mode.
+• Bullet tracers may be visible through geometry on some hardware in DX10/10.1 mode with in-game anti-aliasing enabled. Disable in-game anti-aliasing and restart the game to work around this.
 • Attempting to "Exit Game" from the main menu can freeze the game on some hardware in DX10/10.1 mode.
 • Controller roars playing before a savegame is loaded persist into that savegame. Restart the game before loading to work around this.
 • Entries made to the PDA message log persist into a subsequently loaded savegame until overwritten by a new entry. Restart the game before loading to work around this.
@@ -474,4 +474,4 @@ Red7204, RoboMook, SetaKat (fluffy22), smoq2, smrtphoneusr, Tariq, Vandal, Xetri
  • Useful feedback and testing:
 
 100RadsBar, Ceano, Charcharo, Compizfox, Crew 900, EliteHunter39, Firon, lowenz, Marius
-Petran, motiv-8, Paul Jaye, RK Roadkill, Stryker7, Talrivian, TKGP, VicRattlehead
+Petran, motiv-8, Paul Jaye, RK Roadkill, Stryker7, SurDno, Talrivian, TKGP, VicRattlehead

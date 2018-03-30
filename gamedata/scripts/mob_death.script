@@ -11,7 +11,8 @@ function mob_death:__init(obj, storage)
 	self.st = storage
 end
 
-function mob_death:death_callback(victim, who)
+function mob_death:death_callback(victim) --, who)
+--[[
 	local death = db.storage[victim:id()].death
 	if not death then
 		death = {}
@@ -24,6 +25,7 @@ function mob_death:death_callback(victim, who)
 		death.killer = -1
 --		death.killer_name = nil
 	end
+]]
 	if xr_logic.try_switch_to_another_section(victim, self.st, db.actor) then
 		return
 	end

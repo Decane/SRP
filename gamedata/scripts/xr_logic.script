@@ -1,5 +1,5 @@
 -- nv170324, nv170508: Fixed the use_object callback for doors and buttons being reset on scheme switch.
--- DC170518: Optimization.
+-- DC170518, DC180328: Optimization.
 
 local function get_string(ini, section, field, default)
 	if section and ini:section_exist(section) and ini:line_exist(section, field) then
