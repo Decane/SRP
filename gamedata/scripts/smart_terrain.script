@@ -924,14 +924,14 @@ function setup_gulag_and_logic_on_spawn(obj, st, sobject, stype, loaded)
 --	end
 end
 ]]
-function on_death(obj)
+function on_death(se_obj)
 	local sim = alife()
 	if sim then
-		local obj = sim:object(obj.id)
-		if obj == nil then return end
-		local strn_id = obj:smart_terrain_id()
+--		local se_obj = sim:object(se_obj.id) -- se_obj is already a server object
+--		if se_obj == nil then return end -- not possible here
+		local strn_id = se_obj:smart_terrain_id()
 		if strn_id ~= 65535 then
-			sim:object(strn_id):clear_dead(obj)
+			sim:object(strn_id):clear_dead(se_obj)
 		end
 	end
 end
