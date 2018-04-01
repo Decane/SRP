@@ -21,6 +21,7 @@ v1.1.3
 + Fixed a few remaining NPC disposition bugs. - Decane
 + Fixed the audio associated with an NPC's instrument-playing animation continuing to play even when the animation is interrupted by the NPC getting up intermittently. - Decane
 + Fixed the parting audio of an NPC playing prematurely upon entering the trade or upgrade screen with them. - Decane
++ Worked around the death of a squad poltergeist failing to be processed correctly if the death callback from its object binder triggers before that of its server entity equivalent, se_monster:on_death(). As a side-effect, poltergeists now leave behind a corpse when killed. - Decane
 + Fixed Sakharov and Lingov not being marked as important characters on the map. - Decane
 + Fixed the issue where a squad commander icon could overlap with a trader icon on the map. - Decane
 + Made a couple of drop-boxes in the Abandoned Hospital destructible that mistakenly were not so in the unmodded game. - Decane

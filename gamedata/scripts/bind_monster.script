@@ -174,15 +174,17 @@ function generic_object_binder:death_callback(victim, culprit)
 	victim:set_callback(callback_patrol_path_in_point, nil) -- SRP
 	victim:set_callback(callback_hit, nil)                  -- SRP
 	victim:set_callback(callback_death, nil)                -- SRP
-
+--[[
+	-- This could fire before se_monster:on_death() does and calls on_npc_death().
+	-- In that case, the death of a squad poltergeist would not be processed correctly.
 	if victim:clsid() == clsid.poltergeist_s then
 		local sim = alife()
---		local sim_obj = sim:object(victim:name())
-		local sim_obj = sim:object(victim:id())
+		local sim_obj = sim:object(victim:name())
 		if sim_obj ~= nil then
 			sim:release(sim_obj, true)
 		end
 	end
+]]
 end
 
 function generic_object_binder:hit_callback(victim, amount, local_direction, hitter, bone_index)
