@@ -603,9 +603,9 @@ function sim_board:exit_smart(squad, smart)
 		squad_faction.resource_level = squad_faction.resource_level - 1
 	end
 
-	squad_faction:faction_brain_update()
+	smart.player_name = "none" -- moved this up from below faction_brain_update()
 
-	smart.player_name = "none"
+	squad_faction:faction_brain_update()
 
 --	smart:refresh()
 end

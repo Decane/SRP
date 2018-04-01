@@ -183,7 +183,7 @@ function show_description(npc)	--, dialog_name, phrase_id)
 	return ""
 end
 
-function squad_has_capture_tasks(actor, npc, p1, p2, p3)
+function squad_has_capture_tasks(actor, npc, p1, p2, p3) -- misnomer, is actually used to check for 'return_item', 'bring_item', and 'capture_smart' tasks via dialog
 	local squad = db.storage[npc:id()].squad_obj
 	if squad == nil then
 		abort("[task_dialogs.squad_has_capture_tasks]: Squad for NPC with ID %s is nil!", npc:id())
@@ -197,36 +197,35 @@ function squad_has_capture_tasks(actor, npc, p1, p2, p3)
 	end
 end
 
-function give_squad_capture_task(npc, actor, p1, p2)
+function give_squad_capture_task(npc, actor, p1, p2) -- misnomer, is actually used to assign 'return_item', 'bring_item', and 'capture_smart' tasks via dialog
 
 	local squad = db.storage[npc:id()].squad_obj
 	if squad == nil then
 		abort("[task_dialogs.give_squad_capture_task]: Squad for NPC with ID %s is nil!", npc:id())
 	end
 
-	if tonumber(p2) == 43 then
+	if tonumber(p2) == 43 then -- 43: return_item, 24: bring_item, 22 & 21: capture_smart
 		p2 = 23
 	end
 
-	local entity_id = squad.random_tasks[tonumber(p2) - 20]
+	local entity_id = squad.random_tasks[tonumber(p2) - 20] -- 4,3,2,1 are possible indices here
 	if entity_id == nil then
 		return
 	end
 
-	local tm = task_manager.get_task_manager()
-	local task = tm:get_task_by_entity_id(entity_id)
-	if p2 == 23 then
-		task:init_task(squad.squad_id)
-	end
+	local task = task_manager.get_task_manager():get_task_by_entity_id(entity_id)
+--	if p2 == 23 then
+--		task:init_task(squad.squad_id) -- return_item gets an extra init_task() call ???
+--	end
 
 --	local player = sim_board.get_sim_board().players[squad.player_id]
-	task:give_task(squad.player_id)
 	task.squad = squad
+	task:give_task(squad.player_id)
 --[[
 	if sr_recoveritem.target_sr then
 		entity_id = squad.random_tasks[3]
 		if entity_id ~= nil then
-			local task = tm:get_task_by_entity_id(entity_id)
+			local task = task_manager.get_task_manager():get_task_by_entity_id(entity_id)
 			if task.status ~= "selected" then
 				db.storage.table_squad_for_recoveritem[squad.squad_id] = nil
 			end
