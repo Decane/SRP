@@ -77,16 +77,27 @@ function CRandomTask:save(packet)
 
 	set_save_marker(packet, "save", false, "CRandomTask")
 
-	local inited_tasks = self.inited_tasks		-- clear all unstarted bring_item tasks
-	for k, v in pairs (inited_tasks) do
-		if v.type == "bring_item" then
-			if v.status == "normal" then
-				self.id_generator:remove(v.entity_id)
-				local task_squad = sim_board.get_sim_board().squads[v.squad_id]
-				if task_squad then
-					task_squad.random_tasks[4] = nil
+	local inited_tasks = self.inited_tasks
+--[[
+	The block below clears any unstarted bring_item and recover_item tasks.
+	An autosave while the player has the random task dialog open would erase the
+	entity IDs of any tasks of the aforementioned types that have by then been
+	allocated for player selection in that dialog by task_dialogs.squad_has_capture_tasks().
+	That would spell trouble, so this block is run only if the dialog window is closed.
+]]
+	if pda.dialog_closed == true then
+		local id_by_type = {bring_item = 4, recover_item = 3}
+		for key, task in pairs (inited_tasks) do
+			local id = id_by_type[task.type]
+			if id ~= nil then
+				if task.status == "normal" then
+					self.id_generator:remove(task.entity_id)
+					local task_squad = sim_board.get_sim_board().squads[task.squad_id]
+					if task_squad then
+						task_squad.random_tasks[id] = nil
+					end
+					inited_tasks[key] = nil
 				end
-				inited_tasks[k] = nil
 			end
 		end
 	end
@@ -98,20 +109,19 @@ function CRandomTask:save(packet)
 
 	packet:w_u16(n)
 
-	local task_id_by_type = {
-
-	storyline		= 0,
-	eliminate_smart		= 1,
-	capture_smart		= 2,
-	defend_smart		= 3,
-	defend_smart_delay	= 4,
-	take_reward		= 5,
-	bring_item		= 6,
-	recover_item		= 7,
-	find_upgrade		= 8,
-	hide_from_surge		= 9--,
---	eliminate_squad		= 10
-
+	local task_id_by_type =
+	{
+		storyline          = 0,
+		eliminate_smart    = 1,
+		capture_smart      = 2,
+		defend_smart       = 3,
+		defend_smart_delay = 4,
+		take_reward        = 5,
+		bring_item         = 6,
+		recover_item       = 7,
+		find_upgrade       = 8,
+		hide_from_surge    = 9,
+--		eliminate_squad    = 10
 	}
 
 	for key, task in pairs (inited_tasks) do
@@ -122,14 +132,7 @@ function CRandomTask:save(packet)
 	end
 
 	self.id_generator:save(packet)
---[[
-	local generator = self.id_generator
-	packet:w_u16(generator.m_count)
-	packet:w_u16(generator.m_last_id)
-	packet:w_u16(0)
-	packet:w_u16(0)
-	packet:w_u16(8)
-]]
+
 	n = 0
 	for k in pairs (self.rewards) do
 		n = n + 1
@@ -179,109 +182,111 @@ function CRandomTask:load(reader)
 	set_save_marker(reader, "load", false, "CRandomTask")
 
 --	self.task_ini = ini_file("misc\\task_manager.ltx")
-
 --	self.task_info = {}
 --	self.inited_tasks = {}
 --	self.inited_find_upgrade_tasks = {}
 
-	local task_type_by_id = {
-
-	[0] = "storyline",
-	[1] = "eliminate_smart",
-	[2] = "capture_smart",
-	[3] = "defend_smart",
-	[4] = "defend_smart_delay",
-	[5] = "take_reward",
-	[6] = "bring_item",
-	[7] = "recover_item",
-	[8] = "find_upgrade",
-	[9] = "hide_from_surge"--,
---	[10] = "eliminate_squad"
-
+	local task_type_by_id =
+	{
+		[0] = "storyline",
+		[1] = "eliminate_smart",
+		[2] = "capture_smart",
+		[3] = "defend_smart",
+		[4] = "defend_smart_delay",
+		[5] = "take_reward",
+		[6] = "bring_item",
+		[7] = "recover_item",
+		[8] = "find_upgrade",
+		[9] = "hide_from_surge",
+--		[10] = "eliminate_squad"
 	}
 
-	local T = self.inited_tasks
-	local TT = self.tasks_by_smarts
+	local inited_tasks = self.inited_tasks
+	local tasks_by_smarts = self.tasks_by_smarts
+	local task_info = self.task_info
 
 	local n = reader:r_u16()
+
 	for i = 1, n do
 
 		local base_id = reader:r_stringZ()
 		local key = reader:r_stringZ()
 		local t = task_type_by_id[reader:r_u16()]
-		local obj = nil
+		local task = nil
 
 		if t == "storyline" then
-			obj = task_objects.CStorylineTask(self.task_ini, base_id, t)
+			task = task_objects.CStorylineTask(self.task_ini, base_id, t)
 		elseif t == "eliminate_smart" then
-			obj = task_objects.CEliminateSmartTask(self.task_ini, base_id, t)
+			task = task_objects.CEliminateSmartTask(self.task_ini, base_id, t)
 		elseif t == "capture_smart" then
-			obj = task_objects.CCaptureSmartTask(self.task_ini, base_id, t)
+			task = task_objects.CCaptureSmartTask(self.task_ini, base_id, t)
 		elseif t == "defend_smart" then
-			obj = task_objects.CDefendSmartTask(self.task_ini, base_id, t)
+			task = task_objects.CDefendSmartTask(self.task_ini, base_id, t)
 		elseif t == "defend_smart_delay" then
-			obj = task_objects.CDefendSmartTaskDelay(self.task_ini, base_id, t)
+			task = task_objects.CDefendSmartTaskDelay(self.task_ini, base_id, t)
 		elseif t == "take_reward" then
-			obj = task_objects.CGetRewardTask(self.task_ini, base_id, t)
+			task = task_objects.CGetRewardTask(self.task_ini, base_id, t)
 		elseif t == "bring_item" then
-			obj = task_objects.CBringItemTask(self.task_ini, base_id, t)
+			task = task_objects.CBringItemTask(self.task_ini, base_id, t)
 		elseif t == "recover_item" then
-			obj = task_objects.CRecoverItemTask(self.task_ini, base_id, t)
+			task = task_objects.CRecoverItemTask(self.task_ini, base_id, t)
 		elseif t == "find_upgrade" then
-			obj = task_objects.CFindUpgradeTask(self.task_ini, base_id, t)
+			task = task_objects.CFindUpgradeTask(self.task_ini, base_id, t)
 		elseif t == "hide_from_surge" then
-			obj = task_objects.CHideFromSurgeTask(self.task_ini, base_id, t)
+			task = task_objects.CHideFromSurgeTask(self.task_ini, base_id, t)
 --		elseif t == "eliminate_squad" then
---			obj = task_objects.CEliminateSquadTask(self.task_ini, base_id, t)
+--			task = task_objects.CEliminateSquadTask(self.task_ini, base_id, t)
 		end
 
-		if obj ~= nil then
-			obj:load(reader)
-			T[key] = obj
-			if obj.status == "selected" then
-				self.task_info[tostring(obj.entity_id)] = obj
+		if task ~= nil then
+			task:load(reader)
+			inited_tasks[key] = task
+			if task.status == "selected" then
+				task_info[tostring(task.entity_id)] = task
 			end
 			if (t == "eliminate_smart") or (t == "capture_smart") or (t == "defend_smart") or (t == "defend_smart_delay") then
-				TT[obj.target] = obj
+				tasks_by_smarts[task.target] = task
 			end
 		end
 	end
 
 	self.id_generator:load(reader)
 
-	T = self.rewards
+	local rewards = self.rewards
 
 	n = reader:r_u8()
+
 	for i = 1, n do
 
 		local community = reader:r_stringZ()
-		TT = {}
-		T[community] = TT
-
 		local num = reader:r_u8()
-		for ii = 1, num do
+		local rewards_by_community = {}
+
+		rewards[community] = rewards_by_community
+
+		for j = 1, num do
 
 			local is_money = reader:r_bool()
 			if is_money then
 				local amount = reader:r_u16()
---				table.insert(T[community], {money = amount})
-				TT[ii] = {money = amount}
+--				table.insert(rewards[community], {money = amount})
+				rewards_by_community[j] = {money = amount}
 			else
 				local item_name = reader:r_stringZ()
---				table.insert(T[community], {item = item_name})
-				TT[ii] = {item = item_name}
+--				table.insert(rewards[community], {item = item_name})
+				rewards_by_community[j] = {item = item_name}
 			end
 		end
 	end
 
---	self.inited_find_upgrade_tasks = {}
-	T = self.inited_find_upgrade_tasks
+	local inited_find_upgrade_tasks = self.inited_find_upgrade_tasks
 
 	n = reader:r_u16()
+
 	for i = 1, n do
 		local k = reader:r_u16()
-		TT = {}
-		T[k] = TT
+		local TT = {}
+		inited_find_upgrade_tasks[k] = TT
 		local num = reader:r_u16()
 		for j = 1, num do
 			local kk = reader:r_stringZ()
@@ -340,9 +345,9 @@ function CRandomTask:task_fail(task_id)
 	return status == "reversed" or status == "reversed_silent"
 end
 
-function CRandomTask:task_callback(task, completed)
+function CRandomTask:task_callback(_task, completed)
 
-	local task_id = task:get_id()
+	local task_id = _task:get_id()
 	local task_obj = self.task_info[task_id]
 
 	if task_obj == nil then
@@ -375,23 +380,23 @@ function CRandomTask:task_callback(task, completed)
 		v[task_obj_id] = nil
 	end
 
-	task_obj:deactivate_task(task)
+	task_obj:deactivate_task(_task)
 
 --	dbgmsg("tm.id_generator.m_count before finishing task: "..self.id_generator.m_count)
 
-	for key, v in pairs (self.inited_tasks) do
-		if tostring(v.entity_id) == tostring(task_id) then
---			self.id_generator:remove(v.entity_id)
---			dbgmsg("Cleared task with key "..key..", entity_id "..v.entity_id..", name "..v.name.." from tm.inited_tasks")
+	for key, tsk in pairs (self.inited_tasks) do
+		if tostring(tsk.entity_id) == tostring(task_id) then
+--			self.id_generator:remove(tsk.entity_id)
+--			dbgmsg("Cleared task with key "..key..", entity_id "..tsk.entity_id..", name "..tsk.name.." from tm.inited_tasks")
 			self.inited_tasks[key] = nil
 			break
 		end
 	end
 
-	for smart_id, v in pairs (self.tasks_by_smarts) do
-		if tostring(v.entity_id) == tostring(task_id) then
---			self.id_generator:remove(v.entity_id)
---			dbgmsg("Cleared task with smart_id "..smart_id..", entity_id "..v.entity_id..", name "..v.name.." from tm.tasks_by_smarts")
+	for smart_id, tsk in pairs (self.tasks_by_smarts) do
+		if tostring(tsk.entity_id) == tostring(task_id) then
+--			self.id_generator:remove(tsk.entity_id)
+--			dbgmsg("Cleared task with smart_id "..smart_id..", entity_id "..tsk.entity_id..", name "..tsk.name.." from tm.tasks_by_smarts")
 			self.tasks_by_smarts[smart_id] = nil
 			break
 		end
@@ -690,9 +695,9 @@ function task_fail(p1)
 	return get_task_manager():task_fail(p1)
 end
 
-function task_callback(_task, state)
-	if state == task.fail or state == task.completed then
-		get_task_manager():task_callback(_task, state == task.completed)
+function task_callback(_task, _state)
+	if _state == task.fail or _state == task.completed then
+		get_task_manager():task_callback(_task, _state == task.completed)
 	end
 end
 --[[

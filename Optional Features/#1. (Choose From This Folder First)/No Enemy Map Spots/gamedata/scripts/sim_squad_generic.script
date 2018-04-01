@@ -1,5 +1,5 @@
-local monster_resource_by_level = {
-
+local monster_resource_by_level =
+{
 	marsh 		= {0,3},
 	escape 		= {1,3},
 	garbage 	= {1,4},
@@ -10,8 +10,8 @@ local monster_resource_by_level = {
 	military 	= {1,5}
 }
 
-local monster_num_by_resource = {
-
+local monster_num_by_resource =
+{
 	[0] = {1,1},
 	[1] = {4,5},
 	[2] = {4,5},
@@ -21,9 +21,20 @@ local monster_num_by_resource = {
 	[6] = {1,1}
 }
 
-local math_random = math.random
-local math_ceil = math.ceil
-local table_remove = table.remove
+local get_game_time          = game.get_game_time
+local trans                  = game.translate_string
+
+local map_add_object_spot    = level.map_add_object_spot
+local map_has_object_spot    = level.map_has_object_spot
+local map_change_spot_hint   = level.map_change_spot_hint
+local map_remove_object_spot = level.map_remove_object_spot
+local get_level_name         = level.name
+local get_time_hours         = level.get_time_hours
+
+local table_remove           = table.remove
+
+local math_random            = math.random
+local math_ceil              = math.ceil
 
 class "sim_squad_generic"
 
@@ -44,7 +55,7 @@ function sim_squad_generic:__init(sim_board, player_id, squad_id)
 	self.squad_online = false
 	self.current_action = nil
 	self.sim_combat_id = nil
-	self.last_action_timer = game.get_game_time()
+	self.last_action_timer = get_game_time()
 	self.squad_power = 0
 	self.squad_attack_power = 0
 	self.entered_smart = nil
@@ -114,7 +125,7 @@ function sim_squad_generic:spawn_box_items(smart_id)
 
 	local smart = self.board.smarts[smart_id].smrt
 
-	if smart.smart_level ~= level.name() then
+	if smart.smart_level ~= get_level_name() then
 		self.items_spawned = true
 		return
 	end
@@ -434,8 +445,8 @@ function sim_squad_generic:assign_smart(smart)
 	end
 end
 
-local faction_activity = {
-
+local faction_activity =
+{
 	csky		= {
 
 				[00] = 00, [01] = 00, [02] = 00, [03] = 00, [04] = 00, [05] = 00,
@@ -524,8 +535,8 @@ function sim_squad_generic:calculate_attack_power(set_val)
 	if player_time_activity == nil then
 		abort("[sim_squad_generic.calculate_attack_power]: Player time activity does not exist for faction '%s'.", tostring(player.player_name))
 	end
-	local game_time = game.get_game_time()
-	local additional_power = player_time_activity[level.get_time_hours()] * game_time:diffSec(self.last_action_timer) / 3600
+	local game_time = get_game_time()
+	local additional_power = player_time_activity[get_time_hours()] * game_time:diffSec(self.last_action_timer) / 3600
 	self.squad_attack_power = self.squad_attack_power + additional_power
 	if self.squad_attack_power > 100 then
 		self.squad_attack_power = 100
@@ -877,7 +888,8 @@ function sim_squad_generic:init_squad_task()
 		random_tasks[3] = recover_task
 	end
 
-	task = tm:select_task("bring_item", self.commander_id, squad_faction_name)
+--	task = tm:select_task("bring_item", self.commander_id, squad_faction_name)
+	task = tm:select_task("bring_item", self.squad_id, squad_faction_name)
 	if task ~= nil then
 		random_tasks[4] = task.entity_id
 	end
@@ -1343,13 +1355,12 @@ function sim_squad_generic:adaptive_refresh()
 	end
 
 	local commander_id = self.commander_id
-	local map_spot_present = level.map_has_object_spot
 	if commander_id == nil
 	or self.show_disabled
 	or self.current_action == nil
-	or map_spot_present(commander_id, "ui_pda2_trader_location") ~= 0
-	or map_spot_present(commander_id, "ui_pda2_scout_location") ~= 0
-	or map_spot_present(commander_id, "ui_pda2_quest_npc_location") ~= 0 then
+	or map_has_object_spot(commander_id, "ui_pda2_trader_location") ~= 0
+	or map_has_object_spot(commander_id, "ui_pda2_scout_location") ~= 0
+	or map_has_object_spot(commander_id, "ui_pda2_quest_npc_location") ~= 0 then
 		self:hide()
 		return
 	end
@@ -1362,6 +1373,29 @@ function sim_squad_generic:adaptive_refresh()
 	else
 		local act = db.actor
 		local relation
+--[[
+		if act then
+			local commander = db.storage[commander_id]
+			commander = commander and commander.object
+			if commander then
+				relation = commander:general_goodwill(act)
+			else
+				local relationship = self.relationship
+				if relationship == "enemy" then
+					relation = -1000
+				elseif relationship == "friend" then
+					relation = 1000
+				elseif relationship == "neutral" then
+					relation = 0
+				else
+					local squad_faction = self.player_id
+					relation = act:community_goodwill(squad_faction) + relation_registry.community_relation(squad_faction, act:character_community())
+				end
+			end
+		else
+			return
+		end
+]]
 		if act then
 			local relationship = self.relationship
 			if relationship == "enemy" then
@@ -1397,7 +1431,7 @@ function sim_squad_generic:adaptive_refresh()
 	if orig_spot == spot then
 		if has_alife_info("ui_pda") then
 			self.info_string = self:get_squad_props()
-			level.map_change_spot_hint(self.current_spot_id, orig_spot, self.info_string)	-- update info string iff PDA is open
+			map_change_spot_hint(self.current_spot_id, orig_spot, self.info_string)	-- update info string iff PDA is open
 		end
 		return
 	elseif orig_spot ~= nil then
@@ -1405,8 +1439,8 @@ function sim_squad_generic:adaptive_refresh()
 			self.info_string = self:get_squad_props()
 --		end
 		local orig_spot_id = self.current_spot_id
-		level.map_remove_object_spot(orig_spot_id, orig_spot)
-		level.map_add_object_spot(orig_spot_id, spot, self.info_string)
+		map_remove_object_spot(orig_spot_id, orig_spot)
+		map_add_object_spot(orig_spot_id, spot, self.info_string)
 	end
 
 	self.spot_section = spot
@@ -1424,7 +1458,7 @@ function sim_squad_generic:hide()
 	if self.current_spot_id == nil or self.spot_section == nil then
 		return
 	end
-	level.map_remove_object_spot(self.current_spot_id, self.spot_section)
+	map_remove_object_spot(self.current_spot_id, self.spot_section)
 	self.current_spot_id = nil
 	self.spot_section = nil
 end
@@ -1432,11 +1466,10 @@ end
 function sim_squad_generic:show()
 
 	local commander_id = self.commander_id
-	local map_spot_present = level.map_has_object_spot
 	if self.show_disabled
-	or map_spot_present(commander_id, "ui_pda2_trader_location") ~= 0
-	or map_spot_present(commander_id, "ui_pda2_scout_location") ~= 0
-	or map_spot_present(commander_id, "ui_pda2_quest_npc_location") ~= 0 then
+	or map_has_object_spot(commander_id, "ui_pda2_trader_location") ~= 0
+	or map_has_object_spot(commander_id, "ui_pda2_scout_location") ~= 0
+	or map_has_object_spot(commander_id, "ui_pda2_quest_npc_location") ~= 0 then
 		self:hide()
 		return
 	end
@@ -1444,6 +1477,8 @@ function sim_squad_generic:show()
 	if self.current_spot_id ~= commander_id then
 		self:hide()
 		self.current_spot_id = commander_id
+--		self:show()
+--		return
 	end
 
 	local orig_spot = self.spot_section
@@ -1453,6 +1488,35 @@ function sim_squad_generic:show()
 		self:hide()
 		return
 	else
+--[[
+		local commander = db.storage[commander_id]
+		commander = commander and commander.object
+		local act = db.actor
+		local relation
+		if commander and act then
+			relation = commander:general_goodwill(act)
+		else
+			local relationship = self.relationship
+			if relationship == "enemy" then
+				relation = -1000
+			elseif relationship == "friend" then
+				relation = 1000
+			elseif relationship == "neutral" then
+				relation = 0
+			else
+				if act then
+					local squad_faction = self.player_id
+--					relation = act:community_goodwill(squad_faction) + game_relations.get_factions_community(squad_faction, alife():actor():community())
+					relation = act:community_goodwill(squad_faction) + relation_registry.community_relation(squad_faction, act:character_community())
+				else
+--					relation = game_relations.get_factions_community(self.player_id, alife():actor():community())
+					local squad_faction = self.player_id
+					local actor_community = alife():actor():community()
+					relation = relation_registry.community_goodwill(squad_faction, actor_community) + relation_registry.community_relation(squad_faction, actor_community)
+				end
+			end
+		end
+]]
 		local relation
 		local relationship = self.relationship
 		if relationship == "enemy" then
@@ -1462,14 +1526,16 @@ function sim_squad_generic:show()
 		elseif relationship == "neutral" then
 			relation = 0
 		else
-			local commander = db.storage[commander_id]
-			commander = commander and commander.object
 			local act = db.actor
-			if commander and act then
-				relation = commander:general_goodwill(act)
-			elseif act then
-				local squad_faction = self.player_id
-				relation = act:community_goodwill(squad_faction) + relation_registry.community_relation(squad_faction, act:character_community())
+			if act then
+				local commander = db.storage[commander_id]
+				commander = commander and commander.object
+				if commander then
+					relation = commander:general_goodwill(act)
+				else
+					local squad_faction = self.player_id
+					relation = act:community_goodwill(squad_faction) + relation_registry.community_relation(squad_faction, act:character_community())
+				end
 			else
 				local squad_faction = self.player_id
 				local actor_community = alife():actor():community()
@@ -1495,17 +1561,17 @@ function sim_squad_generic:show()
 	if orig_spot == spot then
 		if has_alife_info("ui_pda") then
 			self.info_string = self:get_squad_props()
-			level.map_change_spot_hint(self.current_spot_id, orig_spot, self.info_string)	-- update info string iff PDA is open
+			map_change_spot_hint(self.current_spot_id, orig_spot, self.info_string)	-- update info string iff PDA is open
 		end
 		return
 	elseif orig_spot ~= nil then
 		self.info_string = self:get_squad_props()
 		local orig_spot_id = self.current_spot_id
-		level.map_remove_object_spot(orig_spot_id, orig_spot)
-		level.map_add_object_spot(orig_spot_id, spot, self.info_string)
+		map_remove_object_spot(orig_spot_id, orig_spot)
+		map_add_object_spot(orig_spot_id, spot, self.info_string)
 	else
 		self.info_string = self:get_squad_props()
-		level.map_add_object_spot(self.current_spot_id, spot, self.info_string)
+		map_add_object_spot(self.current_spot_id, spot, self.info_string)
 	end
 	self.spot_section = spot
 end
@@ -1538,8 +1604,6 @@ function sim_squad_generic:get_squad_props()
 	elseif str == "stalker" then
 		str = "ui_st_name_stalker"
 	end
-
-	local trans = game.translate_string
 
 	str = trans(str)
 
@@ -1616,9 +1680,10 @@ class "sim_attack_point"
 
 function sim_attack_point:__init(squad, dest_smrt_id, major)
 	self.name = "attack_point"
+	self.squad = squad -- SRP
 	self.board = squad.board
-	self.player_id = squad.player_id
-	self.squad_id = squad.squad_id
+--	self.player_id = squad.player_id
+--	self.squad_id = squad.squad_id
 	self.src_smrt_id = squad.smart_id
 	self.dest_smrt_id = dest_smrt_id
 	self.major = major
@@ -1650,7 +1715,7 @@ end
 function sim_attack_point:update()
 
 	local board = self.board
-	local squad = board.squads[self.squad_id]
+	local squad = self.squad
 	local dest_smrt_id = self.dest_smrt_id
 	local dest_smart = board.smarts[dest_smrt_id].smrt
 	local squad_stage = dest_smart.combat_manager:get_squad_stage(squad)
@@ -1665,7 +1730,7 @@ function sim_attack_point:update()
 	local commander = alife():object(squad.commander_id)
 
 	if GG:vertex(commander.m_game_vertex_id):level_id() ~= GG:vertex(dest_smart.m_game_vertex_id):level_id() then
---		dbgmsg(game.translate_string(self.player_id).." commander level_id ["..GG:vertex(commander.m_game_vertex_id):level_id().."] ~= dest_smrt level_id ["..GG:vertex(dest_smart.m_game_vertex_id):level_id().."].")
+--		dbgmsg(trans(squad.player_id).." commander level_id ["..GG:vertex(commander.m_game_vertex_id):level_id().."] ~= dest_smrt level_id ["..GG:vertex(dest_smart.m_game_vertex_id):level_id().."].")
 		return false
 	end
 
@@ -1673,18 +1738,18 @@ function sim_attack_point:update()
 		local obj_pos = commander.position
 		local dest_def_restr = db.zone_by_name[dest_smart.def_restr]
 		if (dest_def_restr ~= nil and not dest_def_restr:inside(obj_pos) and dest_smart:name() ~= "mar_smart_terrain_5_12") or (dest_def_restr == nil and obj_pos:distance_to_sqr(dest_smart.position) > 900) then
---			dbgmsg("Online "..game.translate_string(self.player_id).." squad rejected entry to "..smart_names.get_smart_terrain_name(dest_smart)..".")
+--			dbgmsg("Online "..trans(squad.player_id).." squad rejected entry to "..smart_names.get_smart_terrain_name(dest_smart)..".")
 			return false
 		end
 --	else
 --		if utils.graph_distance(dest_smart.m_game_vertex_id, commander.m_game_vertex_id) > 84 then
---			dbgmsg("Offline "..game.translate_string(self.player_id).." squad is "..utils.graph_distance(dest_smart.m_game_vertex_id, commander.m_game_vertex_id).."m away from "..smart_names.get_smart_terrain_name(dest_smart)..".")
+--			dbgmsg("Offline "..trans(squad.player_id).." squad is "..utils.graph_distance(dest_smart.m_game_vertex_id, commander.m_game_vertex_id).."m away from "..smart_names.get_smart_terrain_name(dest_smart)..".")
 --			return false
 --		end
 	end
 
 	local dest_faction = dest_smart.player_name
-	local squad_faction = self.player_id
+	local squad_faction = squad.player_id
 
 	if dest_faction ~= squad_faction then
 		if dest_faction ~= "none" then
@@ -1700,17 +1765,17 @@ function sim_attack_point:update()
 	board:assign_squad_to_smart(squad, dest_smrt_id)
 	board:enter_smart(squad, dest_smrt_id)
 
---	dbgmsg(game.translate_string(squad_faction).." squad entered "..smart_names.get_smart_terrain_name(dest_smart)..".")
+--	dbgmsg(trans(squad_faction).." squad entered "..smart_names.get_smart_terrain_name(dest_smart)..".")
 
-	squad:refresh()		-- refresh squad props
+	squad:refresh() -- refresh squad props
 	return true
 end
 
 function sim_attack_point:make()
 
 	local board = self.board
-	local squad = board.squads[self.squad_id]
-	local squad_faction_name = self.player_id
+	local squad = self.squad
+	local squad_faction_name = squad.player_id
 	local squad_faction = board.players[squad_faction_name]
 	local cur_attack_quantity = squad_faction.current_attack_quantity
 	local dest_smrt_id = self.dest_smrt_id
@@ -1724,10 +1789,9 @@ function sim_attack_point:make()
 	squad.spoted_shouted = false
 
 	local board_smarts = board.smarts
-	local src_smart = board_smarts[self.src_smrt_id].smrt
 	local dest_smart = board_smarts[dest_smrt_id].smrt
+	local attack_smart_owner = dest_smart.player_name -- use this local instead of 'self.attack_smart_owner'
 
-	local attack_smart_owner = dest_smart.player_name	-- use this local instead of 'self.attack_smart_owner'
 	if attack_smart_owner ~= "none" then
 		if attack_smart_owner ~= squad_faction_name then
 			self.target_was_hostile = true
@@ -1735,6 +1799,8 @@ function sim_attack_point:make()
 			squad.sound_manager:set_story("squad_begin_attack")
 		end
 	end
+
+	local src_smart = board_smarts[self.src_smrt_id].smrt
 
 	if squad.sim_combat_id ~= nil then
 		src_smart.combat_manager:unregister_squad(squad)
@@ -1747,14 +1813,14 @@ function sim_attack_point:make()
 	squad.current_action = self
 
 	local sim = alife()
-	for k in pairs (squad.squad_npc) do
-		local obj = sim:object(k)
+	for npc_id in pairs (squad.squad_npc) do
+		local obj = sim:object(npc_id)
 		if obj ~= nil then
 			board:setup_squad_and_group(obj)
 			src_smart:update_jobs(obj)
 		else
-			squad.squad_npc[k] = nil
-			if squad.commander_id == k then
+			squad.squad_npc[npc_id] = nil
+			if squad.commander_id == npc_id then
 				for kk in pairs (squad.squad_npc) do
 					squad.commander_id = kk
 					break
@@ -1763,14 +1829,14 @@ function sim_attack_point:make()
 		end
 	end
 
-	squad.last_action_timer = game.get_game_time()
+	squad.last_action_timer = get_game_time()
 	squad:calculate_attack_power(0)
 	squad:refresh()
 --	squad_faction:refresh()
 end
 
 function sim_attack_point:finalize()
-	local cur_attack_quantity = self.board.players[self.player_id].current_attack_quantity
+	local cur_attack_quantity = self.board.players[self.squad.player_id].current_attack_quantity
 	local dest_smrt_id = self.dest_smrt_id
 	cur_attack_quantity[dest_smrt_id] = cur_attack_quantity[dest_smrt_id] - 1
 end
@@ -1783,11 +1849,12 @@ end
 class "sim_stay_point"
 
 function sim_stay_point:__init(squad, stay_defended)
-	self.src_smrt_id = squad.smart_id
 	self.name = "stay_point"
+	self.squad = squad -- SRP
 	self.board = squad.board
-	self.player_id = squad.player_id
-	self.squad_id = squad.squad_id
+--	self.player_id = squad.player_id
+--	self.squad_id = squad.squad_id
+	self.src_smrt_id = squad.smart_id
 	self.stay_defended = stay_defended or false
 end
 
@@ -1824,7 +1891,7 @@ end
 
 function sim_stay_point:update()
 
-	local squad = self.board.squads[self.squad_id]
+	local squad = self.squad
 
 	local tm = task_manager.get_task_manager()
 
@@ -1851,7 +1918,7 @@ function sim_stay_point:update()
 	-- We can't leave smart if we are delay attacking.
 
 	if squad.delayed_attack_task ~= nil then
---		dbgmsg("delayed_attack_task is not nil for "..game.translate_string(self.player_id).." squad with ID "..tostring(self.squad_id).." and npc count "..tostring(squad.npc_count)..".")
+--		dbgmsg("delayed_attack_task is not nil for "..trans(squad.player_id).." squad with ID "..tostring(squad.squad_id).." and npc count "..tostring(squad.npc_count)..".")
 		return false
 	end
 
@@ -1862,8 +1929,8 @@ function sim_stay_point:update()
 		return false
 	end
 
-	local player = self.board.players[self.player_id]
-	local player_target = player.squad_target_cache[self.squad_id]
+	local player = self.board.players[squad.player_id]
+	local player_target = player.squad_target_cache[squad.squad_id]
 
 	if player_target ~= squad.assigned_target_smart_id then
 		return true
@@ -1875,7 +1942,7 @@ function sim_stay_point:update()
 
 	-- We can't leave smart if we've stayed on it for less than 36 real seconds.
 
-	if game.get_game_time():diffSec(self.begin_time) < 360 then
+	if get_game_time():diffSec(self.begin_time) < 360 then
 		return false
 	end
 
@@ -1889,12 +1956,12 @@ function sim_stay_point:update()
 end
 
 function sim_stay_point:make()
-	local squad = self.board.squads[self.squad_id]
+	local squad = self.squad
 	if squad ~= nil then
 		squad.current_action = self
 		local src_smart = self.board.smarts[self.src_smrt_id].smrt
 		src_smart.combat_manager:register_squad(squad)
-		self.begin_time = game.get_game_time()
+		self.begin_time = get_game_time()
 		self:init_defend_smart_delay(squad)
 		squad:refresh()
 	end
@@ -1943,7 +2010,7 @@ function sim_stay_point:init_defend_smart_delay(squad)
 						if task.status ~= "selected" then
 							task:give_task(v.player_id)
 						end
---						dbglog("Gave delayed defend task to "..game.translate_string(v.player_id).." squad with ID "..tostring(v.squad_id)..".")
+--						dbglog("Gave delayed defend task to "..trans(v.player_id).." squad with ID "..tostring(v.squad_id)..".")
 						return
 					end
 				end

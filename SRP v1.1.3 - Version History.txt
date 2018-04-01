@@ -34,6 +34,7 @@ v1.1.3
 + (ZRP import) Prevented NPCs dying of collision damage when spawning at the same spot as another NPC. - bardak
 ~ Made each attribute bar length in the "Faction War" tab of the PDA reflect the sum of the levels of that attribute for the two opposing factions displayed, instead of the highest level of the attribute among all factions. - Decane
 ~ Blocked the possibility of changing levels during an emission, as doing so can glitch the game. - Decane
+~ Enabled the possibility of returning the items requested in a 'bring item' task to the new squad leader if the original dies (new game recommended). - Decane
 ~ Moved some previously 'hard-coded' lists in a few scripts to appropriate configuration files. - Decane
 ~ The SVD and SVU are now included among the weapons not tossed when using the optional 'No NPC Weapon Tossing Upon Death' feature.
 
