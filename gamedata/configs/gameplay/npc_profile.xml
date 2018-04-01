@@ -30,7 +30,7 @@
 		<class>Stalker_bandit</class>
 	</character>
 -->
-	
+
 	<!-- sim profiles -->
 
 		<!-- sim duty -->
@@ -68,7 +68,7 @@
 	<character id="sim_default_monolith_4">
 		<class>sim_default_monolith_4</class>
 	</character>
-	
+
 		<!-- sim freedom -->
 
 	<character id="sim_default_freedom_0">
@@ -86,7 +86,7 @@
 	<character id="sim_default_freedom_4">
 		<class>sim_default_freedom_4</class>
 	</character>
-	
+
 		<!-- sim bandit -->
 
 	<character id="sim_default_bandit_0">
@@ -104,7 +104,7 @@
 	<character id="sim_default_bandit_4">
 		<class>sim_default_bandit_4</class>
 	</character>
-	
+
 		<!-- sim renegade -->
 
 	<character id="sim_default_renegade_0">
@@ -116,7 +116,7 @@
 	<character id="sim_default_renegade_2">
 		<class>sim_default_renegade_2</class>
 	</character>
-	
+
 		<!-- sim csky -->
 
 	<character id="sim_default_csky_0">
@@ -152,7 +152,7 @@
 	<character id="sim_default_stalker_4">
 		<class>sim_default_stalker_4</class>
 	</character>
-		
+
 		<!-- sim military -->
 
 	<character id="sim_default_military_0">
@@ -173,7 +173,7 @@
 	<character id="sim_default_military_4">
 		<class>sim_default_military_4</class>
 	</character>
-		
+
 		<!-- mercenery -->
 
 	<character id="sim_default_killer_0">
@@ -191,7 +191,7 @@
 	<character id="sim_default_killer_4">
 		<class>sim_default_killer_4</class>
 	</character>
-		
+
 		<!-- sim digger -->
 
 	<character id="sim_default_digger_0">
@@ -209,7 +209,7 @@
 	<character id="sim_default_digger_4">
 		<class>sim_default_digger_4</class>
 	</character>
-	
+
 		<!-- sim zombied -->
 
 	<character id="sim_default_zombied_1">

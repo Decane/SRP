@@ -193,7 +193,7 @@
 
 #include "gameplay\character_criticals_1.xml"
 #include "gameplay\character_dialogs.xml"
-		
+
 	</specific_character>
 
 	<specific_character id="val_freedom_blockpost_guard_leader_south" team_default = "1">
@@ -227,7 +227,7 @@
 
 #include "gameplay\character_criticals_1.xml"
 #include "gameplay\character_dialogs.xml"
-		
+
 	</specific_character>
 
 	<specific_character id="val_freedom_blockpost_guard" team_default = "1">
@@ -394,7 +394,7 @@
 
 #include "gameplay\character_criticals_1.xml"
 #include "gameplay\character_dialogs.xml"
-		
+
 	</specific_character>
 
 	<specific_character id="val_freedom_attack_commander" team_default = "1">

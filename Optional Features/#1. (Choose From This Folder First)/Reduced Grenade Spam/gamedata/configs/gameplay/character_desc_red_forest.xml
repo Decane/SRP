@@ -268,7 +268,7 @@
 
 		<class>red_forester</class>
 		<community>stalker</community> <terrain_sect>stalker_terrain</terrain_sect>
-		
+
 		<rank>900</rank>
 		<reputation>100</reputation>
 
@@ -294,7 +294,7 @@
 		<actor_dialog>treasure_dialog</actor_dialog>
 
 	</specific_character>
-	
+
 	<specific_character id="red_stalker_artefact_hunter" team_default = "1">
 
 		<name>GENERATE_NAME_stalker</name>
@@ -330,7 +330,7 @@
 #include "gameplay\character_dialogs.xml"
 
 	</specific_character>
-	
+
 	<specific_character id="red_bounty_hunter_default_0" team_default="1">
 
 		<name>GENERATE_NAME_stalker</name>
@@ -361,7 +361,7 @@
 #include "gameplay\character_dialogs.xml"
 
 	</specific_character>
-	
+
 	<specific_character id="red_bounty_hunter_default_1" team_default="1">
 
 		<name>GENERATE_NAME_stalker</name>
@@ -392,7 +392,7 @@
 #include "gameplay\character_dialogs.xml"
 
 	</specific_character>
-	
+
 	<specific_character id="red_bounty_hunter_default_2" team_default="1">
 
 		<name>GENERATE_NAME_stalker</name>

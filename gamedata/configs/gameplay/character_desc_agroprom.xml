@@ -699,7 +699,7 @@
 #include "gameplay\character_criticals_1.xml"
 
 	</specific_character>
-	
+
 	<specific_character id="agr_dolg_blockpost_commander" team_default = "1">
 
 		<name>GENERATE_NAME_stalker</name>

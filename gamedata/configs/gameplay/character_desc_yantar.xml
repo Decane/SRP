@@ -7,7 +7,7 @@
 		<icon>ui_npc_u_zombied_3</icon>
 
 		<class>yan_stalker_zombied</class>
-		<community>zombied</community> <terrain_sect>stalker_terrain</terrain_sect> 
+		<community>zombied</community> <terrain_sect>stalker_terrain</terrain_sect>
 
 		<rank>400</rank>
 		<reputation>0</reputation>
@@ -29,14 +29,14 @@
 #include "gameplay\character_criticals_1.xml"
 
 	</specific_character>
-	
+
 	<specific_character id="yan_stalker_zombied_1_default" team_default = "1">
 
 		<name>GENERATE_NAME_stalker</name>
 		<icon>ui_npc_u_zombied_2</icon>
 
 		<class>yan_stalker_zombied</class>
-		<community>zombied</community> <terrain_sect>stalker_terrain</terrain_sect> 
+		<community>zombied</community> <terrain_sect>stalker_terrain</terrain_sect>
 
 		<rank>400</rank>
 		<reputation>0</reputation>
@@ -58,14 +58,14 @@
 #include "gameplay\character_criticals_1.xml"
 
 	</specific_character>
-	
+
 	<specific_character id="yan_stalker_zombied_2_default" team_default = "1">
 
 		<name>GENERATE_NAME_stalker</name>
 		<icon>ui_npc_u_zombied_1</icon>
 
 		<class>yan_stalker_zombied</class>
-		<community>zombied</community> <terrain_sect>stalker_terrain</terrain_sect> 
+		<community>zombied</community> <terrain_sect>stalker_terrain</terrain_sect>
 
 		<rank>400</rank>
 		<reputation>0</reputation>
@@ -87,7 +87,7 @@
 #include "gameplay\character_criticals_1.xml"
 
 	</specific_character>
-	
+
 	<specific_character id="yan_stalker_sakharov" team_default = "1">
 
 		<name>yan_st_sakharov_name</name>
@@ -120,7 +120,7 @@
 #include "gameplay\character_criticals_1.xml"
 
 	</specific_character>
-	
+
 	<specific_character id="yan_stalker_levsha" team_default = "1">
 
 		<name>yan_st_levsha_name</name>

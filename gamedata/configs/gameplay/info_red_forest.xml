@@ -6,10 +6,10 @@
 
 	<info_portion id="red_in_forester_door_zone"/>
 
-<!--	 Decane end	-->
+<!--	Decane end	-->
 
 	<!-- Bridge down -->
-  
+
 	<info_portion id="red_bridge_scene_begin"/>
 	<info_portion id="red_bridge_bandit_1"/>
 	<info_portion id="red_bridge_bandit_2"/>
@@ -30,10 +30,10 @@
 	<info_portion id="red_bridge_allyes_out"/>
 	<info_portion id="red_bridge_captured"/>
 	<info_portion id="red_bridge_down_done"/>
-	<info_portion id="red_bridge_actor_out"/>  
+	<info_portion id="red_bridge_actor_out"/>
 	<info_portion id="red_bridge_bandit_out"/>
 	<info_portion id="red_bridge_allyes_win"/>
- 	<info_portion id="red_bridge_allyes_free"/>
+	<info_portion id="red_bridge_allyes_free"/>
 	<info_portion id="red_bridge_bridge_move"/>
 	<info_portion id="red_bridge_bandit_enter_true"/>
 	<info_portion id="red_bridge_csky_assault"/>
@@ -130,7 +130,7 @@
 	<info_portion id="red_pursuit_bandit_guard_bridge"/>
 	<info_portion id="red_pursuit_bandit_guard_bridge2"/>
 	<info_portion id="red_bridge_bandit_time_out"/>
-	<info_portion id="red_pursuit_bounty_hunters_hit"/>
+<!--	<info_portion id="red_pursuit_bounty_hunters_hit"/>	-->
 	<info_portion id="red_pursuit_camfly_begin"/>
 	<info_portion id="red_bounty_hunters_go_info"/>
 	<info_portion id="red_bounty_hunter_far"/>
@@ -165,7 +165,7 @@
 	<info_portion id="red_undeground_open"/>
 	<info_portion id="red_psy_dog_attack"/>
 	<info_portion id="red_underground_dynamit_use"/>
-  
+
 	<info_portion id="red_teleport_way"/>
 	<info_portion id="red_teleport_way_2"/>
 	<info_portion id="red_actor_find_teleport"/>

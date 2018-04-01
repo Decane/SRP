@@ -437,7 +437,7 @@
 #include "gameplay\character_dialogs.xml"
 
 	</specific_character>
-	
+
 	<specific_character id="sim_default_duty_4_default_2" team_default = "1">
 
 		<name>GENERATE_NAME_stalker</name>
@@ -508,7 +508,7 @@
 
 		<name>GENERATE_NAME_stalker</name>
 		<icon>ui_npc_u_freedom_1</icon>
- 
+
 		<class>sim_default_freedom_0</class>
 		<community>freedom</community> <terrain_sect>stalker_terrain</terrain_sect>
 		<snd_config>characters_voice\human_03\freedom\</snd_config>
@@ -946,7 +946,7 @@
 #include "gameplay\character_dialogs.xml"
 
 	</specific_character>
-	
+
 	<specific_character id="sim_default_freedom_3_default_2" team_default = "1">
 
 		<name>GENERATE_NAME_stalker</name>
@@ -978,7 +978,7 @@
 #include "gameplay\character_dialogs.xml"
 
 	</specific_character>
-	
+
 	<specific_character id="sim_default_freedom_3_default_3" team_default = "1">
 
 		<name>GENERATE_NAME_stalker</name>
@@ -1296,7 +1296,7 @@
 #include "gameplay\character_dialogs.xml"
 
 	</specific_character>
-	
+
 	<specific_character id="sim_default_bandit_2_default_1" team_default = "1">
 
 		<name>GENERATE_NAME_stalker</name>
@@ -1359,7 +1359,7 @@
 #include "gameplay\character_dialogs.xml"
 
 	</specific_character>
-	
+
 <!-- bandit veteran -->
 
 	<specific_character id="sim_default_bandit_3_default_0" team_default = "1">
@@ -1704,7 +1704,7 @@
 #include "gameplay\character_dialogs.xml"
 
 	</specific_character>
-	
+
 	<specific_character id="sim_default_renegade_2_default_1" team_default = "1">
 
 		<name>GENERATE_NAME_stalker</name>
@@ -1765,8 +1765,8 @@
 #include "gameplay\character_dialogs.xml"
 
 	</specific_character>
-	
-	 <specific_character id="sim_default_renegade_2_default_3" team_default = "1">
+
+	<specific_character id="sim_default_renegade_2_default_3" team_default = "1">
 
 		<name>GENERATE_NAME_stalker</name>
 		<icon>ui_npc_u_bandit_2</icon>
@@ -2687,7 +2687,7 @@
 #include "gameplay\character_dialogs.xml"
 
 	</specific_character>
-	
+
 	<specific_character id="sim_default_stalker_0_default_2" team_default = "1">
 
 		<name>GENERATE_NAME_stalker</name>
@@ -2716,7 +2716,7 @@
 #include "gameplay\character_dialogs.xml"
 
 	</specific_character>
-	
+
 	<specific_character id="sim_default_stalker_0_default_3" team_default = "1">
 
 		<name>GENERATE_NAME_stalker</name>
@@ -3136,7 +3136,7 @@
 #include "gameplay\character_dialogs.xml"
 
 	</specific_character>
-	
+
 <!-- military novice -->
 
 	<specific_character id="sim_default_military_0_default" team_default = "1">
@@ -3337,7 +3337,7 @@
 #include "gameplay\character_criticals_4.xml"
 
 	</specific_character>
-	
+
 	<specific_character id="sim_default_military_4_default_1" team_default = "1">
 
 		<name>GENERATE_NAME_stalker</name>
@@ -3401,7 +3401,7 @@
 #include "gameplay\character_criticals_4.xml"
 
 	</specific_character>
-	
+
 <!-- military sniper -->
 
 	<specific_character id="sim_default_military_3_default_sniper" team_default = "1">
@@ -3519,7 +3519,7 @@
 #include "gameplay\character_criticals_4.xml"
 
 	</specific_character>
-	
+
 	<specific_character id="sim_default_monolith_1_default_1" team_default = "1">
 
 		<name>GENERATE_NAME_stalker</name>
@@ -3833,7 +3833,7 @@
 		<icon>ui_npc_u_zombied_1</icon>
 
 		<class>sim_default_zombied_1</class>
-		<community>zombied</community> <terrain_sect>stalker_terrain</terrain_sect> 
+		<community>zombied</community> <terrain_sect>stalker_terrain</terrain_sect>
 		<snd_config>characters_voice\human_02\zombied\</snd_config>
 
 		<rank>400</rank>
@@ -3862,7 +3862,7 @@
 		<icon>ui_npc_u_zombied_1</icon>
 
 		<class>sim_default_zombied_1</class>
-		<community>zombied</community> <terrain_sect>stalker_terrain</terrain_sect> 
+		<community>zombied</community> <terrain_sect>stalker_terrain</terrain_sect>
 		<snd_config>characters_voice\human_02\zombied\</snd_config>
 
 		<rank>400</rank>
@@ -3882,14 +3882,14 @@
 #include "gameplay\character_criticals_1.xml"
 
 	</specific_character>
-	
+
 	<specific_character id="sim_default_zombied_2_default_0" team_default = "1">
 
 		<name>GENERATE_NAME_stalker</name>
 		<icon>ui_npc_u_zombied_2</icon>
 
 		<class>sim_default_zombied_2</class>
-		<community>zombied</community> <terrain_sect>stalker_terrain</terrain_sect> 
+		<community>zombied</community> <terrain_sect>stalker_terrain</terrain_sect>
 		<snd_config>characters_voice\human_02\zombied\</snd_config>
 
 		<rank>400</rank>
@@ -3918,7 +3918,7 @@
 		<icon>ui_npc_u_zombied_2</icon>
 
 		<class>sim_default_zombied_2</class>
-		<community>zombied</community> <terrain_sect>stalker_terrain</terrain_sect> 
+		<community>zombied</community> <terrain_sect>stalker_terrain</terrain_sect>
 		<snd_config>characters_voice\human_02\zombied\</snd_config>
 
 		<rank>400</rank>
@@ -3940,14 +3940,14 @@
 #include "gameplay\character_criticals_1.xml"
 
 	</specific_character>
-	
+
 	<specific_character id="sim_default_zombied_3_default_0" team_default = "1">
 
 		<name>GENERATE_NAME_stalker</name>
 		<icon>ui_npc_u_zombied_3</icon>
 
 		<class>sim_default_zombied_3</class>
-		<community>zombied</community> <terrain_sect>stalker_terrain</terrain_sect> 
+		<community>zombied</community> <terrain_sect>stalker_terrain</terrain_sect>
 		<snd_config>characters_voice\human_01\zombied\</snd_config>
 
 		<rank>400</rank>
@@ -3976,7 +3976,7 @@
 		<icon>ui_npc_u_zombied_3</icon>
 
 		<class>sim_default_zombied_3</class>
-		<community>zombied</community> <terrain_sect>stalker_terrain</terrain_sect> 
+		<community>zombied</community> <terrain_sect>stalker_terrain</terrain_sect>
 		<snd_config>characters_voice\human_01\zombied\</snd_config>
 
 		<rank>400</rank>
@@ -4005,7 +4005,7 @@
 		<icon>ui_npc_u_zombied_4</icon>
 
 		<class>sim_default_zombied_4</class>
-		<community>zombied</community> <terrain_sect>stalker_terrain</terrain_sect> 
+		<community>zombied</community> <terrain_sect>stalker_terrain</terrain_sect>
 		<snd_config>characters_voice\human_01\zombied\</snd_config>
 
 		<rank>400</rank>

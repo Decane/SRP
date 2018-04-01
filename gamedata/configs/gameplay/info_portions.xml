@@ -6,7 +6,7 @@
 
 	<info_portion id="ui_talk_show"/>
 
-<!--	 Decane end	-->
+<!--	Decane end	-->
 
 	<info_portion id="global_dialogs">
 		<dialog>actor_break_dialog</dialog>

@@ -230,7 +230,7 @@
 		<supplies>
 			[spawn] \n
 			device_torch \n
-		 	wpn_val \n
+			wpn_val \n
 			ammo_9x39_ap \n
 			grenade_f1 = 3, prob=0.1 \n
 		</supplies>
