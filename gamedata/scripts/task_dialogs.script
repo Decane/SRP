@@ -1,3 +1,5 @@
+local trans = game.translate_string
+
 function is_squad_leader(actor, npc)
 	local npc_id = npc:id()
 	local squad = db.storage[npc_id].squad_obj
@@ -7,7 +9,7 @@ function is_squad_leader(actor, npc)
 	return npc_id == squad.commander_id
 end
 
-function init_squad_task(actor, npc)	--, p1, p2)
+function init_squad_task(actor, npc) --, p1, p2)
 	local squad = db.storage[npc:id()].squad_obj
 	if squad == nil then
 		abort("[task_dialogs.init_squad_task]: Squad for NPC with ID %s is nil!", npc:id())
@@ -15,7 +17,7 @@ function init_squad_task(actor, npc)	--, p1, p2)
 	squad:init_squad_task()
 end
 
-function squad_has_tasks(npc, actor)	--, p1, p2)
+function squad_has_tasks(npc, actor) --, p1, p2)
 
 	local squad = db.storage[npc:id()].squad_obj
 
@@ -43,7 +45,7 @@ function squad_has_tasks(npc, actor)	--, p1, p2)
 	return false
 end
 
-function squad_hasnt_tasks(npc, actor)	--, p1, p2)
+function squad_hasnt_tasks(npc, actor) --, p1, p2)
 
 	local squad = db.storage[npc:id()].squad_obj
 
@@ -71,7 +73,7 @@ function squad_hasnt_tasks(npc, actor)	--, p1, p2)
 	return true
 end
 
-function show_tasks(npc)	--, actor, dialog, phrase)
+function show_tasks(npc) --, actor, dialog, phrase)
 
 	local squad = db.storage[npc:id()].squad_obj
 	if squad == nil then
@@ -86,7 +88,6 @@ function show_tasks(npc)	--, actor, dialog, phrase)
 		local tsk = tm:get_task_by_entity_id(entity_id)
 		if tsk.status ~= "selected" then
 			local task_type = tsk.type
-			local trans = game.translate_string
 			if (task_type == "eliminate_smart") then
 				news_caption = trans(tsk.name)
 				if tsk.description ~= "NO_TEXT" then
@@ -166,7 +167,7 @@ function show_tasks(npc)	--, actor, dialog, phrase)
 	end
 end
 
-function show_description(npc)	--, dialog_name, phrase_id)
+function show_description(npc) --, dialog_name, phrase_id)
 	local squad = db.storage[npc:id()].squad_obj
 	if squad == nil then
 		abort("[task_dialogs.show_description]: Squad for NPC with ID %s is nil!", npc:id())
@@ -234,7 +235,7 @@ function give_squad_capture_task(npc, actor, p1, p2) -- misnomer, is actually us
 ]]
 end
 
-function squad_hasnt_capture_tasks(actor, npc)	--, p1, p2, p3)
+function squad_hasnt_capture_tasks(actor, npc) --, p1, p2, p3)
 	local squad = db.storage[npc:id()].squad_obj
 	if squad == nil then
 		abort("[task_dialogs.squad_hasnt_capture_tasks]: Squad for NPC with ID %s is nil!", npc:id())
@@ -279,7 +280,6 @@ end
 
 function create_task_answer_phrase(npc, dialog_name, phrase_id)
 	local string = ""
-	local trans = game.translate_string
 	if (phrase_id == "15") then
 		string = trans("tm_random_task_15")
 	elseif (phrase_id == "14") then
@@ -321,8 +321,10 @@ function transfer_recovered_item(actor, npc)
 	if squad == nil then
 		return false
 	end
-	local return_item_task = task_manager.get_task_manager():get_task_by_entity_id(squad.random_tasks[3])
-	return_item_task:transfer_items_looking_for(npc)
+	local random_tasks = squad.random_tasks
+	local task = task_manager.get_task_manager():get_task_by_entity_id(random_tasks[3])
+	task:transfer_items_looking_for(npc)
+	random_tasks[3] = nil
 --[[
 	if sr_recoveritem.target_sr then
 		local db_storage = db.storage
@@ -334,7 +336,7 @@ function transfer_recovered_item(actor, npc)
 ]]
 end
 
-function rewarder_has_reward(npc)	--, actor)
+function rewarder_has_reward(npc) --, actor)
 
 	local tm = task_manager.get_task_manager()
 	local community = nil
@@ -358,7 +360,7 @@ function rewarder_has_reward(npc)	--, actor)
 	return #tm.rewards[community] > 0
 end
 
-function rewarder_hasnt_reward(npc)	--, actor)
+function rewarder_hasnt_reward(npc) --, actor)
 
 	local tm = task_manager.get_task_manager()
 	local community = nil
@@ -382,7 +384,7 @@ function rewarder_hasnt_reward(npc)	--, actor)
 	return #tm.rewards[community] == 0
 end
 
-function rewarder_give_reward(npc)	--, actor, p1, p2)
+function rewarder_give_reward(npc) --, actor, p1, p2)
 
 	local tm = task_manager.get_task_manager()
 	local community = nil
@@ -481,7 +483,7 @@ function faction_show_task(npc, actor)
 		if k > 5 then
 			return
 		end
-		db.actor:give_talk_message2(game.translate_string(v.id), game.translate_string(v.id), "ui_iconsTotal_locations", "iconed_trade_info")
+		db.actor:give_talk_message2(trans(v.id), trans(v.id), "ui_iconsTotal_locations", "iconed_trade_info")
 	end
 end
 
@@ -539,18 +541,18 @@ function mechanic_has_tasks(actor, npc)
 	return false
 end
 
-function mechanic_show_tasks(npc)	--, actor, dialog, phrase)
-	local news_text = ""
+function mechanic_show_tasks(npc) --, actor, dialog, phrase)
+--	local news_text = ""
 	local task_table = task_manager.get_task_manager().inited_find_upgrade_tasks[npc:id()]
 	for k, task in pairs (task_table) do
 		if task.status == "normal" then
-			news_text = task.item_for_reward
-			npc:give_talk_message2(game.translate_string("sim_find_upgrade"), news_text, "ui_iconsTotal_find_upgrade", "iconed_answer_item")
+			local news_text = task.item_for_reward
+			npc:give_talk_message2(trans("sim_find_upgrade"), news_text, "ui_iconsTotal_find_upgrade", "iconed_answer_item")
 		end
 	end
 end
 
-function give_find_upgrade_task(actor, npc)	--, p1, p2)
+function give_find_upgrade_task(actor, npc) --, p1, p2)
 	local community = npc:character_community()
 	local task_table = task_manager.get_task_manager().inited_find_upgrade_tasks[npc:id()]
 	for k, task in pairs (task_table) do
@@ -574,12 +576,11 @@ function is_find_upgrade_task(actor, npc)
 end
 
 function transfer_find_upgrade(actor, npc)
-	local tm = task_manager.get_task_manager()
-	local task_table = tm.inited_find_upgrade_tasks[npc:id()]
+	local task_table = task_manager.get_task_manager().inited_find_upgrade_tasks[npc:id()]
 	for k, task in pairs (task_table) do
 		if task.state == "have_item" then
 			task:transfer_items_looking_for(npc)
-			task:finish_task()
+--			task:finish_task() -- now done above
 		end
 	end
 end
@@ -615,10 +616,10 @@ function mechanic_proposition(npc, actor, dialog, phrase)
 	local news_text = ""
 	for k,v in pairs(flash_card_table) do
 		if actor:object(v.item) ~= nil then
-			local name = game.translate_string(system_ini():r_string(v.item, "inv_name"))
+			local name = trans(system_ini():r_string(v.item, "inv_name"))
 			local price = v.price
 			news_caption = name
-			news_text = price..game.translate_string("st_rubles")
+			news_text = price..trans("st_rubles")
 			npc:give_talk_message2(news_text, "ui_iconsTotal_lost_money", "iconed_answer_item")
 		end
 	end
@@ -629,7 +630,7 @@ function mechanic_proposition_answer_phrase(npc, dialog_name, phrase_id)
 	local i = phrase_id-10
 	if flash_card_table[i]~=nil then
 		if db.actor:object(flash_card_table[i].item) ~= nil then
-			local name = game.translate_string(system_ini():r_string(flash_card_table[i].item, "inv_name"))
+			local name = trans(system_ini():r_string(flash_card_table[i].item, "inv_name"))
 			local price = flash_card_table[i].price
 			string = name.."/"..price.." RU"
 		end

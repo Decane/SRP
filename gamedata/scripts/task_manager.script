@@ -1,3 +1,5 @@
+-- DC180402: Fixed the issue where speaking to a mechanic with incomplete 'find upgrade' tasks would leak task entity IDs.
+
 local random_task = nil
 
 class "CRandomTask"
@@ -384,19 +386,19 @@ function CRandomTask:task_callback(_task, completed)
 
 --	dbgmsg("tm.id_generator.m_count before finishing task: "..self.id_generator.m_count)
 
-	for key, tsk in pairs (self.inited_tasks) do
-		if tostring(tsk.entity_id) == tostring(task_id) then
---			self.id_generator:remove(tsk.entity_id)
---			dbgmsg("Cleared task with key "..key..", entity_id "..tsk.entity_id..", name "..tsk.name.." from tm.inited_tasks")
+	for key, task in pairs (self.inited_tasks) do
+		if tostring(task.entity_id) == tostring(task_id) then
+--			self.id_generator:remove(task.entity_id)
+--			dbgmsg("Cleared task with key "..key..", entity_id "..task.entity_id..", name "..task.name.." from tm.inited_tasks")
 			self.inited_tasks[key] = nil
 			break
 		end
 	end
 
-	for smart_id, tsk in pairs (self.tasks_by_smarts) do
-		if tostring(tsk.entity_id) == tostring(task_id) then
---			self.id_generator:remove(tsk.entity_id)
---			dbgmsg("Cleared task with smart_id "..smart_id..", entity_id "..tsk.entity_id..", name "..tsk.name.." from tm.tasks_by_smarts")
+	for smart_id, task in pairs (self.tasks_by_smarts) do
+		if tostring(task.entity_id) == tostring(task_id) then
+--			self.id_generator:remove(task.entity_id)
+--			dbgmsg("Cleared task with smart_id "..smart_id..", entity_id "..task.entity_id..", name "..task.name.." from tm.tasks_by_smarts")
 			self.tasks_by_smarts[smart_id] = nil
 			break
 		end
@@ -433,10 +435,10 @@ function CRandomTask:select_task(type, obj, faction)
 		key = tostring(faction).."_bring_item_"..obj
 	elseif type == "recover_item" then
 		task_table = self.recover_item_tasks
-		key = "recover_item_"..level.name()		-- SRP
-	elseif type == "find_upgrade" then
-		task_table = self.find_upgrade_tasks
-		key = tostring(faction).."_find_upgrade_"..obj
+		key = "recover_item_"..level.name() -- SRP
+--	elseif type == "find_upgrade" then -- find_upgrade tasks never get a select_task() call
+--		task_table = self.find_upgrade_tasks
+--		key = tostring(faction).."_find_upgrade_"..obj
 	elseif type == "hide_from_surge" then
 		task_table = self.hide_from_surge
 		key = tostring(faction).."_hide_from_surge_"..obj
@@ -483,15 +485,15 @@ function CRandomTask:select_task(type, obj, faction)
 ]]
 	end
 
---	local new_EId = self.id_generator:get_id()	-- memory leak
+--	local new_EId = self.id_generator:get_id() -- memory leak
 	local max_prior = -1
 	local selected_task = nil
 
-	for k, v in pairs (task_table) do
-		if v.prior > max_prior then
-			if v:check_target(obj, faction) then	-- flipped this and the line above it for performance
-				max_prior = v.prior
-				selected_task = v
+	for k, task in pairs (task_table) do -- un-inited tasks
+		if task.prior > max_prior then
+			if task:check_target(obj, faction) then -- flipped this and the line above it for performance
+				max_prior = task.prior
+				selected_task = task
 			end
 		end
 	end
@@ -502,35 +504,52 @@ function CRandomTask:select_task(type, obj, faction)
 
 --	dbgmsg("tm.id_generator.m_count before accepting task: "..self.id_generator.m_count)
 
-	local new_EId = self.id_generator:get_id()	-- prevented a small memory leak by moving this *below* the potential return above
+	local new_EId = self.id_generator:get_id() -- prevented a small memory leak by moving this *below* the potential return above
 
 	inited_tasks[key] = selected_task:get_inited_task(obj, faction, new_EId)
+
 	return inited_tasks[key]
 end
 
-function CRandomTask:select_find_upgrade_task(obj, faction)
+function CRandomTask:select_find_upgrade_task(npc, faction)
 
-	local obj_id = obj:id()
+	local npc_id = npc:id()
+	local npc_upgr_tasks = self.inited_find_upgrade_tasks[npc_id]
 
-	if self.inited_find_upgrade_tasks[obj_id] == nil then
-		self.inited_find_upgrade_tasks[obj_id] = {}
+	if npc_upgr_tasks == nil then
+		npc_upgr_tasks = {}
+		self.inited_find_upgrade_tasks[npc_id] = npc_upgr_tasks
 	end
 
+	-- DC180402: The original loop (block-commented below this one) would leak entity IDs
+	-- whenever the player spoke to a mechanic with incomplete find_upgrade tasks:
+	for section, task in pairs (self.find_upgrade_tasks) do -- un-inited tasks
+		if npc_upgr_tasks[section] == nil then
+			if task:check_target(npc, faction) then
+				local entity_id = self.id_generator:get_id()
+				local itask = task:get_inited_task(npc, faction, entity_id)
+				npc_upgr_tasks[section] = itask
+				self.inited_tasks[tostring(faction).."_find_upgrade_"..entity_id] = itask
+			end
+		end
+	end
+--[[
 	for k, v in pairs (self.find_upgrade_tasks) do
-		if v:check_target(obj, faction) then
-			local task = v:get_inited_task(obj, faction, self.id_generator:get_id())
-			if self.inited_find_upgrade_tasks[obj_id][task.id] == nil then
-				self.inited_find_upgrade_tasks[obj_id][task.id] = task
+		if v:check_target(npc, faction) then
+			local task = v:get_inited_task(npc, faction, self.id_generator:get_id())
+			if self.inited_find_upgrade_tasks[npc_id][task.id] == nil then
+				self.inited_find_upgrade_tasks[npc_id][task.id] = task
 				self.inited_tasks[tostring(faction).."_find_upgrade_"..task.entity_id] = task
 			end
 		end
 	end
+]]
 end
 
 function CRandomTask:get_task_by_entity_id(entity_id)
-	for k, v in pairs (self.inited_tasks) do
-		if v.entity_id == entity_id then
-			return v
+	for k, task in pairs (self.inited_tasks) do
+		if task.entity_id == entity_id then
+			return task
 		end
 	end
 	return nil
@@ -576,17 +595,17 @@ function CRandomTask:get_tasks_by_smart(smart_id)
 end
 
 function CRandomTask:reinit_task_prior(faction)
-	for k, v in pairs (self.inited_tasks) do
-		if v.community == faction then
-			local task_type = v.type
+	for k, task in pairs (self.inited_tasks) do
+		if task.community == faction then
+			local task_type = task.type
 			if task_type == "eliminate_smart" then
-				v.prior = v.base_prior + v.target_obj.sim_prior[faction]
+				task.prior = task.base_prior + task.target_obj.sim_prior[faction]
 			elseif task_type == "capture_smart" then
-				v.prior = v.base_prior + v.target_obj.sim_prior[faction]
+				task.prior = task.base_prior + task.target_obj.sim_prior[faction]
 			elseif task_type == "defend_smart" then
-				v.prior = v.base_prior + v.target_obj.sim_prior[faction]
+				task.prior = task.base_prior + task.target_obj.sim_prior[faction]
 			elseif task_type == "defend_smart_delay" then
-				v.prior = v.base_prior + v.target_obj.sim_prior[faction]
+				task.prior = task.base_prior + task.target_obj.sim_prior[faction]
 			end
 		end
 	end

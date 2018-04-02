@@ -116,7 +116,7 @@ function CGeneralTask:__init(task_ini, id, type)
 	self.faction_target                    = get_string(task_ini, id, "faction", nil, false, "", nil)
 	self.base_prior                        = get_number(task_ini, id, "prior", nil, false, 0)
 	self.prior                             = self.base_prior
-	self.text                              = get_string(task_ini, id, "text", nil, false, "", "NO_TEXT")
+	self.text                              = trans(get_string(task_ini, id, "text", nil, false, "", "NO_TEXT")) -- SRP: wrapped in trans()
 	self.description                       = get_string(task_ini, id, "description", nil, false, "", "NO_TEXT")
 	self.board                             = sim_board.get_sim_board()
 	self.auto_name                         = get_bool(task_ini, id, "auto_name", nil, false, true)
@@ -173,7 +173,7 @@ function CGeneralTask:give_task(community)
 		str = "ui_st_name_stalker"
 	end
 
-	self.community_name = str
+	self.community_name = trans(str)
 
 	local t = CGameTask()
 	local type = self.type
@@ -214,9 +214,9 @@ function CGeneralTask:give_task(community)
 		t:set_description("")
 	else
 		if self.auto_faction then
-			t:set_description(trans(self.community_name)..".\\n"..trans(self.text))
+			t:set_description(self.community_name..".\\n"..self.text)
 		else
-			t:set_description(trans(self.text))
+			t:set_description(self.text)
 		end
 	end
 
@@ -532,7 +532,7 @@ function CGeneralTask:load(reader)
 		str = "ui_st_name_bandit"
 	end
 
-	self.community_name = str
+	self.community_name = trans(str)
 
 	self.actor_come = reader:r_bool()
 --	self.actor_ignore = reader:r_bool()
@@ -1609,21 +1609,21 @@ function CDefendSmartTaskDelay:deactivate_task(_task)
 end
 
 function CDefendSmartTaskDelay:save(package)
-	set_save_marker(package, "save", false, "CDefendSmartTask")
+	set_save_marker(package, "save", false, "CDefendSmartTaskDelay")
 	task_objects.CGeneralTask.save(self, package)
 	package:w_u16(self.target)
 	utils.w_CTime(package, self.last_called_time)
 	package:w_stringZ(tostring(self.src_squad_id)) -- SRP
-	set_save_marker(package, "save", true, "CDefendSmartTask")
+	set_save_marker(package, "save", true, "CDefendSmartTaskDelay")
 end
 
 function CDefendSmartTaskDelay:load(reader)
-	set_save_marker(reader, "load", false, "CDefendSmartTask")
+	set_save_marker(reader, "load", false, "CDefendSmartTaskDelay")
 	task_objects.CGeneralTask.load(self, reader)
 	self.target = reader:r_u16()
 	self.last_called_time = utils.r_CTime(reader)
 	self.src_squad_id = reader:r_stringZ() -- SRP
-	set_save_marker(reader, "load", true, "CDefendSmartTask")
+	set_save_marker(reader, "load", true, "CDefendSmartTaskDelay")
 end
 
 ------------------------------------------------------------------------------------------------
@@ -1772,10 +1772,8 @@ function CGetRewardTask:change_description()
 	self.description = s
 
 	if self.auto_faction then
---		self.t:set_description(trans(self.community_name)..".\\n"..trans(self.description))
-		self.t:set_description(trans(self.community_name)..".\\n"..s)
+		self.t:set_description(self.community_name..".\\n"..s)
 	else
---		self.t:set_description(trans(self.description))
 		self.t:set_description(s)
 	end
 end
@@ -1940,7 +1938,7 @@ function CBringItemTask:check_target(squad_id, faction) -- called 1st
 end
 
 function CBringItemTask:get_inited_task(squad_id, faction, entity_id) -- called 2nd
-	local task = CBringItemTask(self.task_ini, self.base_id, self.type) -- calls CGeneralTask:__init() and CRecoverItemTask:__init()
+	local task = CBringItemTask(self.task_ini, self.base_id, self.type) -- calls CGeneralTask:__init() and CBringItemTask:__init()
 	task:init_task(squad_id)
 	task.entity_id = entity_id
 	return task
@@ -2005,12 +2003,26 @@ function CBringItemTask:init_task(squad_id) -- called 4th
 	self.target = self.board.squads[squad_id].commander_id
 --	self.squad_id = alife():object(commander_id).squad_id
 	self.squad_id = squad_id
-	self.npc = nil
+--	self.npc = nil
 	self.tmp_counter = 0
 	self.state = "started"
 	-- db.actor:iterate_inventory(get_inventory_item_count, self) -- iterate on give task
 	-- db.actor:iterate_inventory(set_task_text_for_bring_item, self)
 	self:set_task_text_for_bring_item()
+end
+
+local function get_inventory_item_count(task, item)
+	local sect = item:section()
+	for k, v in pairs (task.requested_items) do
+		if k == sect then
+			for i = 1, #v do
+				if not v[i] then
+					v[i] = true
+					return
+				end
+			end
+		end
+	end
 end
 
 function CBringItemTask:give_task(community) -- called 5th
@@ -2043,20 +2055,6 @@ function CBringItemTask:generate_requested_items(community)
 						cur_sections_count = cur_sections_count + 1
 					end
 					self.ri_counter = self.ri_counter + 1
-				end
-			end
-		end
-	end
-end
-
-function get_inventory_item_count(task, item)
-	local sect = item:section()
-	for k, v in pairs (task.requested_items) do
-		if k == sect then
-			for i = 1, #v do
-				if not v[i] then
-					v[i] = true
-					return
 				end
 			end
 		end
@@ -2103,6 +2101,12 @@ function CBringItemTask:check_task(tm) -- called 6th
 
 	self.check_time = global_time + 250
 
+	local actor = db.actor
+
+	if actor == nil then
+		return
+	end
+
 	local squad = self.squad -- set by task_dialogs.give_squad_capture_task() or CBringItemTask:load()
 	local commander_id = squad.commander_id
 
@@ -2116,17 +2120,14 @@ function CBringItemTask:check_task(tm) -- called 6th
 			return
 		end
 
-		local actor = db.actor
+		npc = db.storage[commander_id]
+		npc = npc and npc.object
 
 		-- If tasker squad commander is hostile, cancel:
-		if actor then
-			npc = db.storage[commander_id]
-			npc = npc and npc.object
-			if npc then
-				if npc:general_goodwill(actor) <= -1000 then
-					self.last_check_task = "reversed"
-					return
-				end
+		if npc then
+			if npc:general_goodwill(actor) <= -1000 then
+				self.last_check_task = "reversed"
+				return
 			end
 		end
 	else
@@ -2135,26 +2136,23 @@ function CBringItemTask:check_task(tm) -- called 6th
 		return
 	end
 
+	if self:has_requested_items() then
+		self.state = "have_item"
+	else
+		self.state = "started"
+	end
+
 	if self.target ~= commander_id then
 		self.target = commander_id
 		self.t:change_map_location(self.spot, commander_id)
-	end
-
-	if (self.state == "started") and self:has_requested_items() then
-		self.state = "have_item"
-	elseif (self.state == "have_item") and not self:has_requested_items() then
-		self.state = "started"
-	elseif (self.state == "finished") then
-		self.last_check_task = "complete"
 	end
 end
 
 function CBringItemTask:has_requested_items()
 
 	if self.t == nil then
-		local actor = db.actor
-		self.t = actor and actor:get_task(tostring(self.entity_id), false) -- "true" used to search only for not finished tasks
-		return
+		self.t = db.actor:get_task(tostring(self.entity_id), false) -- "true" used to search only for not finished tasks
+		return false
 	end
 
 	local c = 0
@@ -2167,21 +2165,17 @@ function CBringItemTask:has_requested_items()
 		end
 	end
 
+	if self.auto_faction then
+		self.t:set_description(self.community_name..".\\n"..self.text)
+	else
+		self.t:set_description(self.text)
+	end
+
 	if c < self.ri_counter then
 		self.t:set_title(trans("sim_bring_item").." "..c.." ("..self.ri_counter..")")
-		if self.auto_faction then
-			self.t:set_description(trans(self.community_name)..".\\n"..trans(self.text))
-		else
-			self.t:set_description(trans(self.text))
-		end
 		return false
 	else
 		self.t:set_title("sim_bring_item_text")
-		if self.auto_faction then
-			self.t:set_description(trans(self.community_name)..".\\n"..trans(self.text))
-		else
-			self.t:set_description(trans(self.text))
-		end
 		return true
 	end
 end
@@ -2208,33 +2202,7 @@ function CBringItemTask:on_item_drop(item)
 	self:set_task_text_for_bring_item()
 end
 
-function CBringItemTask:transfer_items_looking_for(npc)
-	self.npc = npc
-	self.tmp_counter = 0
-	self.state = "finished"
-	local act = db.actor
-	act:iterate_inventory(transfer_quest_items, self)
-	if self.tmp_counter < self.ri_counter then
-		local item_in_slot
-		for i = 1, 4 do
-			item_in_slot = act:item_in_slot(i)
-			for k, v in pairs (self.requested_items) do
-				if item_in_slot ~= nil then
-					if item_in_slot:section() == k then
-						for ii = 1, #v do
-							if v[ii] then
-								act:transfer_item(item_in_slot, self.npc)
-								v[ii] = false
-							end
-						end
-					end
-				end
-			end
-		end
-	end
-end
-
-function transfer_quest_items(task, item)
+local function transfer_quest_items(task, item)
 	local sect, act, item_id, item_in_slot = item:section(), db.actor, item:id()
 	for k, v in pairs (task.requested_items) do
 		if sect == k then
@@ -2258,13 +2226,42 @@ function transfer_quest_items(task, item)
 	end
 end
 
+function CBringItemTask:transfer_items_looking_for(npc)
+	self.npc = npc
+	self.tmp_counter = 0
+	self.state = "finished"
+	local act = db.actor
+	act:iterate_inventory(transfer_quest_items, self)
+	if self.tmp_counter < self.ri_counter then
+		local item_in_slot
+		for i = 1, 4 do
+			item_in_slot = act:item_in_slot(i)
+			for k, v in pairs (self.requested_items) do
+				if item_in_slot ~= nil then
+					if item_in_slot:section() == k then
+						for ii = 1, #v do
+							if v[ii] then
+								act:transfer_item(item_in_slot, npc)
+								v[ii] = false
+							end
+						end
+					end
+				end
+			end
+		end
+	end
+	self.last_check_task = "complete"
+end
+
 function CBringItemTask:deactivate_task(_task) -- called 7th
 	task_objects.CGeneralTask.deactivate_task(self, _task)
---	task_manager.get_task_manager():unregister_faction_task(self.community, self)
+--[[
+	task_manager.get_task_manager():unregister_faction_task(self.community, self)
 	local squad = self.squad
 	if squad then
-		squad.random_tasks[4] = nil
+		squad.random_tasks[4] = nil -- done in task_dialogs.transfer_bringed_item()
 	end
+]]
 end
 
 function CBringItemTask:save(package)
@@ -2274,7 +2271,7 @@ function CBringItemTask:save(package)
 	task_objects.CGeneralTask.save(self, package)
 
 --	package:w_stringZ(self.state)
-
+--[[
 	local self_state = self.state
 	if self_state == "started" then
 		package:w_u8(1)
@@ -2285,16 +2282,19 @@ function CBringItemTask:save(package)
 	else
 		abort("[task_objects.CBringItemTask:save]: Tried to save an identifier for an invalid task state: '%s'. If a save file was created, it is corrupt.", tostring(self_state))
 	end
+]]
+	package:w_u8(0) -- TODO: Delete when new game requirement
 
 	package:w_u8(self.ri_counter)
 
-	-- TODO: Comment out when new game requirement
+	package:w_u16(0) -- TODO: Delete when new game requirement
+--[[
 	if self.target then
 		package:w_u16(self.target)
 	else
 		package:w_u16(-1)
 	end
-
+]]
 	if self.squad_id == nil then
 		package:w_stringZ("nil")
 	else
@@ -2327,7 +2327,8 @@ function CBringItemTask:load(reader)
 
 --	self.state = reader:r_stringZ()
 
-	local state = reader:r_u8()
+	local state = reader:r_u8() -- TODO: Comment out when new game requirement
+--[[
 	if state == 1 then
 		self.state = "started"
 	elseif state == 2 then
@@ -2337,18 +2338,18 @@ function CBringItemTask:load(reader)
 	else
 		abort("[task_objects.CBringItemTask:load]: Tried to load an invalid task state identifier: '%s'. Your save file is corrupt.", tostring(state))
 	end
-
-	self.npc = nil
+]]
+--	self.npc = nil
 
 	self.ri_counter = reader:r_u8()
 
-	-- TODO: Comment out when new game requirement
-	local n = reader:r_u16()
+	local n = reader:r_u16() -- TODO: Comment out when new game requirement
+--[[
 	if n ~= 65535 then
 		self.target = n
 	end
-
-	n = reader:r_stringZ()
+]]
+	local n = reader:r_stringZ()
 	if n ~= "nil" then
 		self.squad_id = n
 	end
@@ -2384,6 +2385,7 @@ function CRecoverItemTask:__init(task_ini, id, type) super (task_ini, id, type) 
 	local target_npc_or_box_name = utils.cfg_get_string(task_ini, id, "target_npc_or_box_name", nil, true, "")
 	self.target_npc_or_box_table = utils.parse_names(target_npc_or_box_name)
 	self.requested_item = task_ini:r_string(id, "requested_items")
+	self.requested_item_inv_name = trans(system_ini():r_string(self.requested_item, "inv_name")) -- SRP
 end
 
 function CRecoverItemTask:check_target(squad_id, faction) -- called 1st
@@ -2426,11 +2428,11 @@ end
 
 function CRecoverItemTask:init_task(squad_id) -- called 4th
 	self.squad_id = squad_id
-	self.description = ""
-	self.npc = nil
+--	self.description = ""
+--	self.npc = nil
 	self.target = nil
 	self.target_obj_id = nil
-	self.presence_requested_item = false
+--	self.presence_requested_item = false
 	self.state = "started"
 end
 
@@ -2472,6 +2474,12 @@ function CRecoverItemTask:check_task(tm) -- called 6th
 
 	self.check_time = global_time + 250
 
+	local actor = db.actor
+
+	if actor == nil then
+		return
+	end
+
 	local squad = self.squad -- set by task_dialogs.give_squad_capture_task() or CRecoverItemTask:load()
 	local commander_id = squad.commander_id
 
@@ -2485,17 +2493,14 @@ function CRecoverItemTask:check_task(tm) -- called 6th
 			return
 		end
 
-		local actor = db.actor
+		npc = db.storage[commander_id]
+		npc = npc and npc.object
 
 		-- If tasker squad commander is hostile, cancel:
-		if actor then
-			npc = db.storage[commander_id]
-			npc = npc and npc.object
-			if npc then
-				if npc:general_goodwill(actor) <= -1000 then
-					self.last_check_task = "reversed"
-					return
-				end
+		if npc then
+			if npc:general_goodwill(actor) <= -1000 then
+				self.last_check_task = "reversed"
+				return
 			end
 		end
 	else
@@ -2504,76 +2509,68 @@ function CRecoverItemTask:check_task(tm) -- called 6th
 		return
 	end
 
-	if self:has_requested_item() then
+	if self:has_requested_item(actor) then
 		self.state = "have_item"
 		if self.target ~= commander_id then
 			self.target = commander_id
 			self.t:change_map_location(self.spot, commander_id)
 		end
-	elseif (self.state == "have_item") and not self:has_requested_item() then
+	else
 		self.state = "started"
-		self.target = self.target_obj_id
-		self.t:change_map_location(self.spot, self.target)
-	elseif (self.state == "finished") then
-		self.last_check_task = "complete"
+		local target_obj_id = self.target_obj_id
+		if self.target ~= target_obj_id then
+			self.target = target_obj_id
+			self.t:change_map_location(self.spot, target_obj_id)
+		end
 	end
 end
 
-function CRecoverItemTask:set_task_text_for_recover_item()
-	local s = ""
-	local name = trans(system_ini():r_string(self.requested_item, "inv_name"))
-	if db.actor:object(self.requested_item) ~= nil then
-		s = "+ "..name
-		self.presence_requested_item = true
-	else
-		s = "- "..name
-		self.presence_requested_item = false
-	end
-	self.description = trans(self.text).."\\n"..s
-end
-
-function CRecoverItemTask:has_requested_item()
+function CRecoverItemTask:has_requested_item(actor)
 	if self.t == nil then
-		local act = db.actor
-		self.t = act and act:get_task(tostring(self.entity_id), false) -- "true" used to search only for not finished tasks
-		return
+		self.t = actor:get_task(tostring(self.entity_id), false) -- "true" used to search only for not finished tasks
+		return false
 	end
-	self:set_task_text_for_recover_item()
-	if self.auto_faction then
-		self.t:set_description(trans(self.community_name)..".\\n"..trans(self.description))
+	local has_requested_item = false
+	local s = ""
+	if actor:object(self.requested_item) ~= nil then
+		s = "+ "
+		has_requested_item = true
 	else
-		self.t:set_description(trans(self.description))
+		s = "- "
 	end
-	return self.presence_requested_item
+	local description = self.text.."\\n"..s..self.requested_item_inv_name
+	if self.auto_faction then
+		self.t:set_description(self.community_name..".\\n"..description)
+	else
+		self.t:set_description(description)
+	end
+	return has_requested_item
+end
 --[[
-	if self.presence_requested_item then
-		return true
-	end
-	return false
-]]
-end
-
-function CRecoverItemTask:transfer_items_looking_for(npc)
-	self.npc = npc
-	db.actor:iterate_inventory(transfer_recover_item, self)
-	self.state = "finished"
-end
-
-function transfer_recover_item(task, item)
-	if item:section() == task.requested_item and task.presence_requested_item then
+local function transfer_recover_item(task, item)
+	if item:section() == task.requested_item then
 		db.actor:transfer_item(item, task.npc)
-		task.presence_requested_item = false
 		return
 	end
 end
+]]
+function CRecoverItemTask:transfer_items_looking_for(npc) -- called 7th
+--	self.npc = npc
+--	db.actor:iterate_inventory(transfer_recover_item, self)
+	dialogs.relocate_item_section(npc, self.requested_item, "out")
+	self.state = "finished"
+	self.last_check_task = "complete"
+end
 
-function CRecoverItemTask:deactivate_task(_task) -- called 7th
+function CRecoverItemTask:deactivate_task(_task) -- called 8th
 	task_objects.CGeneralTask.deactivate_task(self, _task)
---	task_manager.get_task_manager():unregister_faction_task(self.community, self)
+--[[
+	task_manager.get_task_manager():unregister_faction_task(self.community, self)
 	local squad = self.squad
 	if squad then
-		squad.random_tasks[3] = nil
+		squad.random_tasks[3] = nil -- done in task_dialogs.transfer_recovered_item()
 	end
+]]
 end
 
 function CRecoverItemTask:save(package)
@@ -2582,6 +2579,8 @@ function CRecoverItemTask:save(package)
 
 	task_objects.CGeneralTask.save(self, package)
 
+	package:w_u8(0) -- TODO: Delete when new game requirement, temp. replacement for lines below
+--[[
 	local self_state = self.state
 	if self_state == "started" then
 		package:w_u8(1)
@@ -2592,7 +2591,7 @@ function CRecoverItemTask:save(package)
 	else
 		abort("[task_objects.CRecoverItemTask:save]: Tried to save an identifier for an invalid task state: '%s'. If a save file was created, it is corrupt.", tostring(self_state))
 	end
-
+]]
 	if self.squad_id == nil then
 		package:w_stringZ("nil")
 	else
@@ -2605,9 +2604,11 @@ function CRecoverItemTask:save(package)
 		package:w_u16(self.target_obj_id)
 	end
 
-	package:w_bool(self.presence_requested_item)
+	package:w_bool(true) -- TODO: Delete when new game requirement, temp. replacement for line below
+--	package:w_bool(self.presence_requested_item)
 
-	package:w_stringZ(self.requested_item)
+	package:w_stringZ("") -- TODO: Delete when new game requirement, temp. replacement for line below
+--	package:w_stringZ(self.requested_item) -- read in CRecoverItemTask:__init()
 
 	set_save_marker(package, "save", true, "CRecoverItemTask")
 end
@@ -2618,7 +2619,8 @@ function CRecoverItemTask:load(reader) -- called 0.5th (only on load)
 
 	task_objects.CGeneralTask.load(self, reader)
 
-	local state = reader:r_u8()
+	local state = reader:r_u8() -- TODO: Comment out when new game requirement
+--[[
 	if state == 1 then
 		self.state = "started"
 	elseif state == 2 then
@@ -2628,7 +2630,7 @@ function CRecoverItemTask:load(reader) -- called 0.5th (only on load)
 	else
 		abort("[task_objects.CRecoverItemTask:load]: Tried to load an invalid task state identifier: '%s'. Your save file is corrupt.", tostring(state))
 	end
-
+]]
 	local n = reader:r_stringZ()
 	if n ~= "nil" then
 		self.squad_id = n
@@ -2643,11 +2645,13 @@ function CRecoverItemTask:load(reader) -- called 0.5th (only on load)
 		self.target_obj_id = n
 	end
 
-	self.npc = nil
+--	self.npc = nil
 
-	self.presence_requested_item = reader:r_bool()
+	local presence_requested_item = reader:r_bool() -- TODO: Delete when new game requirement, temp. replacement for line below
+--	self.presence_requested_item = reader:r_bool()
 
-	self.requested_item = reader:r_stringZ()
+	local requested_item = reader:r_stringZ() -- TODO: Delete when new game requirement, temp. replacement for line below
+--	self.requested_item = reader:r_stringZ() -- read in CRecoverItemTask:__init()
 
 	set_save_marker(reader, "load", true, "CRecoverItemTask")
 end
@@ -3094,14 +3098,14 @@ class "CFindUpgradeTask" (task_objects.CGeneralTask)
 
 ------------------------------------------------------------------------------------------------
 
-function CFindUpgradeTask:__init(task_ini, id, type) super (task_ini, id, type)
+function CFindUpgradeTask:__init(task_ini, id, type) super (task_ini, id, type) -- called 0th (on load), 3rd (otherwise)
 	self.target_cond = xr_logic.parse_condlist(nil, "task_manager", "target_cond", utils.cfg_get_string(task_ini, id, "target_cond", nil, false, "", "false"))
 	self.requested_item = utils.cfg_get_string(task_ini, id, "requested_item", nil, false, "")
-	self.requested_item_inv_name = system_ini():r_string(self.requested_item, "inv_name")
+	self.requested_item_inv_name = trans(system_ini():r_string(self.requested_item, "inv_name"))
 	local cost = utils.cfg_get_number(self.task_ini, self.base_id, "cost", nil, true)
 	local sss = utils.cfg_get_string(self.task_ini, self.base_id, "reward_upgr", nil, false, "")
-	if sss ~= nil and game ~= nil then
-		local char_ini = ini_file("item_upgrades.ltx")
+	if sss ~= nil then
+--		local char_ini = ini_file("item_upgrades.ltx")
 		local sss_table = utils.parse_names(sss)
 		local name_item = trans(system_ini():r_string(sss_table[1], "inv_name"))
 		local name_apgr = trans(self.name)
@@ -3110,7 +3114,7 @@ function CFindUpgradeTask:__init(task_ini, id, type) super (task_ini, id, type)
 	self.cost = cost
 end
 
-function CFindUpgradeTask:check_target(obj, faction)
+function CFindUpgradeTask:check_target(obj, faction) -- called 1st
 
 	local TGT = self.faction_target
 
@@ -3130,27 +3134,36 @@ function CFindUpgradeTask:check_target(obj, faction)
 ]]
 end
 
-function CFindUpgradeTask:init_task(npc)
-	self.target = npc:id()
-	self.description = ""
-	self.npc = nil
-	self.presence_requested_item = false
-	self.state = "started"
-	db.actor:iterate_inventory(get_inventory_find_upgrade_count, self)
-end
-
-function CFindUpgradeTask:get_inited_task(npc, faction, entity_id)
-	local task = CFindUpgradeTask(self.task_ini, self.base_id, self.type)
+function CFindUpgradeTask:get_inited_task(npc, faction, entity_id) -- called 2nd
+	local task = CFindUpgradeTask(self.task_ini, self.base_id, self.type) -- calls CGeneralTask:__init() and CFindUpgradeTask:__init()
 	task:init_task(npc)
 	task.entity_id = entity_id
 	return task
 end
+--[[
+local function get_inventory_find_upgrade_count(task, item)
+	if task.requested_item == item:section() then
+		if not task.presence_requested_item then
+			task.presence_requested_item = true
+			return
+		end
+	end
+end
+]]
+function CFindUpgradeTask:init_task(npc) -- called 4th
+	self.target = npc:id()
+--	self.description = ""
+--	self.npc = nil
+--	self.presence_requested_item = false
+	self.state = "started"
+--	db.actor:iterate_inventory(get_inventory_find_upgrade_count, self)
+end
 
-function CFindUpgradeTask:give_task(community)
+function CFindUpgradeTask:give_task(community) -- called 5th
 	task_objects.CGeneralTask.give_task(self, community)
 end
 
-function CFindUpgradeTask:check_task(tm)
+function CFindUpgradeTask:check_task(tm) -- called 6th
 
 	if self.last_check_task ~= nil then
 		return
@@ -3164,6 +3177,12 @@ function CFindUpgradeTask:check_task(tm)
 
 	self.check_time = global_time + 250
 
+	local actor = db.actor
+
+	if actor == nil then
+		return
+	end
+
 	if self.target then
 
 		local obj = alife():object(self.target)
@@ -3176,12 +3195,9 @@ function CFindUpgradeTask:check_task(tm)
 		obj = sobj and sobj.object
 
 		if obj then
-			local act = db.actor
-			if act then
-				if obj:general_goodwill(act) <= -1000 then
-					self.last_check_task = "reversed"
-					return
-				end
+			if obj:general_goodwill(actor) <= -1000 then
+				self.last_check_task = "reversed"
+				return
 			end
 		end
 --	else
@@ -3189,77 +3205,64 @@ function CFindUpgradeTask:check_task(tm)
 --		return
 	end
 
-	if self:has_requested_items() then
+	if self:has_requested_item(actor) then
 		self.state = "have_item"
-	elseif (self.state == "have_item") and not self:has_requested_items() then
+	else
 		self.state = "started"
 	end
 
 	for k, v in pairs (self.condlist) do
-		local act = db.actor
-		local cond = xr_logic.pick_section_from_condlist(act, act, v)
+		local cond = xr_logic.pick_section_from_condlist(actor, actor, v)
 		if cond ~= nil then
 			self.last_check_task = cond
 		end
 	end
 end
-
+--[[
 function CFindUpgradeTask:finish_task()
 	self.last_check_task = "complete"
 end
-
-function CFindUpgradeTask:has_requested_items()
-	local s = ""
-	local name = ""
-	local name = trans(self.requested_item_inv_name)
-	if db.actor:object(self.requested_item) ~= nil then
-		s = s.."+ "..name
-		self.presence_requested_item = true
-	else
-		s = s.."- "..name
-		self.presence_requested_item = false
-	end
-	self.description = trans(self.text).."\\n"..s
+]]
+function CFindUpgradeTask:has_requested_item(actor)
 	if self.t == nil then
-		local act = db.actor
-		self.t = act and act:get_task(tostring(self.entity_id), false) -- "true" used to search only for not finished tasks
-		return
-	end
-	if self.auto_faction then
-		self.t:set_description(trans(self.community_name)..".\\n"..trans(self.description))
-	else
-		self.t:set_description(trans(self.description))
-	end
-	return self.presence_requested_item
---[[
-	if self.presence_requested_item then
-		return true
-	else
+		self.t = actor:get_task(tostring(self.entity_id), false) -- "true" used to search only for not finished tasks
 		return false
 	end
-]]
+	local has_requested_item = false
+	local s = ""
+	if actor:object(self.requested_item) ~= nil then
+		s = "+ "
+		has_requested_item = true
+	else
+		s = "- "
+	end
+	local description = self.text.."\\n"..s..self.requested_item_inv_name
+	if self.auto_faction then
+		self.t:set_description(self.community_name..".\\n"..description)
+	else
+		self.t:set_description(description)
+	end
+	return has_requested_item
 end
 
-function CFindUpgradeTask:transfer_items_looking_for(npc)
-	self.npc = npc
+function CFindUpgradeTask:transfer_items_looking_for(npc) -- called 7th
+--	self.npc = npc
 	dialogs.relocate_item_section(npc, self.requested_item, "out")
 	dialogs.relocate_money(npc, self.cost, "in")
 	self.state = "finished"
+	self.last_check_task = "complete"
 end
 
-function get_inventory_find_upgrade_count(task, item)
-	if task.requested_item == item:section() then
-		if not task.presence_requested_item then
-			task.presence_requested_item = true
-			return
-		end
-	end
+function CFindUpgradeTask:deactivate_task(_task) -- called 8th
+	task_objects.CGeneralTask.deactivate_task(self, _task)
 end
 
 function CFindUpgradeTask:save(package)
 	set_save_marker(package, "save", false, "CFindUpgradeTask")
 	task_objects.CGeneralTask.save(self, package)
 --	package:w_stringZ(self.state)
+	package:w_u8(0) -- TODO: Delete when new game requirement, temp. replacement for lines below
+--[[
 	local self_state = self.state
 	if self_state == "started" then
 		package:w_u8(1)
@@ -3270,16 +3273,21 @@ function CFindUpgradeTask:save(package)
 	else
 		abort("[task_objects.CFindUpgradeTask:save]: Tried to save an identifier for an invalid task state: '%s'. If a save file was created, it is corrupt.", tostring(self_state))
 	end
-	package:w_bool(self.presence_requested_item)
-	package:w_stringZ(self.requested_item)
+]]
+	package:w_bool(true) -- TODO: Delete when new game requirement, temp. replacement for line below
+--	package:w_bool(self.presence_requested_item)
+--	package:w_u16(self.target) -- TODO: Uncomment when new game requirement
+	package:w_stringZ("") -- TODO: Delete when new game requirement, temp. replacement for line below
+--	package:w_stringZ(self.requested_item) -- read in CFindUpgradeTask:__init()
 	set_save_marker(package, "save", true, "CFindUpgradeTask")
 end
 
-function CFindUpgradeTask:load(reader)
+function CFindUpgradeTask:load(reader) -- called 0.5th (only on load)
 	set_save_marker(reader, "load", false, "CFindUpgradeTask")
 	task_objects.CGeneralTask.load(self, reader)
 --	self.state = reader:r_stringZ()
-	local state = reader:r_u8()
+	local state = reader:r_u8() -- TODO: Comment out when new game requirement
+--[[
 	if state == 1 then
 		self.state = "started"
 	elseif state == 2 then
@@ -3289,8 +3297,12 @@ function CFindUpgradeTask:load(reader)
 	else
 		abort("[task_objects.CFindUpgradeTask:load]: Tried to load an invalid task state identifier: '%s'. Your save file is corrupt.", tostring(state))
 	end
-	self.npc = nil
-	self.presence_requested_item = reader:r_bool()
-	self.requested_item = reader:r_stringZ()
+]]
+--	self.npc = nil
+	local presence_requested_item = reader:r_bool() -- TODO: Delete when new game requirement, temp. replacement for line below
+--	self.presence_requested_item = reader:r_bool()
+--	self.target = reader:r_u16() -- TODO: Uncomment when new game requirement
+	local requested_item = reader:r_stringZ() -- TODO: Delete when new game requirement, temp. replacement for line below
+--	self.requested_item = reader:r_stringZ() -- read in CFindUpgradeTask:__init()
 	set_save_marker(reader, "load", true, "CFindUpgradeTask")
 end
