@@ -12,6 +12,7 @@ local to_delayed_alife_release_objects = {}
 
 local game_difficulty_by_num = {[0] = "gd_novice", [1] = "gd_stalker", [2] = "gd_veteran", [3] = "gd_master"}
 local zones_needing_weapon_hide = 0
+local clsid_wpn_ammo = clsid.wpn_ammo
 ----------------------------------------------------------------------------------------------------------------------
 class "actor_binder" (object_binder)
 ----------------------------------------------------------------------------------------------------------------------
@@ -53,7 +54,7 @@ function actor_binder:net_spawn(data)
 		sim_board.get_sim_board():start_sim()
 	end
 
-	self.spawn_frame = device().frame
+--	self.spawn_frame = device().frame
 --	self.already_jumped = false
 	benchmark.main()					--' Distemper 06.2008 --
 
@@ -80,8 +81,6 @@ function actor_binder:net_destroy()
 	level.show_indicators()
 	level.show_weapon(true)
 
-	db.del_actor()
-
 --	sobj:set_callback(callback.inventory_info, nil)
 --	sobj:set_callback(callback.article_info, nil)
 	sobj:set_callback(callback.on_item_take, nil)
@@ -92,6 +91,8 @@ function actor_binder:net_destroy()
 --	sobj:set_callback(callback.level_border_exit, nil)
 	sobj:set_callback(callback.take_item_from_box, nil)
 --	sobj:set_callback(callback.use_object, nil) -- SRP
+
+	db.del_actor()
 
 	if sr_psy_antenna.psy_antenna then
 		sr_psy_antenna.psy_antenna:destroy()
@@ -186,7 +187,7 @@ function actor_binder:on_item_take(obj)
 			end
 		end
 	end
-	if obj:clsid() == clsid.wpn_ammo then
+	if obj:clsid() == clsid_wpn_ammo then
 		dunin_ammo.on_take(obj)
 	end
 end
