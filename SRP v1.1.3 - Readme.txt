@@ -279,6 +279,7 @@ Other changes:
 + Restored some content left out of the game due to bugs and/or negligence (see changelog for details).
 + Added a squad state indicator text to squad info tooltips on the world map.
 + Added the target camp owner name to 'capture' task dialog descriptions.
++ Added the target camp name to 'capture' task phase titles.
 + Enabled freeplay mode after finishing the main storyline.
 + Implemented level- and freeplay-specific autosaves.
 + Various optimizations.

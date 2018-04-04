@@ -338,7 +338,7 @@ function sim_board:register_player(faction)
 	local self_players = self.players
 	local faction_name = faction.player_name
 	if self_players[faction_name] ~= nil then
-		abort("[sim_board.register_player]: Faction '%s' already exists in sim_board.players.", faction:name())
+		abort("[sim_board:register_player]: Faction '%s' already exists in sim_board.players.", faction:name())
 	end
 	self_players[faction_name] = faction
 end
@@ -349,7 +349,7 @@ function sim_board:unregister_player(faction)
 	local self_players = self.players
 	local faction_name = faction.player_name
 	if self_players[faction_name] == nil then
-		abort("[sim_board.unregister_player]: Tried to unregister a nil faction: '%s'.", faction:name())
+		abort("[sim_board:unregister_player]: Tried to unregister a nil faction: '%s'.", faction:name())
 	end
 	self_players[faction_name] = nil
 end
@@ -362,7 +362,7 @@ function sim_board:register_smart(smart)
 	local smart_id = smart.id
 
 	if self_smarts[smart_id] ~= nil then
-		abort("[sim_board.register_smart]: Smart '%s' already exists in sim_board.smarts.", smart:name())
+		abort("[sim_board:register_smart]: Smart '%s' already exists in sim_board.smarts.", smart:name())
 	end
 
 	self_smarts[smart_id] =
@@ -385,19 +385,22 @@ function sim_board:register_smart(smart)
 	end
 end
 
-function sim_board:init_smart(smart)
+function sim_board:init_smart(smart) -- called (only) from smart_terrain.on_register()
 	local smart_id = smart.id
 	local temp_squad_table = self.tmp_assigned_squad[smart_id]
 	if temp_squad_table ~= nil then
 		for k, squad in pairs (temp_squad_table) do
-			self:assign_squad_to_smart(squad, smart_id)
+--			dbglog("Delay-assigning %s squad with ID '%s' to smart '%s'", game.translate_string(squad.player_id), tostring(squad.squad_id), smart_names.get_smart_terrain_name(smart))
+			self:assign_squad_to_smart(squad, smart_id) -- delay-assigns squads from early instances of assign_squad_to_smart(squad, smart) where self.smarts[smart.id] was still nil
 		end
 		self.tmp_assigned_squad[smart_id] = nil
 	end
 	temp_squad_table = self.tmp_entered_squad[smart_id]
 	if temp_squad_table ~= nil then
 		for k, squad in pairs (temp_squad_table) do
-			self:assign_squad_to_smart(squad, smart_id)
+--			dbglog("Delay-entering %s squad with ID '%s' to smart '%s'", game.translate_string(squad.player_id), tostring(squad.squad_id), smart_names.get_smart_terrain_name(smart))
+--			self:assign_squad_to_smart(squad, smart_id)
+			self:enter_smart(squad, smart_id) -- delay-enters squads from early instances of enter_smart(squad, smart_id) where self.smarts[smart_id] was still nil
 		end
 		self.tmp_entered_squad[smart_id] = nil
 	end
@@ -407,7 +410,7 @@ function sim_board:unregister_smart(smart)
 	local self_smarts = self.smarts
 	local smart_id = smart.id
 	if self_smarts[smart_id] == nil then
-		abort("[sim_board.unregister_smart]: Tried to unregister a nil smart: '%s'.", smart:name())
+		abort("[sim_board:unregister_smart]: Tried to unregister a nil smart: '%s'.", smart:name())
 	end
 	self_smarts[smart_id] = nil
 end
@@ -461,7 +464,7 @@ function sim_board:create_squad(faction_id, squad_class, spawn_smart, sq_id, set
 	local self_squads = self.squads
 
 	if self_squads[squad_id] ~= nil then
-		abort("[sim_board.create_squad]: Tried to assign a squad ID that is already in use: '%s'.", tostring(squad_id))
+		abort("[sim_board:create_squad]: Tried to assign a squad ID that is already in use: '%s'.", tostring(squad_id))
 	end
 
 	local squad = squad_class(self, faction_id, squad_id, settings_id)
@@ -493,33 +496,46 @@ function sim_board:create_squad(faction_id, squad_class, spawn_smart, sq_id, set
 	return squad
 end
 
-function sim_board:remove_squad(squad)
+function sim_board:remove_squad(squad, squad_smart)
 
-	local sim_combat_id = squad.sim_combat_id
+	local tm = task_manager.get_task_manager()
+
+	for k, entity_id in pairs (squad.random_tasks) do
+		local task = tm:get_task_by_entity_id(entity_id)
+		if task == nil then
+			squad.random_tasks[k] = nil
+		else
+			if task.status == "selected" then
+				local task_type = task.type
+				if task_type == "recover_item" or task_type == "bring_item" then
+					if task.squad_id == squad.squad_id then
+						task.last_check_task = "reversed"
+					else
+						squad.random_tasks[k] = nil
+					end
+				elseif task_type == "capture_smart" then
+					task.last_check_task = "fail"
+				end
+			end
+		end
+	end
+
+	local sim_combat_id = squad.sim_combat_id -- should differ from squad.smart_id only when latest squad action was attack_point
 	if sim_combat_id ~= nil then
-		local sim_combat = self.smarts[sim_combat_id].smrt.combat_manager
-		sim_combat:unregister_squad(squad)
-	end
---[[
-	local squad_action = squad.current_action
-	if squad_action == nil or squad_action.dest_smrt == nil then			-- squad_action.dest_smrt is always nil, so this always passes
-		squad.board:exit_smart(squad, self.smarts[squad.smart_id].smrt)		-- run this separately instead
+		self.smarts[sim_combat_id].smrt.combat_manager:unregister_squad(squad)
 	end
 
-	if squad.sim_combat_id ~= nil then						-- squad.sim_combat_id is guaranteed to be nil here
-		src_smart.combat_manager:unregister_squad(squad)	-- so this would never execute, nor should it (src_smart = nil --> crash)
-	end
-]]
+	self:exit_smart(squad, squad_smart, true)
+
 	squad:hide()
 
-	local self_players = self.players
-	local squad_faction = self_players[squad.player_id]
-
-	self:assign_squad_to_smart(squad, nil)
+--	self:assign_squad_to_smart(squad, nil) -- exit_smart() already handled the relevant bit: old_smart_info.squads[squad.squad_id] = nil
 
 	squad:clear_npc()
 
-	squad_faction:unregister_squad(squad)
+	local self_players = self.players
+
+	self_players[squad.player_id]:unregister_squad(squad)
 
 	local squad_id = squad.squad_id
 
@@ -532,55 +548,68 @@ function sim_board:remove_squad(squad)
 	end
 end
 
-function sim_board:assign_squad_to_smart(squad, smart_id)
+--[[
 
-	if smart_id ~= nil then
-		if self.smarts[smart_id] == nil then
+Summary of operations:
+
+(1) old_smart_info.squads[squad.squad_id] = nil
+(2) squad.smart_id = new_smart_id
+(3) new_smart_info.squads[squad.squad_id] = squad
+
+]]
+
+function sim_board:assign_squad_to_smart(squad, new_smart_id) -- first unassigns from old
+
+	local new_smart_info = self.smarts[new_smart_id]
+
+--	if new_smart_id ~= nil then -- now never nil
+		if new_smart_info == nil then
 			local tmp_assigned_tbl = self.tmp_assigned_squad
-			if tmp_assigned_tbl[smart_id] == nil then
-				tmp_assigned_tbl[smart_id] = {}
+			if tmp_assigned_tbl[new_smart_id] == nil then
+				tmp_assigned_tbl[new_smart_id] = {}
 			end
-			table.insert(tmp_assigned_tbl[smart_id], squad)
+			table.insert(tmp_assigned_tbl[new_smart_id], squad)
 			return
 		end
-	end
+--	end
 
 	local old_smart_id = squad.smart_id
-	if old_smart_id ~= nil then
-		local old_smart = self.smarts[old_smart_id]
-		old_smart.squads[squad.squad_id] = nil
---		old_smart.smrt:refresh()
-	end
+	local old_smart
 
-	if smart_id == nil then
+	if old_smart_id ~= nil then
+		local old_smart_info = self.smarts[old_smart_id]
+		old_smart = old_smart_info.smrt
+		old_smart_info.squads[squad.squad_id] = nil
+--		old_smart:refresh()
+	end
+--[[
+	if new_smart_id == nil then
 		return
 	end
+]]
+	local new_smart = new_smart_info.smrt
 
-	local new_smart = self.smarts[smart_id]
-	local new_smart_obj = new_smart.smrt
+	squad:assign_smart(old_smart, old_smart_id, new_smart, new_smart_id)
 
-	squad:assign_smart(new_smart_obj)
+	new_smart_info.squads[squad.squad_id] = squad
 
-	new_smart.squads[squad.squad_id] = squad
---	new_smart_obj:refresh()
+--	new_smart:refresh()
 end
 
-function sim_board:exit_smart(squad, smart)
-
+function sim_board:exit_smart(squad, smart, skip_brain_update)
+--[[
 	if smart == nil then
 		return
 	end
-
+]]
 	local smart_id = smart.id
 
 	if squad.entered_smart ~= smart_id then
 		return
 	end
 
-	local squad_faction = self.players[squad.player_id]
-
-	if smart.player_name ~= squad_faction.player_name then
-		abort("[sim_board.exit_smart]: Squad with ID '%s' cannot exit smart '%s' because its parent faction ('%s') is not the smart owner ('%s').", tostring(squad.squad_id), smart:name(), tostring(squad_faction.player_name), tostring(smart.player_name))
+	if smart.player_name ~= squad.player_id then
+		abort("[sim_board:exit_smart]: Squad with ID '%s' cannot exit smart '%s' because the squad's parent faction ('%s') is not the smart owner ('%s').", tostring(squad.squad_id), smart_names.get_smart_terrain_name(smart), tostring(squad.player_id), tostring(smart.player_name))
 	end
 
 	squad.entered_smart = nil
@@ -594,6 +623,8 @@ function sim_board:exit_smart(squad, smart)
 		self:reset_nearest_squads(smart)
 	end
 
+	local squad_faction = self.players[squad.player_id]
+
 	if smart_info.stayed_squad_quan > 0 then
 		squad_faction:calculate_squad_tasks()
 		return
@@ -605,10 +636,24 @@ function sim_board:exit_smart(squad, smart)
 
 	smart.player_name = "none" -- moved this up from below faction_brain_update()
 
-	squad_faction:faction_brain_update()
+	if skip_brain_update ~= true then
+		squad_faction:faction_brain_update()
+	end
 
 --	smart:refresh()
 end
+
+--[[
+
+Summary of operations:
+
+(1) squad.entered_smart = smart_id
+(2) smart.player_name = squad_faction.player_name
+(3) squad_faction.resource_level incremented if appropriate
+(4) squad faction brain updates as appropriate
+(5) smart_info.stayed_squad_quan = smart_info.stayed_squad_quan + 1
+
+]]
 
 function sim_board:enter_smart(squad, smart_id, after_load)
 
@@ -624,7 +669,7 @@ function sim_board:enter_smart(squad, smart_id, after_load)
 	end
 
 	if squad.entered_smart ~= nil then
-		abort("[sim_board.enter_smart]: Squad with ID '%s' tried to enter smart with ID '%s' without first leaving its old one.", tostring(squad.squad_id), tostring(smart_id))
+		abort("[sim_board:enter_smart]: Squad with ID '%s' tried to enter smart with ID '%s' without first leaving its old one.", tostring(squad.squad_id), tostring(smart_id))
 	end
 
 	local smart = smart_info.smrt
@@ -635,7 +680,7 @@ function sim_board:enter_smart(squad, smart_id, after_load)
 	if smart_info.stayed_squad_quan == 0 then
 
 		if smart.player_name ~= "none" then
-			abort("[sim_board.enter_smart]: Smart with ID '%s' is supposed to be empty but it has '%s' as its registered owner.", tostring(smart_id), tostring(smart.player_name))
+			abort("[sim_board:enter_smart]: Smart with ID '%s' is supposed to be empty but it has '%s' as its registered owner.", tostring(smart_id), tostring(smart.player_name))
 		end
 
 		smart.player_name = squad_faction.player_name
@@ -650,7 +695,7 @@ function sim_board:enter_smart(squad, smart_id, after_load)
 	else
 		if smart.player_name ~= squad_faction.player_name then
 			local our_faction = squad_faction.player_name
-			abort("[sim_board.enter_smart]: Tried to assign squad with ID '%s' and faction '%s' as owner of smart '%s' which was supposed to be owned by '%s' but is actually owned by '%s'.", tostring(squad.squad_id), tostring(our_faction), tostring(smart:name()), tostring(our_faction), tostring(smart.player_name))
+			abort("[sim_board:enter_smart]: Tried to assign squad with ID '%s' and faction '%s' as owner of smart '%s' which was supposed to be owned by '%s' but is actually owned by '%s'.", tostring(squad.squad_id), tostring(our_faction), tostring(smart:name()), tostring(our_faction), tostring(smart.player_name))
 		end
 
 		squad_faction:calculate_squad_tasks()
@@ -714,7 +759,7 @@ function sim_board:build_cross_table(smart)
 	for i = 1, #targets do
 		local target_smart = smarts_by_name[targets[i]]
 		if target_smart == nil then
-			abort("[sim_board.sim_board:build_cross_table]: Invalid target '%s' for smart '%s'.", tostring(targets[i]), smart:name())
+			abort("[sim_board:build_cross_table]: Invalid target '%s' for smart '%s'.", tostring(targets[i]), smart:name())
 		end
 		smart_targets[target_smart.id] = target_smart
 --		self.smarts[target_smart.id].dangers[smart.id] = smart -- dangers unused in vanilla
@@ -767,7 +812,7 @@ function sim_board:find_path(src_smart_id, tgt_smart_id, squad)
 	-- iterate_point() either returns true or aborts, so this test is useless:
 --	local is_founded = iterate_point(squad, src_smart_id, tgt_smart_id, arhive, front)
 --	if is_founded == false then
---		abort("[sim_board.sim_board:find_path]: Path from '%s' to '%s' does not exist for squad with ID '%s'.", tostring(src_smart_id), tostring(tgt_smart_id), tostring(squad.squad_id))
+--		abort("[sim_board:find_path]: Path from '%s' to '%s' does not exist for squad with ID '%s'.", tostring(src_smart_id), tostring(tgt_smart_id), tostring(squad.squad_id))
 --	end
 
 	local path = {{id = tgt_smart_id, value = arhive[tgt_smart_id].value}}

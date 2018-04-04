@@ -36,6 +36,8 @@ local table_remove           = table.remove
 local math_random            = math.random
 local math_ceil              = math.ceil
 
+local PLAYER_HELP_MAX_RADIUS = 150*150
+
 class "sim_squad_generic"
 
 function sim_squad_generic:__init(sim_board, player_id, squad_id)
@@ -378,14 +380,16 @@ function sim_squad_generic:on_npc_death(npc, killer_id)
 	end
 
 	if self.npc_count == 0 then
+--[[
+		-- The block below has been moved into sim_board:remove_squad():
+
 		local tm = task_manager.get_task_manager()
-		for k, v in pairs (self.random_tasks) do
-			local task = tm:get_task_by_entity_id(v)
+		for k, entity_id in pairs (self.random_tasks) do
+			local task = tm:get_task_by_entity_id(entity_id)
 			if task == nil then
 				self.random_tasks[k] = nil
 			else
 				if task.status == "selected" then
---[[
 					local task_type = task.type
 					if task_type == "recover_item" or task_type == "bring_item" then
 						if task.squad_id == self.squad_id then
@@ -393,14 +397,13 @@ function sim_squad_generic:on_npc_death(npc, killer_id)
 						else
 							self.random_tasks[k] = nil
 						end
-					else		-- ^ this stuff is already done via task_objects.script
-]]
-					if task.type == "capture_smart" then
+					elseif task_type == "capture_smart" then
 						task.last_check_task = "fail"
 					end
 				end
 			end
 		end
+]]
 		if self.current_action ~= nil then
 			self.current_action:finalize()
 			self.current_action = nil
@@ -408,34 +411,31 @@ function sim_squad_generic:on_npc_death(npc, killer_id)
 		if self.death_condlist ~= nil then
 			xr_logic.pick_section_from_condlist(db.actor, self, self.death_condlist)
 		end
-		self.board:exit_smart(self, self.board.smarts[self.smart_id].smrt)
-		self.board:remove_squad(self)
+		self.board:remove_squad(self, self.board.smarts[self.smart_id].smrt)
 		return
 	end
 
 	self:refresh()
 end
 
-function sim_squad_generic:assign_smart(smart)
-	local old_smart, sim, obj = self.smart_id, alife()
-	self.smart_id = smart.id
-	for k in pairs (self.squad_npc) do
-		obj = sim:object(k)
-		if obj ~= nil then
-			if obj.m_smart_terrain_id == self.smart_id then
+function sim_squad_generic:assign_smart(old_smart, old_smart_id, new_smart, new_smart_id)
+	local sim = alife()
+	self.smart_id = new_smart_id
+	for npc_id in pairs (self.squad_npc) do
+		local se_npc = sim:object(npc_id)
+		if se_npc ~= nil then
+			if se_npc.m_smart_terrain_id == new_smart_id then
 				return
 			end
-			if obj.m_smart_terrain_id ~= 65535 then
-				if obj.m_smart_terrain_id == old_smart then
-					self.board.smarts[old_smart].smrt:unregister_npc(obj)
+			if se_npc.m_smart_terrain_id ~= 65535 then
+				if se_npc.m_smart_terrain_id == old_smart_id then -- if old_smart_id is nil, this test fails
+					old_smart:unregister_npc(se_npc)
 				end
 			end
-			if smart ~= nil then
-				smart:register_npc(obj)
-			end
+			new_smart:register_npc(se_npc)
 		else
-			self.squad_npc[k] = nil
-			if self.commander_id == k then
+			self.squad_npc[npc_id] = nil
+			if self.commander_id == npc_id then
 				for kk in pairs (self.squad_npc) do
 					self.commander_id = kk
 					break
@@ -705,11 +705,11 @@ function sim_squad_generic:get_next_action()
 		target_smart = board.smarts[self.assigned_target_smart_id].smrt
 	end
 
-	-- If we are the source squad for the target smart of a player's task, 'target_smart' = task target. (Higher priority.)
+	-- If we are the squad joining the player in an active 'capture' task received via dialog, 'target_smart' = task target. (Higher priority.)
 
 	for k, task in pairs (tm.inited_tasks) do
-		if task.status == "selected" then
-			if task.src_obj == self.squad_id then
+		if task.src_obj == self.squad_id then
+			if task.status == "selected" then
 				target_smart = board.smarts[task.target].smrt
 				break
 			end
@@ -895,17 +895,14 @@ function sim_squad_generic:init_squad_task()
 	end
 end
 
-function sim_squad_generic:give_squad_task(target_smart)
-	local ktask = task_manager.get_task_manager():get_tasks_by_smart(target_smart)
+function sim_squad_generic:give_squad_task(target_smart_id)
+	local ktask = task_manager.get_task_manager():get_tasks_by_smart(target_smart_id)
 	if ktask ~= nil then
-		local ktask_type = ktask.type
-		if ktask_type ~= "capture_smart" and ktask.target == target_smart then
-			if ktask_type == "eliminate_smart" then
-				ktask.last_check_task = "reversed_silent"
-				bind_stalker.task_update = true
-			else
-				ktask:reverse_task()
-			end
+		if ktask.type == "eliminate_smart" then
+			ktask.last_check_task = "reversed_silent"
+			bind_stalker.task_update = true
+		else
+			ktask:reverse_task()
 		end
 	end
 	if self.current_action == nil then
@@ -1810,7 +1807,7 @@ function sim_attack_point:make()
 
 	board:exit_smart(squad, src_smart)
 
-	squad.current_action = self
+--	squad.current_action = self -- superfluous
 
 	local sim = alife()
 	for npc_id in pairs (squad.squad_npc) do
@@ -1957,60 +1954,59 @@ end
 
 function sim_stay_point:make()
 	local squad = self.squad
-	if squad ~= nil then
-		squad.current_action = self
+--	if squad ~= nil then
+--		squad.current_action = self -- superfluous
 		local src_smart = self.board.smarts[self.src_smrt_id].smrt
 		src_smart.combat_manager:register_squad(squad)
 		self.begin_time = get_game_time()
 		self:init_defend_smart_delay(squad)
 		squad:refresh()
-	end
+--	end
 end
 
-function sim_stay_point:init_defend_smart_delay(squad)
+function sim_stay_point:init_defend_smart_delay(attack_squad)
 	if self.delay_attack_id == nil then
 		return
 	end
-	local player = self.board.players[squad.player_id]
-	if player.brain.use_delay_attack ~= true then
+	if self.board.players[attack_squad.player_id].brain.use_delay_attack ~= true then
 		return
 	end
-	if squad.delayed_attack_task ~= nil then	-- if squad is already attacking
+	if attack_squad.delayed_attack_task ~= nil then	-- if squad is already attacking
 		return
 	end
 	local target_smart = self.board.smarts[self.delay_attack_id]
 	local target_smart_obj = target_smart.smrt
-	if db.actor:position():distance_to_sqr(target_smart_obj.position) <= 150*150 then
-		for k, v in pairs (target_smart.squads) do
-			if v.squad_online == true then
-				if game_relations.check_all_squad_members(v.squad_id, "enemy") == false then
-					if not target_smart_obj.combat_manager:point_under_attack() then
-						local tm = task_manager.get_task_manager()
-						if tm:get_tasks_by_smart(self.delay_attack_id) ~= nil then
+	if target_smart_obj.combat_manager:point_under_attack() then
+		return
+	end
+--	dbgmsg("Trying to assign a delayed defend task...")
+--	dbgmsg("Checking tasks already in progress...")
+	local tm = task_manager.get_task_manager()
+	if tm:get_tasks_by_smart(self.delay_attack_id) ~= nil then
+--		dbgmsg("Failed to give delayed defend task because defend task already in progress!")
+		return
+	end
+	local script_target = attack_squad:get_script_target()
+	if script_target and script_target ~= self.delay_attack_id then
+--		dbgmsg("Failed to give delayed defend task because attack squad candidate has script target differing from smart to defend!")
+		return
+	end
+	if db.actor:position():distance_to_sqr(target_smart_obj.position) <= PLAYER_HELP_MAX_RADIUS then
+		for k, defense_squad in pairs (target_smart.squads) do
+			if defense_squad.squad_online == true then
+				local defender_action = defense_squad.current_action
+				if defender_action == nil or defender_action.name == "stay_point" then
+					if game_relations.check_all_squad_members(defense_squad.squad_id, "enemy") == false then
+						if attack_squad.squad_power < defense_squad.squad_power then
 							return
 						end
-						if squad.squad_power < v.squad_power then
-							return
-						end
---						dbgmsg("Trying to assign a delayed defend task...")
-						local vv_type
-						for kk, vv in pairs (tm.inited_tasks) do
---							dbgmsg("Checking tasks already in progress...")
-							vv_type = vv.type
-							if vv_type == "defend_smart" or vv_type == "defend_smart_delay" then
-								if vv.status == "selected" then
---									dbgmsg("Failed to give delayed defend task because defend task already in progress!")
-									return
-								end
-							end
-						end
-						local task = tm:select_task("defend_smart_delay", target_smart_obj, v.player_id)
-						squad.delayed_attack_task = task.entity_id
-						task.src_squad_id = squad.squad_id
+						local task = tm:select_task("defend_smart_delay", target_smart_obj, defense_squad.player_id)
 						if task.status ~= "selected" then
-							task:give_task(v.player_id)
+							attack_squad.delayed_attack_task = task.entity_id
+							task.src_squad_id = attack_squad.squad_id
+							task:give_task(defense_squad.player_id)
+--							dbgmsg("Gave delayed defend task to "..trans(defense_squad.player_id).." squad with ID "..tostring(defense_squad.squad_id))
 						end
---						dbglog("Gave delayed defend task to "..trans(v.player_id).." squad with ID "..tostring(v.squad_id)..".")
 						return
 					end
 				end

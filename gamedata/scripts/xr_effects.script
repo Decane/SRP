@@ -1230,9 +1230,8 @@ function remove_squad(actor, obj, p)
 		squad.current_action = nil
 	end
 
---	board:exit_smart(squad, squad.smart)				-- squad.smart is always nil
-	board:exit_smart(squad, board.smarts[squad.smart_id].smrt)
-	board:remove_squad(squad)
+--	board:exit_smart(squad, squad.smart) -- squad.smart is always nil and remove_squad() calls exit_smart() anyway
+	board:remove_squad(squad, board.smarts[squad.smart_id].smrt)
 end
 
 function kill_squad(actor, obj, p)
@@ -1299,8 +1298,8 @@ function clear_smart_terrain(actor, obj, p)
 			squad.current_action:finalize()
 			squad.current_action = nil
 		end
-		board:exit_smart(squad, smart)
-		board:remove_squad(squad)
+--		board:exit_smart(squad, smart) -- done in remove_squad()
+		board:remove_squad(squad, smart)
 	end
 end
 
