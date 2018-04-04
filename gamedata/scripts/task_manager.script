@@ -593,7 +593,7 @@ end
 function CRandomTask:get_tasks_by_smart(smart_id)
 	return self.tasks_by_smarts[smart_id]
 end
-
+--[[
 function CRandomTask:reinit_task_prior(faction)
 	for k, task in pairs (self.inited_tasks) do
 		if task.community == faction then
@@ -610,7 +610,7 @@ function CRandomTask:reinit_task_prior(faction)
 		end
 	end
 end
---[[
+
 function CRandomTask:register_faction_task(faction, task_object)
 
 	if self.selected_faction_task[faction] == nil then

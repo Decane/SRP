@@ -901,29 +901,7 @@ function setup_gulag_and_logic_on_spawn(obj, st, se_obj, stype, loaded)
 	end
 	xr_logic.initialize_obj(obj, st, loaded, db.actor, stype)
 end
---[[
-function setup_gulag_and_logic_on_spawn(obj, st, sobject, stype, loaded)
-	local sim = alife()
-	local obj_id = obj:id()
-	local sobject = sim:object(obj_id)
---	if sim ~= nil then
-		local strn_id = sobject.m_smart_terrain_id
-		if strn_id ~= nil and strn_id ~= 65535 then
-			local strn = sim:object(strn_id)
-			local need_setup_logic = (not loaded) and (strn.npc_info[obj_id].begin_job == true)
-			if need_setup_logic then
-				strn:setup_logic(obj)
-			else
-				xr_logic.initialize_obj(obj, st, loaded, db.actor, stype)
-			end
-		else
-			xr_logic.initialize_obj(obj, st, loaded, db.actor, stype)
-		end
---	else
---		xr_logic.initialize_obj(obj, st, loaded, db.actor, stype)
---	end
-end
-]]
+
 function on_death(se_obj)
 	local sim = alife()
 	if sim then
@@ -935,9 +913,7 @@ function on_death(se_obj)
 		end
 	end
 end
-
---------------------
-
+--[[
 function read_smart_terrain_conditions(self)
 	local ini = self.ini
 	if ini and ini:section_exist("smart_terrains") then
@@ -954,3 +930,4 @@ function read_smart_terrain_conditions(self)
 	end
 	return nil
 end
+]]
