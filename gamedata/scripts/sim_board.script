@@ -480,18 +480,20 @@ function sim_board:create_squad(faction_id, squad_class, spawn_smart, sq_id, set
 
 	self:assign_squad_to_smart(squad, spawn_smart.id)
 
-	local board = squad.board
+--	local board = squad.board
 	local sim = alife()
 	for npc_id in pairs (squad.squad_npc) do
 		local npc_obj = sim:object(npc_id)
-		board:setup_squad_and_group(npc_obj)
+		self:setup_squad_and_group(npc_obj)
 	end
 
 	local faction = self.players[faction_id]
 
 	faction:register_squad(squad)
 
-	faction:faction_brain_update()
+--	faction:faction_brain_update() -- done in enter_smart() if appropriate
+
+	self:enter_smart(squad, spawn_smart.id)
 
 	return squad
 end

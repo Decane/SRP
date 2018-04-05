@@ -1197,15 +1197,15 @@ function create_squad(actor, obj, p)
 	else
 		squad = board:create_squad(player.player_name, sim_squad_scripted.sim_squad_scripted, smart, squad_id)
 	end
-
-	board:enter_smart(squad, smart.id)
+--[[
+	board:enter_smart(squad, smart.id) -- now done in create_squad()
 
 	local sim = alife()
-	for npc_id in pairs (squad.squad_npc) do
+	for npc_id in pairs (squad.squad_npc) do -- already done in create_squad()
 		local obj = sim:object(npc_id)
 		board:setup_squad_and_group(obj)
 	end
-
+]]
 	squad:update()
 end
 

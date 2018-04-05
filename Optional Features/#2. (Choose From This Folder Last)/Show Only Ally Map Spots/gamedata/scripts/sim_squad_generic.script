@@ -265,7 +265,8 @@ function sim_squad_generic:create_npc(spawn_smart)
 		self.squad_power = self.squad_power + 5 * obj:rank() / 1000
 	end
 
-	self.smart_id = spawn_smart.id
+--	self.smart_id = spawn_smart.id -- done in sim_board:assign_squad_to_smart() after this func called
+
 	self:refresh()
 
 	if self.squad_power > 25 then
