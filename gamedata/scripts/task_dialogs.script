@@ -177,7 +177,8 @@ function show_description(npc) --, dialog_name, phrase_id)
 		local tsk = tm:get_task_by_entity_id(entity_id)
 		if tsk.status ~= "selected" then
 			if tsk.type == "recover_item" then
-				return tsk.text
+--				return tsk.text -- causes string buffer overflow when pre-translated as in SRP
+				return utils.cfg_get_string(tsk.task_ini, tsk.id, "text", nil, false, "", "NO_TEXT")
 			end
 		end
 	end
