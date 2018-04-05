@@ -273,10 +273,9 @@ function transfer_bringed_item(actor, npc)
 	if squad == nil then
 		return false
 	end
-	local random_tasks = squad.random_tasks
-	local task = task_manager.get_task_manager():get_task_by_entity_id(random_tasks[4])
+	local task = task_manager.get_task_manager():get_task_by_entity_id(squad.random_tasks[4])
 	task:transfer_items_looking_for(npc)
-	random_tasks[4] = nil
+--	squad.random_tasks[4] = nil -- done in task_objects.CBringItemTask:deactivate_task()
 end
 
 function create_task_answer_phrase(npc, dialog_name, phrase_id)
@@ -322,11 +321,10 @@ function transfer_recovered_item(actor, npc)
 	if squad == nil then
 		return false
 	end
-	local random_tasks = squad.random_tasks
-	local task = task_manager.get_task_manager():get_task_by_entity_id(random_tasks[3])
+	local task = task_manager.get_task_manager():get_task_by_entity_id(squad.random_tasks[3])
 	task:transfer_items_looking_for(npc)
-	random_tasks[3] = nil
 --[[
+	squad.random_tasks[3] = nil -- done in task_objects.CRecoverItemTask:deactivate_task()
 	if sr_recoveritem.target_sr then
 		local db_storage = db.storage
 		local remembered_target = db_storage.remember_target_for_recoveritem[squad.squad_id]

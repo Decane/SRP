@@ -2227,13 +2227,11 @@ end
 
 function CBringItemTask:deactivate_task(_task) -- called 7th
 	task_objects.CGeneralTask.deactivate_task(self, _task)
---[[
-	task_manager.get_task_manager():unregister_faction_task(self.community, self)
+--	task_manager.get_task_manager():unregister_faction_task(self.community, self)
 	local squad = self.squad
 	if squad then
-		squad.random_tasks[4] = nil -- done in task_dialogs.transfer_bringed_item()
+		squad.random_tasks[4] = nil
 	end
-]]
 end
 
 function CBringItemTask:save(package)
@@ -2544,13 +2542,11 @@ end
 
 function CRecoverItemTask:deactivate_task(_task) -- called 8th
 	task_objects.CGeneralTask.deactivate_task(self, _task)
---[[
-	task_manager.get_task_manager():unregister_faction_task(self.community, self)
+--	task_manager.get_task_manager():unregister_faction_task(self.community, self)
 	local squad = self.squad
 	if squad then
-		squad.random_tasks[3] = nil -- done in task_dialogs.transfer_recovered_item()
+		squad.random_tasks[3] = nil
 	end
-]]
 end
 
 function CRecoverItemTask:save(package)
