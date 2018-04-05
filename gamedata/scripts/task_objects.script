@@ -116,7 +116,7 @@ function CGeneralTask:__init(task_ini, id, type)
 	self.faction_target                    = get_string(task_ini, id, "faction", nil, false, "", nil)
 	self.base_prior                        = get_number(task_ini, id, "prior", nil, false, 0)
 	self.prior                             = self.base_prior
-	self.text                              = trans(get_string(task_ini, id, "text", nil, false, "", "NO_TEXT")) -- SRP: wrapped in trans()
+	self.text                              = get_string(task_ini, id, "text", nil, false, "", "NO_TEXT")
 	self.description                       = get_string(task_ini, id, "description", nil, false, "", "NO_TEXT")
 	self.board                             = sim_board.get_sim_board()
 	self.auto_name                         = get_bool(task_ini, id, "auto_name", nil, false, true)
@@ -214,9 +214,9 @@ function CGeneralTask:give_task(community)
 		t:set_description("")
 	else
 		if self.auto_faction then
-			t:set_description(self.community_name..".\\n"..self.text)
+			t:set_description(self.community_name..".\\n"..trans(self.text))
 		else
-			t:set_description(self.text)
+			t:set_description(trans(self.text))
 		end
 	end
 
@@ -2138,9 +2138,9 @@ function CBringItemTask:has_requested_items(actor)
 	end
 
 	if self.auto_faction then
-		t:set_description(self.community_name..".\\n"..self.text)
+		t:set_description(self.community_name..".\\n"..trans(self.text))
 	else
-		t:set_description(self.text)
+		t:set_description(trans(self.text))
 	end
 
 	if c < self.ri_counter then
@@ -2516,7 +2516,7 @@ function CRecoverItemTask:has_requested_item(actor)
 		s = "- "
 	end
 
-	local description = self.text.."\\n"..s..self.requested_item_inv_name
+	local description = trans(self.text).."\\n"..s..self.requested_item_inv_name
 
 	if self.auto_faction then
 		t:set_description(self.community_name..".\\n"..description)
@@ -3215,7 +3215,7 @@ function CFindUpgradeTask:has_requested_item(actor)
 		s = "- "
 	end
 
-	local description = self.text.."\\n"..s..self.requested_item_inv_name
+	local description = trans(self.text).."\\n"..s..self.requested_item_inv_name
 
 	if self.auto_faction then
 		t:set_description(self.community_name..".\\n"..description)
