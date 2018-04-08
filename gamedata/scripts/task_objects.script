@@ -292,13 +292,13 @@ function CGeneralTask:check_task(tm)
 
 	local act = db.actor
 
-	for k, v in pairs (self.condlist) do
-		local t = xr_logic.pick_section_from_condlist(act, act, v)
-		if t ~= nil then
-			if valid_values[t] ~= true then
-				abort("[task_objects.CGeneralTask:check_task]: Invalid task status '%s' for task '%s'.", tostring(t), tostring(self.name))
+	for k, condlist in pairs (self.condlist) do
+		local status = xr_logic.pick_section_from_condlist(act, act, condlist)
+		if status ~= nil then
+			if valid_values[status] ~= true then
+				abort("[task_objects.CGeneralTask:check_task]: Invalid task status '%s' for task '%s'.", tostring(status), tostring(self.name))
 			end
-			self.last_check_task = t
+			self.last_check_task = status
 			return
 		end
 	end
@@ -1744,10 +1744,13 @@ function CGetRewardTask:check_task(tm) -- called 6th
 		end
 	end
 
- 	for k, v in pairs (self.condlist) do
-		local cond = xr_logic.pick_section_from_condlist(actor, actor, v)
-		if cond ~= nil then
-			self.last_check_task = cond
+	for k, condlist in pairs (self.condlist) do
+		local status = xr_logic.pick_section_from_condlist(actor, actor, condlist)
+		if status ~= nil then
+			if valid_values[status] ~= true then
+				abort("[task_objects.CGetRewardTask:check_task]: Invalid task status '%s' for task '%s'.", tostring(status), tostring(self.name))
+			end
+			self.last_check_task = status
 			return
 		end
 	end
@@ -2240,9 +2243,10 @@ function CBringItemTask:save(package)
 
 	task_objects.CGeneralTask.save(self, package)
 
---	package:w_stringZ(self.state)
+	package:w_u8(0) -- TODO: Delete when new game requirement, temp. replacement for block below
 --[[
 	local self_state = self.state
+
 	if self_state == "started" then
 		package:w_u8(1)
 	elseif self_state == "have_item" then
@@ -2253,11 +2257,9 @@ function CBringItemTask:save(package)
 		abort("[task_objects.CBringItemTask:save]: Tried to save an identifier for an invalid task state: '%s'. If a save file was created, it is corrupt.", tostring(self_state))
 	end
 ]]
-	package:w_u8(0) -- TODO: Delete when new game requirement
-
 	package:w_u8(self.ri_counter)
 
-	package:w_u16(0) -- TODO: Delete when new game requirement
+	package:w_u16(0) -- TODO: Delete when new game requirement, temp. replacement for block below
 --[[
 	if self.target then
 		package:w_u16(self.target)
@@ -2295,8 +2297,6 @@ function CBringItemTask:load(reader) -- called 0.5th (only on load)
 
 	task_objects.CGeneralTask.load(self, reader)
 
---	self.state = reader:r_stringZ()
-
 	local state = reader:r_u8() -- TODO: Comment out when new game requirement
 --[[
 	if state == 1 then
@@ -2308,9 +2308,9 @@ function CBringItemTask:load(reader) -- called 0.5th (only on load)
 	else
 		abort("[task_objects.CBringItemTask:load]: Tried to load an invalid task state identifier: '%s'. Your save file is corrupt.", tostring(state))
 	end
-]]
---	self.npc = nil
 
+	self.npc = nil
+]]
 	self.ri_counter = reader:r_u8()
 
 	local n = reader:r_u16() -- TODO: Comment out when new game requirement
@@ -2558,6 +2558,7 @@ function CRecoverItemTask:save(package)
 	package:w_u8(0) -- TODO: Delete when new game requirement, temp. replacement for lines below
 --[[
 	local self_state = self.state
+
 	if self_state == "started" then
 		package:w_u8(1)
 	elseif self_state == "have_item" then
@@ -3177,10 +3178,14 @@ function CFindUpgradeTask:check_task(tm) -- called 6th
 		self.state = "started"
 	end
 
-	for k, v in pairs (self.condlist) do
-		local cond = xr_logic.pick_section_from_condlist(actor, actor, v)
-		if cond ~= nil then
-			self.last_check_task = cond
+	for k, condlist in pairs (self.condlist) do
+		local status = xr_logic.pick_section_from_condlist(actor, actor, condlist)
+		if status ~= nil then
+			if valid_values[status] ~= true then
+				abort("[task_objects.CFindUpgradeTask:check_task]: Invalid task status '%s' for task '%s'.", tostring(status), tostring(self.name))
+			end
+			self.last_check_task = status
+			return
 		end
 	end
 end
@@ -3237,8 +3242,10 @@ end
 function CFindUpgradeTask:save(package)
 	set_save_marker(package, "save", false, "CFindUpgradeTask")
 	task_objects.CGeneralTask.save(self, package)
---	package:w_stringZ(self.state)
-	package:w_u8(0) -- TODO: Delete when new game requirement, temp. replacement for lines below
+	-- TODO: Delete when new game requirement, temp. replacements for block below:
+	package:w_u8(0)
+	package:w_bool(true)
+	package:w_stringZ("")
 --[[
 	local self_state = self.state
 	if self_state == "started" then
@@ -3250,20 +3257,20 @@ function CFindUpgradeTask:save(package)
 	else
 		abort("[task_objects.CFindUpgradeTask:save]: Tried to save an identifier for an invalid task state: '%s'. If a save file was created, it is corrupt.", tostring(self_state))
 	end
+	package:w_bool(self.presence_requested_item)
+	package:w_stringZ(self.requested_item) -- read in CFindUpgradeTask:__init()
 ]]
-	package:w_bool(true) -- TODO: Delete when new game requirement, temp. replacement for line below
---	package:w_bool(self.presence_requested_item)
 --	package:w_u16(self.target) -- TODO: Uncomment when new game requirement
-	package:w_stringZ("") -- TODO: Delete when new game requirement, temp. replacement for line below
---	package:w_stringZ(self.requested_item) -- read in CFindUpgradeTask:__init()
 	set_save_marker(package, "save", true, "CFindUpgradeTask")
 end
 
 function CFindUpgradeTask:load(reader) -- called 0.5th (only on load)
 	set_save_marker(reader, "load", false, "CFindUpgradeTask")
 	task_objects.CGeneralTask.load(self, reader)
---	self.state = reader:r_stringZ()
 	local state = reader:r_u8() -- TODO: Comment out when new game requirement
+	-- TODO: Delete when new game requirement, temp. replacements for lines below:
+	local presence_requested_item = reader:r_bool()
+	local requested_item = reader:r_stringZ()
 --[[
 	if state == 1 then
 		self.state = "started"
@@ -3274,12 +3281,10 @@ function CFindUpgradeTask:load(reader) -- called 0.5th (only on load)
 	else
 		abort("[task_objects.CFindUpgradeTask:load]: Tried to load an invalid task state identifier: '%s'. Your save file is corrupt.", tostring(state))
 	end
+	self.npc = nil
+	self.presence_requested_item = reader:r_bool()
+	self.requested_item = reader:r_stringZ() -- read in CFindUpgradeTask:__init()
 ]]
---	self.npc = nil
-	local presence_requested_item = reader:r_bool() -- TODO: Delete when new game requirement, temp. replacement for line below
---	self.presence_requested_item = reader:r_bool()
 --	self.target = reader:r_u16() -- TODO: Uncomment when new game requirement
-	local requested_item = reader:r_stringZ() -- TODO: Delete when new game requirement, temp. replacement for line below
---	self.requested_item = reader:r_stringZ() -- read in CFindUpgradeTask:__init()
 	set_save_marker(reader, "load", true, "CFindUpgradeTask")
 end
