@@ -1,0 +1,74 @@
+----------------------------------------------------------------------------------------------------
+-- Author: Andrey Fidrya (Zmey) af@svitonline.com
+-- Source script (trader): Evgeniy Negrobov (Jon) jon@gsc-game.kiev.ua
+----------------------------------------------------------------------------------------------------
+
+local snd = {
+
+	trader_greet_first = {
+		[[characters_voice\scenario\escape\esc_trader_greet_first]]
+	},
+
+	trader_greet_habar = {
+		[[characters_voice\scenario\escape\esc_trader_greet_habar]]
+	},
+
+	trader_wait = {
+		[[characters_voice\scenario\escape\esc_trader_wait_1]],
+		[[characters_voice\scenario\escape\esc_trader_wait_2]],
+		[[characters_voice\scenario\escape\esc_trader_wait_3]],
+		[[characters_voice\scenario\escape\esc_trader_wait_4]]
+	},
+
+	trader_wait_habar_greet = {
+		[[characters_voice\scenario\escape\esc_trader_habar_greet_1]],
+		[[characters_voice\scenario\escape\esc_trader_habar_greet_2]],
+		[[characters_voice\scenario\escape\esc_trader_habar_greet_3]]
+	},
+
+	trader_wait_habar_bye = {
+		[[characters_voice\scenario\escape\esc_trader_bye_habar_1]],
+		[[characters_voice\scenario\escape\esc_trader_bye_habar_2]],
+		[[characters_voice\scenario\escape\esc_trader_bye_habar_3]]
+	},
+
+	trader_bye_garbage = {
+		[[characters_voice\scenario\escape\esc_trader_bye_1]],
+		[[characters_voice\scenario\escape\esc_trader_bye_2]],
+		[[characters_voice\scenario\escape\esc_trader_bye_3]]
+	},
+
+	trader_bye_give_habar = {
+		[[characters_voice\scenario\escape\esc_trader_bye_give_habar]]
+	},
+
+	trader_hello_what_have_you_got = {
+		[[characters_voice\scenario\escape\esc_trader_greet_1]],
+		[[characters_voice\scenario\escape\esc_trader_greet_2]],
+		[[characters_voice\scenario\escape\esc_trader_greet_3]],
+		[[characters_voice\scenario\escape\esc_trader_greet_4]]
+	},
+
+	red_forester_meet = {
+		[[characters_voice\scenario\red_forest\red_forester_meet_hello_0]],
+		[[characters_voice\scenario\red_forest\red_forester_meet_hello_1]],
+		[[characters_voice\scenario\red_forest\red_forester_meet_hello_2]],
+		[[characters_voice\scenario\red_forest\red_forester_greet_1]]
+	},
+
+	red_forester_meet_bye = {
+		[[characters_voice\scenario\red_forest\red_forester_hello_bye_0]],
+		[[characters_voice\scenario\red_forest\red_forester_hello_bye_1]],
+		[[characters_voice\scenario\red_forest\red_forester_hello_bye_2]]
+	}
+}
+
+local math_random = math.random
+
+function pick_sound_from_set(npc, set) --, last_sound_info) -- TODO: 'npc' not used
+	local sndset = snd[set]
+	if not sndset then
+		abort("[mob_sound.pick_sound_from_set]: Sound set '%s' does not exist in table mob_sound.snd.", tostring(set))
+	end
+	return sndset[math_random(1, #sndset)]
+end
