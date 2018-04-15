@@ -1,0 +1,47 @@
+----------------------------------------------------------------------------------------------------
+-- Physics hit checker
+----------------------------------------------------------------------------------------------------
+-- Author: Andrey Fidrya (Zmey) af@svitonline.com
+----------------------------------------------------------------------------------------------------
+
+class "ph_on_hit"
+
+function ph_on_hit:__init(obj, storage)
+	self.object = obj
+	self.st = storage
+end
+
+function ph_on_hit:reset_scheme()
+end
+
+function ph_on_hit:update(delta)
+end
+
+function ph_on_hit:hit_callback(obj) --, amount, local_direction, who, bone_index)
+	if db.storage[self.object:id()].active_scheme then
+		xr_logic.try_switch_to_another_section(obj, self.st, db.actor)
+	end
+end
+
+function ph_on_hit:deactivate()
+end
+
+----------------------------------------------------------------------------------------------------
+
+function add_to_binder(obj, ini, scheme, section, storage)
+	local action = ph_on_hit(obj, storage)
+	storage.action = action
+end
+
+function set_scheme(obj, ini, scheme, section) --, gulag_name)
+	local st = xr_logic.assign_storage_and_bind(obj, ini, scheme, section)
+	st.logic = xr_logic.cfg_get_switch_conditions(ini, section, obj)
+	xr_logic.subscribe_action_for_events(obj, st, st.action)
+end
+
+function disable_scheme(obj, scheme)
+	local st = db.storage[obj:id()][scheme]
+	if st then
+		xr_logic.unsubscribe_action_from_events(obj, st, st.action)
+	end
+end

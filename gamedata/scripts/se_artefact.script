@@ -1,0 +1,16 @@
+class "se_artefact" (cse_alife_item_artefact)
+
+function se_artefact:__init (section) super (section)
+end
+
+--------------------
+
+function se_artefact:can_switch_offline()
+	return true
+end
+
+--------------------
+
+function se_artefact:can_switch_online()
+	return true
+end

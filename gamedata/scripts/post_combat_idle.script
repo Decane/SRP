@@ -1,0 +1,116 @@
+local math_random = math.random
+local string_find = string.find
+
+class "evaluator_combat_enemy" (property_evaluator)
+
+function evaluator_combat_enemy:__init(storage, name) super(nil, name)
+	self.st = storage
+	self.st.timer = time_global()
+end
+
+function evaluator_combat_enemy:evaluate()
+
+	local best_enemy = self.object:best_enemy()
+	local st = self.st
+
+	if best_enemy ~= nil then
+		if st.timer ~= nil then
+			st.last_best_enemy_id = best_enemy:id()
+			st.last_best_enemy_name = best_enemy:name()
+			st.timer = nil
+		end
+		return true
+	end
+
+	if st.timer == nil then
+		if st.last_best_enemy_id == db.actor:id() then
+			st.timer = time_global()
+			return false
+		else
+			local overrides = db.storage[self.object:id()].overrides
+			local min = (overrides and overrides.min_post_combat_time * 1000) or 10000
+			local max = (overrides and overrides.max_post_combat_time * 1000) or 15000
+			st.timer = time_global() + math_random(min, max)
+		end
+	end
+
+	return time_global() < st.timer
+end
+
+----------------------------------------------------------------------------------------------------------------------
+
+class "action_post_combat_wait" (action_base)
+
+function action_post_combat_wait:__init(npc, storage, action_name) super(nil, action_name)
+	self.st = storage
+end
+
+function action_post_combat_wait:initialize()
+	action_base.initialize(self)
+	local last_best_enemy_name = self.st.last_best_enemy_name
+	self.marsh_creature_detected = last_best_enemy_name ~= nil and string_find(last_best_enemy_name, "bloodsucker_jumper") ~= nil
+	if self.marsh_creature_detected then
+		state_mgr.set_state(self.object, "bloodsucker_search")
+	else
+		state_mgr.set_state(self.object, "hide")
+	end
+end
+
+function action_post_combat_wait:execute()
+	action_base.execute(self)
+	if self.marsh_creature_detected then
+		return
+	end
+	local sobj_id = self.object:id()
+--	local squad = db.storage[sobj_id].squad_obj
+--	if squad and squad.npc_count > 1 then
+		xr_sound.set_sound_play(sobj_id, "post_combat_wait")
+--	end
+end
+
+function action_post_combat_wait:finalize()
+	if self.marsh_creature_detected then
+		return
+	end
+	local sobj_id = self.object:id()
+--	local squad = db.storage[sobj_id].squad_obj
+--	if squad and squad.npc_count > 1 then
+		xr_sound.set_sound_play(sobj_id, "post_combat_relax")
+--	end
+	action_base.finalize(self)
+end
+
+local stalker_ids_action_combat_planner = stalker_ids.action_combat_planner
+local stalker_ids_action_post_combat_wait = stalker_ids.action_post_combat_wait
+local stalker_ids_property_enemy = stalker_ids.property_enemy
+
+local wp_stalker_ids_property_enemy_true = world_property(stalker_ids_property_enemy, true)
+local wp_stalker_ids_property_enemy_false = world_property(stalker_ids_property_enemy, false)
+local wp_stalker_ids_property_pure_enemy_false = world_property(stalker_ids.property_pure_enemy, false)
+local wp_stalker_ids_property_critically_wounded_false = world_property(stalker_ids.property_critically_wounded, false)
+local wp_stalker_ids_property_danger_grenade_false = world_property(stalker_ids.property_danger_grenade, false)
+
+function add_post_combat_idle(npc)
+
+	local manager = npc:motivation_action_manager()
+	local combat_action = manager:action(stalker_ids_action_combat_planner)
+	local combat_action_planner = cast_planner(combat_action)
+	local storage = {}
+
+	db.storage[npc:id()].post_combat_wait = storage
+
+	manager:remove_evaluator(stalker_ids_property_enemy)
+	manager:add_evaluator(stalker_ids_property_enemy, evaluator_combat_enemy(storage, "evaluator_combat_enemy"))
+
+	combat_action_planner:remove_evaluator(stalker_ids_property_enemy)
+	combat_action_planner:add_evaluator(stalker_ids_property_enemy, evaluator_combat_enemy(storage, "evaluator_combat_enemy"))
+	combat_action_planner:remove_action(stalker_ids_action_post_combat_wait)
+
+	local new_action = this.action_post_combat_wait(npc, storage, "action_post_combat_wait")
+	new_action:add_precondition(wp_stalker_ids_property_enemy_true)
+	new_action:add_precondition(wp_stalker_ids_property_pure_enemy_false)
+	new_action:add_precondition(wp_stalker_ids_property_critically_wounded_false)
+	new_action:add_precondition(wp_stalker_ids_property_danger_grenade_false)
+	new_action:add_effect(wp_stalker_ids_property_enemy_false)
+	combat_action_planner:add_action(stalker_ids_action_post_combat_wait, new_action)
+end

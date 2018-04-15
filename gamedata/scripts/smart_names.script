@@ -1,0 +1,28 @@
+local smart_names_table = {}
+
+function init_smart_names_table()
+	local names_ini = ini_file("misc\\smart_names.ltx") -- initialized just once per session, during game load
+	for i = 0, names_ini:line_count("levels") - 1 do
+		local _, level_name = names_ini:r_line("levels", i, "", "")
+		if names_ini:section_exist(level_name) then
+			local level_smarts = {}
+			smart_names_table[level_name] = level_smarts
+			for i = 0, names_ini:line_count(level_name) - 1 do
+				local result, smart_name, name_str = names_ini:r_line(level_name, i, "", "")
+				level_smarts[smart_name] = name_str -- e.g. 'st_name_mar_smart_terrain_10_5'
+			end
+		end
+	end
+end
+
+function get_smart_terrain_name(smart)
+	local level_smarts = smart_names_table[smart.smart_level]
+	local smart_name = smart:name()
+	if level_smarts ~= nil then
+		local name_str = level_smarts[smart_name]
+		if name_str ~= nil then
+			return game.translate_string(name_str)
+		end
+	end
+	return smart_name
+end

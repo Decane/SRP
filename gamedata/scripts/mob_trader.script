@@ -88,7 +88,7 @@ function mob_trader:reset_scheme()
 	-- start sound and head animation
 	if self_st.sound_phrase then
 		if has_alife_info("esc_in_sid_door_zone") or has_alife_info("red_in_forester_door_zone") then -- SRP hack to prevent Sid / Forester voice bugs
-			local snd = mob_sound.pick_sound_from_set(sobj, self_st.sound_phrase, {})
+			local snd = mob_sound.pick_sound_from_set(sobj, self_st.sound_phrase) --, {})
 			sobj:set_trader_sound(snd, self:select_head_animation())
 		end
 	end
