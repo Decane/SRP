@@ -2,8 +2,8 @@
 <game_dialogs>
 	<dialog id="gar_digger_traitor_smuggler">
 		<precondition>dialogs_garbage.is_dark_night</precondition>
-	<dont_has_info>gar_quest_kill_digger_traitor_started</dont_has_info>
-	<dont_has_info>gar_quest_get_weapons_spoken</dont_has_info>
+		<dont_has_info>gar_quest_kill_digger_traitor_started</dont_has_info>
+		<dont_has_info>gar_quest_get_weapons_spoken</dont_has_info>
 		<has_info>gar_quest_get_weapons_started</has_info>
 		<phrase_list>
 			<phrase id="0">
@@ -12,7 +12,7 @@
 			</phrase>
 			<phrase id="1">
 				<text>gar_digger_traitor_smuggler_1</text>
-<!--		<dont_has_info>gar_quest_get_weapons_spoken</dont_has_info>	-->
+<!--			<dont_has_info>gar_quest_get_weapons_spoken</dont_has_info> -->
 				<give_info>gar_quest_get_weapons_spoken</give_info>
 				<next>11</next>
 			</phrase>
@@ -23,8 +23,8 @@
 		</phrase_list>
 	</dialog>
 	<dialog id="gar_bandit_barman_kill_smuggler">
-	<dont_has_info>gar_quest_kill_smuggler_done</dont_has_info>
-	<dont_has_info>gar_quest_kill_smuggler_barman</dont_has_info>
+		<dont_has_info>gar_quest_kill_smuggler_done</dont_has_info>
+		<dont_has_info>gar_quest_kill_smuggler_barman</dont_has_info>
 		<has_info>gar_quest_kill_smuggler_told</has_info>
 		<phrase_list>
 			<phrase id="0">
@@ -110,7 +110,7 @@
 		</phrase_list>
 	</dialog>
 	<dialog id="gar_digger_traitor_kill">
-<!--	<dont_has_info>gar_quest_kill_digger_traitor_gone</dont_has_info>	-->
+<!--	<dont_has_info>gar_quest_kill_digger_traitor_gone</dont_has_info> -->
 		<has_info>gar_quest_kill_digger_traitor_started</has_info>
 		<phrase_list>
 			<phrase id="0">
@@ -197,8 +197,8 @@
 		</phrase_list>
 	</dialog>
 	<dialog id="gar_bandit_leader_kill_digger_traitor_told">
-	<dont_has_info>gar_bandit_block_quest_line</dont_has_info>
-	<dont_has_info>gar_quest_kill_digger_traitor_started</dont_has_info>
+		<dont_has_info>gar_bandit_block_quest_line</dont_has_info>
+		<dont_has_info>gar_quest_kill_digger_traitor_started</dont_has_info>
 		<has_info>gar_quest_kill_digger_traitor_told</has_info>
 		<phrase_list>
 			<phrase id="0">
@@ -276,9 +276,9 @@
 		</phrase_list>
 	</dialog>
 	<dialog id="gar_bandit_barman_kill_digger_traitor">
-	<dont_has_info>gar_quest_kill_digger_traitor_gone</dont_has_info>
-	<dont_has_info>gar_quest_kill_digger_traitor_done</dont_has_info>
-	<dont_has_info>gar_quest_kill_digger_traitor_barman</dont_has_info>
+		<dont_has_info>gar_quest_kill_digger_traitor_gone</dont_has_info>
+		<dont_has_info>gar_quest_kill_digger_traitor_done</dont_has_info>
+		<dont_has_info>gar_quest_kill_digger_traitor_barman</dont_has_info>
 		<has_info>gar_quest_kill_digger_traitor_started</has_info>
 		<phrase_list>
 			<phrase id="0">
@@ -605,7 +605,7 @@
 				<next>11111</next>
 			</phrase>
 			<phrase id="11111">
-<!--		<text>gar_bandit_bookmaker_training_11111</text>	-->
+<!--			<text>gar_bandit_bookmaker_training_11111</text> -->
 				<text>gar_bandit_bookmaker_money_1111111</text>
 				<next>111111</next>
 				<next>31</next>
@@ -775,7 +775,7 @@
 		</phrase_list>
 	</dialog>
 	<dialog id="gar_bandit_leader_reward">
-	<dont_has_info>gar_quest_bandit_secret_started</dont_has_info>
+		<dont_has_info>gar_quest_bandit_secret_started</dont_has_info>
 		<has_info>gar_quest_more_reward_started</has_info>
 		<phrase_list>
 			<phrase id="0">
@@ -900,8 +900,8 @@
 		</phrase_list>
 	</dialog>
 	<dialog id="gar_bandit_barman_destroy_flea_market">
-	<dont_has_info>gar_quest_destroy_flea_market_done</dont_has_info>
-	<dont_has_info>gar_quest_destroy_flea_market_barman</dont_has_info>
+		<dont_has_info>gar_quest_destroy_flea_market_done</dont_has_info>
+		<dont_has_info>gar_quest_destroy_flea_market_barman</dont_has_info>
 		<has_info>gar_quest_destroy_flea_market_told</has_info>
 		<phrase_list>
 			<phrase id="0">
@@ -1097,7 +1097,7 @@
 		</phrase_list>
 	</dialog>
 	<dialog id="gar_bandit_trader_reward">
-	<dont_has_info>gar_quest_bandit_reward_done</dont_has_info>
+		<dont_has_info>gar_quest_bandit_reward_done</dont_has_info>
 		<has_info>gar_quest_bandit_reward_started</has_info>
 		<phrase_list>
 			<phrase id="0">
@@ -1133,9 +1133,9 @@
 		</phrase_list>
 	</dialog>
 	<dialog id="gar_digger_leader_old_pda">
-	<dont_has_info>gar_flea_market_stop_quest_line</dont_has_info>
-<!--	<dont_has_info>gar_quest_liberate_conc_camp_done</dont_has_info>	-->
-	<dont_has_info>gar_quest_bring_money_told</dont_has_info>
+		<dont_has_info>gar_flea_market_stop_quest_line</dont_has_info>
+<!--	<dont_has_info>gar_quest_liberate_conc_camp_done</dont_has_info> -->
+		<dont_has_info>gar_quest_bring_money_told</dont_has_info>
 		<phrase_list>
 			<phrase id="0">
 				<text>gar_digger_leader_old_pda_0</text>
@@ -1158,7 +1158,7 @@
 			</phrase>
 			<phrase id="3">
 				<text>gar_digger_leader_old_pda_3</text>
-<!--		<dont_has_info>gar_quest_bring_money_told</dont_has_info>	-->
+<!--			<dont_has_info>gar_quest_bring_money_told</dont_has_info> -->
 				<has_info>gar_quest_get_old_pda_camp_told</has_info>
 				<next>31</next>
 				<next>32</next>
@@ -1282,8 +1282,8 @@
 		</phrase_list>
 	</dialog>
 	<dialog id="gar_bandit_leader_kill_digger_traitor">
-	<dont_has_info>gar_bandit_block_quest_line</dont_has_info>
-	<dont_has_info>gar_quest_kill_digger_traitor_told</dont_has_info>
+		<dont_has_info>gar_bandit_block_quest_line</dont_has_info>
+		<dont_has_info>gar_quest_kill_digger_traitor_told</dont_has_info>
 		<phrase_list>
 			<phrase id="0">
 				<text>gar_bandit_leader_kill_digger_traitor_0</text>
@@ -1320,9 +1320,9 @@
 		</phrase_list>
 	</dialog>
 	<dialog id="gar_digger_leader_bring_money">
-	<dont_has_info>gar_flea_market_stop_quest_line</dont_has_info>
-<!--	<dont_has_info>gar_quest_liberate_conc_camp_done</dont_has_info>	-->
-	<dont_has_info>gar_quest_get_weapons_started</dont_has_info>
+		<dont_has_info>gar_flea_market_stop_quest_line</dont_has_info>
+<!--	<dont_has_info>gar_quest_liberate_conc_camp_done</dont_has_info> -->
+		<dont_has_info>gar_quest_get_weapons_started</dont_has_info>
 		<has_info>gar_quest_bring_money_told</has_info>
 		<phrase_list>
 			<phrase id="0">
@@ -1464,7 +1464,7 @@
 			</phrase>
 			<phrase id="11">
 				<text>gar_bandit_robbery_11</text>
-<!--		<precondition>dialogs_garbage.always_false</precondition>	-->	<!-- why disable this branch? -->
+<!--			<precondition>dialogs_garbage.always_false</precondition> --> <!-- why disable this branch? -->
 				<next>111</next>
 				<next>112</next>
 			</phrase>
@@ -1480,7 +1480,7 @@
 			</phrase>
 			<phrase id="112">
 				<text>gar_bandit_robbery_112</text>
-				<action>sr_robbery.actor_dont_pay</action>	<!-- make robbers hostile -->
+				<action>sr_robbery.actor_dont_pay</action> <!-- make robbers hostile -->
 				<action>sr_robbery.robbery_end</action>
 				<action>dialogs.break_dialog</action>
 			</phrase>
@@ -1491,7 +1491,7 @@
 			</phrase>
 			<phrase id="122">
 				<text>gar_bandit_robbery_122</text>
-				<action>sr_robbery.actor_dont_pay</action>	<!-- ditto -->
+				<action>sr_robbery.actor_dont_pay</action> <!-- ditto -->
 				<action>sr_robbery.robbery_end</action>
 				<action>dialogs.break_dialog</action>
 			</phrase>
@@ -1617,7 +1617,7 @@
 	</dialog>
 	<dialog id="gar_bandit_leader_join_first">
 		<precondition>dialogs.actor_not_in_bandit</precondition>
-	<dont_has_info>gar_bandit_join_talked_first</dont_has_info>
+		<dont_has_info>gar_bandit_join_talked_first</dont_has_info>
 		<phrase_list>
 			<phrase id="0">
 				<text>gar_bandit_leader_join_first_0</text>
@@ -1720,8 +1720,8 @@
 		</phrase_list>
 	</dialog>
 	<dialog id="gar_bandit_barman_bandit_secret">
-	<dont_has_info>gar_quest_bandit_secret_done</dont_has_info>
-	<dont_has_info>gar_quest_bandit_secret_barman</dont_has_info>
+		<dont_has_info>gar_quest_bandit_secret_done</dont_has_info>
+		<dont_has_info>gar_quest_bandit_secret_barman</dont_has_info>
 		<has_info>gar_quest_bandit_secret_started</has_info>
 		<phrase_list>
 			<phrase id="0">
@@ -1735,9 +1735,9 @@
 		</phrase_list>
 	</dialog>
 	<dialog id="gar_digger_leader_attack">
-	<dont_has_info>gar_flea_market_stop_quest_line</dont_has_info>
-	<dont_has_info>gar_quest_liberate_conc_camp_done</dont_has_info>
-	<dont_has_info>gar_quest_meet_with_digger_fighters_started</dont_has_info>
+		<dont_has_info>gar_flea_market_stop_quest_line</dont_has_info>
+		<dont_has_info>gar_quest_liberate_conc_camp_done</dont_has_info>
+		<dont_has_info>gar_quest_meet_with_digger_fighters_started</dont_has_info>
 		<has_info>gar_quest_speak_with_quester_done</has_info>
 		<phrase_list>
 			<phrase id="0">
@@ -1752,7 +1752,7 @@
 			</phrase>
 			<phrase id="2">
 				<text>gar_digger_leader_attack_2</text>
-<!--		<dont_has_info>gar_quest_meet_with_digger_fighters_started</dont_has_info>	-->
+<!--			<dont_has_info>gar_quest_meet_with_digger_fighters_started</dont_has_info> -->
 				<has_info>gar_quest_liberate_conc_camp_told</has_info>
 				<next>1111</next>
 				<next>1112</next>
@@ -1881,14 +1881,14 @@
 			</phrase>
 			<phrase id="14">
 				<text>gar_digger_leader_hello_14</text>
-<!--		<dont_has_info>gar_quest_get_old_pda_camp_told</dont_has_info>		-->
-<!--		<has_info>gar_quest_get_old_pda_asked</has_info>			-->
+<!--			<dont_has_info>gar_quest_get_old_pda_camp_told</dont_has_info> -->
+<!--			<has_info>gar_quest_get_old_pda_asked</has_info> -->
 				<dont_has_info>gar_quest_bring_old_pda_started</dont_has_info>
 				<has_info>gar_quest_get_old_pda_started</has_info>
 			</phrase>
 			<phrase id="15">
 				<text>gar_digger_leader_hello_15</text>
-<!--		<has_info>gar_quest_get_old_pda_camp_told</has_info>			-->
+<!--			<has_info>gar_quest_get_old_pda_camp_told</has_info> -->
 				<has_info>gar_quest_bring_old_pda_started</has_info>
 			</phrase>
 			<phrase id="21">
@@ -1897,18 +1897,18 @@
 			</phrase>
 			<phrase id="22">
 				<text>gar_digger_leader_hello_22</text>
-<!--		<dont_has_info>gar_quest_get_weapons_started</dont_has_info>		-->
+<!--			<dont_has_info>gar_quest_get_weapons_started</dont_has_info> -->
 				<has_info>gar_quest_bring_money_started</has_info>
 			</phrase>
 			<phrase id="31">
 				<text>gar_digger_leader_hello_31</text>
-<!--		<dont_has_info>gar_quest_get_weapons_time_end</dont_has_info>		-->
+<!--			<dont_has_info>gar_quest_get_weapons_time_end</dont_has_info> -->
 				<dont_has_info>gar_quest_get_weapons_arrived</dont_has_info>
 				<next>311</next>
 			</phrase>
 			<phrase id="32">
 				<text>gar_digger_leader_hello_32</text>
-<!--		<dont_has_info>gar_quest_get_weapons_time_end</dont_has_info>		-->
+<!--			<dont_has_info>gar_quest_get_weapons_time_end</dont_has_info> -->
 				<dont_has_info>gar_quest_get_weapons_destroyed_ambush</dont_has_info>
 				<has_info>gar_quest_get_weapons_arrived</has_info>
 				<next>321</next>

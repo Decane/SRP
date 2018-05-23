@@ -320,7 +320,7 @@
 	</dialog>
 	<dialog id="mar_csky_tactic_situation_dialog">
 		<precondition>dialog_manager.precondition_is_phrase_disabled</precondition>
-	<dont_has_info>mar_story_go_to_escape_done</dont_has_info>
+		<dont_has_info>mar_story_go_to_escape_done</dont_has_info>
 		<phrase_list>
 			<phrase id="0">
 				<text>mar_csky_tactic_situation_dialog_0</text>
@@ -387,7 +387,7 @@
 	</dialog>
 	<dialog id="mar_csky_tactic_task_dialog">
 		<precondition>dialog_manager.precondition_is_phrase_disabled</precondition>
-	<dont_has_info>mar_story_go_to_escape_done</dont_has_info>
+		<dont_has_info>mar_story_go_to_escape_done</dont_has_info>
 		<phrase_list>
 			<phrase id="0">
 				<text>mar_csky_tactic_task_dialog_0</text>
@@ -417,7 +417,7 @@
 	</dialog>
 	<dialog id="mar_csky_tactic_tutorial_dialog">
 		<precondition>dialog_manager.precondition_is_phrase_disabled</precondition>
-	<dont_has_info>mar_story_go_to_escape_done</dont_has_info>
+		<dont_has_info>mar_story_go_to_escape_done</dont_has_info>
 		<phrase_list>
 			<phrase id="0">
 				<text>mar_csky_tactic_tutorial_dialog_0</text>
@@ -473,7 +473,7 @@
 	</dialog>
 	<dialog id="mar_csky_leader_choose_dialog">
 		<has_info>mar_intro_talk_with_guide_done</has_info>
-	<dont_has_info>mar_intro_talk_with_commander_3_done</dont_has_info>
+		<dont_has_info>mar_intro_talk_with_commander_3_done</dont_has_info>
 		<phrase_list>
 			<phrase id="0">
 				<text>mar_csky_leader_choose_dialog_0</text>

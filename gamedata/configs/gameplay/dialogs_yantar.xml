@@ -20,42 +20,42 @@
 			</phrase>
 			<phrase id="12">
 				<text>yan_scientist_hello_dialog_12</text>
-<!--		<dont_has_info>yan_stop</dont_has_info>			-->
+<!--			<dont_has_info>yan_stop</dont_has_info> -->
 				<dont_has_info>yan_quest_levsha</dont_has_info>
 				<has_info>yan_quest_doc</has_info>
 			</phrase>
 			<phrase id="13">
 				<text>yan_scientist_hello_dialog_13</text>
-<!--		<dont_has_info>yan_vzyal_quest_doc</dont_has_info>	-->
-<!--		<has_info>yan_quest_levsha</has_info>			-->
-<!--		<has_info>yan_stop</has_info>				-->
+<!--			<dont_has_info>yan_vzyal_quest_doc</dont_has_info> -->
+<!--			<has_info>yan_quest_levsha</has_info> -->
+<!--			<has_info>yan_stop</has_info> -->
 				<has_info>yan_go_to_red_forest_cut6</has_info>
 			</phrase>
 			<phrase id="14">
 				<text>yan_scientist_hello_dialog_14</text>
-<!--		<dont_has_info>yan_vzyal_quest_doc</dont_has_info>	-->
-<!--		<dont_has_info>yan_proriv_k_ystanovke</dont_has_info>	-->
+<!--			<dont_has_info>yan_vzyal_quest_doc</dont_has_info> -->
+<!--			<dont_has_info>yan_proriv_k_ystanovke</dont_has_info> -->
 				<dont_has_info>yan_go_to_red_forest_cut6</dont_has_info>
 				<has_info>yan_quest_levsha</has_info>
 			</phrase>
 		</phrase_list>
 	</dialog>
 	<dialog id="yan_scientist_about_strelok">
-	<dont_has_info>yan_vzyal_quest_doc</dont_has_info>
-<!--	<dont_has_info>yan_otnesi_doc_saharavy</dont_has_info>		-->
-<!--	<dont_has_info>yan_quest_levsha</dont_has_info>			-->
-<!--	<dont_has_info>yan_quest_doc</dont_has_info>			-->
+		<dont_has_info>yan_vzyal_quest_doc</dont_has_info>
+<!--	<dont_has_info>yan_otnesi_doc_saharavy</dont_has_info> -->
+<!--	<dont_has_info>yan_quest_levsha</dont_has_info> -->
+<!--	<dont_has_info>yan_quest_doc</dont_has_info> -->
 		<phrase_list>
 			<phrase id="0">
 				<text>yan_scientist_about_strelok_0</text>
-<!--		<dont_has_info>yan_vzyal_quest_doc</dont_has_info>	-->
-<!--		<dont_has_info>yan_otnesi_doc_saharavy</dont_has_info>	-->
+<!--			<dont_has_info>yan_vzyal_quest_doc</dont_has_info> -->
+<!--			<dont_has_info>yan_otnesi_doc_saharavy</dont_has_info> -->
 				<next>1</next>
 			</phrase>
 			<phrase id="1">
 				<text>yan_scientist_about_strelok_1</text>
-<!--		<disable_info>yan_questions_scientists</disable_info>	-->
-<!--		<give_info>yan_vida4a_quest_doc</give_info>		-->
+<!--			<disable_info>yan_questions_scientists</disable_info> -->
+<!--			<give_info>yan_vida4a_quest_doc</give_info> -->
 				<next>11</next>
 			</phrase>
 			<phrase id="11">
@@ -77,7 +77,7 @@
 		</phrase_list>
 	</dialog>
 	<dialog id="yan_scientist_go_diggers">
-	<dont_has_info>yan_quest_doc</dont_has_info>
+		<dont_has_info>yan_quest_doc</dont_has_info>
 		<has_info>yan_vzyal_quest_doc</has_info>
 		<phrase_list>
 			<phrase id="0">
@@ -86,19 +86,19 @@
 			</phrase>
 			<phrase id="1">
 				<text>yan_scientist_go_diggers_1</text>
-<!--		<disable_info>yan_vzyal_quest_doc</disable_info>	-->
+<!--			<disable_info>yan_vzyal_quest_doc</disable_info> -->
 				<give_info>yan_quest_doc</give_info>
 			</phrase>
 		</phrase_list>
 	</dialog>
 	<dialog id="yan_scientist_bring_documents">
-<!--	<dont_has_info>yan_vzyal_quest_doc</dont_has_info>		-->
-	<dont_has_info>yan_quest_levsha</dont_has_info>
+<!--	<dont_has_info>yan_vzyal_quest_doc</dont_has_info> -->
+		<dont_has_info>yan_quest_levsha</dont_has_info>
 		<has_info>yan_otnesti_doc_saharavy</has_info>
 		<phrase_list>
 			<phrase id="0">
 				<text>yan_scientist_bring_documents_0</text>
-<!--		<has_info>yan_otnesti_doc_saharavy</has_info>		-->
+<!--			<has_info>yan_otnesti_doc_saharavy</has_info> -->
 				<action>dialogs_yantar.give_pda</action>
 				<next>1</next>
 			</phrase>
@@ -108,22 +108,22 @@
 			</phrase>
 			<phrase id="11">
 				<text>yan_scientist_bring_documents_11</text>
-<!--		<action>dialogs_yantar.give_pda</action>		-->
+<!--			<action>dialogs_yantar.give_pda</action> -->
 				<next>111</next>
 			</phrase>
 			<phrase id="111">
 				<text>yan_scientist_bring_documents_111</text>
-<!--		<disable_info>yan_vzyal_quest_doc</disable_info>	-->
-<!--		<disable_info>yan_otnesti_doc_saharavy</disable_info>	-->
+<!--			<disable_info>yan_vzyal_quest_doc</disable_info> -->
+<!--			<disable_info>yan_otnesti_doc_saharavy</disable_info> -->
 				<give_info>yan_quest_levsha</give_info>
 			</phrase>
 		</phrase_list>
 	</dialog>
 	<dialog id="yan_scientist_about_stalkers">
 		<precondition>dialog_manager.precondition_is_phrase_disabled</precondition>
-<!--	<dont_has_info>yan_questions_scientists</dont_has_info>		-->
-<!--	<dont_has_info>yan_vzyal_quest_doc</dont_has_info>		-->
-<!--	<dont_has_info>yan_quest_levsha</dont_has_info>			-->
+<!--	<dont_has_info>yan_questions_scientists</dont_has_info> -->
+<!--	<dont_has_info>yan_vzyal_quest_doc</dont_has_info> -->
+<!--	<dont_has_info>yan_quest_levsha</dont_has_info> -->
 		<phrase_list>
 			<phrase id="0">
 				<text>yan_scientist_about_stalkers_0</text>
@@ -151,9 +151,9 @@
 	</dialog>
 	<dialog id="yan_scientist_about_zombie">
 		<precondition>dialog_manager.precondition_is_phrase_disabled</precondition>
-<!--	<dont_has_info>yan_questions_scientists</dont_has_info>		-->
-<!--	<dont_has_info>yan_vzyal_quest_doc</dont_has_info>		-->
-	<dont_has_info>yan_go_to_red_forest_cut6</dont_has_info>
+<!--	<dont_has_info>yan_questions_scientists</dont_has_info> -->
+<!--	<dont_has_info>yan_vzyal_quest_doc</dont_has_info> -->
+		<dont_has_info>yan_go_to_red_forest_cut6</dont_has_info>
 		<phrase_list>
 			<phrase id="0">
 				<text>yan_scientist_about_zombie_0</text>
@@ -174,7 +174,7 @@
 		</phrase_list>
 	</dialog>
 	<dialog id="yan_levsha_hello_dialog">
-	<dont_has_info>yan_proriv_k_ystanovke_start</dont_has_info>
+		<dont_has_info>yan_proriv_k_ystanovke_start</dont_has_info>
 		<phrase_list>
 			<phrase id="0">
 				<text/>

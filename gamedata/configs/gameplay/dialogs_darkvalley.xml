@@ -217,7 +217,7 @@
 	</dialog>
 	<dialog id="val_freedom_leader_join_first">
 		<precondition>dialogs.actor_not_in_freedom</precondition>
-	<dont_has_info>val_freedom_join_talked_first</dont_has_info>
+		<dont_has_info>val_freedom_join_talked_first</dont_has_info>
 		<phrase_list>
 			<phrase id="0">
 				<text>val_freedom_leader_join_first_0</text>
@@ -290,7 +290,7 @@
 			</phrase>
 			<phrase id="12">
 				<text>val_freedom_leader_hello_dialog_12</text>
-<!--		<give_info>val_talked_to_freedom_leader</give_info>	-->
+<!--			<give_info>val_talked_to_freedom_leader</give_info> -->
 				<next>121</next>
 			</phrase>
 			<phrase id="21">
@@ -543,7 +543,7 @@
 				<text/>
 				<dont_has_info>val_go_to_trader</dont_has_info>
 				<has_info>val_talked_to_comendat_1</has_info>
-<!--		<has_info>val_kill_flesh</has_info>		-->
+<!--			<has_info>val_kill_flesh</has_info> -->
 				<next>51</next>
 			</phrase>
 			<phrase id="6">
@@ -568,11 +568,11 @@
 			</phrase>
 			<phrase id="61">
 				<text>val_freedom_comendant_hello_dialog_61</text>
-<!--		<next>611</next>	-->
+<!--			<next>611</next> -->
 			</phrase>
 			<phrase id="71">
 				<text>val_freedom_comendant_hello_dialog_71</text>
-<!--		<next>711</next>	-->
+<!--			<next>711</next> -->
 			</phrase>
 			<phrase id="111">
 				<text>val_freedom_comendant_hello_dialog_111</text>
@@ -586,7 +586,7 @@
 			<phrase id="512">
 				<text>val_freedom_comendant_hello_dialog_512</text>
 				<dont_has_info>val_kill_flesh_done</dont_has_info>
-<!--		<action>dialogs.break_dialog</action>	-->
+<!--			<action>dialogs.break_dialog</action> -->
 			</phrase>
 <!--
 			<phrase id="611">
@@ -630,10 +630,10 @@
 			</phrase>
 			<phrase id="111111111">
 				<text>val_freedom_comendant_hello_dialog_111111111</text>
-<!--		<give_info>val_kill_flesh</give_info>	-->
+<!--			<give_info>val_kill_flesh</give_info> -->
 				<give_info>val_talked_to_comendat_1</give_info>
 				<give_info>val_come_to_comendant_complete</give_info>
-<!--		<action>dialogs.break_dialog</action>	-->
+<!--			<action>dialogs.break_dialog</action> -->
 			</phrase>
 		</phrase_list>
 	</dialog>
@@ -841,7 +841,7 @@
 	</dialog>
 -->
 	<dialog id="val_freedom_barmen_questions_dialog_complete">
-	<dont_has_info>val_bandit_spy_done</dont_has_info>
+		<dont_has_info>val_bandit_spy_done</dont_has_info>
 		<has_info>val_be_info_bandit_spy</has_info>
 		<has_info>val_bandit_spy_die</has_info>
 		<phrase_list>
@@ -908,7 +908,7 @@
 	</dialog>
 	<dialog id="val_freedom_barmen_questions_dialog">
 		<precondition>dialogs_darkvalley.is_bloobsucker_task_complete</precondition>
-	<dont_has_info>val_be_info_bandit_spy</dont_has_info>
+		<dont_has_info>val_be_info_bandit_spy</dont_has_info>
 		<phrase_list>
 			<phrase id="0">
 				<text>val_freedom_barmen_questions_dialog_0</text>

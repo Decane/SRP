@@ -2,10 +2,10 @@
 <game_dialogs>
 	<dialog id="red_leshiy_story_2">
 		<precondition>dialog_manager.precondition_is_phrase_disabled</precondition>
-	<dont_has_info>red_bridge_actor_fail</dont_has_info>
-	<dont_has_info>red_leshiy_reward_1</dont_has_info>
-	<dont_has_info>red_leshiy_reward_2</dont_has_info>
-	<dont_has_info>red_leshiy_reward_3</dont_has_info>
+		<dont_has_info>red_bridge_actor_fail</dont_has_info>
+		<dont_has_info>red_leshiy_reward_1</dont_has_info>
+		<dont_has_info>red_leshiy_reward_2</dont_has_info>
+		<dont_has_info>red_leshiy_reward_3</dont_has_info>
 		<phrase_list>
 			<phrase id="0">
 				<text>red_leshiy_story_2_0</text>
@@ -79,8 +79,8 @@
 	</dialog>
 	<dialog id="red_leshiy_story_1">
 		<precondition>dialog_manager.precondition_is_phrase_disabled</precondition>
-	<dont_has_info>red_leshiy_reward_1</dont_has_info>
-	<dont_has_info>red_bridge_actor_fail</dont_has_info>
+		<dont_has_info>red_leshiy_reward_1</dont_has_info>
+		<dont_has_info>red_bridge_actor_fail</dont_has_info>
 		<phrase_list>
 			<phrase id="0">
 				<action>dialog_manager.action_disable_phrase</action>
@@ -93,7 +93,7 @@
 		</phrase_list>
 	</dialog>
 	<dialog id="red_artefact_hunters_reward_dialog">
-	<dont_has_info>red_artefact_hunters_task_complete</dont_has_info>
+		<dont_has_info>red_artefact_hunters_task_complete</dont_has_info>
 		<phrase_list>
 			<phrase id="0">
 				<text/>
@@ -380,7 +380,7 @@
 	</dialog>
 -->
 	<dialog id="red_forester_cheet">
-	<dont_has_info>red_forester_actor_has_compas</dont_has_info>
+		<dont_has_info>red_forester_actor_has_compas</dont_has_info>
 		<has_info>red_pursuit_task_end</has_info>
 		<phrase_list>
 			<phrase id="0">
@@ -397,7 +397,7 @@
 		</phrase_list>
 	</dialog>
 	<dialog id="red_forester_who_are_you">
-	<dont_has_info>red_forester_who_are_you</dont_has_info>
+		<dont_has_info>red_forester_who_are_you</dont_has_info>
 		<phrase_list>
 			<phrase id="0">
 				<text>red_forester_who_are_you_0</text>
@@ -411,7 +411,7 @@
 		</phrase_list>
 	</dialog>
 	<dialog id="red_forester_need_to_limansk">
-	<dont_has_info>mil_start_storyline_info</dont_has_info>
+		<dont_has_info>mil_start_storyline_info</dont_has_info>
 		<has_info>red_pursuit_task_end</has_info>
 		<has_info>red_forester_who_are_you</has_info>
 		<phrase_list>
@@ -482,12 +482,12 @@
 	</dialog>
 	<dialog id="red_forester_lost_stalkers">
 		<has_info>mil_actor_inside_wtower</has_info>
-	<dont_has_info>mil_actor_go_to_limansk</dont_has_info>
-	<dont_has_info>red_forester_search_compas_task</dont_has_info>
+		<dont_has_info>mil_actor_go_to_limansk</dont_has_info>
+		<dont_has_info>red_forester_search_compas_task</dont_has_info>
 		<phrase_list>
 			<phrase id="0">
 				<text>red_forester_lost_stalkers_0</text>
-<!--		<give_info>forester_talked_2</give_info>		-->
+<!--			<give_info>forester_talked_2</give_info> -->
 				<next>1</next>
 			</phrase>
 			<phrase id="1">
@@ -719,8 +719,8 @@
 		<phrase_list>
 			<phrase id="0">
 				<text>red_forester_hello_dialog_0</text>
-<!--		<precondition>dialog_manager.precondition_is_phrase_disabled</precondition>	-->
-<!--		<action>dialog_manager.action_disable_phrase</action>				-->
+<!--			<precondition>dialog_manager.precondition_is_phrase_disabled</precondition> -->
+<!--			<action>dialog_manager.action_disable_phrase</action> -->
 			</phrase>
 		</phrase_list>
 	</dialog>

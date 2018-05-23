@@ -155,7 +155,7 @@
 				<text/>
 				<next>1</next>
 				<next>2</next>
-<!--		<next>4</next>							-->
+<!--			<next>4</next> -->
 				<next>5</next>
 				<next>6</next>
 				<next>7</next>
@@ -163,7 +163,7 @@
 			<phrase id="1">
 				<text/>
 				<dont_has_info>mil_merc_talked</dont_has_info>
-<!--		<dont_has_info>mil_merc_talked_f1_f2_wt1</dont_has_info>	-->
+<!--			<dont_has_info>mil_merc_talked_f1_f2_wt1</dont_has_info> -->
 				<next>11</next>
 			</phrase>
 			<phrase id="2">
@@ -316,7 +316,7 @@
 			</phrase>
 			<phrase id="1111111">
 				<text>hello_mil_killer_1111111</text>
-<!--		<dont_has_info>forester_telled_coordinates</dont_has_info>	-->
+<!--			<dont_has_info>forester_telled_coordinates</dont_has_info> -->
 				<dont_has_info>mil_actor_inside_wtower</dont_has_info>
 				<dont_has_info>mil_bs_dead</dont_has_info>
 				<give_info>mil_merc_talked</give_info>
@@ -324,7 +324,7 @@
 			</phrase>
 			<phrase id="1111112">
 				<text>hello_mil_killer_11111112</text>
-<!--		<dont_has_info>forester_telled_coordinates</dont_has_info>	-->
+<!--			<dont_has_info>forester_telled_coordinates</dont_has_info> -->
 				<dont_has_info>mil_actor_inside_wtower</dont_has_info>
 				<has_info>mil_bs_dead</has_info>
 				<give_info>mil_merc_talked</give_info>
@@ -332,10 +332,10 @@
 			</phrase>
 			<phrase id="1111113">
 				<text>hello_mil_killer_11111113</text>
-<!--		<has_info>forester_telled_coordinates</has_info>		-->
+<!--			<has_info>forester_telled_coordinates</has_info> -->
 				<has_info>mil_actor_inside_wtower</has_info>
 				<give_info>mil_merc_talked</give_info>
-<!--		<next>55</next>							-->
+<!--			<next>55</next> -->
 			</phrase>
 			<phrase id="5555555">
 				<text>hello_mil_killer_5555555</text>
