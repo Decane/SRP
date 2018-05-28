@@ -97,6 +97,8 @@ end
 function se_monster:STATE_Write(packet)
 
 	cse_alife_monster_base.STATE_Write (self, packet)
+
+	packet:w_bool(self.sim_forced_online)
 --[[
 	if self.job_online == true then
 		packet:w_u8(0)
@@ -109,15 +111,11 @@ function se_monster:STATE_Write(packet)
 		packet:w_stringZ(self.job_online_condlist)
 	end
 ]]
-	packet:w_u8(2) -- TODO: Comment out when new game requirement
-
 	if self.squad_id == nil then
 		packet:w_stringZ("nil")
 	else
 		packet:w_stringZ(tostring(self.squad_id))
 	end
-
-	packet:w_bool(self.sim_forced_online)
 end
 
 --------------------
@@ -126,8 +124,12 @@ function se_monster:STATE_Read(packet, size)
 
 	cse_alife_monster_base.STATE_Read (self, packet, size)
 
-	local t = packet:r_u8() -- TODO: Comment out when new game requirement
+	if self.script_version >= 8 then
+		self.sim_forced_online = packet:r_bool()
+	end
 --[[
+	local t = packet:r_u8()
+
 	if t == 0 then
 		self.job_online = true
 	elseif t == 1 then
@@ -146,9 +148,7 @@ function se_monster:STATE_Read(packet, size)
 		end
 	end
 
-	if self.script_version >= 8 then
-		self.sim_forced_online = packet:r_bool()
-	end
+--	dbglog("Mutant: %u (%s)", packet:r_elapsed(), self:name())
 
 --	local pos = self.position
 end

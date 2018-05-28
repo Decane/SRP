@@ -112,6 +112,8 @@ end
 function se_stalker:STATE_Write(packet)
 
 	cse_alife_human_stalker.STATE_Write (self, packet)
+
+	packet:w_bool(self.treasure_processed) -- SRP
 --[[
 	if self.job_online == true then
 		packet:w_u8(0)
@@ -124,8 +126,6 @@ function se_stalker:STATE_Write(packet)
 		packet:w_stringZ(self.job_online_condlist)
 	end
 ]]
-	packet:w_u8(2) -- TODO: Comment out when new game requirement
-
 	packet:w_bool(self.death_droped)
 
 	if self.squad_id == nil then
@@ -135,8 +135,6 @@ function se_stalker:STATE_Write(packet)
 	end
 
 	packet:w_bool(self.sim_forced_online)
-
-	packet:w_bool(self.treasure_processed) -- SRP
 end
 
 --------------------
@@ -145,8 +143,10 @@ function se_stalker:STATE_Read(packet, size)
 
 	cse_alife_human_stalker.STATE_Read (self, packet, size)
 
-	local t = packet:r_u8() -- TODO: Comment out when new game requirement
+	self.treasure_processed = packet:r_bool() -- SRP
 --[[
+	local t = packet:r_u8()
+
 	if t == 0 then
 		self.job_online = true
 	elseif t == 1 then
@@ -171,10 +171,7 @@ function se_stalker:STATE_Read(packet, size)
 		self.sim_forced_online = packet:r_bool()
 	end
 
-	-- SRP:
-	if packet:r_elapsed() ~= 0 then
-		self.treasure_processed = packet:r_bool()
-	end
+--	dbglog("Human: %u (%s)", packet:r_elapsed(), self:name())
 end
 
 --------------------

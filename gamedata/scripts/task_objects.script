@@ -422,7 +422,7 @@ function CGeneralTask:deactivate_task(_task)
 
 	if self.last_check_task == "fail" then
 		local act = db.actor
-		xr_logic.pick_section_from_condlist(act, act, self.on_fail)	-- missing by default but referenced in tm_military.ltx
+		xr_logic.pick_section_from_condlist(act, act, self.on_fail) -- missing by default but referenced in tm_military.ltx
 		news_manager.send_task(act, "fail", _task)
 	elseif self.last_check_task == "reversed" then
 		local act = db.actor
@@ -667,8 +667,6 @@ function CEliminateSmartTask:save(package)
 	task_objects.CGeneralTask.save(self, package)
 
 	package:w_u16(self.target)
-
-	package:w_stringZ("") -- TODO: Delete when new game requirement, temp. replacement for line below
 --[[
 	package:w_stringZ(tostring(self.src_obj))
 
@@ -702,8 +700,6 @@ function CEliminateSmartTask:load(reader) -- called 0.5th (only on load)
 	self.target = reader:r_u16()
 
 	self.id	= self.id.."_"..self.target
-
-	local src_obj = reader:r_stringZ() -- TODO: Delete when new game requirement, temp. replacement for 4 lines below
 --[[
 	self.src_obj = reader:r_stringZ()
 
@@ -1766,14 +1762,14 @@ end
 function CGetRewardTask:save(package)
 	set_save_marker(package, "save", false, "CGetRewardTask")
 	task_objects.CGeneralTask.save(self, package)
-	package:w_u32(self.target) -- TODO: Change to w_u16 when new game requirement
+	package:w_u16(self.target)
 	set_save_marker(package, "save", true, "CGetRewardTask")
 end
 
 function CGetRewardTask:load(reader) -- called 0.5th (only on load)
 	set_save_marker(reader, "load", false, "CGetRewardTask")
 	task_objects.CGeneralTask.load(self, reader)
-	self.target = reader:r_u32() -- TODO: Change to r_u16 when new game requirement
+	self.target = reader:r_u16()
 	self.id	= self.id.."_"..self.target
 	set_save_marker(reader, "load", true, "CGetRewardTask")
 end
@@ -2242,8 +2238,6 @@ function CBringItemTask:save(package)
 	set_save_marker(package, "save", false, "CBringItemTask")
 
 	task_objects.CGeneralTask.save(self, package)
-
-	package:w_u8(0) -- TODO: Delete when new game requirement, temp. replacement for block below
 --[[
 	local self_state = self.state
 
@@ -2258,8 +2252,6 @@ function CBringItemTask:save(package)
 	end
 ]]
 	package:w_u8(self.ri_counter)
-
-	package:w_u16(0) -- TODO: Delete when new game requirement, temp. replacement for block below
 --[[
 	if self.target then
 		package:w_u16(self.target)
@@ -2296,9 +2288,9 @@ function CBringItemTask:load(reader) -- called 0.5th (only on load)
 	set_save_marker(reader, "load", false, "CBringItemTask")
 
 	task_objects.CGeneralTask.load(self, reader)
-
-	local state = reader:r_u8() -- TODO: Comment out when new game requirement
 --[[
+	local state = reader:r_u8()
+
 	if state == 1 then
 		self.state = "started"
 	elseif state == 2 then
@@ -2312,9 +2304,9 @@ function CBringItemTask:load(reader) -- called 0.5th (only on load)
 	self.npc = nil
 ]]
 	self.ri_counter = reader:r_u8()
-
-	local n = reader:r_u16() -- TODO: Comment out when new game requirement
 --[[
+	local n = reader:r_u16()
+
 	if n ~= 65535 then
 		self.target = n
 	end
@@ -2554,8 +2546,6 @@ function CRecoverItemTask:save(package)
 	set_save_marker(package, "save", false, "CRecoverItemTask")
 
 	task_objects.CGeneralTask.save(self, package)
-
-	package:w_u8(0) -- TODO: Delete when new game requirement, temp. replacement for lines below
 --[[
 	local self_state = self.state
 
@@ -2581,10 +2571,8 @@ function CRecoverItemTask:save(package)
 		package:w_u16(self.target_obj_id)
 	end
 
-	package:w_bool(true) -- TODO: Delete when new game requirement, temp. replacement for line below
 --	package:w_bool(self.presence_requested_item)
 
-	package:w_stringZ("") -- TODO: Delete when new game requirement, temp. replacement for line below
 --	package:w_stringZ(self.requested_item) -- read in CRecoverItemTask:__init()
 
 	set_save_marker(package, "save", true, "CRecoverItemTask")
@@ -2595,9 +2583,9 @@ function CRecoverItemTask:load(reader) -- called 0.5th (only on load)
 	set_save_marker(reader, "load", false, "CRecoverItemTask")
 
 	task_objects.CGeneralTask.load(self, reader)
-
-	local state = reader:r_u8() -- TODO: Comment out when new game requirement
 --[[
+	local state = reader:r_u8()
+
 	if state == 1 then
 		self.state = "started"
 	elseif state == 2 then
@@ -2629,10 +2617,8 @@ function CRecoverItemTask:load(reader) -- called 0.5th (only on load)
 
 --	self.npc = nil
 
-	local presence_requested_item = reader:r_bool() -- TODO: Delete when new game requirement, temp. replacement for line below
 --	self.presence_requested_item = reader:r_bool()
 
-	local requested_item = reader:r_stringZ() -- TODO: Delete when new game requirement, temp. replacement for line below
 --	self.requested_item = reader:r_stringZ() -- read in CRecoverItemTask:__init()
 
 	set_save_marker(reader, "load", true, "CRecoverItemTask")
@@ -3149,27 +3135,24 @@ function CFindUpgradeTask:check_task(tm) -- called 6th
 		return
 	end
 
-	if self.target then -- TODO: self.target is always nil after a reload... Oops, GSC.
+	local tasker_id = self.target -- self.target set by CFindUpgradeTask:init_task() or CRecoverItemTask:load(), guaranteed valid
+	local tasker = alife():object(tasker_id)
 
-		local npc = alife():object(self.target)
+	-- If tasker doesn't exist or is dead, cancel:
+	if not tasker or not tasker:alive() then
+		self.last_check_task = "reversed"
+		return
+	end
 
-		if not npc or not npc:alive() then
+	tasker = db.storage[tasker_id]
+	tasker = tasker and tasker.object
+
+	-- If tasker is hostile, cancel:
+	if tasker then
+		if tasker:general_goodwill(actor) <= -1000 then
 			self.last_check_task = "reversed"
 			return
 		end
-
-		npc = db.storage[self.target]
-		npc = npc and npc.object
-
-		if npc then
-			if npc:general_goodwill(actor) <= -1000 then
-				self.last_check_task = "reversed"
-				return
-			end
-		end
---	else
---		self.last_check_task = "reversed"
---		return
 	end
 
 	if self:has_requested_item(actor) then
@@ -3242,10 +3225,6 @@ end
 function CFindUpgradeTask:save(package)
 	set_save_marker(package, "save", false, "CFindUpgradeTask")
 	task_objects.CGeneralTask.save(self, package)
-	-- TODO: Delete when new game requirement, temp. replacements for block below:
-	package:w_u8(0)
-	package:w_bool(true)
-	package:w_stringZ("")
 --[[
 	local self_state = self.state
 	if self_state == "started" then
@@ -3260,18 +3239,15 @@ function CFindUpgradeTask:save(package)
 	package:w_bool(self.presence_requested_item)
 	package:w_stringZ(self.requested_item) -- read in CFindUpgradeTask:__init()
 ]]
---	package:w_u16(self.target) -- TODO: Uncomment when new game requirement
+	package:w_u16(self.target)
 	set_save_marker(package, "save", true, "CFindUpgradeTask")
 end
 
 function CFindUpgradeTask:load(reader) -- called 0.5th (only on load)
 	set_save_marker(reader, "load", false, "CFindUpgradeTask")
 	task_objects.CGeneralTask.load(self, reader)
-	local state = reader:r_u8() -- TODO: Comment out when new game requirement
-	-- TODO: Delete when new game requirement, temp. replacements for lines below:
-	local presence_requested_item = reader:r_bool()
-	local requested_item = reader:r_stringZ()
 --[[
+	local state = reader:r_u8()
 	if state == 1 then
 		self.state = "started"
 	elseif state == 2 then
@@ -3285,6 +3261,6 @@ function CFindUpgradeTask:load(reader) -- called 0.5th (only on load)
 	self.presence_requested_item = reader:r_bool()
 	self.requested_item = reader:r_stringZ() -- read in CFindUpgradeTask:__init()
 ]]
---	self.target = reader:r_u16() -- TODO: Uncomment when new game requirement
+	self.target = reader:r_u16()
 	set_save_marker(reader, "load", true, "CFindUpgradeTask")
 end

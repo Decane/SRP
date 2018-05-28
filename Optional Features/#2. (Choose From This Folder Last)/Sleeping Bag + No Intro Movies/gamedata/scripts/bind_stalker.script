@@ -8,7 +8,7 @@ end
 
 task_update = false
 delayed_alife_release_objects = {}
-local to_delayed_alife_release_objects = {}
+-- to_delayed_alife_release_objects = {}
 
 local game_difficulty_by_num = {[0] = "gd_novice", [1] = "gd_stalker", [2] = "gd_veteran", [3] = "gd_master"}
 local zones_needing_weapon_hide = 0
@@ -543,19 +543,6 @@ function actor_binder:save(packet)
 		packet:w_u16(k)
 	end
 
-	-- For compatibility with existing saves:
-
-	n = 0
-	for k in pairs (to_delayed_alife_release_objects) do
-		n = n + 1
-	end
-
-	packet:w_u8(n)
-
-	for k in pairs (to_delayed_alife_release_objects) do
-		packet:w_u16(k)
-	end
-
 	n = 0
 	for k in pairs (db.script_ids) do
 		n = n + 1
@@ -618,13 +605,6 @@ function actor_binder:load(reader)
 	guiders.load(reader)
 
 	treasure_manager.load(reader)
-
-	n = reader:r_u8()
-	for i = 1, n do
-		delayed_alife_release_objects[reader:r_u16()] = true
-	end
-
-	-- For compatibility with existing saves. Load the contents of to_delayed_alife_release_objects into delayed_alife_release_objects (might be a mix of mutants and NPCs):
 
 	n = reader:r_u8()
 	for i = 1, n do
