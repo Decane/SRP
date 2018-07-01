@@ -131,7 +131,7 @@ function actor_binder:reinit()
 end
 ----------------------------------------------------------------------------------------------------------------------
 function actor_binder:take_item_from_box(box, item)
-	treasure_manager.take_item_from_box(box, box:name(), item)
+	treasure_manager.take_item_from_box(box)
 end
 ----------------------------------------------------------------------------------------------------------------------
 --[[
