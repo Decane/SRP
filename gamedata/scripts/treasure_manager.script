@@ -31,14 +31,7 @@ function CTreasure:__init(ini, section)
 	self.target             = target
 	self.name               = get_string(ini, section, "name", nil, true, "")
 	self.description        = get_string(ini, section, "description", nil, true, "")
-	local items             = get_string(ini, section, "items", nil, true, "", "nil")
-
-	if items ~= "nil" then
-		self.items = parse_spawns(items)
-		if self.items == nil then
-			abort("[treasure_manager.__init]: The 'items' field is empty.")
-		end
-	end
+	self.items              = parse_spawns(get_string(ini, section, "items", nil, true, ""))
 
 	local act               = db.actor
 	self.rank               = get_string(ini, section, "rank", nil, false, "", "novice")
@@ -53,14 +46,13 @@ function CTreasure:__init(ini, section)
 		t[v] = true
 	end
 
-	local tbt               = treasure_by_target[target]
+	local tbt = treasure_by_target[target]
 
 	if tbt == nil then
 		tbt = {}
 		treasure_by_target[target] = tbt
 	end
 
---	table.insert(treasure_by_target[target], self)
 	tbt[#tbt + 1] = self
 
 	self.condlist           = xr_logic.parse_condlist(act, section, "condlist", get_string(ini, section, "condlist", nil, false, "", "false"))
@@ -69,54 +61,51 @@ end
 
 function CTreasure:give_treasure()
 
-	-- If an assignable treasure exists then:
-
 	local sim = alife()
 	local obj = sim:object(self.target)
+	local treasure_name = self.name
 
-	if obj ~= nil then
-
-		-- If the treasure name or description is not set in the XML file then abort.
-
-		local treasure_name = self.name
+	if obj == nil then
+		abort("[treasure_manager.give_location_only]: Treasure target '%s' for treasure '%s' does not exist.", self.target, treasure_name)
+	end
 --[[
-		if treasure_name == trans(treasure_name) then
-			abort("[treasure_manager.give_treasure]: Treasure name '%s' is not set in the XML file.", tostring(treasure_name))
-		end
+	-- If the treasure name or description is not set in the XML file then abort.
 
-		if self.description == trans(self.description) then
-			abort("[treasure_manager.give_treasure]: Treasure description '%s' is not set in the XML file.", tostring(self.description))
-		end
+	if treasure_name == trans(treasure_name) then
+		abort("[treasure_manager.give_treasure]: Treasure name '%s' is not set in the XML file.", tostring(treasure_name))
+	end
+
+	if self.description == trans(self.description) then
+		abort("[treasure_manager.give_treasure]: Treasure description '%s' is not set in the XML file.", tostring(self.description))
+	end
 ]]
-		-- Give the treasure news, info, and map spot.
+	-- Give the treasure news, info, and map spot.
 
-		news_manager.send_treasure(treasure_name)
+	news_manager.send_treasure(treasure_name)
 
-		local text = "%c[255,238,155,23]"..trans(treasure_name).."\\n".."%c[default]"..trans(self.description)
-		local obj_id = obj.id
-		level.map_add_object_spot_ser(obj_id, "treasure", text)
+	local text = "%c[255,238,155,23]"..trans(treasure_name).."\\n".."%c[default]"..trans(self.description)
+	local obj_id = obj.id
+	level.map_add_object_spot_ser(obj_id, "treasure", text)
 
-		-- Spawn the treasure.
+	-- Spawn the treasure.
 
-		if self.items then
-			local ammo_sections = ammo_section
-			local vec = vector()
-			for kk, vv in pairs (self.items) do
-				local section = vv.section
-				if ammo_sections[section] == true then
-					se_respawn.create_ammo(section, vec, 0, 0, obj_id, vv.prob)
-				else
-					for i = 1, vv.prob do
-						sim:create(section, vec, 0, 0, obj_id)
-					end
-				end
+	local ammo_sections = ammo_section
+	local vec = vector()
+
+	for kk, vv in pairs (self.items) do
+		local section = vv.section
+		if ammo_sections[section] == true then
+			se_respawn.create_ammo(section, vec, 0, 0, obj_id, vv.prob)
+		else
+			for i = 1, vv.prob do
+				sim:create(section, vec, 0, 0, obj_id)
 			end
 		end
-
-		-- Set the treasure status to "given".
-
-		self.flag = 1
 	end
+
+	-- Set the treasure status to "given".
+
+	self.flag = 1
 end
 
 function CTreasure:check_rank_and_community(npc)
@@ -342,15 +331,10 @@ end
 
 function get_item_name()
 	local dt_items = dt.items
-	if dt_items then
-		local ini = system_ini()
-		local str = trans(ini:r_string(dt_items[1].section, "inv_name"))
-		for i = 2, #dt_items do
-			str = str..", "..trans(ini:r_string(dt_items[i].section, "inv_name"))
-		end
-		str = str.."."
-		return str
-	else
-		return trans("treasure_dialog_11131")
+	local ini = system_ini()
+	local str = trans(ini:r_string(dt_items[1].section, "inv_name"))
+	for i = 2, #dt_items do
+		str = str..", "..trans(ini:r_string(dt_items[i].section, "inv_name"))
 	end
+	return str.."."
 end

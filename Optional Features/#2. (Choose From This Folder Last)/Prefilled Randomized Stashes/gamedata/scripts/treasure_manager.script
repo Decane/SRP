@@ -2,9 +2,10 @@
 
 The variable self.flag can take a value of:
 
-0:	coordinates not given, treasure not emptied
+0:	coordinates not given, treasure not spawned, treasure not emptied
 1:	coordinates given
-2:	treasure emptied
+2:	treasure spawned
+4:	treasure emptied
 
 ]]
 
@@ -20,6 +21,7 @@ local parse_spawns = utils.parse_spawns
 
 local treasures = {}
 local treasure_by_target = {}
+local treasure_on_level = nil
 local rank_table = {["novice"] = 0, ["stalker"] = 300, ["veteran"] = 600, ["master"] = 900}
 
 class "CTreasure"
@@ -87,16 +89,16 @@ function CTreasure:give_location_only()
 
 	-- Set the treasure coordinate status to "given".
 
-	self.flag = 1
+	self.flag = self.flag + 1
 end
 
-function CTreasure:populate_stash()
+function CTreasure:populate_stash(box_name)
 
 	local sim = alife()
-	local obj = sim:object(self.target)
+	local obj = sim:object(box_name or self.target)
 
 	if obj == nil then
-		abort("[treasure_manager.populate_stash]: Treasure target '%s' for treasure '%s' does not exist.", self.target, self.name)
+		abort("[treasure_manager.populate_stash]: Treasure target '%s' for treasure '%s' does not exist.", box_name or self.target, self.name)
 	end
 --[[
 	-- If the treasure name or description is not set in the XML file then abort.
@@ -134,6 +136,8 @@ function CTreasure:populate_stash()
 			end
 		end
 	end
+
+	self.flag = self.flag + 2
 end
 
 function CTreasure:check_rank_and_community(npc)
@@ -144,17 +148,70 @@ function use_box(box_name)
 
 	-- If this is not a treasure box then do nothing.
 
-	local treasures = treasure_by_target[box_name]
-	if treasures == nil then
+	if treasure_by_target[box_name] == nil then
+		return
+	end
+
+	-- Populate table of treasures on current map if not done already.
+
+	if treasure_on_level == nil then
+		treasure_on_level = {}
+		local level_name = level.name()
+		local sim = alife()
+		local c = 0
+		for k, treasure in pairs (treasures) do
+			local target = treasure.target
+			local target_obj = sim:object(target)
+			if target_obj then
+				local treasure_level = sim:level_name(game_graph():vertex(target_obj.m_game_vertex_id):level_id())
+				if treasure_level == level_name then
+					c = c + 1
+					treasure_on_level[c] = treasure
+				end
+			end
+		end
+	end
+
+	-- Only populate a box with stashes meant for the same level.
+
+	local c = 0
+	local available_treasures = {}
+
+	for i, treasure in pairs (treasure_on_level) do
+		if treasure.flag <= 1 then
+			local target = treasure.target
+			if target ~= "gar_treasure_quest_reward_in_anomaly" and target ~= "gar_treasure_quest_old_pda" then
+				c = c + 1
+				available_treasures[c] = treasure
+			end
+		end
+	end
+
+	local num_avail = #available_treasures
+
+	if num_avail == 0 then
+		abort("[treasure_manager.use_box]: Not enough treasures to populate box "..box_name)
 		return
 	end
 
 	-- Populate the box with one of the available treasures chosen at random.
-	-- There is at least one if treasures ~= nil.
 
-	treasures[math_random(1, #treasures)]:populate_stash()
+	available_treasures[math_random(1, num_avail)]:populate_stash(box_name)
+--[[
+	-- Debug code (requires passing in 'box'):
 
---	dbglog("Populated box "..box_name)
+	local t = available_treasures[math_random(1, num_avail)]
+
+	t:populate_stash(box_name)
+
+	local info = treasure_by_target[box_name][1]
+	local name = trans(info.name)
+	local text = "%c[255,255,0,23]"..name.."\\n".."%c[default]"..trans(info.description)
+
+	level.map_add_object_spot_ser(box:id(), "treasure", text)
+
+	dbglog("Populated box "..box_name.." ("..name..") with treasure "..t.section.." ("..trans(t.name)..")")
+]]
 end
 
 local function treasure_empty(box)
@@ -181,7 +238,7 @@ local function treasure_empty(box)
 
 	for k, v in pairs (treasures) do
 
-		if v.flag ~= 2 then
+		if v.flag ~= 4 then
 
 			-- Execute on_empty effect(s) if any.
 
@@ -189,7 +246,7 @@ local function treasure_empty(box)
 
 			-- Set the treasure status to "emptied".
 
-			v.flag = 2
+			v.flag = 4
 
 			-- Remove its map spot.
 
@@ -237,7 +294,8 @@ function use(npc)
 	for k, v in pairs (treasures) do
 		if xr_logic.pick_section_from_condlist(act, npc, v.condlist) == "true" then
 			if v:check_rank_and_community(npc) == true then
-				if v.flag == 0 then
+				local flag = v.flag
+				if flag == 0 or flag == 2 then -- makes available even coordinates for treasures that haven't (yet) spawned
 					if v.treasure_cost == 0 then
 						c = c + 1
 						available_treasures[c] = v
@@ -297,7 +355,7 @@ end
 function give_treasure(treasure_id)
 	local t = treasures[treasure_id]
 	if t ~= nil then
-		if t.flag ~= 2 then
+		if t.flag <= 1 then
 			t:populate_stash()
 			t:give_location_only()
 		end
@@ -309,7 +367,8 @@ end
 function give_location_only(treasure_id)
 	local t = treasures[treasure_id]
 	if t ~= nil then
-		if t.flag == 0 then
+		local flag = t.flag
+		if flag == 0 or flag == 2 then
 			t:give_location_only()
 		end
 	else
@@ -330,7 +389,8 @@ local function select_dialog_treasures(npc)
 	for k, v in pairs (treasures) do
 		if xr_logic.pick_section_from_condlist(act, npc, v.condlist) == "true" then
 			if v:check_rank_and_community(npc) then
-				if v.flag == 0 then
+				local flag = v.flag
+				if flag == 0 or flag == 2 then -- makes available even coordinates for treasures that haven't (yet) spawned
 					if v.treasure_cost > 0 then
 						c = c + 1
 						available_treasures[c] = v
@@ -380,11 +440,13 @@ function get_treasure_desc()
 end
 
 function is_item_name()
-	return dt.say_item_name
+--	return dt.say_item_name
+	return false
 end
 
 function is_not_item_name()
-	return not dt.say_item_name
+--	return not dt.say_item_name
+	return true
 end
 
 function get_item_name()

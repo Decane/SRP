@@ -48,7 +48,7 @@ If you already have mods installed, you will need to merge the contents of any c
 
 3.) Install any desired optional features by pasting into your Clear Sky root directory the contents of the folder named after the desired optional feature. Overwrite any pre-existing files and folders if prompted, unless they did not originate in the SRP, in which case you will need to manually merge the new files with the pre-existing ones.
 
-To prevent conflicts, install any optional features desired from folder #1 before installing any from folder #2. The 'Prefilled Stashes' feature requires a new game, but all other optional features can be installed at any point in the game. Note also that the 'Reduced Grenade Spam' feature will take full effect only after starting a new game, although it is safe to install at any time. Consult the documentation marked 'Optional Features' for information on each feature, including recommendations for players unsure of which features to use.
+To prevent conflicts, install any optional features desired from folder #1 before installing any from folder #2. The 'Prefilled Stashes' and 'Prefilled Randomized Stashes' features require a new game, but all other optional features can be installed at any point in the game. Note also that the 'Reduced Grenade Spam' feature will take full effect only after starting a new game, although it is safe to install at any time. Consult the documentation marked 'Optional Features' for information on each feature, including recommendations for players unsure of which features to use.
 
 
 ====================================
