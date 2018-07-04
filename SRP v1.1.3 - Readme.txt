@@ -167,6 +167,7 @@ Gameplay fixes:
 + Fixed the issue where important characters would not disappear when they are supposed to during a raid on their base either by the player or another faction.
 + Fixed the issue where Senka would occasionally rush out of the bandit base and get killed by enemies.
 + Fixed the script bugs causing the sudden deaths of Drifter and Hound and made some important characters invulnerable to prevent their accidental demise.
++ Fixed the bridge to Limansk in the Red Forest not aligning properly when lowered, which in rare cases would cause NPCs to never reach the other side.
 + Fixed the issue where the stalker squad overlooking the Vehicle Station in the Cordon would be blocked from raiding it with the player in exchange for payment until Valerian has tasked the player with assaulting it.
 + Fixed the Dark Valley mercenary base tunnel detonating (i) prematurely if the player wanders behind the deserted factory before receiving the task to purge the base; (ii) after it should have already gone out of commission if the player enters the relevant space restrictor for the first time only after the reward dialog with Chekhov.
 + Fixed the issues where the Dark Valley entrance hold-up (i) could occur prematurely if the player enters the Dark Valley before being tasked with chasing Fang there and (ii) would happen even after the player has reached Freedom's base if the player did not speak to the outpost commander before doing so.
@@ -385,7 +386,6 @@ Bugs still in the game:
 • Strelok can fall off a platform at the NPP, making the game unfinishable.
 • Emissions may rarely break active tasks and NPC logic.
 • NPCs may occasionally get stuck in an unresponsive state.
-• The bridge to Limansk in the Red Forest does not align properly when lowered, which in rare cases causes NPCs to never reach the other side.
 • Artifacts sometimes glitch into terrain, making them unattainable.
 • Weapon scope zoom upgrades are 'forgotten' when another upgrade is installed over them, or when the player reloads a savegame - the new scope zoom value does not persist.
 • The AI of the military NPCs at the Cordon outpost sometimes becomes unresponsive.
@@ -467,7 +467,7 @@ AMK Team, angrydog, Angus McFisticuffs, Anonymous, antifrost, Armada, Atempad, b
 barin, BobBQ, burger, Canzah, castl, CeeJay.dk, Control volume, Danila_STALKER,
 dDefinder, Decane, DerHeiligeApfel, DEXXX, Fangion, Gosuke, GSC Game World, IG2007,
 InnerGround, jjwalker (Cameron Sneed), Kill_the_Strelok, Lobstris, MacroN, Marked_2,
-MrSeyker, notanumber (nandersen), NatVac, OGSM Team, olegj5, pavlov, PhoenixHeart,
+MrSeyker, notanumber (nandersen), NatVac, OGSM Team, olegj5, pavlov, PhoenixHeart, PYP,
 Red7204, RoboMook, SetaKat (fluffy22), smoq2, smrtphoneusr, Tariq, Vandal, Xetrill
 
  • Useful feedback and testing:
