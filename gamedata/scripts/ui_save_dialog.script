@@ -169,6 +169,7 @@ function save_dialog:delete_selected_file()
 	if index == -1 then return end
 
 	local item				= self.list_box:GetItem(index)
+	if item == nil then return end
 	local filename			= item.fn:GetText()
 	
 	ui_load_dialog.delete_save_game(filename)

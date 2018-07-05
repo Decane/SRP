@@ -153,7 +153,7 @@ Prefilled Randomized Stashes
 ====================================================
 
 
-Does what 'Prefilled Stashes' does, but also also randomizes the stash's spawn container on its designated map.
+Does what 'Prefilled Stashes' does, but also randomizes the stash's spawn container on its designated map.
 
 Note that coordinate vendors will never know a stash's contents beforehand with this functionality enabled.
 
