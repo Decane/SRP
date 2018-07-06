@@ -3,8 +3,9 @@
 The variable self.flag can take a value of:
 
 0:	coordinates not given, treasure not spawned, treasure not emptied
-1:	coordinates given
-2:	treasure spawned
+1:	coordinates given,     treasure not spawned, treasure not emptied
+2:	coordinates not given, treasure spawned,     treasure not emptied
+3:	coordinates given,     treasure spawned,     treasure not emptied
 4:	treasure emptied
 
 ]]
@@ -146,7 +147,7 @@ end
 
 function use_box(box_name)
 
-	-- If this is not a treasure box then do nothing.
+	-- If this is not a treasure target box then do nothing.
 
 	if treasure_by_target[box_name] == nil then
 		return
@@ -158,12 +159,13 @@ function use_box(box_name)
 		treasure_on_level = {}
 		local level_name = level.name()
 		local sim = alife()
+		local GG = game_graph()
 		local c = 0
 		for k, treasure in pairs (treasures) do
 			local target = treasure.target
 			local target_obj = sim:object(target)
 			if target_obj then
-				local treasure_level = sim:level_name(game_graph():vertex(target_obj.m_game_vertex_id):level_id())
+				local treasure_level = sim:level_name(GG:vertex(target_obj.m_game_vertex_id):level_id())
 				if treasure_level == level_name then
 					c = c + 1
 					treasure_on_level[c] = treasure
