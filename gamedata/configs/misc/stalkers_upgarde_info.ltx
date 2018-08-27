@@ -1,42 +1,82 @@
+; DC260818: Fixed a few instances of a mechanic not being able to upgrade a pre-upgraded variant of a weapon even if they could upgrade the base weapon.
+
 ;************************************************
 ;************** Marsh CS mechanic ***************
 ;************************************************
 
 [mar_csky_tech]
-wpn_bm16
-wpn_toz34
-wpn_pm
-wpn_pm_up
-wpn_pm_9x19
-wpn_pb
-wpn_fort
-wpn_fort_up
-wpn_hpsa
-wpn_wincheaster1300
-wpn_spas12
-wpn_mp5
-wpn_ak74u
+agr_quest_duty_abakan ; DC260818
+agr_quest_wpn_spas12 ; DC260818
+;esc_quest_akm47
+;gar_quest_wpn_desert_eagle
+gar_quest_wpn_pm ; DC260818
+gar_quest_wpn_wincheaster1300 ; DC260818
+mar_quest_wpn_ak74u_1 ; DC260818
+mar_quest_wpn_pm_1 ; DC260818
+;red_quest_tank_minigun
+wpn_abakan
+wpn_abakan_up2
 wpn_ak74
 wpn_ak74_up
 wpn_ak74_up2
-wpn_abakan
-wpn_abakan_up2
-wpn_l85
-wpn_lr300
-wpn_sig550
-wpn_sig550_up2
+wpn_ak74u
+;wpn_beretta
+wpn_bm16
+;wpn_colt1911
+;wpn_colt1911_up2
+;wpn_desert_eagle
+;wpn_desert_eagle_up
 wpn_fn2000
+wpn_fort
+wpn_fort_up
 wpn_g36
 wpn_g36_up2
+;wpn_gauss
 wpn_groza
+wpn_hpsa
+wpn_l85
+wpn_lr300
+wpn_lr300_up2 ; DC260818
+wpn_mp5
+wpn_pb
 wpn_pkm
+wpn_pm
+wpn_pm_9x19
+wpn_pm_up
+;wpn_rg-6
+;wpn_rpg7
+;wpn_sig220
+wpn_sig550
+wpn_sig550_up2
+wpn_spas12
+;wpn_svd
+;wpn_svu
+wpn_toz34
+;wpn_usp
+;wpn_val
+;wpn_vintorez
+;wpn_vintorez_up
+;wpn_walther
+;wpn_walther_up2
+wpn_wincheaster1300
 
-novice_outfit
 bandit_outfit
-cs_light_outfit
 cs_heavy_outfit
+cs_light_outfit
+;dolg_heavy_outfit
+;dolg_outfit
+;exo_outfit
+;gar_quest_novice_outfit
+mar_quest_novice_outfit_1 ; DC260818
+;military_outfit
+novice_outfit
+;scientific_outfit
+;specops_outfit
 stalker_outfit
 stalker_outfit_up_stalk
+;svoboda_exo_outfit
+;svoboda_heavy_outfit
+;svoboda_light_outfit
 
 [mar_csky_tech_upgr]
 up_sect_ac_ak74u = false
@@ -65,27 +105,78 @@ up_sect_bdfh_scientific_outfit = false
 ;************************************************
 
 [esc_tech_stalkerbase]
-wpn_pm
-wpn_pm_up
-wpn_pm_9x19
-wpn_pb
-wpn_fort
-wpn_fort_up
-wpn_hpsa
-wpn_bm16
-wpn_toz34
-wpn_wincheaster1300
-wpn_mp5
-wpn_ak74u
+;agr_quest_duty_abakan
+;agr_quest_wpn_spas12
+;esc_quest_akm47
+;gar_quest_wpn_desert_eagle
+gar_quest_wpn_pm ; DC260818
+gar_quest_wpn_wincheaster1300 ; DC260818
+mar_quest_wpn_ak74u_1 ; DC260818
+mar_quest_wpn_pm_1 ; DC260818
+;red_quest_tank_minigun
+;wpn_abakan
+;wpn_abakan_up2
 wpn_ak74
 wpn_ak74_up
 wpn_ak74_up2
+wpn_ak74u
+;wpn_beretta
+wpn_bm16
+;wpn_colt1911
+;wpn_colt1911_up2
+;wpn_desert_eagle
+;wpn_desert_eagle_up
+;wpn_fn2000
+wpn_fort
+wpn_fort_up
+;wpn_g36
+;wpn_g36_up2
+;wpn_gauss
+;wpn_groza
+wpn_hpsa
 wpn_l85
+;wpn_lr300
+;wpn_lr300_up2
+wpn_mp5
+wpn_pb
+;wpn_pkm
+wpn_pm
+wpn_pm_9x19
+wpn_pm_up
+;wpn_rg-6
+;wpn_rpg7
+;wpn_sig220
+;wpn_sig550
+;wpn_sig550_up2
+;wpn_spas12
+;wpn_svd
+;wpn_svu
+wpn_toz34
+;wpn_usp
+;wpn_val
+;wpn_vintorez
+;wpn_vintorez_up
+;wpn_walther
+;wpn_walther_up2
+wpn_wincheaster1300
 
-novice_outfit
 bandit_outfit
+;cs_heavy_outfit
+;cs_light_outfit
+;dolg_heavy_outfit
+;dolg_outfit
+;exo_outfit
+;gar_quest_novice_outfit
+mar_quest_novice_outfit_1 ; DC260818
+;military_outfit
+novice_outfit
+;scientific_outfit
+;specops_outfit
 stalker_outfit
 stalker_outfit_up_stalk
+;svoboda_exo_outfit
+;svoboda_heavy_outfit
+;svoboda_light_outfit
 
 [esc_tech_stalkerbase_upgr]
 up_sect_ac_mp5 = false
@@ -93,8 +184,8 @@ up_sect_bd_mp5 = false
 
 up_sect_ac_wincheaster1300 = {+info_up_ac_wincheaster1300}
 up_sect_bd_wincheaster1300 = {+info_up_bd_wincheaster1300}
-up_sect_ac_spas12 = {+info_up_ac_wincheaster1300}		; {+info_up_bd_wincheaster1300}		; SRP fix
-up_sect_bd_spas12 = {+info_up_bd_wincheaster1300}		; {+info_up_ac_wincheaster1300}		; SRP fix
+up_sect_ac_spas12 = {+info_up_ac_wincheaster1300} ; {+info_up_bd_wincheaster1300} ; SRP fix
+up_sect_bd_spas12 = {+info_up_bd_wincheaster1300} ; {+info_up_ac_wincheaster1300} ; SRP fix
 up_sect_ac_ak74u = {+info_up_ac_ak74u}
 
 up_sect_aceg_ak74 = false
@@ -113,47 +204,78 @@ up_sect_bdfh_sig550 = false
 ;************************************************
 
 [gar_bandit_fixer]
-wpn_pm
-wpn_pm_up
-wpn_pm_9x19
-wpn_pb
-wpn_fort
-wpn_fort_up
-wpn_hpsa
-wpn_colt1911
-wpn_colt1911_up2
-wpn_desert_eagle
-wpn_bm16
-wpn_toz34
-wpn_wincheaster1300
-wpn_spas12
-wpn_mp5
-wpn_ak74u
+agr_quest_duty_abakan ; DC260818
+agr_quest_wpn_spas12 ; DC260818
+;esc_quest_akm47
+gar_quest_wpn_desert_eagle ; DC260818
+gar_quest_wpn_pm ; DC260818
+gar_quest_wpn_wincheaster1300 ; DC260818
+mar_quest_wpn_ak74u_1 ; DC260818
+mar_quest_wpn_pm_1 ; DC260818
+;red_quest_tank_minigun
+wpn_abakan
+wpn_abakan_up2
 wpn_ak74
 wpn_ak74_up
 wpn_ak74_up2
-wpn_abakan
-wpn_abakan_up2
+wpn_ak74u
+;wpn_beretta
+wpn_bm16
+wpn_colt1911
+wpn_colt1911_up2
+wpn_desert_eagle
+wpn_desert_eagle_up ; DC260818
+;wpn_fn2000
+wpn_fort
+wpn_fort_up
+wpn_g36
+wpn_g36_up2
+;wpn_gauss
+wpn_groza
+wpn_hpsa
 wpn_l85
 wpn_lr300
 wpn_lr300_up2
+wpn_mp5
+wpn_pb
+;wpn_pkm
+wpn_pm
+wpn_pm_9x19
+wpn_pm_up
+;wpn_rg-6
+;wpn_rpg7
+;wpn_sig220
 wpn_sig550
 wpn_sig550_up2
-wpn_g36
-wpn_g36_up2
-wpn_groza
+wpn_spas12
+;wpn_svd
+;wpn_svu
+wpn_toz34
+;wpn_usp
+wpn_val
 wpn_vintorez
 wpn_vintorez_up
-wpn_val
+;wpn_walther
+;wpn_walther_up2
+wpn_wincheaster1300
 
-novice_outfit
 bandit_outfit
+;cs_heavy_outfit
+;cs_light_outfit
+;dolg_heavy_outfit
+;dolg_outfit
+exo_outfit
+;gar_quest_novice_outfit
+mar_quest_novice_outfit_1 ; DC260818
+military_outfit
+novice_outfit
+scientific_outfit
+specops_outfit
 stalker_outfit
 stalker_outfit_up_stalk
-specops_outfit
-scientific_outfit
-military_outfit
-exo_outfit
+;svoboda_exo_outfit
+;svoboda_heavy_outfit
+;svoboda_light_outfit
 
 [gar_bandit_fixer_upgr]
 up_sect_ac_wincheaster1300 = false
@@ -166,51 +288,86 @@ up_sect_aceg_abakan = false
 up_sect_bdfh_abakan = false
 
 up_sect_fh_scientific_outfit = {+info_up_fh_scientific_outfit}
-up_sect_aceg_scientific_outfit = {+info_up_aceg_scientific_outfit}	; {+info_up_bdfh_scientific_outfit}	; SRP fix
-up_sect_bdfh_scientific_outfit = {+info_up_bdfh_scientific_outfit}	; {+info_up_aceg_scientific_outfit}	; SRP fix
+up_sect_aceg_scientific_outfit = {+info_up_aceg_scientific_outfit} ; {+info_up_bdfh_scientific_outfit} ; SRP fix
+up_sect_bdfh_scientific_outfit = {+info_up_bdfh_scientific_outfit} ; {+info_up_aceg_scientific_outfit} ; SRP fix
 
 ;************************************************
 ;************** Garbage digger mechanic *********
 ;************************************************
 
 [gar_digger_fixer]
-wpn_pm
-wpn_pm_up
-wpn_pm_9x19
-wpn_pb
-wpn_fort
-wpn_fort_up
-wpn_hpsa
-wpn_beretta
-wpn_walther
-wpn_walther_up2
-wpn_colt1911
-wpn_colt1911_up2
-wpn_usp
-wpn_sig220
-wpn_desert_eagle
-wpn_bm16
-wpn_toz34
-wpn_wincheaster1300
-wpn_spas12
-wpn_mp5
-wpn_ak74u
+agr_quest_duty_abakan ; DC260818
+agr_quest_wpn_spas12 ; DC260818
+;esc_quest_akm47
+gar_quest_wpn_desert_eagle ; DC260818
+gar_quest_wpn_pm ; DC260818
+gar_quest_wpn_wincheaster1300 ; DC260818
+mar_quest_wpn_ak74u_1 ; DC260818
+mar_quest_wpn_pm_1 ; DC260818
+;red_quest_tank_minigun
+wpn_abakan
+wpn_abakan_up2
 wpn_ak74
 wpn_ak74_up
 wpn_ak74_up2
-wpn_abakan
-wpn_abakan_up2
+wpn_ak74u
+wpn_beretta
+wpn_bm16
+wpn_colt1911
+wpn_colt1911_up2
+wpn_desert_eagle
+wpn_desert_eagle_up ; DC260818
+;wpn_fn2000
+wpn_fort
+wpn_fort_up
+;wpn_g36
+;wpn_g36_up2
+;wpn_gauss
+;wpn_groza
+wpn_hpsa
 wpn_l85
 wpn_lr300
 wpn_lr300_up2
+wpn_mp5
+wpn_pb
+;wpn_pkm
+wpn_pm
+wpn_pm_9x19
+wpn_pm_up
+;wpn_rg-6
+;wpn_rpg7
+wpn_sig220
 wpn_sig550
 wpn_sig550_up2
+wpn_spas12
+;wpn_svd
+;wpn_svu
+wpn_toz34
+wpn_usp
+;wpn_val
+;wpn_vintorez
+;wpn_vintorez_up
+wpn_walther
+wpn_walther_up2
+wpn_wincheaster1300
 
-novice_outfit
 bandit_outfit
+;cs_heavy_outfit
+;cs_light_outfit
+;dolg_heavy_outfit
+;dolg_outfit
+;exo_outfit
+;gar_quest_novice_outfit
+mar_quest_novice_outfit_1 ; DC260818
+;military_outfit
+novice_outfit
+;scientific_outfit
+specops_outfit
 stalker_outfit
 stalker_outfit_up_stalk
-specops_outfit
+;svoboda_exo_outfit
+;svoboda_heavy_outfit
+;svoboda_light_outfit
 
 [gar_digger_fixer_upgr]
 up_sect_ac_mp5 = false
@@ -262,52 +419,78 @@ up_sect_bdfh_sig550 = false
 ;************************************************
 
 [val_freedom_fixer]
-wpn_pm
-wpn_pm_up
-wpn_pm_9x19
-wpn_pb
-wpn_fort
-wpn_fort_up
-wpn_hpsa
-wpn_beretta
-wpn_walther
-wpn_walther_up2
-wpn_colt1911
-wpn_colt1911_up2
-wpn_usp
-wpn_sig220
-wpn_bm16
-wpn_toz34
-wpn_wincheaster1300
-wpn_spas12
-wpn_mp5
-wpn_ak74u
+agr_quest_duty_abakan ; DC260818
+agr_quest_wpn_spas12 ; DC260818
+;esc_quest_akm47
+;gar_quest_wpn_desert_eagle
+gar_quest_wpn_pm ; DC260818
+gar_quest_wpn_wincheaster1300 ; DC260818
+mar_quest_wpn_ak74u_1 ; DC260818
+mar_quest_wpn_pm_1 ; DC260818
+;red_quest_tank_minigun
+wpn_abakan
+wpn_abakan_up2 ; DC260818
 wpn_ak74
 wpn_ak74_up
 wpn_ak74_up2
-wpn_abakan
+wpn_ak74u
+wpn_beretta
+wpn_bm16
+wpn_colt1911
+wpn_colt1911_up2
+;wpn_desert_eagle
+;wpn_desert_eagle_up
+;wpn_fn2000
+wpn_fort
+wpn_fort_up
+wpn_g36
+wpn_g36_up2
+;wpn_gauss
+;wpn_groza
+wpn_hpsa
 wpn_l85
 wpn_lr300
 wpn_lr300_up2
+wpn_mp5
+wpn_pb
+;wpn_pkm
+wpn_pm
+wpn_pm_9x19
+wpn_pm_up
+;wpn_rg-6
+;wpn_rpg7
+wpn_sig220
 wpn_sig550
 wpn_sig550_up2
-wpn_g36
-wpn_g36_up2
+wpn_spas12
+wpn_svd
+wpn_svu
+wpn_toz34
+wpn_usp
 wpn_val
 wpn_vintorez
 wpn_vintorez_up
-wpn_svd
-wpn_svu
+wpn_walther
+wpn_walther_up2
+wpn_wincheaster1300
 
-stalker_outfit
-stalker_outfit_up_stalk
+;bandit_outfit
+;cs_heavy_outfit
+;cs_light_outfit
+;dolg_heavy_outfit
+;dolg_outfit
+exo_outfit
+;gar_quest_novice_outfit
+;mar_quest_novice_outfit_1
+military_outfit
+;novice_outfit
 scientific_outfit
 specops_outfit
-military_outfit
-svoboda_light_outfit
-svoboda_heavy_outfit
+stalker_outfit
+stalker_outfit_up_stalk
 svoboda_exo_outfit
-exo_outfit
+svoboda_heavy_outfit
+svoboda_light_outfit
 
 [val_freedom_fixer_upgr]
 up_sect_ac_wincheaster1300 = false
@@ -337,50 +520,78 @@ up_sect_abcd_svd = {+info_up_abcd_svu}
 ;************************************************
 
 [agr_duty_base_mechanic]
-wpn_pm
-wpn_pm_up
-wpn_pm_9x19
-wpn_pb
-wpn_fort
-wpn_fort_up
-wpn_hpsa
-wpn_beretta
-wpn_walther
-wpn_walther_up2
-wpn_colt1911
-wpn_colt1911_up2
-wpn_usp
-wpn_sig220
-wpn_desert_eagle
-wpn_bm16
-wpn_toz34
-wpn_wincheaster1300
-wpn_spas12
-wpn_ak74u
+agr_quest_duty_abakan ; DC260818
+agr_quest_wpn_spas12 ; DC260818
+;esc_quest_akm47
+gar_quest_wpn_desert_eagle ; DC260818
+gar_quest_wpn_pm ; DC260818
+gar_quest_wpn_wincheaster1300 ; DC260818
+mar_quest_wpn_ak74u_1 ; DC260818
+mar_quest_wpn_pm_1 ; DC260818
+;red_quest_tank_minigun
+wpn_abakan
+wpn_abakan_up2
 wpn_ak74
 wpn_ak74_up
 wpn_ak74_up2
-wpn_abakan
-wpn_abakan_up2
+wpn_ak74u
+wpn_beretta
+wpn_bm16
+wpn_colt1911
+wpn_colt1911_up2
+wpn_desert_eagle
+wpn_desert_eagle_up ; DC260818
+;wpn_fn2000
+wpn_fort
+wpn_fort_up
+;wpn_g36
+;wpn_g36_up2
+;wpn_gauss
+wpn_groza
+wpn_hpsa
 wpn_l85
 wpn_lr300
 wpn_lr300_up2
+;wpn_mp5
+wpn_pb
+wpn_pkm
+wpn_pm
+wpn_pm_9x19
+wpn_pm_up
+;wpn_rg-6
+;wpn_rpg7
+wpn_sig220
 wpn_sig550
 wpn_sig550_up2
-wpn_groza
+wpn_spas12
+;wpn_svd
+;wpn_svu
+wpn_toz34
+wpn_usp
 wpn_val
 wpn_vintorez
 wpn_vintorez_up
-wpn_pkm
+wpn_walther
+wpn_walther_up2
+wpn_wincheaster1300
 
+;bandit_outfit
+;cs_heavy_outfit
+;cs_light_outfit
+dolg_heavy_outfit
+dolg_outfit
+exo_outfit
+;gar_quest_novice_outfit
+;mar_quest_novice_outfit_1
+military_outfit
+;novice_outfit
+scientific_outfit
+specops_outfit
 stalker_outfit
 stalker_outfit_up_stalk
-specops_outfit
-scientific_outfit
-military_outfit
-dolg_outfit
-dolg_heavy_outfit
-exo_outfit
+;svoboda_exo_outfit
+;svoboda_heavy_outfit
+;svoboda_light_outfit
 
 [agr_duty_base_mechanic_upgr]
 up_sect_ac_ak74u = false
@@ -393,44 +604,86 @@ up_sect_bdfh_lr300 = false
 up_sect_bdfh_sig550 = false
 
 up_sect_ab_pkm = {+info_up_ab_pkm}
-up_sect_cd_pkm = {+info_up_cd_pkm}		; {+info_up_ab_pkm}	; SRP fix
-up_sect_abcd_pkm = {+info_up_abcd_pkm}		; {+info_up_ab_pkm}	; SRP fix
+up_sect_cd_pkm = {+info_up_cd_pkm} ; {+info_up_ab_pkm} ; SRP fix
+up_sect_abcd_pkm = {+info_up_abcd_pkm} ; {+info_up_ab_pkm} ; SRP fix
 
 ;************************************************
 ;************** Agroprom stalker mechanic *******
 ;************************************************
 
 [agr_stalker_base_mechanic]
-wpn_pm
-wpn_pm_up
-wpn_pm_9x19
-wpn_pb
-wpn_fort
-wpn_fort_up
-wpn_hpsa
+;agr_quest_duty_abakan
+agr_quest_wpn_spas12 ; DC260818
+;esc_quest_akm47
+gar_quest_wpn_desert_eagle ; DC260818
+gar_quest_wpn_pm ; DC260818
+gar_quest_wpn_wincheaster1300 ; DC260818
+mar_quest_wpn_ak74u_1 ; DC260818
+mar_quest_wpn_pm_1 ; DC260818
+;red_quest_tank_minigun
+;wpn_abakan
+;wpn_abakan_up2
+wpn_ak74
+wpn_ak74_up ; DC260818
+wpn_ak74_up2 ; DC260818
+wpn_ak74u
 wpn_beretta
-wpn_walther
-wpn_walther_up2
+wpn_bm16
 wpn_colt1911
 wpn_colt1911_up2
-wpn_usp
-wpn_sig220
 wpn_desert_eagle
-wpn_bm16
-wpn_toz34
-wpn_wincheaster1300
-wpn_spas12
-wpn_ak74u
-wpn_mp5
-wpn_ak74
+wpn_desert_eagle_up ; DC260818
+;wpn_fn2000
+wpn_fort
+wpn_fort_up
+;wpn_g36
+;wpn_g36_up2
+;wpn_gauss
+;wpn_groza
+wpn_hpsa
 wpn_l85
 wpn_lr300
 wpn_lr300_up2
+wpn_mp5
+wpn_pb
+;wpn_pkm
+wpn_pm
+wpn_pm_9x19
+wpn_pm_up
+;wpn_rg-6
+;wpn_rpg7
+wpn_sig220
 wpn_sig550
 wpn_sig550_up2
+wpn_spas12
+;wpn_svd
+;wpn_svu
+wpn_toz34
+wpn_usp
+;wpn_val
+;wpn_vintorez
+;wpn_vintorez_up
+wpn_walther
+wpn_walther_up2
+wpn_wincheaster1300
 
-stalker_outfit
+;bandit_outfit
+;cs_heavy_outfit
+;cs_light_outfit
+;dolg_heavy_outfit
+;dolg_outfit
+;exo_outfit
+;gar_quest_novice_outfit
+;mar_quest_novice_outfit_1
+;military_outfit
+;novice_outfit
+;scientific_outfit
 specops_outfit
+stalker_outfit
+stalker_outfit_up_stalk ; DC260818
+;svoboda_exo_outfit
+;svoboda_heavy_outfit
+;svoboda_light_outfit
 
 [agr_stalker_base_mechanic_upgr]
 up_sect_ac_mp5 = false
@@ -475,61 +728,6 @@ up_sect_ac_spas12 = {+info_up_ac_spas12}
 
 [red_forester]
 he_upgrade_nothing
-wpn_pm
-wpn_pm_up
-wpn_pm_9x19
-wpn_pb
-wpn_fort
-wpn_fort_up
-wpn_hpsa
-wpn_beretta
-wpn_walther
-wpn_walther_up2
-wpn_colt1911
-wpn_colt1911_up2
-wpn_usp
-wpn_sig220
-wpn_desert_eagle
-wpn_bm16
-wpn_toz34
-wpn_wincheaster1300
-wpn_spas12
-wpn_ak74u
-wpn_mp5
-wpn_ak74
-wpn_ak74_up
-wpn_ak74_up2
-wpn_abakan
-wpn_abakan_up2
-wpn_l85
-wpn_lr300
-wpn_lr300_up2
-wpn_sig550
-wpn_sig550_up2
-wpn_g36
-wpn_fn2000
-wpn_groza
-wpn_val
-wpn_vintorez
-wpn_vintorez_up
-wpn_svu
-wpn_svd
-wpn_pkm
-
-novice_outfit
-bandit_outfit
-specops_outfit
-military_outfit
-stalker_outfit
-scientific_outfit
-exo_outfit
-svoboda_light_outfit
-svoboda_heavy_outfit
-svoboda_exo_outfit
-cs_light_outfit
-cs_heavy_outfit
-dolg_outfit
-dolg_heavy_outfit
 
 [red_forester_upgr]
 
