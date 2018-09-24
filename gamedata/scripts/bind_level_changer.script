@@ -4,6 +4,8 @@
 -- 25.12.07 --------------------------------------------------------------------
 --------------------------------------------------------------------------------
 
+local object_binder_update = object_binder.update
+
 function bind(obj)
 	obj:bind_object(lchanger_binder(obj))
 end
@@ -18,7 +20,7 @@ function lchanger_binder:__init(obj) super(obj)
 end
 
 function lchanger_binder:update(delta)
-	object_binder.update(self, delta)
+	object_binder_update(self, delta)
 	if xr_surge_hide.start_surge or xr_surge_hide.surge_activated then
 		local sobj = self.object
 		if sobj:is_level_changer_enabled() then

@@ -1,3 +1,5 @@
+local object_binder_update = object_binder.update
+
 function bind(obj)
 	obj:bind_object(bridge_binder(obj))
 	db.storage[obj:id()] = {}
@@ -27,7 +29,7 @@ function bridge_binder:net_spawn(server_object)
 		self.koleso:get_physics_object():stop_anim()
 	end
 
---	db.add_bridge(self.bridge, self)	-- duplicate
+--	db.add_bridge(self.bridge, self) -- duplicate
 
 	self.idle_snd = sound_object("device\\bridge\\bridge_move")
 	self.down_snd = sound_object("device\\bridge\\bridge_down")
@@ -43,7 +45,7 @@ function bridge_binder:net_destroy()
 	self.down_snd:stop()
 	self.start_snd:stop()
 	self.stop_snd:stop()
-	self.object:set_callback(callback.script_animation, nil)	-- SRP
+	self.object:set_callback(callback.script_animation, nil) -- SRP
 	object_binder.net_destroy(self)
 end
 
@@ -86,7 +88,7 @@ end
 
 function bridge_binder:update(delta)
 
-	object_binder.update(self, delta)
+	object_binder_update(self, delta)
 
 	if self.se_koleso_id ~= nil and (self.koleso == nil) and (db.storage[self.se_koleso_id] ~= nil) and (db.storage[self.se_koleso_id].object ~= nil) then
 		self.koleso = db.storage[self.se_koleso_id].object

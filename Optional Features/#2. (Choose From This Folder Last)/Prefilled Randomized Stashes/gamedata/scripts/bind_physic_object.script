@@ -1,3 +1,5 @@
+local object_binder_update = object_binder.update
+
 function init(obj) -- called 1st
 
 	local ini = obj:spawn_ini()
@@ -83,7 +85,7 @@ end
 
 function generic_physics_binder:update(delta) -- called 6th
 
-	object_binder.update(self, delta)
+	object_binder_update(self, delta)
 
 	local sobj = self.object
 	local obj_st = self.st

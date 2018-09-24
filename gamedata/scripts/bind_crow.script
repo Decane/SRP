@@ -1,6 +1,8 @@
 crow_storage = {}
 crow_counter = 0
 
+local object_binder_update = object_binder.update
+
 function bind(obj)
 	obj:bind_object(crow_binder(obj))
 end
@@ -27,13 +29,12 @@ function crow_binder:reinit()
 end
 
 function crow_binder:update(delta)
-	object_binder.update(self, delta)
-	local sobj = self.object
+	object_binder_update(self, delta)
 	local death_time = self.death_time
 	if death_time ~= nil then
-		if game.get_game_time():diffSec(death_time) >= 1200 then	-- 10 * 120 seconds = 1200 game-seconds
+		if game.get_game_time():diffSec(death_time) >= 1200 then -- 10 * 120 seconds = 1200 game-seconds
 			local sim = alife()
-			sim:release(sim:object(sobj:id()), true)
+			sim:release(sim:object(self.object:id()), true)
 		end
 	end
 end

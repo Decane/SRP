@@ -1,3 +1,5 @@
+local object_binder_update = object_binder.update
+
 function bind(obj)
 
 	local ini = obj:spawn_ini()
@@ -6,7 +8,7 @@ function bind(obj)
 		return
 	end
 
-	if ini:section_exist("gulag1") or ini:section_exist("smart_terrain") then
+	if ini:section_exist("smart_terrain") then
 		if obj:clsid() == clsid.smart_terrain then
 			if alife() then
 				obj:bind_object(smart_terrain_binder(obj))
@@ -48,6 +50,6 @@ function smart_terrain_binder:net_Relcase(obj)
 end
 
 function smart_terrain_binder:update(delta)
-	object_binder.update(self, delta)
+	object_binder_update(self, delta)
 	self.se_smart_terrain:update()
 end

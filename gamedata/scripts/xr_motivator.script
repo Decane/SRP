@@ -1,6 +1,8 @@
 -- memtsg = {}
 -- lasthealth = 0
 -- lastime = nil
+
+local object_binder_update = object_binder.update
 local bloodsuckers_restr = {}
 bloodsucker_zone_enter = {}
 
@@ -319,7 +321,7 @@ end
 
 function motivator_binder:update(delta)
 
-	object_binder.update(self, delta)
+	object_binder_update(self, delta)
 
 	if self.death_recorded == true then
 		return

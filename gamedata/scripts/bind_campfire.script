@@ -1,3 +1,4 @@
+local object_binder_update = object_binder.update
 local string_gsub = string.gsub
 local patrol_path_exists = level.patrol_path_exists
 
@@ -39,5 +40,5 @@ function campfire_binder:net_spawn(server_object)
 end
 
 function campfire_binder:update(delta)
-	object_binder.update(self, delta)
+	object_binder_update(self, delta)
 end

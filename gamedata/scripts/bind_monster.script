@@ -2,6 +2,8 @@
 -- Monster binding
 -----------------------------------------------------------------------------------
 
+local object_binder_update = object_binder.update
+
 function bind(obj)
 	local new_binder = generic_object_binder(obj)
 	obj:bind_object(new_binder)
@@ -51,7 +53,7 @@ end
 
 function generic_object_binder:update(delta)
 
-	object_binder.update(self, delta)
+	object_binder_update(self, delta)
 
 	if self.death_recorded == true then
 		return
@@ -119,6 +121,7 @@ function generic_object_binder:extrapolate_callback()
 	end
 
 	local patrol_path = sobj:patrol()
+
 	if not level.patrol_path_exists(patrol_path) then
 		return false
 	end

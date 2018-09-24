@@ -1,9 +1,11 @@
 -- Pavlov ??.??.2008: Fixed the incorrect counting and saving of artifacts belonging to an anomalous zone.
 -- Decane 31.01.2013: Removed some old code which could trigger a crash due to an undefined variable: 'se_pos'.
---	  25.10.2014: Fixed the borked savegame persistence of the respawn timer.
+--        25.10.2014: Fixed the borked savegame persistence of the respawn timer.
 
-artefact_ways_by_id		= {}
-parent_zones_by_artefact_id	= {}
+artefact_ways_by_id = {}
+parent_zones_by_artefact_id = {}
+
+local object_binder_update = object_binder.update
 
 function bind(obj)
 	obj:bind_object(anomaly_zone_binder(obj))
@@ -13,29 +15,30 @@ class "anomaly_zone_binder" (object_binder)
 
 function anomaly_zone_binder:__init(obj) super(obj)
 
-	local ini		= obj:spawn_ini()
-	local path		= utils.cfg_get_string(ini, "anomal_zone", "artefact_ways", nil, true, "", nil)
-	local artefacts		= utils.cfg_get_string(ini, "anomal_zone", "artefacts", nil, true, "", nil)
+	local get_string       = utils.cfg_get_string
+	local get_number       = utils.cfg_get_number
 
-	self.artefact_count	= utils.cfg_get_number(ini, "anomal_zone", "artefact_count", nil, false, 1)
-	self.idle_time		= utils.cfg_get_number(ini, "anomal_zone", "idle_time", nil, false, 14400) * 10 -- 1000	-- artifacts respawn after 14400 * 10 game-seconds i.e. 14400 / 60 / 60 = 4 real hours
-	self.applying_force_xz	= utils.cfg_get_number(ini, "anomal_zone", "applying_force_xz", nil, false, 200)
-	self.applying_force_y	= utils.cfg_get_number(ini, "anomal_zone", "applying_force_y", nil, false, 400)
+	local ini              = obj:spawn_ini()
+	local path             = get_string(ini, "anomal_zone", "artefact_ways", nil, true, "", nil)
+	local artefacts        = get_string(ini, "anomal_zone", "artefacts", nil, true, "", nil)
 
 	if path == nil then
-		abort("There is no field 'artefact_ways' in section [anomal_zone] in obj [%s]", obj:name())
+		abort("[bind_anomaly_zone.__init]: There is no field 'artefact_ways' in section [anomal_zone] for obj [%s]", obj:name())
 	end
-
-	self.path_table		= parse_names(path)
 
 	if artefacts == nil then
-		abort("There is no field 'artefacts' in section [anomal_zone] in obj [%s]", obj:name())
+		abort("[bind_anomaly_zone.__init]: There is no field 'artefacts' in section [anomal_zone] for obj [%s]", obj:name())
 	end
 
-	self.artefacts_table	= parse_names(artefacts)
-	self.spawned_count	= 0
---	self.idle_time_end	= 0
-	self.idle_time_start	= nil
+	self.artefact_count    = get_number(ini, "anomal_zone", "artefact_count", nil, false, 1)
+	self.idle_time         = get_number(ini, "anomal_zone", "idle_time", nil, false, 14400) * level.get_time_factor() -- artifacts respawn after 14400 / 60 / 60 = 4 real hours
+	self.applying_force_xz = get_number(ini, "anomal_zone", "applying_force_xz", nil, false, 200)
+	self.applying_force_y  = get_number(ini, "anomal_zone", "applying_force_y", nil, false, 400)
+
+	self.path_table        = parse_names(path)
+	self.artefacts_table   = parse_names(artefacts)
+	self.spawned_count     = 0
+	self.idle_time_start   = nil
 end
 
 function anomaly_zone_binder:net_spawn(server_object)
@@ -43,7 +46,6 @@ function anomaly_zone_binder:net_spawn(server_object)
 		return false
 	end
 	if self.spawned_count < self.artefact_count then
---		if self.idle_time_end < time_global() then
 		if self.idle_time_start == nil or game.get_game_time():diffSec(self.idle_time_start) >= self.idle_time then
 			for i = 1, self.artefact_count - self.spawned_count do
 				self:spawn_artefact_randomly()
@@ -54,37 +56,33 @@ function anomaly_zone_binder:net_spawn(server_object)
 end
 
 function anomaly_zone_binder:update(delta)
-	object_binder.update(self, delta)
+	object_binder_update(self, delta)
 	if self.spawned_count < self.artefact_count then
---		local global_time = time_global()
---		if self.idle_time_end < global_time then
 		if self.idle_time_start == nil or game.get_game_time():diffSec(self.idle_time_start) >= self.idle_time then
 			self:spawn_artefact_randomly()
---			self.idle_time_end = global_time + self.idle_time
 		end
 	end
 end
 
 function anomaly_zone_binder:on_artefact_take()
 	self.spawned_count = self.spawned_count - 1
---	self.idle_time_end = time_global() + self.idle_time
 	self.idle_time_start = game.get_game_time()
 end
 
 function anomaly_zone_binder:spawn_artefact_randomly()
 
-	local rand		= math.random
-	local rnd_artefact	= self.artefacts_table[rand(1, #self.artefacts_table)]
-	local rnd_path_name	= self.path_table[rand(1, #self.path_table)]
-	local rnd_path		= patrol(rnd_path_name)
-	local rnd_path_point	= rand(0, rnd_path:count() - 1)
-	local artefact_obj	= alife():create(rnd_artefact, rnd_path:point(rnd_path_point), self.object:level_vertex_id(), self.object:game_vertex_id())
+	local math_random = math.random
+	local rnd_artefact = self.artefacts_table[math_random(1, #self.artefacts_table)]
+	local rnd_path_name = self.path_table[math_random(1, #self.path_table)]
+	local rnd_path = patrol(rnd_path_name)
+	local rnd_path_point = math_random(0, rnd_path:count() - 1)
+	local artefact_id = alife():create(rnd_artefact, rnd_path:point(rnd_path_point), self.object:level_vertex_id(), self.object:game_vertex_id()).id
 
-	artefact_ways_by_id[artefact_obj.id] = rnd_path_name
-	parent_zones_by_artefact_id[artefact_obj.id] = self
+	artefact_ways_by_id[artefact_id] = rnd_path_name
+	parent_zones_by_artefact_id[artefact_id] = self
 
-	self.spawned_count	= self.spawned_count + 1
-	self.idle_time_start	= nil	-- set this to nil after respawning to reduce packet data burden
+	self.spawned_count = self.spawned_count + 1
+	self.idle_time_start = nil -- set this to nil after respawning to reduce packet data burden
 end
 
 function anomaly_zone_binder:net_save_relevant()
@@ -98,22 +96,23 @@ function anomaly_zone_binder:save(thread)
 	object_binder.save(self, thread)
 
 	local count = 0
-	for k, v in pairs (artefact_ways_by_id) do
-		if parent_zones_by_artefact_id[k] ~= nil then
-			if rawequal(parent_zones_by_artefact_id[k], self) then	-- only count artefacts that belong to this anomal zone
+
+	for art_id in pairs (artefact_ways_by_id) do
+		if parent_zones_by_artefact_id[art_id] ~= nil then
+			if rawequal(parent_zones_by_artefact_id[art_id], self) then -- only count artefacts that belong to this anomal zone
 				count = count + 1
 			end
 		end
 	end
 
 --	thread:w_u16(count)
-	thread:w_u8(count)	-- no anomaly zone is going to have more than 255 artifacts in it at once, so let's save a byte
+	thread:w_u8(count) -- no anomaly zone is going to have more than 255 artifacts in it at once, so let's save a byte
 
-	for k, v in pairs (artefact_ways_by_id) do
-		if parent_zones_by_artefact_id[k] ~= nil then
-			if rawequal(parent_zones_by_artefact_id[k], self) then	-- only store artefacts that belong to this anomal zone
-				thread:w_u16(k)
-				thread:w_stringZ(v)
+	for art_id, path_name in pairs (artefact_ways_by_id) do
+		if parent_zones_by_artefact_id[art_id] ~= nil then
+			if rawequal(parent_zones_by_artefact_id[art_id], self) then -- only store artefacts that belong to this anomal zone
+				thread:w_u16(art_id)
+				thread:w_stringZ(path_name)
 			end
 		end
 	end
@@ -121,15 +120,7 @@ function anomaly_zone_binder:save(thread)
 	thread:w_u8(self.spawned_count)
 
 	utils.w_CTime(thread, self.idle_time_start)
---[[
-	local time_diff = self.idle_time_end - time_global()
 
-	if time_diff <= 0 then
-		thread:w_u32(0)
-	else
-		thread:w_u32(time_diff)
-	end
-]]
 	set_save_marker(thread, "save", true, "anomaly_zone_binder")
 end
 
@@ -142,9 +133,8 @@ function anomaly_zone_binder:load(thread)
 --	local count = thread:r_u16()
 	local count = thread:r_u8()
 
-	local art_id
 	for i = 1, count do
-		art_id = thread:r_u16()
+		local art_id = thread:r_u16()
 		artefact_ways_by_id[art_id] = thread:r_stringZ()
 		parent_zones_by_artefact_id[art_id] = self
 	end
@@ -152,10 +142,6 @@ function anomaly_zone_binder:load(thread)
 	self.spawned_count = thread:r_u8()
 
 	self.idle_time_start = utils.r_CTime(thread)
---[[
-	local time_diff = thread:r_u32()
 
-	self.idle_time_end = time_global() + time_diff
-]]
 	set_save_marker(thread, "load", true, "anomaly_zone_binder")
 end
