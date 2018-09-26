@@ -20,7 +20,7 @@ function get_infos_from_data(npc, s)
 	local t = {}
 	if s then
 		for name in string.gfind(s, "(%|*[^%|]+%|*)%p*") do
-			local condlist = xr_logic.parse_condlist(npc, "in", name, name)
+			local condlist = xr_logic.parse_condlist(nil, nil, nil, name)
 			if condlist then
 				table.insert(t, xr_logic.pick_section_from_condlist(db.actor, npc, condlist))
 			end
@@ -87,7 +87,7 @@ function reset_show_spot(npc, scheme, st, section)
 	local act = db.actor
 
 	if map_spot ~= nil then
-		map_spot = xr_logic.parse_condlist(npc, section, "level_spot", map_spot)
+		map_spot = xr_logic.parse_condlist(nil, nil, nil, map_spot)
 		map_spot = xr_logic.pick_section_from_condlist(act, npc, map_spot)
 	end
 
@@ -95,7 +95,7 @@ function reset_show_spot(npc, scheme, st, section)
 		spot_section = "true"
 	end
 
-	local spot_condlist = xr_logic.parse_condlist(npc, section, "show_spot", spot_section)
+	local spot_condlist = xr_logic.parse_condlist(nil, nil, nil, spot_section)
 	local spot = xr_logic.pick_section_from_condlist(act, npc, spot_condlist)
 
 	local npc_id = npc:id()
@@ -172,7 +172,7 @@ function remove_level_spot(npc, st)
 	end
 
 	if map_spot ~= nil then
-		map_spot = xr_logic.parse_condlist(npc, st.active_section, "level_spot", map_spot)
+		map_spot = xr_logic.parse_condlist(nil, nil, nil, map_spot)
 		map_spot = xr_logic.pick_section_from_condlist(db.actor, npc, map_spot)
 	end
 

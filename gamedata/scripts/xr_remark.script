@@ -240,7 +240,7 @@ function set_scheme(npc, ini, scheme, section) --, gulag_name)
 	st.logic			= xr_logic.cfg_get_switch_conditions(ini, section, npc)
 	st.snd_anim_sync	= utils.cfg_get_bool(ini, section, "snd_anim_sync", npc, false)
 	st.snd				= utils.cfg_get_string(ini, section, "snd", npc, false, "", nil)
-	st.anim				= xr_logic.parse_condlist(npc, "anim", "anim", utils.cfg_get_string(ini, section, "anim", npc, false, "", "wait"))
+	st.anim				= xr_logic.parse_condlist(nil, nil, nil, utils.cfg_get_string(ini, section, "anim", npc, false, "", "wait"))
 	st.tips_id			= utils.cfg_get_string(ini, section, "tips", npc, false, "")
 
 	if st.tips_id then

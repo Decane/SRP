@@ -33,11 +33,10 @@ function CTreasure:__init(ini, section)
 	self.description        = get_string(ini, section, "description", nil, true, "")
 	self.items              = parse_spawns(get_string(ini, section, "items", nil, true, ""))
 
-	local act               = db.actor
 	self.rank               = get_string(ini, section, "rank", nil, false, "", "novice")
 	self.treasure_cost      = get_number(ini, section, "treasure_cost", nil, false, 0)
 	self.say_item_name      = get_bool(ini, section, "say_item_name", nil, false, true)
-	self.on_empty           = xr_logic.parse_condlist(act, section, "on_empty", get_string(ini, section, "on_empty", nil, false, "", "false"))
+	self.on_empty           = xr_logic.parse_condlist(nil, nil, nil, get_string(ini, section, "on_empty", nil, false, "", "false"))
 	local t                 = {}
 	self.community          = t
 	local community         = parse_names(get_string(ini, section, "community", nil, false, "", "stalker, bandit, dolg, freedom, csky, renegade"))
@@ -55,7 +54,7 @@ function CTreasure:__init(ini, section)
 
 	tbt[#tbt + 1] = self
 
-	self.condlist           = xr_logic.parse_condlist(act, section, "condlist", get_string(ini, section, "condlist", nil, false, "", "false"))
+	self.condlist           = xr_logic.parse_condlist(nil, nil, nil, get_string(ini, section, "condlist", nil, false, "", "false"))
 	self.flag               = 0
 end
 

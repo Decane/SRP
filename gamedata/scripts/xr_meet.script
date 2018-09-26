@@ -466,7 +466,47 @@ function reset_meet(npc, scheme, st, section)
 		init_meet(npc, st.ini, meet_section, st.meet, scheme)
 	end
 end
--- Функция чтения настроек. В нее передается секция, откуда их нужно читать.
+local function parse_zone_data(s)
+--	printf("parse_zone_data [%s]", utils.to_str(s))
+	local t = {}
+
+    if s then
+		for name in string.gfind( s, "(%|*[^%|]+%|[^%|]+)%p*" ) do
+--			printf("[%s]", utils.to_str(name))
+			local dat = {	zone = nil,
+							state = nil,
+							sound = nil}
+
+			local t_pos = string.find( name, "|", 1, true )
+			local s_pos = string.find( name, "@", 1, true )
+
+			local zone = string.sub( name, 1, t_pos - 1 )
+			local state
+			local sound
+
+			if s_pos then
+				state	= string.sub( name, t_pos + 1,
+											s_pos - 1 )
+				sound	= string.sub( name, s_pos + 1)
+			else
+				state	= string.sub( name, t_pos + 1)
+			end
+
+--			printf("	[%s]=[%s][%s]", utils.to_str(zone), utils.to_str(state), utils.to_str(sound))
+
+			dat.zone = zone
+			if state then
+				dat.state = xr_logic.parse_condlist(nil, nil, nil, state)
+			end
+			if sound then
+				dat.sound = xr_logic.parse_condlist(nil, nil, nil, sound)
+			end
+			table.insert(t, dat)
+		end
+	end
+
+    return t
+end
 function init_meet(npc, ini, section, st, scheme)
 	--printf("MEET SECTION [%s][%s]", tostring(section), tostring(scheme))
 
@@ -549,10 +589,10 @@ function init_meet(npc, ini, section, st, scheme)
 		st.sound_start		= def.sound_start
 		st.sound_start_wpn  = def.sound_start_wpn
 		st.sound_stop		= def.sound_stop
-		st.use				= xr_logic.parse_condlist(npc, section, "use", def.use)
-		st.use_wpn			= xr_logic.parse_condlist(npc, section, "use_wpn", def.use_wpn)
-		st.meet_dialog		= xr_logic.parse_condlist(npc, section, "meet_dialog", "")
-		st.zone				= parse_zone_data(npc, "")
+		st.use				= xr_logic.parse_condlist(nil, nil, nil, def.use)
+		st.use_wpn			= xr_logic.parse_condlist(nil, nil, nil, def.use_wpn)
+		st.meet_dialog		= xr_logic.parse_condlist(nil, nil, nil, "")
+		st.zone				= parse_zone_data("")
 		st.precond			= def.precond
 		st.abuse			= def.abuse
 		st.trade_enable		= utils.cfg_get_bool(ini, section, "trade_enable", npc, false, true)
@@ -566,10 +606,10 @@ function init_meet(npc, ini, section, st, scheme)
 		st.sound_start		= "nil"
 		st.sound_start_wpn  = "nil"
 		st.sound_stop		= "nil"
-		st.use				= xr_logic.parse_condlist(npc, section, "use", "false")
-		st.use_wpn			= xr_logic.parse_condlist(npc, section, "use_wpn", "false")
-		st.meet_dialog		= xr_logic.parse_condlist(npc, section, "meet_dialog", "")
-		st.zone				= parse_zone_data(npc, "")
+		st.use				= xr_logic.parse_condlist(nil, nil, nil, "false")
+		st.use_wpn			= xr_logic.parse_condlist(nil, nil, nil, "false")
+		st.meet_dialog		= xr_logic.parse_condlist(nil, nil, nil, "")
+		st.zone				= parse_zone_data("")
 		st.precond			= "usability"
 		st.abuse			= "false"
 		st.trade_enable		= utils.cfg_get_bool(ini, section, "trade_enable", npc, false, false)
@@ -583,10 +623,10 @@ function init_meet(npc, ini, section, st, scheme)
 		st.sound_start		= utils.cfg_get_string(ini, section, "sound_start", npc, false, "", def.sound_start)
 		st.sound_start_wpn	= utils.cfg_get_string(ini, section, "sound_start_wpn", npc, false, "", def.sound_start_wpn)
 		st.sound_stop		= utils.cfg_get_string(ini, section, "sound_stop", npc, false, "", def.sound_stop)
-		st.use				= xr_logic.parse_condlist(npc, section, "use", utils.cfg_get_string(ini, section, "use", npc, false, "", def.use))
-		st.use_wpn			= xr_logic.parse_condlist(npc, section, "use_wpn", utils.cfg_get_string(ini, section, "use_wpn", npc, false, "", def.use_wpn))
-		st.meet_dialog		= xr_logic.parse_condlist(npc, section, "meet_dialog", utils.cfg_get_string(ini, section, "meet_dialog", npc, false, "", ""))
-		st.zone				= parse_zone_data(npc, utils.cfg_get_string(ini, section, "zone", npc, false, ""))
+		st.use				= xr_logic.parse_condlist(nil, nil, nil, utils.cfg_get_string(ini, section, "use", npc, false, "", def.use))
+		st.use_wpn			= xr_logic.parse_condlist(nil, nil, nil, utils.cfg_get_string(ini, section, "use_wpn", npc, false, "", def.use_wpn))
+		st.meet_dialog		= xr_logic.parse_condlist(nil, nil, nil, utils.cfg_get_string(ini, section, "meet_dialog", npc, false, "", ""))
+		st.zone				= parse_zone_data(utils.cfg_get_string(ini, section, "zone", npc, false, ""))
 		st.precond			= utils.cfg_get_string(ini, section, "precond", npc, false, "", def.precond)
 		st.abuse			= utils.cfg_get_string(ini, section, "abuse", npc, false, "", def.abuse)
 		st.meet_only_at_path = utils.cfg_get_bool(ini, section, "meet_only_at_path", npc, false, false)
@@ -642,57 +682,17 @@ function parse_data(npc,s)
 
 			dat.dist = tonumber(dist)
 			if state then
-				dat.state = xr_logic.parse_condlist(npc, dist, state, state)
+				dat.state = xr_logic.parse_condlist(nil, nil, nil, state)
 			end
 			if sound then
-				dat.sound = xr_logic.parse_condlist(npc, dist, sound, sound)
+				dat.sound = xr_logic.parse_condlist(nil, nil, nil, sound)
 			end
 			table.insert(t, dat)
 		end
 	end
     return t
 end
-function parse_zone_data(npc,s)
---	printf("parse_zone_data [%s]", utils.to_str(s))
-	local t = {}
 
-    if s then
-		for name in string.gfind( s, "(%|*[^%|]+%|[^%|]+)%p*" ) do
---			printf("[%s]", utils.to_str(name))
-			local dat = {	zone = nil,
-							state = nil,
-							sound = nil}
-
-			local t_pos = string.find( name, "|", 1, true )
-			local s_pos = string.find( name, "@", 1, true )
-
-			local zone = string.sub( name, 1, t_pos - 1 )
-			local state
-			local sound
-
-			if s_pos then
-				state	= string.sub( name, t_pos + 1,
-											s_pos - 1 )
-				sound	= string.sub( name, s_pos + 1)
-			else
-				state	= string.sub( name, t_pos + 1)
-			end
-
---			printf("	[%s]=[%s][%s]", utils.to_str(zone), utils.to_str(state), utils.to_str(sound))
-
-			dat.zone = zone
-			if state then
-				dat.state = xr_logic.parse_condlist(npc, zone, state, state)
-			end
-			if sound then
-				dat.sound = xr_logic.parse_condlist(npc, zone, sound, sound)
-			end
-			table.insert(t, dat)
-		end
-	end
-
-    return t
-end
 function parse_syn_data(npc,s)
 --	printf("parse_syn_data [%s]", utils.to_str(s))
 	local t = {}

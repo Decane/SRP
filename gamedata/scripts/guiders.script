@@ -123,7 +123,7 @@ function action_fill_temp_teleport_points(fs, npc, dn, pi)
 
 	for k, v in pairs (guiders_table.teleport_points) do
 		local smart = smarts[k]
-		local condlist = xr_logic.parse_condlist(nil, "guiders", "condlist", v.condlist)
+		local condlist = xr_logic.parse_condlist(nil, nil, nil, v.condlist)
 		local cond = xr_logic.pick_section_from_condlist(act, act, condlist)
 		if smart and cond == "true" then
 --			local npc_smart_id = alife():object(npc_id).m_smart_terrain_id

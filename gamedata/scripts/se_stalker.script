@@ -1,5 +1,7 @@
 -- DC170520: Optimization.
 
+local cse_alife_human_stalker_update = cse_alife_human_stalker.update
+
 class "se_stalker" (cse_alife_human_stalker)
 
 --------------------
@@ -181,7 +183,7 @@ function se_stalker:on_before_register()
 	local ini = self:spawn_ini()
 	self.ini = ini
 	if ini:section_exist("spawner") then
-		self.spawner = xr_logic.parse_condlist(db.actor, "spawner", "cond", ini:r_string("spawner", "cond"))
+		self.spawner = xr_logic.parse_condlist(nil, nil, nil, ini:r_string("spawner", "cond"))
 	end
 end
 
@@ -272,7 +274,7 @@ function se_stalker:fill_exclusives()
 end
 ]]
 function se_stalker:update()
-	cse_alife_human_stalker.update(self)
+	cse_alife_human_stalker_update(self)
 	if self.squad_id ~= nil then
 		local squad = self.board.squads[self.squad_id]
 		if squad ~= nil and squad.commander_id == self.id then

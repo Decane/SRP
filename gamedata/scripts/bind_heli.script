@@ -1,3 +1,5 @@
+local object_binder_update = object_binder.update
+
 function bind(obj)
 	local ini = obj:spawn_ini()
 	if ini and ini:section_exist("logic") then
@@ -10,10 +12,10 @@ end
 class "heli_binder" (object_binder)
 
 function heli_binder:__init(obj, ini) super(obj)
-	self.ini		= ini
-	self.initialized	= false
-	self.loaded		= false
-	self.heli_fire		= heli_fire.get_heli_firer(obj)
+	self.ini = ini
+	self.initialized = false
+	self.loaded = false
+	self.heli_fire = heli_fire.get_heli_firer(obj)
 end
 
 function heli_binder:reload(section)
@@ -50,17 +52,17 @@ function heli_binder:reinit()
 
 	local object_ini = sobj:spawn_ini()
 
-	self.snd_hit		= utils.cfg_get_string(object_ini, "helicopter", "snd_hit", sobj, false, "", "heli_hit")
-	self.snd_damage		= utils.cfg_get_string(object_ini, "helicopter", "snd_damage", sobj, false, "", "heli_damaged")
-	self.snd_down		= utils.cfg_get_string(object_ini, "helicopter", "snd_down", sobj, false, "", "heli_down")
+	self.snd_hit = utils.cfg_get_string(object_ini, "helicopter", "snd_hit", sobj, false, "", "heli_hit")
+	self.snd_damage = utils.cfg_get_string(object_ini, "helicopter", "snd_damage", sobj, false, "", "heli_damaged")
+	self.snd_down = utils.cfg_get_string(object_ini, "helicopter", "snd_down", sobj, false, "", "heli_down")
 
-	self_st.last_alt	= self.heliObject:GetRealAltitude()
-	self_st.alt_check_time	= time_global() + 1000
+	self_st.last_alt = self.heliObject:GetRealAltitude()
+	self_st.alt_check_time = time_global() + 1000
 end
 
 function heli_binder:update(delta)
 
-	object_binder.update(self, delta)
+	object_binder_update(self, delta)
 
 	local sobj = self.object
 	local self_st = self.st

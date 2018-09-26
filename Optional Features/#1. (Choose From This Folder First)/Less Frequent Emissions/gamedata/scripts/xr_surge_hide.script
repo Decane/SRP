@@ -454,7 +454,7 @@ function surge_can_be_started(level)
 	if level_surge_data ~= nil then
 		local actor = db.actor
 		if actor then
-			local condlist = xr_logic.parse_condlist(nil, "xr_surge_hide", "condlist", level_surge_data.condlist)
+			local condlist = xr_logic.parse_condlist(nil, nil, nil, level_surge_data.condlist)
 			local cond = xr_logic.pick_section_from_condlist(actor, actor, condlist)
 			if cond == "true" and not surge_activated then
 				local random_percentage = math.random(100)

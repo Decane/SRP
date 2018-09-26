@@ -10,11 +10,11 @@ function se_zone_anom:on_register()
 	cse_anomalous_zone.on_register(self)
 --	self.m_registred = true
 end
-
+--[[
 function se_zone_anom:update()
 	cse_anomalous_zone.update(self)
 end
-
+]]
 function se_zone_anom:STATE_Write(packet)
 	cse_anomalous_zone.STATE_Write(self, packet)
 end
@@ -33,11 +33,11 @@ end
 function se_zone_visual:on_register()
 	cse_zone_visual.on_register(self)
 end
-
+--[[
 function se_zone_visual:update()
 	cse_zone_visual.update(self)
 end
-
+]]
 function se_zone_visual:STATE_Write(packet)
 	cse_zone_visual.STATE_Write(self, packet)
 end

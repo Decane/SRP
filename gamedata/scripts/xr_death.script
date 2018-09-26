@@ -43,16 +43,16 @@ function set_death(npc, ini, scheme, section)
 	local st = xr_logic.assign_storage_and_bind(npc, ini, scheme, section)
 end
 
-function reset_death(npc, scheme, st) --, section)
+function reset_death(npc, st) -- (npc, scheme, st, section)
 	local death_section = utils.cfg_get_string(st.ini, st.section_logic, "on_death", npc, false, "")
 	if death_section then
 		local tmp = utils.cfg_get_string(st.ini, death_section, "on_info", npc, false, "")
 		if tmp then
-			st.death.info = xr_logic.parse_condlist(npc, death_section, "death", tmp)
+			st.death.info = xr_logic.parse_condlist(nil, nil, nil, tmp)
 		end
 		tmp = utils.cfg_get_string(st.ini, death_section, "on_info2", npc, false, "")
 		if tmp then
-			st.death.info2 = xr_logic.parse_condlist(npc, death_section, "death", tmp)
+			st.death.info2 = xr_logic.parse_condlist(nil, nil, nil, tmp)
 		end
 	end
 end

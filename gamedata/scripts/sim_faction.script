@@ -1,12 +1,14 @@
-class "se_sim_faction"	(cse_alife_smart_zone)
-
 local table_sort = table.sort
 local table_remove = table.remove
 local math_random = math.random
 
+local cse_alife_smart_zone_update = cse_alife_smart_zone.update
+
 local _sort_by_squad_dist_asc = function(a, b) return a.squads[1].dist < b.squads[1].dist end
 local _sort_by_dist_asc = function(a, b) return a.dist < b.dist end
 local _sort_by_target_dist_asc = function(a, b) return a.dist_to_target < b.dist_to_target end
+
+class "se_sim_faction" (cse_alife_smart_zone)
 
 function se_sim_faction:__init (section) super (section)
 --	self.sid = math_random(100000)
@@ -77,7 +79,7 @@ function se_sim_faction:read_params()
 
 		t.id				= i
 		t.section			= section
-		t.base_squad_number		= xr_logic.parse_condlist(self, "sim_faction", "base_squad_number", get_string(setting_ini, section, "base_squad_number", self, true, ""))
+		t.base_squad_number		= xr_logic.parse_condlist(nil, nil, nil, get_string(setting_ini, section, "base_squad_number", self, true, ""))
 
 		t.respawn_idle_time		= utils.cfg_get_number(setting_ini, section, "respawn_idle_time", self, false, 30) * 60
 		local t_respawn_hours		= {}
@@ -102,7 +104,7 @@ function se_sim_faction:read_params()
 --		t.precondition_target_order	= get_string(setting_ini, section, "precondition_target_order", self, false, "", "free")
 		t.precondition_actor_in_faction	= utils.cfg_get_bool(setting_ini, section, "precondition_actor_in_faction", self, false, false)
 
-		t.precondition_cond		= xr_logic.parse_condlist(self, "sim_faction", "precondition_cond", get_string(setting_ini, section, "precondition_cond", self, false, "", "true"))
+		t.precondition_cond		= xr_logic.parse_condlist(nil, nil, nil, get_string(setting_ini, section, "precondition_cond", self, false, "", "true"))
 
 		t.level_up_snd			= get_string(setting_ini, section, "level_up_snd", self, false, "")
 		t.level_down_snd		= get_string(setting_ini, section, "level_down_snd", self, false, "")
@@ -122,7 +124,7 @@ function se_sim_faction:read_params()
 		T = self.secondary_targets
 		for i = 0, n - 1 do
 			result, id, value = setting_ini:r_line("secondary_targets", i, "", "")
-			T[id] = xr_logic.parse_condlist(self, "sim_faction", "secondary_targets", value)
+			T[id] = xr_logic.parse_condlist(nil, nil, nil, value)
 		end
 	end
 end
@@ -222,7 +224,7 @@ end
 
 function se_sim_faction:update()
 
-	cse_alife_smart_zone.update(self)
+	cse_alife_smart_zone_update(self)
 
 	self:calculate_absolute_power()
 

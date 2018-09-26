@@ -38,14 +38,14 @@ function trade_init(npc, ini_path)
 --	tt.cfg_ltx = ini_path
 
 	local condlist = ini:r_string(trader_sect, "buy_condition")
-	tt.buy_condition = xr_logic.parse_condlist(npc, "trade_manager", "buy_condition", condlist)
+	tt.buy_condition = xr_logic.parse_condlist(nil, nil, nil, condlist)
 
 	condlist = ini:r_string(trader_sect, "sell_condition")
-	tt.sell_condition = xr_logic.parse_condlist(npc, "trade_manager", "sell_condition", condlist)
+	tt.sell_condition = xr_logic.parse_condlist(nil, nil, nil, condlist)
 
 	condlist = ini:line_exist(trader_sect, "buy_supplies") and ini:r_string(trader_sect, "buy_supplies")
 	if condlist then
-		tt.buy_supplies = xr_logic.parse_condlist(npc, "trade_manager", "buy_supplies", condlist)
+		tt.buy_supplies = xr_logic.parse_condlist(nil, nil, nil, condlist)
 	end
 end
 

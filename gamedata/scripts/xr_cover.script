@@ -181,7 +181,7 @@ function set_scheme(npc, ini, scheme, section) --, gulag_name)
 	st.logic                = xr_logic.cfg_get_switch_conditions(ini, section, npc)
 --	st.path                 = get_string(ini, section, "path_walk", npc, false, gulag_name)
 	st.smart                = get_string(ini, section, "smart", npc, false, "")
-	st.anim                 = xr_logic.parse_condlist(npc, "anim", "anim", get_string(ini, section, "anim", npc, false, "", "hide"))
+	st.anim                 = xr_logic.parse_condlist(nil, nil, nil, get_string(ini, section, "anim", npc, false, "", "hide"))
 	st.sound_idle           = get_string(ini, section, "sound_idle", npc, false, "")
 
 	if st.smart == nil then

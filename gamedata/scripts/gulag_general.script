@@ -77,7 +77,7 @@ local function add_exclusive_job(job_name, job_table, job_script)
 		_prior = new_prior,
 		_precondition_is_monster = is_monster,
 		job_id = {section = work_section, ini_path = ini_path, ini_file = job_ini, online = job_online},
-		_precondition_params = {condlist = xr_logic.parse_condlist(smart, work_section, "suitable", job_suitable)},
+		_precondition_params = {condlist = xr_logic.parse_condlist(nil, nil, nil, job_suitable)},
 		_precondition_function = _precond_func_exclusive
 	}
 

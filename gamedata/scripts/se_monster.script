@@ -1,5 +1,7 @@
 -- DC170520: Optimization.
 
+local cse_alife_monster_base_update = cse_alife_monster_base.update
+
 class "se_monster" (cse_alife_monster_base)
 
 --------------------
@@ -230,7 +232,7 @@ function se_monster:fill_exclusives()
 end
 ]]
 function se_monster:update()
-	cse_alife_monster_base.update(self)
+	cse_alife_monster_base_update(self)
 	if self.squad_id ~= nil then
 		local squad = self.board.squads[self.squad_id]
 		if squad ~= nil and squad.commander_id == self.id then

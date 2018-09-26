@@ -665,8 +665,8 @@ function CRandomTask:immediate_give_reward(first_speaker, second_speaker, id)
 
 		local npc = dialogs.who_is_npc(first_speaker, second_speaker)
 		local act = db.actor
-		local reward_money = xr_logic.parse_condlist(nil, "task_manager", "condlist", utils.cfg_get_string(task_ini, id, "reward_money", nil, false, "", ""))
-		local reward_item = xr_logic.parse_condlist(nil, "task_manager", "condlist", utils.cfg_get_string(task_ini, id, "reward_item", nil, false, "", ""))
+		local reward_money = xr_logic.parse_condlist(nil, nil, nil, utils.cfg_get_string(task_ini, id, "reward_money", nil, false, "", ""))
+		local reward_item = xr_logic.parse_condlist(nil, nil, nil, utils.cfg_get_string(task_ini, id, "reward_item", nil, false, "", ""))
 		local money = xr_logic.pick_section_from_condlist(act, act, reward_money)
 
 		if money ~= nil then

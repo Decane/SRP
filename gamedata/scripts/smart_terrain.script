@@ -4,6 +4,8 @@ local DEATH_IDLE_TIME = 10*60
 
 -- local smart_terrains_by_name = {}
 
+local cse_alife_smart_zone_update = cse_alife_smart_zone.update
+
 local path_fields = {"path_walk", "path_main", "path_home", "center_point"}
 local valid_territory = {default = true, base = true, resource = true, territory = true}
 
@@ -186,7 +188,7 @@ function se_smart_terrain:read_params()
 		if respawn_sector == "default" then
 			respawn_sector = "all"
 		end
-		respawn_sector = xr_logic.parse_condlist(nil, sect, "respawn_sector", respawn_sector)
+		respawn_sector = xr_logic.parse_condlist(nil, nil, nil, respawn_sector)
 	end
 
 	self.respawn_sector	= respawn_sector
@@ -201,7 +203,7 @@ function se_smart_terrain:read_params()
 	local sim_avail		= get_string(ini, sect, "sim_avail", self, false, "")
 
 	if sim_avail ~= nil then
-		sim_avail	= xr_logic.parse_condlist(nil, sect, "sim_avail", sim_avail)
+		sim_avail	= xr_logic.parse_condlist(nil, nil, nil, sim_avail)
 	end
 
 	self.sim_avail		= sim_avail
@@ -858,7 +860,7 @@ end
 ]]
 function se_smart_terrain:update()
 
-	cse_alife_smart_zone.update(self)
+	cse_alife_smart_zone_update(self)
 
 	self.combat_manager:update()
 
@@ -923,7 +925,7 @@ function read_smart_terrain_conditions(self)
 			local result, field, str
 			for i = 0, n - 1 do
 				result, field, str = ini:r_line("smart_terrains", i, "", "")
-				conds[field] = xr_logic.parse_condlist(self, "smart_terrains", field, str)
+				conds[field] = xr_logic.parse_condlist(nil, nil, nil, str)
 			end
 			return conds
 		end

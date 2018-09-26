@@ -132,18 +132,18 @@ function CGeneralTask:__init(task_ini, id, type)
 	self.condlist = T
 
 	while task_ini:line_exist(id, section) do
-		T[i] = parse_condlist(nil, "task_manager", "condlist", task_ini:r_string(id, section))
+		T[i] = parse_condlist(nil, nil, nil, task_ini:r_string(id, section))
 		i = i + 1
 		section = "condlist_"..i
 	end
 
-	self.on_init                           = parse_condlist(nil, "task_manager", "condlist", get_string(task_ini, id, "on_init", nil, false, "", ""))
-	self.on_complete                       = parse_condlist(nil, "task_manager", "condlist", get_string(task_ini, id, "on_complete", nil, false, "", ""))
-	self.on_reversed                       = parse_condlist(nil, "task_manager", "condlist", get_string(task_ini, id, "on_reversed", nil, false, "", ""))
-	self.on_fail                           = parse_condlist(nil, "task_manager", "condlist", get_string(task_ini, id, "on_fail", nil, false, "", ""))
+	self.on_init                           = parse_condlist(nil, nil, nil, get_string(task_ini, id, "on_init", nil, false, "", ""))
+	self.on_complete                       = parse_condlist(nil, nil, nil, get_string(task_ini, id, "on_complete", nil, false, "", ""))
+	self.on_reversed                       = parse_condlist(nil, nil, nil, get_string(task_ini, id, "on_reversed", nil, false, "", ""))
+	self.on_fail                           = parse_condlist(nil, nil, nil, get_string(task_ini, id, "on_fail", nil, false, "", ""))
 
-	self.reward_money                      = parse_condlist(nil, "task_manager", "condlist", get_string(task_ini, id, "reward_money", nil, false, "", ""))
-	self.reward_item                       = parse_condlist(nil, "task_manager", "condlist", get_string(task_ini, id, "reward_item", nil, false, "", ""))
+	self.reward_money                      = parse_condlist(nil, nil, nil, get_string(task_ini, id, "reward_money", nil, false, "", ""))
+	self.reward_item                       = parse_condlist(nil, nil, nil, get_string(task_ini, id, "reward_item", nil, false, "", ""))
 	self.immediate_reward                  = get_bool(task_ini, id, "immediate_reward", nil, false, false)
 
 	self.community_relation_delta_fail     = get_number(task_ini, id, "community_relation_delta_fail", nil, false, 0)
@@ -549,7 +549,7 @@ class "CEliminateSmartTask" (task_objects.CGeneralTask)
 ------------------------------------------------------------------------------------------------
 
 function CEliminateSmartTask:__init(task_ini, id, type) super (task_ini, id, type) -- called 0th (on load), 3rd (otherwise)
-	self.target_cond = xr_logic.parse_condlist(nil, "task_manager", "target_cond", utils.cfg_get_string(task_ini, id, "target_cond", nil, false, "", "true"))
+	self.target_cond = xr_logic.parse_condlist(nil, nil, nil, utils.cfg_get_string(task_ini, id, "target_cond", nil, false, "", "true"))
 --	self.src_obj = nil
 --	self.faction = nil
 end
@@ -743,7 +743,7 @@ class "CCaptureSmartTask" (task_objects.CGeneralTask)
 ------------------------------------------------------------------------------------------------
 
 function CCaptureSmartTask:__init(task_ini, id, type) super (task_ini, id, type) -- called 0th (on load), 3rd (otherwise)
-	self.target_cond = xr_logic.parse_condlist(nil, "task_manager", "target_cond", utils.cfg_get_string(task_ini, id, "target_cond", nil, false, "", "true"))
+	self.target_cond = xr_logic.parse_condlist(nil, nil, nil, utils.cfg_get_string(task_ini, id, "target_cond", nil, false, "", "true"))
 	self.counter_attack = utils.cfg_get_bool(task_ini, id, "counter_attack", nil, false, true)
 	self.src_obj = nil
 --	self.faction = nil
@@ -1194,7 +1194,7 @@ class "CDefendSmartTask" (task_objects.CGeneralTask) -- 'Help' task
 ------------------------------------------------------------------------------------------------
 
 function CDefendSmartTask:__init(task_ini, id, type) super (task_ini, id, type) -- called 0th (on load), 3rd (otherwise)
-	self.target_cond = xr_logic.parse_condlist(nil, "task_manager", "target_cond", utils.cfg_get_string(task_ini, id, "target_cond", nil, false, "", "true"))
+	self.target_cond = xr_logic.parse_condlist(nil, nil, nil, utils.cfg_get_string(task_ini, id, "target_cond", nil, false, "", "true"))
 	local time = utils.cfg_get_number(task_ini, id, "wait_time", nil, false, 15)
 	self.wait_time = (time ~= -1) and (60 * time) or nil
 --[[
@@ -1386,7 +1386,7 @@ class "CDefendSmartTaskDelay" (task_objects.CGeneralTask) -- 'Defend the camp' t
 ------------------------------------------------------------------------------------------------
 
 function CDefendSmartTaskDelay:__init(task_ini, id, type) super (task_ini, id, type) -- called 0th (on load), 3rd (otherwise)
-	self.target_cond = xr_logic.parse_condlist(nil, "task_manager", "target_cond", utils.cfg_get_string(task_ini, id, "target_cond", nil, false, "", "true"))
+	self.target_cond = xr_logic.parse_condlist(nil, nil, nil, utils.cfg_get_string(task_ini, id, "target_cond", nil, false, "", "true"))
 	local time = utils.cfg_get_number(task_ini, id, "wait_time", nil, false, 15)
 	self.wait_time = (time ~= -1) and (60 * time) or nil
 --[[
@@ -1853,7 +1853,7 @@ class "CBringItemTask" (task_objects.CGeneralTask)
 ------------------------------------------------------------------------------------------------
 
 function CBringItemTask:__init(task_ini, id, type) super (task_ini, id, type) -- called 0th (on load), 3rd (otherwise)
-	self.target_cond = xr_logic.parse_condlist(nil, "task_manager", "target_cond", utils.cfg_get_string(task_ini, id, "target_cond", nil, false, "", "true"))
+	self.target_cond = xr_logic.parse_condlist(nil, nil, nil, utils.cfg_get_string(task_ini, id, "target_cond", nil, false, "", "true"))
 	local sss = utils.cfg_get_string(task_ini, id, "requested_items", nil, false, "")
 	if sss ~= nil then
 		local items_array = {}
@@ -2348,7 +2348,7 @@ class "CRecoverItemTask" (task_objects.CGeneralTask)
 ------------------------------------------------------------------------------------------------
 
 function CRecoverItemTask:__init(task_ini, id, type) super (task_ini, id, type) -- called 0th (on load), 3rd (otherwise)
-	self.target_cond = xr_logic.parse_condlist(nil, "task_manager", "target_cond", utils.cfg_get_string(task_ini, id, "target_cond", nil, false, "", "false"))
+	self.target_cond = xr_logic.parse_condlist(nil, nil, nil, utils.cfg_get_string(task_ini, id, "target_cond", nil, false, "", "false"))
 	local target_npc_or_box_name = utils.cfg_get_string(task_ini, id, "target_npc_or_box_name", nil, true, "")
 	self.target_npc_or_box_table = utils.parse_names(target_npc_or_box_name)
 	self.requested_item = task_ini:r_string(id, "requested_items")
@@ -2631,7 +2631,7 @@ class "CHideFromSurgeTask" (task_objects.CGeneralTask)
 ------------------------------------------------------------------------------------------------
 
 function CHideFromSurgeTask:__init(task_ini, id, type) super (task_ini, id, type)
-	self.target_cond = xr_logic.parse_condlist(nil, "task_manager", "target_cond", utils.cfg_get_string(task_ini, id, "target_cond", nil, false, "", "true"))
+	self.target_cond = xr_logic.parse_condlist(nil, nil, nil, utils.cfg_get_string(task_ini, id, "target_cond", nil, false, "", "true"))
 end
 
 function CHideFromSurgeTask:check_target()
@@ -2969,7 +2969,7 @@ class "CEliminateSquadTask" (task_objects.CGeneralTask)
 ------------------------------------------------------------------------------------------------
 
 function CEliminateSquadTask:__init(task_ini, id, type) super (task_ini, id, type)
-	self.target_cond = xr_logic.parse_condlist(nil, "task_manager", "target_cond", utils.cfg_get_string(task_ini, id, "target_cond", nil, false, "", "true"))
+	self.target_cond = xr_logic.parse_condlist(nil, nil, nil, utils.cfg_get_string(task_ini, id, "target_cond", nil, false, "", "true"))
 	self.src_obj = nil
 end
 
@@ -3058,7 +3058,7 @@ class "CFindUpgradeTask" (task_objects.CGeneralTask)
 ------------------------------------------------------------------------------------------------
 
 function CFindUpgradeTask:__init(task_ini, id, type) super (task_ini, id, type) -- called 0th (on load), 3rd (otherwise)
-	self.target_cond = xr_logic.parse_condlist(nil, "task_manager", "target_cond", utils.cfg_get_string(task_ini, id, "target_cond", nil, false, "", "false"))
+	self.target_cond = xr_logic.parse_condlist(nil, nil, nil, utils.cfg_get_string(task_ini, id, "target_cond", nil, false, "", "false"))
 	self.requested_item = utils.cfg_get_string(task_ini, id, "requested_item", nil, false, "")
 	self.requested_item_inv_name = trans(system_ini():r_string(self.requested_item, "inv_name"))
 	local cost = utils.cfg_get_number(self.task_ini, self.base_id, "cost", nil, true)
