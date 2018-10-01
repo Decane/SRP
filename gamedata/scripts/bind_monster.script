@@ -61,7 +61,7 @@ function generic_object_binder:update(delta)
 
 	local sobj = self.object
 
-	if self.first_update_done == false then
+	if not self.first_update_done then
 		local sobj_id = sobj:id()
 		if bind_stalker.delayed_alife_release_objects[sobj_id] == true then
 			local sim = alife()

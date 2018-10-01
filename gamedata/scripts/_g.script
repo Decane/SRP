@@ -42,6 +42,8 @@ end
 dev_debug = false
 ----------------------------------------------------------------------
 
+local sim = nil
+
 function abort(fmt, ...)
 	local reason = string.format(fmt, ...)
 	error_log(debug.traceback("Abort(): "..reason.."\n"))
@@ -173,15 +175,14 @@ function distance_between_safe(obj1, obj2)
 	return obj1:position():distance_to(obj2:position())
 end
 ]]
-local aa = nil
 function has_alife_info(info_id)
 --[[
-	if aa == nil then
+	if sim == nil then
 		return false
 	end
-	return aa:has_info(0, info_id)
+	return sim:has_info(0, info_id)
 ]]
-	return aa ~= nil and aa:has_info(0, info_id) or false
+	return sim ~= nil and sim:has_info(0, info_id) or false
 end
 --[[
 function reset_action(npc, script_name)
@@ -766,8 +767,8 @@ end
 
 function switch_online(id)
 	if id == -1 then return end
-	local sim = alife()
-	if sim ~= nil then
+--	local sim = alife()
+	if sim then
 		sim:set_switch_online(id, true)
 		sim:set_switch_offline(id, false)
 	end
@@ -777,8 +778,8 @@ end
 
 function switch_offline(npc)
 	if npc == nil or npc:alive() == false then return end
-	local sim = alife()
-	if sim ~= nil then
+--	local sim = alife()
+	if sim then
 		local npc_id = npc:id()
 		sim:set_switch_online(npc_id, false)
 		sim:set_switch_offline(npc_id, true)
@@ -825,7 +826,7 @@ end
 
 function level_object_by_sid(sid)
 
-	local sim = alife()
+--	local sim = alife()
 
 	if sim then
 		local se_obj = sim:story_object(sid)
@@ -839,7 +840,7 @@ end
 
 function id_by_sid(sid)
 
-	local sim = alife()
+--	local sim = alife()
 
 	if sim then
 		local se_obj = sim:story_object(sid)
@@ -937,7 +938,7 @@ end
 ]]
 function start_game_callback()
 
-	aa = alife()
+	sim = alife()
 
 	monster_classes = {
 
@@ -1032,7 +1033,8 @@ function gi(info)
 	db.actor:give_info_portion(info)
 end
 
-ammo_section = {
+ammo_section =
+{
 	["ammo_9x18_fmj"]       = true,
 --	["ammo_9x18_pbp"]       = true,
 	["ammo_9x18_pmm"]       = true,

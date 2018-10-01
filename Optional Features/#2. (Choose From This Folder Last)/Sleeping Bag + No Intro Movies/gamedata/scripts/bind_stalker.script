@@ -10,33 +10,70 @@ task_update = false
 delayed_alife_release_objects = {}
 -- to_delayed_alife_release_objects = {}
 
-local game_difficulty_by_num = {[0] = "gd_novice", [1] = "gd_stalker", [2] = "gd_veteran", [3] = "gd_master"}
-local zones_needing_weapon_hide = 0
+local game_difficulty_by_num =
+{
+	[0] = "gd_novice",
+	[1] = "gd_stalker",
+	[2] = "gd_veteran",
+	[3] = "gd_master"
+}
+
 local clsid_wpn_ammo = clsid.wpn_ammo
 local object_binder_update = object_binder.update
+local tm = nil
+local actor = nil
+local weather_manager = nil
+local last_level_name = nil
+local next_update_time = nil
+local quitting_game = false
+local first_update_done = false
+local weapon_needs_hiding = false
+local weapon_hidden = false
+local zones_needing_weapon_hide = 0
 
 ----------------------------------------------------------------------------------------------------------------------
 class "actor_binder" (object_binder)
 ----------------------------------------------------------------------------------------------------------------------
-function actor_binder:__init (obj) super(obj)
-	self.bCheckStart = false
-	self.weather_manager = level_weathers.get_weather_manager()
-	self.last_level_name = nil
+function actor_binder:__init(obj) super(obj)
+	weather_manager = level_weathers.get_weather_manager()
+end
+----------------------------------------------------------------------------------------------------------------------
+function actor_binder:reinit()
+
+	object_binder.reinit(self)
+
+	local t = {}
+
+	db.storage[0] = t -- actor ID is hard-coded to 0 in-engine
+
+	self.st = t
+--	self.st.pstor = nil
+
+	next_update_time = -10000
+
+	actor = self.object
+
+--	actor:set_callback(callback.inventory_info, self.info_callback, self)
+--	actor:set_callback(callback.article_info, self.article_callback, self)
+	actor:set_callback(callback.on_item_take, self.on_item_take, self)
+	actor:set_callback(callback.on_item_drop, self.on_item_drop, self)
+	actor:set_callback(callback.trade_sell_buy_item, self.on_trade, self)
+	actor:set_callback(callback.task_state, self.task_callback, self)
+--	actor:set_callback(callback.level_border_enter, self.level_border_enter, self)
+--	actor:set_callback(callback.level_border_exit, self.level_border_exit, self)
+	actor:set_callback(callback.take_item_from_box, self.take_item_from_box, self)
+	actor:set_callback(callback.use_object, self.on_use_item, self) -- SRP
 end
 ----------------------------------------------------------------------------------------------------------------------
 function actor_binder:net_spawn(data)
 
 	level.show_indicators()
-	self.bCheckStart = true
-	self.weapon_hidden = false
-	self.weapon_hidden_in_dialog = false
---	weapon_hide = {}
 
 	if object_binder.net_spawn(self, data) == false then
 		return false
 	end
 
-	db.add_actor(self.object)
+	db.add_actor(actor)
 
 	if self.st.disable_input_time == nil then
 		level.enable_input()
@@ -44,13 +81,13 @@ function actor_binder:net_spawn(data)
 
 	xr_s.on_game_load()					--' Distemper 03.2008 --
 
-	self.weather_manager:reset()
+	weather_manager:reset()
 
 	local level_name = level.name()
 
 	death_manager.init_level_drop_settings(level_name) -- SRP
 
-	self.task_manager = task_manager.get_task_manager()
+	tm = task_manager.get_task_manager()
 
 	if level_name ~= "marsh" then
 		sim_board.get_sim_board():start_sim()
@@ -58,6 +95,7 @@ function actor_binder:net_spawn(data)
 
 --	self.spawn_frame = device().frame
 --	self.already_jumped = false
+
 	benchmark.main()					--' Distemper 06.2008 --
 
 	return true
@@ -65,34 +103,31 @@ end
 ----------------------------------------------------------------------------------------------------------------------
 function actor_binder:net_destroy()
 
-	local sobj = self.object
-	local act_id = sobj:id()
+	xr_sound.stop_sounds_by_id(0) -- actor ID is hard-coded to 0 in-engine
 
-	xr_sound.stop_sounds_by_id(act_id)
-
-	local board_factions = sim_board.get_sim_board().players
-	for k, v in pairs (board_factions) do
+	for k, v in pairs (sim_board.get_sim_board().players) do
 		xr_sound.stop_sounds_by_id(v.id)
 	end
 
 --	if actor_stats.remove_from_ranking ~= nil then
---		actor_stats.remove_from_ranking(act_id)
+--		actor_stats.remove_from_ranking(actor:id())
 --	end
 
 	xr_effects.stc_stop_particle_sounds()
+
 	level.show_indicators()
 	level.show_weapon(true)
 
---	sobj:set_callback(callback.inventory_info, nil)
---	sobj:set_callback(callback.article_info, nil)
-	sobj:set_callback(callback.on_item_take, nil)
-	sobj:set_callback(callback.on_item_drop, nil)
-	sobj:set_callback(callback.trade_sell_buy_item, nil) -- SRP
-	sobj:set_callback(callback.task_state, nil)
---	sobj:set_callback(callback.level_border_enter, nil)
---	sobj:set_callback(callback.level_border_exit, nil)
-	sobj:set_callback(callback.take_item_from_box, nil)
---	sobj:set_callback(callback.use_object, nil) -- SRP
+--	actor:set_callback(callback.inventory_info, nil)
+--	actor:set_callback(callback.article_info, nil)
+	actor:set_callback(callback.on_item_take, nil)
+	actor:set_callback(callback.on_item_drop, nil)
+	actor:set_callback(callback.trade_sell_buy_item, nil) -- SRP
+	actor:set_callback(callback.task_state, nil)
+--	actor:set_callback(callback.level_border_enter, nil)
+--	actor:set_callback(callback.level_border_exit, nil)
+	actor:set_callback(callback.take_item_from_box, nil)
+	actor:set_callback(callback.use_object, nil) -- SRP
 
 	db.del_actor()
 
@@ -104,32 +139,6 @@ function actor_binder:net_destroy()
 	xrs_dyn_music.stop_sound()
 	object_binder.net_destroy(self)
 	xr_s.on_actor_destroy()					--' Distemper 03.2008 --
-end
-----------------------------------------------------------------------------------------------------------------------
-function actor_binder:reinit()
-
-	object_binder.reinit(self)
-
-	local sobj = self.object
-	local t = {}
-
-	db.storage[sobj:id()] = t
-
-	self.st = t
-	self.st.pstor = nil
-
-	self.next_restrictors_update_time = -10000
-
---	sobj:set_callback(callback.inventory_info, self.info_callback, self)
---	sobj:set_callback(callback.article_info, self.article_callback, self)
-	sobj:set_callback(callback.on_item_take, self.on_item_take, self)
-	sobj:set_callback(callback.on_item_drop, self.on_item_drop, self)
-	sobj:set_callback(callback.trade_sell_buy_item, self.on_trade, self)
-	sobj:set_callback(callback.task_state, self.task_callback, self)
---	sobj:set_callback(callback.level_border_enter, self.level_border_enter, self)
---	sobj:set_callback(callback.level_border_exit, self.level_border_exit, self)
-	sobj:set_callback(callback.take_item_from_box, self.take_item_from_box, self)
---	sobj:set_callback(callback.use_object, self.on_use_item, self) -- SRP
 end
 ----------------------------------------------------------------------------------------------------------------------
 function actor_binder:take_item_from_box(box, item)
@@ -171,6 +180,7 @@ end
 ]]
 ----------------------------------------------------------------------------------------------------------------------
 function actor_binder:on_item_take(obj)
+	if device().precache_frame > 1 then return end -- per NatVac: don't check existing inventory during synchronizing
 --	level_tasks.proceed(self.object)
 	if isArtefact(obj) then
 		local obj_id = obj:id()
@@ -182,10 +192,10 @@ function actor_binder:on_item_take(obj)
 			bind_anomaly_zone.parent_zones_by_artefact_id[obj_id] = nil -- SRP
 		end
 	end
-	for k, v in pairs (self.task_manager.task_info) do
-		if v.type == "bring_item" then
-			if v.state ~= "finished" then
-				v:on_item_take(obj)
+	for k, task in pairs (tm.task_info) do
+		if task.type == "bring_item" then
+			if task.state ~= "finished" then
+				task:on_item_take(obj)
 			end
 		end
 	end
@@ -195,27 +205,32 @@ function actor_binder:on_item_take(obj)
 end
 ----------------------------------------------------------------------------------------------------------------------
 function actor_binder:on_item_drop(obj)
+	if quitting_game then return end -- per NatVac: keep game from processing dropped items when quitting game
 --	level_tasks.proceed(self.object)
-	for k, v in pairs (self.task_manager.task_info) do
-		if v.type == "bring_item" then
-			if v.state ~= "finished" then
-				v:on_item_drop(obj)
+	for k, task in pairs (tm.task_info) do
+		if task.type == "bring_item" then
+			if task.state ~= "finished" then
+				task:on_item_drop(obj)
 			end
 		end
 	end
+end
+----------------------------------------------------------------------------------------------------------------------
+function actor_binder:on_use_item(obj)
 	if obj:section() == "sleepingbag" then
-		atmmain.on_item_drop(obj)
+		alife():create("sleepingbag", vector(), 0, 0, 0)
+		level.start_stop_menu(atmsleep.UISleep(), true)
 	end
 end
 ----------------------------------------------------------------------------------------------------------------------
 function actor_binder:task_callback(_task, _state)
 	if _state ~= task.fail then
 		if _state == task.completed then
-			news_manager.send_task(db.actor, "complete", _task)
+			news_manager.send_task(actor, "complete", _task)
 		elseif task_update == false then
-			news_manager.send_task(db.actor, "new", _task)
+			news_manager.send_task(actor, "new", _task)
 		else
-			news_manager.send_task(db.actor, "update", _task)
+			news_manager.send_task(actor, "update", _task)
 			local actor_stats = xr_statistic.actor_statistic
 			actor_stats.recieved_quests = actor_stats.recieved_quests - 1 -- hack to undo the counter incrementation on assignment of the updated task
 		end
@@ -231,7 +246,7 @@ end
 ----------------------------------------------------------------------------------------------------------------------
 -- nv111103/nv130223: level-specific autosaves
 -- Decane 18.08.2014: adapted for CS with minor tweaks
---	  21.06.2015: unique autosaves for freeplay
+--        21.06.2015: unique autosaves for freeplay
 function manage_autosaves()
 	local fs = getFS()
 	local fs_path = "$game_saves$"
@@ -269,27 +284,27 @@ end
 function give_level_stash_info()
 	local actor_level = level.name()
 	if actor_level == "marsh" and not has_alife_info("mar_stashes_filled") then
-		db.actor:give_info_portion("mar_stashes_filled")
+		actor:give_info_portion("mar_stashes_filled")
 	elseif actor_level == "escape" and not has_alife_info("esc_stashes_filled") then
-		db.actor:give_info_portion("esc_stashes_filled")
+		actor:give_info_portion("esc_stashes_filled")
 	elseif actor_level == "garbage" and not has_alife_info("gar_stashes_filled") then
-		db.actor:give_info_portion("gar_stashes_filled")
+		actor:give_info_portion("gar_stashes_filled")
 	elseif actor_level == "darkvalley" and not has_alife_info("val_stashes_filled") then
-		db.actor:give_info_portion("val_stashes_filled")
+		actor:give_info_portion("val_stashes_filled")
 	elseif actor_level == "agroprom" and not has_alife_info("agr_stashes_filled") then
-		db.actor:give_info_portion("agr_stashes_filled")
+		actor:give_info_portion("agr_stashes_filled")
 	elseif actor_level == "agroprom_underground" and not has_alife_info("agru_stashes_filled") then
-		db.actor:give_info_portion("agru_stashes_filled")
+		actor:give_info_portion("agru_stashes_filled")
 	elseif actor_level == "yantar" and not has_alife_info("yan_stashes_filled") then
-		db.actor:give_info_portion("yan_stashes_filled")
+		actor:give_info_portion("yan_stashes_filled")
 	elseif actor_level == "red_forest" and not has_alife_info("red_stashes_filled") then
-		db.actor:give_info_portion("red_stashes_filled")
+		actor:give_info_portion("red_stashes_filled")
 	elseif actor_level == "military" and not has_alife_info("mil_stashes_filled") then
-		db.actor:give_info_portion("mil_stashes_filled")
+		actor:give_info_portion("mil_stashes_filled")
 	elseif actor_level == "limansk" and not has_alife_info("lim_stashes_filled") then
-		db.actor:give_info_portion("lim_stashes_filled")
+		actor:give_info_portion("lim_stashes_filled")
 	elseif actor_level == "hospital" and not has_alife_info("kat_stashes_filled") then
-		db.actor:give_info_portion("kat_stashes_filled")
+		actor:give_info_portion("kat_stashes_filled")
 	end
 end
 ----------------------------------------------------------------------------------------------------------------------
@@ -306,58 +321,43 @@ function actor_binder:update(delta)
 			end
 		end
 	end
+
+	game_stats.update(delta, actor)
 ]]
-	atmmain.update()
-
-	local sobj = self.object
-
---	game_stats.update(delta, sobj)
-
-	self.weather_manager:update()
-
-	xr_sound.update(sobj:id())
+	xr_sound.update(0) -- actor ID is hard-coded to 0 in-engine
 --[[
 	if self.st.sleep_relocate_time ~= nil then
 		if game.get_game_time():diffSec(self.st.sleep_relocate_time) >= self.st.sleep_relocate_idle then
-			sobj:set_actor_position(self.st.sleep_relocate_point)
+			actor:set_actor_position(self.st.sleep_relocate_point)
 			local dir = self.st.sleep_relocate_point:sub(self.st.sleep_relocate_look)
-			sobj:set_actor_direction(dir:getH())
+			actor:set_actor_direction(dir:getH())
 			self.st.sleep_relocate_time = nil
 		end
 	end
 ]]
-	if sobj:is_talking() then
-		if self.weapon_hidden_in_dialog == false then
-			sobj:hide_weapon()
-			self.weapon_hidden_in_dialog = true
+	if weapon_needs_hiding or actor:is_talking() then
+		if not weapon_hidden then
+			actor:hide_weapon()
+			weapon_hidden = true
 		end
 	else
-		if self.weapon_hidden_in_dialog == true then
-			sobj:restore_weapon()
-			self.weapon_hidden_in_dialog = false
+		if weapon_hidden then
+			actor:restore_weapon()
+			weapon_hidden = false
 		end
-		dunin_ammo.on_update(sobj)
 	end
 
---	if check_for_weapon_hide_by_zones() == true then
-	if zones_needing_weapon_hide > 0 then
-		if self.weapon_hidden == false then
-			sobj:hide_weapon()
-			self.weapon_hidden = true
-		end
-	else
-		if self.weapon_hidden == true then
-			sobj:restore_weapon()
-			self.weapon_hidden = false
-		end
-	end
+	dunin_ammo.on_update()
 
 	local time = time_global()
 
-	if self.next_restrictors_update_time < time then
+	if next_update_time < time then
 
-		self.next_restrictors_update_time = time + 200
-		self.task_manager:update()
+		next_update_time = time + 200
+
+		weather_manager:update() -- moved from above, no need to run this every update
+
+--		tm:update()
 
 		if self.st.disable_input_time ~= nil then -- moved this block here - no need to run it every update
 			if game.get_game_time():diffSec(self.st.disable_input_time) >= self.st.disable_input_idle then
@@ -369,7 +369,7 @@ function actor_binder:update(delta)
 		local hud = get_hud()
 		local custom_static = hud:GetCustomStatic("cs_radiation_danger")
 
-		if sobj.radiation >= 0.7 then
+		if actor.radiation >= 0.7 then
 			if custom_static == nil then
 				custom_static = hud:AddCustomStatic("cs_radiation_danger", true)
 				custom_static:wnd():SetTextST("st_radiation_danger")
@@ -418,13 +418,14 @@ function actor_binder:update(delta)
 		sr_psy_antenna.psy_antenna:update(delta)
 	end
 
-	if self.bCheckStart then
+	if not first_update_done then
+
 		if not has_alife_info("global_dialogs") then
-			sobj:give_info_portion("global_dialogs")
+			actor:give_info_portion("global_dialogs")
 		end
 --[[
 		if not has_alife_info("level_changer_icons") then
-			sobj:give_info_portion("level_changer_icons")
+			actor:give_info_portion("level_changer_icons")
 		end
 ]]
 		if treasure_manager.enable_stash_filler == true then
@@ -435,12 +436,26 @@ function actor_binder:update(delta)
 
 		level_tasks.add_lchanger_location()
 
-		if self.last_level_name == nil then
-			self.last_level_name = level.name()
+		-- Per NatVac: hack to display the current outfit's HUD arms mesh instead of the default rookie jacket's
+		local actor_outfit = actor:item_in_slot(6)
+		if actor_outfit then
+			actor:transfer_item(actor_outfit, actor)
+		end
+
+		for k, task in pairs (tm.task_info) do
+			if task.type == "bring_item" then
+				if task.state ~= "finished" then
+					task:on_load(actor)
+				end
+			end
+		end
+
+		if last_level_name == nil then
+			last_level_name = level.name()
 		else
 			local level_name = level.name()
-			if level_name ~= self.last_level_name then
-				self.last_level_name = level_name
+			if level_name ~= last_level_name then
+				last_level_name = level_name
 				time = xr_surge_hide.surge_can_be_started(level_name)
 				if time then
 					xr_surge_hide.activate_surge(time)
@@ -448,7 +463,7 @@ function actor_binder:update(delta)
 			end
 		end
 
-		self.bCheckStart = false
+		first_update_done = true
 	end
 --[[
 	local play_combat = xrs_dyn_music.play_combat
@@ -484,9 +499,9 @@ function actor_binder:save(packet)
 		utils.w_CTime(packet, self.st.disable_input_time)
 	end
 
-	xr_logic.pstor_save_all(self.object, packet)
+	xr_logic.pstor_save_all(actor, packet)
 
-	self.weather_manager:save(packet)
+	weather_manager:save(packet)
 
 	release_body_manager.save(packet) --' Distemper 12.02.2008
 
@@ -527,7 +542,7 @@ function actor_binder:save(packet)
 
 	xr_sound.actor_save(packet)
 
-	packet:w_stringZ(tostring(self.last_level_name))
+	packet:w_stringZ(tostring(last_level_name))
 
 	xr_statistic.save(packet)
 
@@ -575,9 +590,9 @@ function actor_binder:load(reader)
 		self.st.disable_input_time = utils.r_CTime(reader)
 	end
 
-	xr_logic.pstor_load_all(self.object, reader)
+	xr_logic.pstor_load_all(actor, reader)
 
-	self.weather_manager:load(reader)
+	weather_manager:load(reader)
 
 	release_body_manager.load(reader) --' Distemper 12.02.2008
 
@@ -600,7 +615,7 @@ function actor_binder:load(reader)
 
 	n = reader:r_stringZ()
 	if n ~= "nil" then
-		self.last_level_name = n
+		last_level_name = n
 	end
 
 	xr_statistic.load(reader)
@@ -622,24 +637,14 @@ function actor_binder:load(reader)
 	set_save_marker(reader, "load", true, "actor_binder")
 end
 ----------------------------------------------------------------------------------------------------------------------
---[[
-function check_for_weapon_hide_by_zones()
-	for k, v in pairs (weapon_hide) do
-		if v == true then
-			return true
-		end
-	end
-	return false
-end
-]]
 function hide_weapon()
---	weapon_hide[zone_id] = true
 	zones_needing_weapon_hide = zones_needing_weapon_hide + 1
+	weapon_needs_hiding = true
 end
 
 function restore_weapon()
---	weapon_hide[zone_id] = false
 	zones_needing_weapon_hide = zones_needing_weapon_hide - 1
+	weapon_needs_hiding = zones_needing_weapon_hide > 0
 end
 
 function add_to_delayed_release(obj_id)
@@ -649,8 +654,3 @@ end
 function del_to_delayed_release(obj_id)
 	delayed_alife_release_objects[obj_id] = nil
 end
---[[
-function actor_binder:on_use_item(obj)
--- Modders, uncomment this function and the two relevant use_object callback entries earlier in the file to enable on-item-use callback support.
-end
-]]

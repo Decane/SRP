@@ -242,7 +242,7 @@ function se_sim_faction:update()
 					local squad_population = #self.squads
 					local squad_population_max = self.squad_population_max
 					local is_spawned = false
-					local sim = alife()
+--					local sim = alife()
 					if squad_population < squad_population_max then
 						local spawn_smart
 --						for i = squad_population, squad_population_max do -- suppose squad_population = 3, squad_population_max = 5; then with GSC's code, we spawn squads for i = 3, 4, and 5 -- that makes 3(!) squads, which is 1 too many!

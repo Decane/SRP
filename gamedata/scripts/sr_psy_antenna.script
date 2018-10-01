@@ -1,49 +1,44 @@
 -- NatVac 03.04.2013: Prevented audio and visual effector intensity doubling after save/reload (imported from the ZRP by Decane).
 -- Decane 20.11.2014: Also prevented hit intensity doubling after save/reload.
 
+local math_abs = math.abs
+local math_random = math.random
+
+local intensity_inertion = 0.05 * 0.01
+local phantom_max = 8
+local phantom_spawn_radius = 30
+local phantom_fov = 45
+
 class "PsyAntenna"
 
 function PsyAntenna:__init()
 
--- ----------------------------------------------------------------------------------------
--- settings
--- ----------------------------------------------------------------------------------------
--- phantom gen
--- ----------------------------------------------------------------------------------------
+	self.phantom_idle              = math_random(2000, 5000)
+--	self.phantom_max               = 8 -- converted to local
+	self.phantom_spawn_probability = 0
+--	self.phantom_spawn_radius      = 30 -- converted to local
+--	self.phantom_spawn_height      = 2.5 -- not used
+--	self.phantom_fov               = 45 -- converted to local
+--	self.hit_amplitude             = 1 -- superfluous multiplier
 
-	self.phantom_max 				= 8
-	self.phantom_spawn_probability			= 0
-	self.phantom_spawn_radius			= 30
-	self.phantom_spawn_height			= 2.5
-	self.phantom_fov				= 45
-	-- antenna
-	self.hit_amplitude				= 1
+--	self.eff_time                  = 0 -- nv130403 not used
+	self.hit_time                  = 0
+	self.phantom_time              = 0
+--	self.intensity_inertion        = 0.05
+	self.hit_intensity             = 0
+	self.sound_intensity           = 0
+	self.sound_intensity_base      = 0
+	self.postprocess_count         = 0
+	self.postprocess               = {}
 
--- ----------------------------------------------------------------------------------------
--- class variables initialize
--- ----------------------------------------------------------------------------------------
-
---	self.eff_time					= 0	-- nv130403 not used
-	self.hit_time					= 0
-	self.phantom_time				= 0
-	self.intensity_inertion				= 0.05
-	self.hit_intensity				= 0
-	self.sound_intensity				= 0
-	self.sound_intensity_base			= 0
-	self.postprocess_count				= 0
-	self.postprocess				= {}
-
--- ----------------------------------------------------------------------------------------
--- sound
--- ----------------------------------------------------------------------------------------
-
-	self.sound_initialized				= false
-	self.sound_obj_right, self.sound_obj_left	= sound_object("characters_voice\\scenario\\yantar\\psy_voices_1_r"), sound_object("characters_voice\\scenario\\yantar\\psy_voices_1_l") 
-	self.sound_obj_left.volume			= self.sound_intensity
-	self.sound_obj_right.volume			= self.sound_intensity
-	self.snd_volume					= level.get_snd_volume()
-	self.mute_sound_threshold			= 0
-	self.max_mumble_volume				= 10
+	self.sound_initialized         = false
+	self.sound_obj_right           = sound_object("characters_voice\\scenario\\yantar\\psy_voices_1_r")
+	self.sound_obj_left            = sound_object("characters_voice\\scenario\\yantar\\psy_voices_1_l")
+	self.sound_obj_left.volume     = 0
+	self.sound_obj_right.volume    = 0
+	self.snd_volume                = level.get_snd_volume()
+	self.mute_sound_threshold      = 0
+--	self.max_mumble_volume         = 10 -- not used
 end
 
 function PsyAntenna:destroy()
@@ -55,7 +50,7 @@ end
 function PsyAntenna:construct()
 end
 
-function PsyAntenna:update_psy_hit()	--dt)
+function PsyAntenna:update_psy_hit() --dt)
 	local hud = get_hud()
 	local custom_static = hud:GetCustomStatic("cs_psy_danger")
 	if self.hit_intensity > 0.01 then
@@ -73,14 +68,14 @@ function PsyAntenna:update_psy_hit()	--dt)
 	local TG = time_global()
 	if TG - self.hit_time > 5000 then
 		self.hit_time = TG
-		local power = self.hit_amplitude * self.hit_intensity
+		local power = self.hit_intensity
 		if power > 0.01 then
-			local psy_hit, act	= hit(), db.actor
-			psy_hit.power 		= power
-			psy_hit.direction 	= vector():set(0, 0, 0)
-			psy_hit.impulse 	= 0
-			psy_hit.draftsman 	= act
-			psy_hit.type 		= hit.telepatic	-- hit.wound
+			local psy_hit, act = hit(), db.actor
+			psy_hit.power = power
+			psy_hit.direction = vector():set(0, 0, 0)
+			psy_hit.impulse = 0
+			psy_hit.draftsman = act
+			psy_hit.type = hit.telepatic -- hit.wound
 			act:hit(psy_hit)
 			if act.health < 0.01 and act:alive() then
 				act:kill(act)
@@ -91,18 +86,14 @@ function PsyAntenna:update_psy_hit()	--dt)
 end
 
 function PsyAntenna:generate_phantoms()
-	if self.phantom_idle == nil then
-		self.phantom_idle = math.random(2000, 5000)
-	end
 	local TG = time_global()
 	if TG - self.phantom_time > self.phantom_idle then
-		local rand = math.random
 		self.phantom_time = TG
-		self.phantom_idle = rand(5000, 10000)
-		if rand() < self.phantom_spawn_probability then
-			if phantom_manager:phantom_count() < self.phantom_max then
-				local radius = self.phantom_spawn_radius * (rand() / 2 + 0.5)
-				local ang = self.phantom_fov * rand() - self.phantom_fov * 0.5
+		self.phantom_idle = math_random(5000, 10000)
+		if math_random() < self.phantom_spawn_probability then
+			if phantom_manager:phantom_count() < phantom_max then
+				local radius = phantom_spawn_radius * (math_random() / 2 + 0.5)
+				local ang = phantom_fov * math_random() - phantom_fov * 0.5
 				local act = db.actor
 				local dir = vector_rotate_y(act:direction(), ang)
 				phantom_manager.spawn_phantom(act:position():add(dir:mul(radius)))
@@ -139,49 +130,48 @@ function PsyAntenna:update_postprocess(pp)
 		level.remove_pp_effector(pp.idx)
 		return false
 	end
-	
+
 	level.set_pp_effector_factor(pp.idx, pp.intensity, 0.3)
 	return true
 end
 
-function PsyAntenna:update(dt)
+local function update_intensity(intensity_base, intensity, di) -- unlocalized in vanilla
 
---	self.eff_time = self.eff_time + dt	-- nv130403 not used
-
-	local function update_intensity(intensity_base, intensity)	-- unlocalized in vanilla
-		local di = self.intensity_inertion * dt * 0.01
-		local ii = intensity_base
-		if math.abs(intensity_base - intensity) >= di then
-			if intensity_base < intensity then
-				ii = intensity - di
-			else
-				ii = intensity + di
-			end
+	if math_abs(intensity_base - intensity) >= di then
+		if intensity_base < intensity then
+			intensity_base = intensity - di
+		else
+			intensity_base = intensity + di
 		end
-
-		if ii < 0 then
-			ii = 0 
-		elseif ii > 1 then
-			ii = 1
-		end
-
-		return ii
 	end
 
+	if intensity_base < 0 then
+		intensity_base = 0
+	elseif intensity_base > 1 then
+		intensity_base = 1
+	end
+
+	return intensity_base
+end
+
+function PsyAntenna:update(dt)
+
+--	self.eff_time = self.eff_time + dt -- nv130403 not used
+
+	local di = intensity_inertion * dt
+
 	self:generate_phantoms()
-	self.sound_intensity = update_intensity(self.sound_intensity_base, self.sound_intensity)
+	self.sound_intensity = update_intensity(self.sound_intensity_base, self.sound_intensity, di)
 	self:update_sound()
 
-	local exist
 	for k, v in pairs (self.postprocess) do
-		v.intensity = update_intensity(v.intensity_base, v.intensity)
-		exist = self:update_postprocess(v)
-		if exist == false then
+		v.intensity = update_intensity(v.intensity_base, v.intensity, di)
+		if not self:update_postprocess(v) then
 			self.postprocess[k] = nil
 		end
 	end
 
-	self:update_psy_hit()	--dt)
+	self:update_psy_hit() --dt)
 end
 
 function PsyAntenna:save(p)
@@ -239,9 +229,9 @@ psy_antenna = false
 class "action_psy_antenna"
 
 function action_psy_antenna:__init(obj, storage)
-	self.object	= obj
-	self.st		= storage
-	self.state	= state_void
+	self.object = obj
+	self.st = storage
+	self.state = state_void
 end
 
 function action_psy_antenna:reset_scheme(loading)
@@ -302,7 +292,7 @@ function action_psy_antenna:zone_enter()
 		level.set_pp_effector_factor(l_idx, 0.01)
 	end
 
-	psy_antenna.postprocess[postproc].intensity_base = psy_antenna.postprocess[postproc].intensity_base + self.st.intensity		
+	psy_antenna.postprocess[postproc].intensity_base = psy_antenna.postprocess[postproc].intensity_base + self.st.intensity
 end
 
 function action_psy_antenna:zone_leave()
@@ -367,12 +357,12 @@ function add_to_binder(npc, ini, scheme, section, storage)
 	xr_logic.subscribe_action_for_events(npc, storage, new_action)
 end
 
-function set_scheme(npc, ini, scheme, section)	--, gulag_name)
-	local st		= xr_logic.assign_storage_and_bind(npc, ini, scheme, section)
-	st.logic		= xr_logic.cfg_get_switch_conditions(ini, section, npc)
-	st.intensity		= utils.cfg_get_number(ini, section, "eff_intensity", npc, true) * 0.01
-	st.postprocess		= utils.cfg_get_string(ini, section, "postprocess", npc, false, "", "psy_antenna.ppe")
-	st.hit_intensity	= utils.cfg_get_number(ini, section, "hit_intensity", npc, true) * 0.01
-	st.phantom_prob		= utils.cfg_get_number(ini, section, "phantom_prob",  npc, false, 0) * 0.01
-	st.mute_sound_threshold	= utils.cfg_get_number(ini, section, "mute_sound_threshold",  npc, false, 0)
+function set_scheme(npc, ini, scheme, section) --, gulag_name)
+	local st                = xr_logic.assign_storage_and_bind(npc, ini, scheme, section)
+	st.logic                = xr_logic.cfg_get_switch_conditions(ini, section, npc)
+	st.intensity            = utils.cfg_get_number(ini, section, "eff_intensity", npc, true) * 0.01
+	st.postprocess          = utils.cfg_get_string(ini, section, "postprocess", npc, false, "", "psy_antenna.ppe")
+	st.hit_intensity        = utils.cfg_get_number(ini, section, "hit_intensity", npc, true) * 0.01
+	st.phantom_prob         = utils.cfg_get_number(ini, section, "phantom_prob", npc, false, 0) * 0.01
+	st.mute_sound_threshold = utils.cfg_get_number(ini, section, "mute_sound_threshold", npc, false, 0)
 end

@@ -4,7 +4,6 @@
 -- "Sleep for ClearSky" v 1.0
 ----------------------------------------------------
 
-local sleep_activ    = false
 local sleep_time     = 1     -- Time of sleep.
 local min_sleep_time = 1     -- Min value of time.
 local max_sleep_time = 12    -- Max value of time.
@@ -34,36 +33,21 @@ local mutants = {
 -- Func: Creating of npc or a mutant.
 ------------------------------------------------------------------------------------------------
 
-function sim_create(section, position, lvid, gvid)
+local function sim_create(section, position, lvid, gvid)
 	local sim = alife()
-	local sobj = sim:create(section, position, lvid, gvid)
-	local sobj_id = sobj.id
+	local sobj_id = sim:create(section, position, lvid, gvid).id
 	sim:set_switch_online(sobj_id, true)
 	sim:set_switch_offline(sobj_id, false)
-	return sobj
-end
-
-------------------------------------------------------------------------------------------------
--- Func: Actor update.
-------------------------------------------------------------------------------------------------
-
-function update()
-	if sleep_activ == true then
-		if db.actor.health < 0.1 then
-			sleep_stop()
-		end
-	end
 end
 
 ------------------------------------------------------------------------------------------------
 -- Func: Maintenance of health.
 ------------------------------------------------------------------------------------------------
 
-function health_cr(slptime)
-	local koef = slptime / 6
+local function health_cr(slptime)
 	local actor = db.actor
 	if actor.health < 1 then
-		local health = actor.health + koef
+		local health = actor.health + slptime / 6
 		if health >= 1 then
 			actor.health = 1
 		else
@@ -73,37 +57,10 @@ function health_cr(slptime)
 end
 
 ------------------------------------------------------------------------------------------------
--- Func: Activation of sleep.
-------------------------------------------------------------------------------------------------
-
-function sleep_stop()
-	sleep_activ = false
-	surprise()
-	level.set_time_factor(system_ini():r_float("alife", "time_factor"))
-	local weather_manager = level_weathers.get_weather_manager()
-	weather_manager:reset() -- reset weather
-	level.add_cam_effector("camera_effects\\prison_1.anm", 25, false, "")
-	level.add_cam_effector("camera_effects\\hit_back_left.anm", 26, false, "")
-end
-
-------------------------------------------------------------------------------------------------
--- Func: Deactivation of sleep.
-------------------------------------------------------------------------------------------------
-
-function sleep_start(slptime)
-	game.start_tutorial("atmdream")
-	db.actor:stop_talk()
-	get_hud():HideActorMenu()
-	level.set_time_factor(slptime * 480)
-	health_cr(slptime)
-	sleep_activ = true
-end
-
-------------------------------------------------------------------------------------------------
 -- Func: Surprise.
 ------------------------------------------------------------------------------------------------
 
-function surprise()
+local function surprise()
 	local dirs = {
 		vector():set(1,  0,  0),
 		vector():set(1,  0,  1),
@@ -131,7 +88,7 @@ function surprise()
 			for i = 1, 2 do
 				local dir = dirs[math.random(1, #dirs)]
 				local start_point_id = level.vertex_in_direction(lvid, dir, math.random(15, 20))
-				local sobj = sim_create("bloodsucker_redhunter", level.vertex_position(start_point_id), start_point_id, gvid)
+				sim_create("bloodsucker_redhunter", level.vertex_position(start_point_id), start_point_id, gvid)
 			end
 		elseif best_enemy:alive() then                                           -- nearby to actor
 			local amount = math.random(1, 2)
@@ -141,7 +98,7 @@ function surprise()
 			for i = 1, amount do
 				local dir = dirs[math.random(1, #dirs)]
 				local start_point_id = level.vertex_in_direction(lvid, dir, math.random(15, 20))
-				local sobj = sim_create(best_enemy:section(), level.vertex_position(start_point_id), start_point_id, gvid)
+				sim_create(best_enemy:section(), level.vertex_position(start_point_id), start_point_id, gvid)
 			end
 		else                                                                     -- corpse
 			local amount = 2
@@ -153,10 +110,37 @@ function surprise()
 			for i = 1, amount do
 				local dir = dirs[math.random(1, #dirs)]
 				local start_point_id = level.vertex_in_direction(lvid, dir, math.random(15, 20))
-				local sobj = sim_create(mutant, level.vertex_position(start_point_id), start_point_id, gvid)
+				sim_create(mutant, level.vertex_position(start_point_id), start_point_id, gvid)
 			end
 		end
 	end
+end
+
+------------------------------------------------------------------------------------------------
+-- Func: Activation of sleep.
+------------------------------------------------------------------------------------------------
+
+local function sleep_start(slptime)
+	game.start_tutorial("atmdream")
+	db.actor:stop_talk()
+	level.hide_indicators_safe()
+	get_hud():HideActorMenu()
+	level.set_time_factor(slptime * 480)
+	health_cr(slptime)
+end
+
+------------------------------------------------------------------------------------------------
+-- Func: Deactivation of sleep.
+------------------------------------------------------------------------------------------------
+
+function sleep_stop()
+	level.show_indicators()
+	surprise()
+	level.set_time_factor(system_ini():r_float("alife", "time_factor"))
+	local weather_manager = level_weathers.get_weather_manager()
+	weather_manager:reset() -- reset weather
+	level.add_cam_effector("camera_effects\\prison_1.anm", 25, false, "")
+	level.add_cam_effector("camera_effects\\hit_back_left.anm", 26, false, "")
 end
 
 ------------------------------------------------------------------------------------------------
@@ -367,9 +351,8 @@ function analyzer:evaluation()
 	local object_by_id = level.object_by_id
 	local actor = db.actor
 	local actor_pos = actor:position()
-	local obj
 	for npc_id in pairs (db.storage) do                                     -- iterate over online entities
-		obj = object_by_id(npc_id)
+		local obj = object_by_id(npc_id)
 		if obj then
 			if IsMonster(obj) then
 				local dist = obj:position():distance_to(actor_pos)

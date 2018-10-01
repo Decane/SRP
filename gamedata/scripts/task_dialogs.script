@@ -137,8 +137,8 @@ function show_tasks(npc) --, actor, dialog, phrase)
 				news_caption = trans("sim_bring_item")
 				local s = ""
 				local ini = system_ini()
-				for k, v in pairs (tsk.requested_items) do
-					local name = trans(ini:r_string(k, "inv_name")).." x"..#v
+				for item_name, cnt_table in pairs (tsk.requested_items) do
+					local name = trans(ini:r_string(item_name, "inv_name")).." x"..cnt_table.goal
 					if s ~= "" then
 						s = s..", "..name
 					else

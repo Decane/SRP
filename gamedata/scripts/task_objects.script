@@ -548,13 +548,13 @@ class "CEliminateSmartTask" (task_objects.CGeneralTask)
 
 ------------------------------------------------------------------------------------------------
 
-function CEliminateSmartTask:__init(task_ini, id, type) super (task_ini, id, type) -- called 0th (on load), 3rd (otherwise)
+function CEliminateSmartTask:__init(task_ini, id, type) super (task_ini, id, type) -- called 0th (on load), 0th and 3rd (otherwise)
 	self.target_cond = xr_logic.parse_condlist(nil, nil, nil, utils.cfg_get_string(task_ini, id, "target_cond", nil, false, "", "true"))
 --	self.src_obj = nil
 --	self.faction = nil
 end
 
-function CEliminateSmartTask:check_target(smart, faction) -- called 1st
+function CEliminateSmartTask:check_target(smart, faction) -- called 1st (not on load)
 
 	local TGT = self.faction_target
 
@@ -567,14 +567,14 @@ function CEliminateSmartTask:check_target(smart, faction) -- called 1st
 	return xr_logic.pick_section_from_condlist(db.actor, smart, self.target_cond) == "true"
 end
 
-function CEliminateSmartTask:get_inited_task(smart, faction, entity_id) -- called 2nd
+function CEliminateSmartTask:get_inited_task(smart, faction, entity_id) -- called 2nd (not on load)
 	local task = CEliminateSmartTask(self.task_ini, self.base_id, self.type) -- calls CGeneralTask:__init() and CEliminateSmartTask:__init()
 	task:init_task(smart, faction)
 	task.entity_id = entity_id
 	return task
 end
 
-function CEliminateSmartTask:init_task(smart, faction) -- called 4th
+function CEliminateSmartTask:init_task(smart, faction) -- called 4th (not on load)
 	self.target = smart.id
 	-- self.target_obj = smart -- smart to eliminate
 	self.id	= self.id .. "_" .. smart.id
@@ -583,7 +583,7 @@ function CEliminateSmartTask:init_task(smart, faction) -- called 4th
 	self.prior = self.base_prior
 end
 
-function CEliminateSmartTask:give_task(community) -- called 5th
+function CEliminateSmartTask:give_task(community) -- called 5th (not on load)
 	task_objects.CGeneralTask.give_task(self, community)
 end
 
@@ -742,14 +742,14 @@ class "CCaptureSmartTask" (task_objects.CGeneralTask)
 
 ------------------------------------------------------------------------------------------------
 
-function CCaptureSmartTask:__init(task_ini, id, type) super (task_ini, id, type) -- called 0th (on load), 3rd (otherwise)
+function CCaptureSmartTask:__init(task_ini, id, type) super (task_ini, id, type) -- called 0th (on load), 0th and 3rd (otherwise)
 	self.target_cond = xr_logic.parse_condlist(nil, nil, nil, utils.cfg_get_string(task_ini, id, "target_cond", nil, false, "", "true"))
 	self.counter_attack = utils.cfg_get_bool(task_ini, id, "counter_attack", nil, false, true)
 	self.src_obj = nil
 --	self.faction = nil
 end
 
-function CCaptureSmartTask:check_target(smart, faction) -- called 1st
+function CCaptureSmartTask:check_target(smart, faction) -- called 1st (not on load)
 
 	local TGT = self.faction_target
 
@@ -762,14 +762,14 @@ function CCaptureSmartTask:check_target(smart, faction) -- called 1st
 	return xr_logic.pick_section_from_condlist(db.actor, smart, self.target_cond) == "true"
 end
 
-function CCaptureSmartTask:get_inited_task(smart, faction, entity_id) -- called 2nd
+function CCaptureSmartTask:get_inited_task(smart, faction, entity_id) -- called 2nd (not on load)
 	local task = CCaptureSmartTask(self.task_ini, self.base_id , self.type) -- calls CGeneralTask:__init() and CCaptureSmartTask:__init()
 	task:init_task(smart, faction)
 	task.entity_id = entity_id
 	return task
 end
 
-function CCaptureSmartTask:init_task(smart, faction) -- called 4th
+function CCaptureSmartTask:init_task(smart, faction) -- called 4th (not on load)
 	self.target = smart.id
 	-- self.target_obj = smart -- smart to capture
 	self.id	= self.id .. "_" .. smart.id
@@ -778,7 +778,7 @@ function CCaptureSmartTask:init_task(smart, faction) -- called 4th
 	self.prior = self.base_prior
 end
 
-function CCaptureSmartTask:give_task(community) -- called 5th
+function CCaptureSmartTask:give_task(community) -- called 5th (not on load)
 
 	if self.src_obj ~= nil then
 		local squad = self.board.squads[self.src_obj]
@@ -1193,7 +1193,7 @@ class "CDefendSmartTask" (task_objects.CGeneralTask) -- 'Help' task
 
 ------------------------------------------------------------------------------------------------
 
-function CDefendSmartTask:__init(task_ini, id, type) super (task_ini, id, type) -- called 0th (on load), 3rd (otherwise)
+function CDefendSmartTask:__init(task_ini, id, type) super (task_ini, id, type) -- called 0th (on load), 0th and 3rd (otherwise)
 	self.target_cond = xr_logic.parse_condlist(nil, nil, nil, utils.cfg_get_string(task_ini, id, "target_cond", nil, false, "", "true"))
 	local time = utils.cfg_get_number(task_ini, id, "wait_time", nil, false, 15)
 	self.wait_time = (time ~= -1) and (60 * time) or nil
@@ -1206,7 +1206,7 @@ function CDefendSmartTask:__init(task_ini, id, type) super (task_ini, id, type) 
 ]]
 end
 
-function CDefendSmartTask:check_target(smart, faction) -- called 1st
+function CDefendSmartTask:check_target(smart, faction) -- called 1st (not on load)
 
 	local TGT = self.faction_target
 
@@ -1219,14 +1219,14 @@ function CDefendSmartTask:check_target(smart, faction) -- called 1st
 	return xr_logic.pick_section_from_condlist(db.actor, smart, self.target_cond) == "true"
 end
 
-function CDefendSmartTask:get_inited_task(smart, faction, entity_id) -- called 2nd
+function CDefendSmartTask:get_inited_task(smart, faction, entity_id) -- called 2nd (not on load)
 	local task = CDefendSmartTask(self.task_ini, self.base_id, self.type) -- calls CGeneralTask:__init() and CDefendSmartTask:__init()
 	task:init_task(smart, faction)
 	task.entity_id = entity_id
 	return task
 end
 
-function CDefendSmartTask:init_task(smart, faction) -- called 4th
+function CDefendSmartTask:init_task(smart, faction) -- called 4th (not on load)
 	self.target = smart.id
 	-- self.target_obj = smart -- smart to defend
 	self.community = faction
@@ -1235,7 +1235,7 @@ function CDefendSmartTask:init_task(smart, faction) -- called 4th
 	self.prior = self.base_prior
 end
 
-function CDefendSmartTask:give_task(community) -- called 5th
+function CDefendSmartTask:give_task(community) -- called 5th (not on load)
 
 	task_objects.CGeneralTask.give_task(self, community)
 
@@ -1385,7 +1385,7 @@ class "CDefendSmartTaskDelay" (task_objects.CGeneralTask) -- 'Defend the camp' t
 
 ------------------------------------------------------------------------------------------------
 
-function CDefendSmartTaskDelay:__init(task_ini, id, type) super (task_ini, id, type) -- called 0th (on load), 3rd (otherwise)
+function CDefendSmartTaskDelay:__init(task_ini, id, type) super (task_ini, id, type) -- called 0th (on load), 0th and 3rd (otherwise)
 	self.target_cond = xr_logic.parse_condlist(nil, nil, nil, utils.cfg_get_string(task_ini, id, "target_cond", nil, false, "", "true"))
 	local time = utils.cfg_get_number(task_ini, id, "wait_time", nil, false, 15)
 	self.wait_time = (time ~= -1) and (60 * time) or nil
@@ -1398,7 +1398,7 @@ function CDefendSmartTaskDelay:__init(task_ini, id, type) super (task_ini, id, t
 ]]
 end
 
-function CDefendSmartTaskDelay:check_target(smart, faction) -- called 1st
+function CDefendSmartTaskDelay:check_target(smart, faction) -- called 1st (not on load)
 
 	local TGT = self.faction_target
 
@@ -1411,14 +1411,14 @@ function CDefendSmartTaskDelay:check_target(smart, faction) -- called 1st
 	return xr_logic.pick_section_from_condlist(db.actor, smart, self.target_cond) == "true"
 end
 
-function CDefendSmartTaskDelay:get_inited_task(smart, faction, entity_id) -- called 2nd
+function CDefendSmartTaskDelay:get_inited_task(smart, faction, entity_id) -- called 2nd (not on load)
 	local task = CDefendSmartTaskDelay(self.task_ini, self.base_id, self.type) -- calls CGeneralTask:__init() and CDefendSmartTaskDelay:__init()
 	task:init_task(smart, faction)
 	task.entity_id = entity_id
 	return task
 end
 
-function CDefendSmartTaskDelay:init_task(smart, faction) -- called 4th
+function CDefendSmartTaskDelay:init_task(smart, faction) -- called 4th (not on load)
 	self.target = smart.id
 	-- self.target_obj = smart -- smart to defend
 	self.community = faction
@@ -1427,7 +1427,7 @@ function CDefendSmartTaskDelay:init_task(smart, faction) -- called 4th
 	self.prior = self.base_prior
 end
 
-function CDefendSmartTaskDelay:give_task(community) -- called 5th
+function CDefendSmartTaskDelay:give_task(community) -- called 5th (not on load)
 
 	task_objects.CGeneralTask.give_task(self, community)
 
@@ -1605,10 +1605,10 @@ class "CGetRewardTask" (task_objects.CGeneralTask)
 
 ------------------------------------------------------------------------------------------------
 
-function CGetRewardTask:__init(task_ini, id, type) super (task_ini, id, type) -- called 0th (on load), 3rd (otherwise)
+function CGetRewardTask:__init(task_ini, id, type) super (task_ini, id, type) -- called 0th (on load), 0th and 3rd (otherwise)
 end
 
-function CGetRewardTask:check_target(npc_id, faction) -- called 1st
+function CGetRewardTask:check_target(npc_id, faction) -- called 1st (not on load)
 
 	local TGT = self.faction_target
 
@@ -1621,14 +1621,14 @@ function CGetRewardTask:check_target(npc_id, faction) -- called 1st
 	return true
 end
 
-function CGetRewardTask:get_inited_task(npc_id, faction, entity_id) -- called 2nd
+function CGetRewardTask:get_inited_task(npc_id, faction, entity_id) -- called 2nd (not on load)
 	local task = CGetRewardTask(self.task_ini, self.base_id, self.type) -- calls CGeneralTask:__init() and CGetRewardTask:__init()
 	task:init_task(npc_id)
 	task.entity_id = entity_id
 	return task
 end
 
-function CGetRewardTask:init_task(npc_id) -- called 4th
+function CGetRewardTask:init_task(npc_id) -- called 4th (not on load)
 	self.target = npc_id
 	self.id	= self.id .. "_" .. npc_id
 end
@@ -1852,32 +1852,11 @@ class "CBringItemTask" (task_objects.CGeneralTask)
 
 ------------------------------------------------------------------------------------------------
 
-function CBringItemTask:__init(task_ini, id, type) super (task_ini, id, type) -- called 0th (on load), 3rd (otherwise)
+function CBringItemTask:__init(task_ini, id, type) super (task_ini, id, type) -- called 0th (on load), 0th and 3rd (otherwise)
 	self.target_cond = xr_logic.parse_condlist(nil, nil, nil, utils.cfg_get_string(task_ini, id, "target_cond", nil, false, "", "true"))
-	local sss = utils.cfg_get_string(task_ini, id, "requested_items", nil, false, "")
-	if sss ~= nil then
-		local items_array = {}
-		self.items_array = items_array
-		local actor_array = {}
-		items_array["actor"] = actor_array
-		local t = utils.parse_names(sss)
-		for k, v in pairs (t) do
-			if actor_array[v] == nil then
-				local actor_item_array = {}
-				actor_array[v] = actor_item_array
-				actor_item_array.chance = 1
-				actor_item_array.min_count = 1
-				actor_item_array.max_count = 1
-			else
-				local actor_item_array = actor_array[v]
-				actor_item_array.min_count = actor_item_array.min_count + 1
-				actor_item_array.max_count = actor_item_array.min_count
-			end
-		end
-	end
 end
 
-function CBringItemTask:check_target(squad_id, faction) -- called 1st
+function CBringItemTask:check_target(squad_id, faction) -- called 1st (not on load)
 
 	local TGT = self.faction_target
 
@@ -1911,64 +1890,77 @@ function CBringItemTask:check_target(squad_id, faction) -- called 1st
 	return false
 end
 
-function CBringItemTask:get_inited_task(squad_id, faction, entity_id) -- called 2nd
+function CBringItemTask:get_inited_task(squad_id, faction, entity_id) -- called 2nd (not on load)
 	local task = CBringItemTask(self.task_ini, self.base_id, self.type) -- calls CGeneralTask:__init() and CBringItemTask:__init()
 	task:init_task(squad_id)
 	task.entity_id = entity_id
 	return task
 end
 
-function CBringItemTask:init_task(squad_id) -- called 4th
-	local community = ""
-	if self.items_array == nil then
-		local quest_ini = ini_file("misc\\bring_item_task.ltx")
-		local communities = {"bandit", "csky", "dolg", "ecolog", "freedom", "killer", "army", "stalker", "trader"}
+function CBringItemTask:init_task(squad_id) -- called 4th (not on load)
+	local community = "actor"
+	local sss = utils.cfg_get_string(self.task_ini, self.base_id, "requested_items", nil, false, "")
+	if sss ~= nil then
+		local actor_array = {}
+		self.items_array = {["actor"] = actor_array}
+		for k, item_name in pairs (utils.parse_names(sss)) do
+			if actor_array[item_name] == nil then
+				actor_array[item_name] =
+				{
+					chance = 1,
+					min_count = 1,
+					max_count = 1
+				}
+			else
+				local actor_item_array = actor_array[item_name]
+				actor_item_array.min_count = actor_item_array.min_count + 1
+				actor_item_array.max_count = actor_item_array.min_count
+			end
+		end
+	else -- never the case in vanilla
 		local level_name = level.name()
 		if level_name == nil then
-			return
-		elseif not quest_ini:section_exist(level_name) then
-			level_name = "default"
+			abort("[task_objects.CBringItemTask:init_task]: Level name is nil!")
 		end
-		self.items_array = {}
-		local result, id, value = "", "", ""
-		for k, v in pairs (communities) do
-			if quest_ini:section_exist(v) then
-				self.items_array[v] = {}
-				local comm_line_num = quest_ini:line_count(v)
-				for i = 0, comm_line_num - 1 do
-					result, id, value = quest_ini:r_line(v, i, "", "")
-					self.items_array[v][id] = {}
-					local t = parse_nums(value)
-					if t[1] == nil or t[2] == nil then
-						abort("[task_objects.CBringItemTask:init_task]: Wrong parameter list for community '%s', line '%s'.", tostring(v), tostring(id))
-					else
-						if t[3] == nil then
-							t[3] = t[2]
-						end
-						if quest_ini:line_exist(level_name, id) then
-							local t2 = parse_nums(quest_ini:r_string(level_name, id))
-							if t2[1] == nil or t2[2] == nil then
-								abort("[task_objects.CBringItemTask:init_task]: Wrong parameter list for section '%s', line '%s'.", tostring(level_name), tostring(id))
-							else
-								if t2[3] == nil then
-									t2[3] = t2[2]
-								end
-								t[1] = t[1] * t2[1]
-								t[2] = t[2] * t2[2]
-								t[3] = t[3] * t2[3]
-							end
-						end
-						self.items_array[v][id].chance = t[1]
-						self.items_array[v][id].min_count = t[2]
-						self.items_array[v][id].max_count = t[3]
-					end
-				end
-			end
+		local quest_ini = ini_file("misc\\bring_item_task.ltx")
+		if not quest_ini:section_exist(level_name) then
+			level_name = "default"
 		end
 --		community = db.storage[commander_id].object:character_community()
 		community = self.board.squads[squad_id].player_id
-	else
-		community = "actor"
+		if not quest_ini:section_exist(community) then
+			abort("[task_objects.CBringItemTask:init_task]: No section for community '%s' in misc\\bring_item_task.ltx.", tostring(community))
+		end
+		local faction_table = {}
+		self.items_array = {[community] = faction_table}
+		for i = 0, quest_ini:line_count(community) - 1 do
+			local result, item_name, chance_and_counts = quest_ini:r_line(community, i, "", "")
+			local t = parse_nums(chance_and_counts)
+			if t[1] == nil or t[2] == nil then
+				abort("[task_objects.CBringItemTask:init_task]: Invalid parameter list '%s' in misc\\bring_item_task.ltx for community '%s' at line '%s'.", tostring(chance_and_counts), tostring(community), tostring(item_name))
+			end
+			if t[3] == nil then
+				t[3] = t[2]
+			end
+			if quest_ini:line_exist(level_name, item_name) then
+				local t2 = parse_nums(quest_ini:r_string(level_name, item_name))
+				if t2[1] == nil or t2[2] == nil then
+					abort("[task_objects.CBringItemTask:init_task]: Invalid parameter list for item '%s' in section '%s'.", tostring(item_name), tostring(level_name))
+				end
+				if t2[3] == nil then
+					t2[3] = t2[2]
+				end
+				t[1] = t[1] * t2[1]
+				t[2] = t[2] * t2[2]
+				t[3] = t[3] * t2[3]
+			end
+			faction_table[item_name] =
+			{
+				chance = t[1],
+				min_count = t[2],
+				max_count = t[3]
+			}
+		end
 	end
 	self.ri_counter = 0
 	self.requested_items = {}
@@ -1978,54 +1970,28 @@ function CBringItemTask:init_task(squad_id) -- called 4th
 --	self.squad_id = alife():object(commander_id).squad_id
 	self.squad_id = squad_id
 --	self.npc = nil
-	self.tmp_counter = 0
+--	self.tmp_counter = 0
 	self.state = "started"
-	-- db.actor:iterate_inventory(get_inventory_item_count, self) -- iterate on give task
-	-- db.actor:iterate_inventory(set_task_text_for_bring_item, self)
+	-- db.actor:iterate_inventory(set_inventory_item_count, self) -- iterate on give task
 	self:set_task_text_for_bring_item()
 end
 
-local function get_inventory_item_count(task, item)
-	local sect = item:section()
-	for k, v in pairs (task.requested_items) do
-		if k == sect then
-			for i = 1, #v do
-				if not v[i] then
-					v[i] = true
-					return
-				end
-			end
-		end
-	end
-end
-
-function CBringItemTask:give_task(community) -- called 5th
-	task_objects.CGeneralTask.give_task(self, community)
---	local squad = db.storage[self.target].squad_obj
---	local squad = self.board.squads[self.squad_id]
---	if squad then
---		squad.bring_item_inited_time = self.inited_time
---	end
-	self.squad.bring_item_inited_time = self.inited_time -- self.squad set by task_dialogs.give_squad_capture_task()
-	db.actor:iterate_inventory(get_inventory_item_count, self)
-end
-
 function CBringItemTask:generate_requested_items(community)
-	local items_count = 0
-	local sections_count = math_random(2, 5) - 1
+	local sections_count = math_random(1, 4)
 	local cur_sections_count = 0
 	while (cur_sections_count == 0) do
-		for k, v in pairs (self.items_array[community]) do
+		for item_name, count_table in pairs (self.items_array[community]) do
 			if cur_sections_count > sections_count then
 				break
 			end
-			items_count = math_random(v.min_count, v.max_count)
+			local items_count = math_random(count_table.min_count, count_table.max_count)
 			for i = 1, items_count do
-				if math_random() <= v.chance then
-					if self.requested_items[k] ~= nil then
-						table_insert(self.requested_items[k], false)
+				if math_random() <= count_table.chance then
+					local cnt_table = self.requested_items[item_name]
+					if cnt_table ~= nil then
+						cnt_table.goal = cnt_table.goal + 1
 					else
-						self.requested_items[k] = {false}
+						self.requested_items[item_name] = {num = 0, goal = 1, xferd = 0}
 						cur_sections_count = cur_sections_count + 1
 					end
 					self.ri_counter = self.ri_counter + 1
@@ -2037,28 +2003,39 @@ end
 
 function CBringItemTask:set_task_text_for_bring_item()
 	local s = ""
-	local act = db.actor
 	local ini = system_ini()
-	for k, v in pairs (self.requested_items) do
-		local name = trans(ini:r_string(k, "inv_name")).." x"..#v
-		if act:object(k) then
-			local not_all = false
-			for i = 1, #v do
-				if not(v[i]) then
-					not_all = true
-					break
-				end
-			end
-			if not_all then
-				s = s.."- "..name.."\\n"
-			else
-				s = s.."+ "..name.."\\n"
-			end
-		else
+	for item_name, cnt_table in pairs (self.requested_items) do
+		local name = trans(ini:r_string(item_name, "inv_name")).." x"..cnt_table.goal
+		if cnt_table.goal > cnt_table.num then
 			s = s.."- "..name.."\\n"
+		else
+			s = s.."+ "..name.."\\n"
 		end
 	end
 	self.text = s
+end
+
+local function set_inventory_item_count(task, item)
+	local sect = item:section()
+	local requested_items = task.requested_items
+	for item_name in pairs (requested_items) do
+		if item_name == sect then
+			local cnt_table = requested_items[item_name]
+			cnt_table.num = cnt_table.num + 1
+			return
+		end
+	end
+end
+
+function CBringItemTask:give_task(community) -- called 5th (not on load)
+	task_objects.CGeneralTask.give_task(self, community)
+--	local squad = db.storage[self.target].squad_obj
+--	local squad = self.board.squads[self.squad_id]
+--	if squad then
+--		squad.bring_item_inited_time = self.inited_time
+--	end
+	self.squad.bring_item_inited_time = self.inited_time -- self.squad set by task_dialogs.give_squad_capture_task()
+	db.actor:iterate_inventory(set_inventory_item_count, self)
 end
 
 function CBringItemTask:check_task(tm) -- called 6th
@@ -2128,12 +2105,8 @@ function CBringItemTask:has_requested_items(actor)
 
 	local c = 0
 
-	for k, v in pairs (self.requested_items) do
-		for i = 1, #v do
-			if v[i] then
-				c = c + 1
-			end
-		end
+	for k, cnt_table in pairs (self.requested_items) do
+		c = c + (cnt_table.num < cnt_table.goal and cnt_table.num or cnt_table.goal)
 	end
 
 	if self.auto_faction then
@@ -2152,75 +2125,44 @@ function CBringItemTask:has_requested_items(actor)
 end
 
 function CBringItemTask:on_item_take(item)
-	for k, v in pairs (self.requested_items) do
-		for i = 1, #v do
-			v[i] = false
-		end
+	local cnt_table = self.requested_items[item:section()]
+	if cnt_table then
+		cnt_table.num = cnt_table.num + 1
 	end
-	db.actor:iterate_inventory(get_inventory_item_count, self)
-	-- db.actor:iterate_inventory(set_task_text_for_bring_item, self)
+--	db.actor:iterate_inventory(set_inventory_item_count, self)
 	self:set_task_text_for_bring_item()
 end
 
 function CBringItemTask:on_item_drop(item)
-	for k, v in pairs (self.requested_items) do
-		for i = 1, #v do
-			v[i] = false
-		end
+	local cnt_table = self.requested_items[item:section()]
+	if cnt_table then
+		cnt_table.num = cnt_table.num - 1
 	end
-	db.actor:iterate_inventory(get_inventory_item_count, self)
-	-- db.actor:iterate_inventory(set_task_text_for_bring_item, self)
+--	db.actor:iterate_inventory(set_inventory_item_count, self)
 	self:set_task_text_for_bring_item()
 end
 
-local function transfer_quest_items(task, item)
-	local sect, act, item_id, item_in_slot = item:section(), db.actor, item:id()
-	for k, v in pairs (task.requested_items) do
-		if sect == k then
-			for i = 1, #v do
-				if v[i] then
-					for ii = 1, 4 do
-						item_in_slot = act:item_in_slot(ii)
-						if item_in_slot ~= nil then
-							if item_in_slot:id() == item_id then
-								return
-							end
-						end
-					end
-					act:transfer_item(item, task.npc)
-					v[i] = false
-					task.tmp_counter = task.tmp_counter + 1
-					return
-				end
+function CBringItemTask:on_load(actor)
+	actor:iterate_inventory(set_inventory_item_count, self)
+end
+
+local function transfer_non_slotted_items(task, item)
+	local item_sect = item:section()
+	for item_name, cnt_table in pairs (task.requested_items) do
+		if item_sect == item_name then
+			if cnt_table.xferd < cnt_table.goal then
+				db.actor:transfer_item(item, task.npc)
+				cnt_table.xferd = cnt_table.xferd + 1
 			end
+			return
 		end
 	end
 end
 
 function CBringItemTask:transfer_items_looking_for(npc)
 	self.npc = npc
-	self.tmp_counter = 0
 	self.state = "finished"
-	local act = db.actor
-	act:iterate_inventory(transfer_quest_items, self)
-	if self.tmp_counter < self.ri_counter then
-		local item_in_slot
-		for i = 1, 4 do
-			item_in_slot = act:item_in_slot(i)
-			for k, v in pairs (self.requested_items) do
-				if item_in_slot ~= nil then
-					if item_in_slot:section() == k then
-						for ii = 1, #v do
-							if v[ii] then
-								act:transfer_item(item_in_slot, npc)
-								v[ii] = false
-							end
-						end
-					end
-				end
-			end
-		end
-	end
+	db.actor:iterate_inventory(transfer_non_slotted_items, self)
 	self.last_check_task = "complete"
 end
 
@@ -2266,18 +2208,15 @@ function CBringItemTask:save(package)
 	end
 
 	local n = 0
-	for k in pairs (self.requested_items) do
+	for item_name in pairs (self.requested_items) do
 		n = n + 1
 	end
 
 	package:w_u8(n)
 
-	for k, v in pairs (self.requested_items) do
-		package:w_stringZ(k)
-		package:w_u16(#v)
-		for i = 1, #v do
-			package:w_bool(v[i])
-		end
+	for item_name, cnt_table in pairs (self.requested_items) do
+		package:w_stringZ(item_name)
+		package:w_u8(cnt_table.goal)
 	end
 
 	set_save_marker(package, "save", true, "CBringItemTask")
@@ -2328,14 +2267,10 @@ function CBringItemTask:load(reader) -- called 0.5th (only on load)
 	self.requested_items = {}
 
 	n = reader:r_u8()
-	local k, num
 	for i = 1, n do
-		k = reader:r_stringZ()
-		self.requested_items[k] = {}
-		num = reader:r_u16()
-		for i = 1, num do
-			self.requested_items[k][i] = reader:r_bool()
-		end
+		local item_name = reader:r_stringZ()
+		local goal = reader:r_u8()
+		self.requested_items[item_name] = {num = 0, goal = goal, xferd = 0}
 	end
 
 	set_save_marker(reader, "load", true, "CBringItemTask")
@@ -2347,7 +2282,7 @@ class "CRecoverItemTask" (task_objects.CGeneralTask)
 
 ------------------------------------------------------------------------------------------------
 
-function CRecoverItemTask:__init(task_ini, id, type) super (task_ini, id, type) -- called 0th (on load), 3rd (otherwise)
+function CRecoverItemTask:__init(task_ini, id, type) super (task_ini, id, type) -- called 0th (on load), 0th and 3rd (otherwise)
 	self.target_cond = xr_logic.parse_condlist(nil, nil, nil, utils.cfg_get_string(task_ini, id, "target_cond", nil, false, "", "false"))
 	local target_npc_or_box_name = utils.cfg_get_string(task_ini, id, "target_npc_or_box_name", nil, true, "")
 	self.target_npc_or_box_table = utils.parse_names(target_npc_or_box_name)
@@ -2355,7 +2290,7 @@ function CRecoverItemTask:__init(task_ini, id, type) super (task_ini, id, type) 
 	self.requested_item_inv_name = trans(system_ini():r_string(self.requested_item, "inv_name")) -- SRP
 end
 
-function CRecoverItemTask:check_target(squad_id, faction) -- called 1st
+function CRecoverItemTask:check_target(squad_id, faction) -- called 1st (not on load)
 
 	local TGT = self.faction_target
 
@@ -2386,14 +2321,14 @@ function CRecoverItemTask:check_target(squad_id, faction) -- called 1st
 	return false
 end
 
-function CRecoverItemTask:get_inited_task(squad_id, faction, entity_id) -- called 2nd
+function CRecoverItemTask:get_inited_task(squad_id, faction, entity_id) -- called 2nd (not on load)
 	local task = CRecoverItemTask(self.task_ini, self.base_id, self.type) -- calls CGeneralTask:__init() and CRecoverItemTask:__init()
 	task:init_task(squad_id)
 	task.entity_id = entity_id
 	return task
 end
 
-function CRecoverItemTask:init_task(squad_id) -- called 4th
+function CRecoverItemTask:init_task(squad_id) -- called 4th (not on load)
 	self.squad_id = squad_id
 --	self.description = ""
 --	self.npc = nil
@@ -2403,7 +2338,7 @@ function CRecoverItemTask:init_task(squad_id) -- called 4th
 	self.state = "started"
 end
 
-function CRecoverItemTask:give_task(community) -- called 5th
+function CRecoverItemTask:give_task(community) -- called 5th (not on load)
 	self:spawn_recoveritem()
 	task_objects.CGeneralTask.give_task(self, community)
 --	local squad = self.board.squads[self.squad_id]
@@ -2419,8 +2354,7 @@ function CRecoverItemTask:spawn_recoveritem()
 	local target_npc_or_box = sim:object(self.target_npc_or_box_table[index])
 	if target_npc_or_box then
 		local container_id = target_npc_or_box.id
-		local target_obj = sim:create(self.requested_item, vector(), 0, 0, container_id)
-		self.target_obj_id = target_obj.id
+		self.target_obj_id = sim:create(self.requested_item, vector(), 0, 0, container_id).id
 		self.target = container_id
 	else
 		abort("[task_objects.CRecoverItemTask:spawn_recoveritem]: There is no such target npc or box: '%s'.", tostring(self.target_npc_or_box_table[index]))
@@ -3057,12 +2991,12 @@ class "CFindUpgradeTask" (task_objects.CGeneralTask)
 
 ------------------------------------------------------------------------------------------------
 
-function CFindUpgradeTask:__init(task_ini, id, type) super (task_ini, id, type) -- called 0th (on load), 3rd (otherwise)
+function CFindUpgradeTask:__init(task_ini, id, type) super (task_ini, id, type) -- called 0th (on load), 0th and 3rd (otherwise)
 	self.target_cond = xr_logic.parse_condlist(nil, nil, nil, utils.cfg_get_string(task_ini, id, "target_cond", nil, false, "", "false"))
 	self.requested_item = utils.cfg_get_string(task_ini, id, "requested_item", nil, false, "")
 	self.requested_item_inv_name = trans(system_ini():r_string(self.requested_item, "inv_name"))
-	local cost = utils.cfg_get_number(self.task_ini, self.base_id, "cost", nil, true)
-	local sss = utils.cfg_get_string(self.task_ini, self.base_id, "reward_upgr", nil, false, "")
+	local cost = utils.cfg_get_number(task_ini, id, "cost", nil, true)
+	local sss = utils.cfg_get_string(task_ini, id, "reward_upgr", nil, false, "")
 	if sss ~= nil then
 --		local char_ini = ini_file("item_upgrades.ltx")
 		local sss_table = utils.parse_names(sss)
@@ -3073,7 +3007,7 @@ function CFindUpgradeTask:__init(task_ini, id, type) super (task_ini, id, type) 
 	self.cost = cost
 end
 
-function CFindUpgradeTask:check_target(npc, faction) -- called 1st
+function CFindUpgradeTask:check_target(npc, faction) -- called 1st (not on load)
 
 	local TGT = self.faction_target
 
@@ -3086,7 +3020,7 @@ function CFindUpgradeTask:check_target(npc, faction) -- called 1st
 	return xr_logic.pick_section_from_condlist(db.actor, db.storage[npc:id()].object, self.target_cond) == "true"
 end
 
-function CFindUpgradeTask:get_inited_task(npc, faction, entity_id) -- called 2nd
+function CFindUpgradeTask:get_inited_task(npc, faction, entity_id) -- called 2nd (not on load)
 	local task = CFindUpgradeTask(self.task_ini, self.base_id, self.type) -- calls CGeneralTask:__init() and CFindUpgradeTask:__init()
 	task:init_task(npc)
 	task.entity_id = entity_id
@@ -3102,7 +3036,7 @@ local function get_inventory_find_upgrade_count(task, item)
 	end
 end
 ]]
-function CFindUpgradeTask:init_task(npc) -- called 4th
+function CFindUpgradeTask:init_task(npc) -- called 4th (not on load)
 	self.target = npc:id()
 --	self.description = ""
 --	self.npc = nil
@@ -3111,7 +3045,7 @@ function CFindUpgradeTask:init_task(npc) -- called 4th
 --	db.actor:iterate_inventory(get_inventory_find_upgrade_count, self)
 end
 
-function CFindUpgradeTask:give_task(community) -- called 5th
+function CFindUpgradeTask:give_task(community) -- called 5th (not on load)
 	task_objects.CGeneralTask.give_task(self, community)
 end
 

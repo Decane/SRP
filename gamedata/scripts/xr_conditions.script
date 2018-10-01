@@ -240,10 +240,10 @@ function is_alive(actor, npc, p)					-- if p[1] == nil and/or alife():story_obje
 end
 
 function is_dead_all(actor, npc, p)					-- if p[1] == nil and/or alife():story_object(p[1]) == nil, returns true
-	local sim, npc1 = alife()
+	local sim = alife()
 	for i, v in pairs (p) do
---		npc1 = level_object_by_sid(v)
-		npc1 = sim:story_object(v)
+--		local npc1 = level_object_by_sid(v)
+		local npc1 = sim:story_object(v)
 		if npc1 then
 			if npc1:alive() then
 				return false

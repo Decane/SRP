@@ -263,14 +263,17 @@ function take_money(actor, npc, p)
 end
 
 function give_actor(actor, npc, p)
-	local act_id, sim, vec = db.actor:id(), alife(), vector()
+	local sim = alife()
+	local vec = vector()
 	for k, v in pairs (p) do
-		sim:create(v, vec, 0, 0, act_id)
+		sim:create(v, vec, 0, 0, 0)
 	end
 end
 
 function give_items(actor, npc, p)
-	local sim, npc_id, vec = alife(), npc:id(), vector()
+	local sim = alife()
+	local vec = vector()
+	local npc_id = npc:id()
 	for i, v in pairs (p) do
 		sim:create(v, vec, 0, 0, npc_id)
 	end
@@ -855,7 +858,8 @@ end
 function destroy_object(actor, obj, p)
 
 	local p1 = p and p[1]
-	local sim, sobj = alife()
+	local sim = alife()
+	local sobj
 
 	if p1 == nil then
 		sobj = sim:object(obj:id())
@@ -1719,11 +1723,13 @@ function stc_activate_weapon(actor, npc, p)
 end
 
 function stc_create_some_csky_stalkers(actor, npc, p)
-	local patrol_point, sim, rand, obj, rnd_point = patrol(p[1]), alife(), math.random
+	local sim = alife()
+	local patrol_point = patrol(p[1])
+	local rand = math.random
 	local patrol_point_count = patrol_point:count()
 	for i = 1, 5 do
-		rnd_point = ((patrol_point_count == 1) and 1) or rand(0, patrol_point_count - 1)
-		obj = sim:create(p[2], patrol_point:point(rnd_point), patrol_point:level_vertex_id(rnd_point), patrol_point:game_vertex_id(rnd_point))
+		local rnd_point = ((patrol_point_count == 1) and 1) or rand(0, patrol_point_count - 1)
+		local obj = sim:create(p[2], patrol_point:point(rnd_point), patrol_point:level_vertex_id(rnd_point), patrol_point:game_vertex_id(rnd_point))
 		obj.sim_forced_online = true
 	end
 end
@@ -1744,15 +1750,16 @@ function stc_create_some_monolith_stalkers(actor, npc, p)
 		used_points[i] = i - 1
 	end
 	local act = db.actor
-	local rand, sim, rem, rnd_point, patrol_point, patrol_path_point, obj
-	= math.random, alife(), table.remove
+	local rand = math.random
+	local rem = table.remove
+	local sim = alife()
 	for i = 1, p[3] do
-		rnd_point = rand(1, #used_points)
-		patrol_point = used_points[rnd_point]
-		patrol_path_point = patrol_path:point(patrol_point)
+		local rnd_point = rand(1, #used_points)
+		local patrol_point = used_points[rnd_point]
+		local patrol_path_point = patrol_path:point(patrol_point)
 		particles_table[i].particle:play_at_pos(patrol_path_point)
 		particles_table[i].sound:play_at_pos(act, patrol_path_point, 0, sound_object.s3d)
-		obj = sim:create(p[2], patrol_path_point, patrol_path:level_vertex_id(patrol_point), patrol_path:game_vertex_id(patrol_point))
+		local obj = sim:create(p[2], patrol_path_point, patrol_path:level_vertex_id(patrol_point), patrol_path:game_vertex_id(patrol_point))
 		obj.sim_forced_online = true
 		obj.squad = 1 or p[4]
 		rem(used_points, rnd_point)
