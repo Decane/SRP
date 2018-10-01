@@ -64,7 +64,7 @@ function generic_object_binder:update(delta)
 	if not self.first_update_done then
 		local sobj_id = sobj:id()
 		if bind_stalker.delayed_alife_release_objects[sobj_id] == true then
-			local sim = alife()
+			local sim = _G.sim
 --			dbglog("[bind_monster.update]: Releasing "..sobj_id)
 			sim:release(sim:object(sobj_id), true)
 			bind_stalker.delayed_alife_release_objects[sobj_id] = nil
@@ -226,7 +226,7 @@ function generic_object_binder:net_spawn(sobject)
 		return true
 	end
 
-	local sim_obj = alife():object(sobj:id())
+	local sim_obj = _G.sim:object(sobj:id())
 
 	if sim_obj == nil then
 		return false

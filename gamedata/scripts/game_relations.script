@@ -199,7 +199,7 @@ function get_gulag_relation_actor(smart_name, relation) -- returns gulag NPCs' *
 		return false
 	end
 
-	local gulag = alife():object(smart_name)
+	local gulag = _G.sim:object(smart_name)
 	if gulag == nil or relation == nil then
 		return false
 	end
@@ -239,7 +239,7 @@ function set_gulag_relation_actor(smart_name, relation) -- sets each gulag NPC's
 		return
 	end
 
-	local gulag = alife():object(smart_name)
+	local gulag = _G.sim:object(smart_name)
 	if gulag == nil or relation == nil then
 		return
 	end
@@ -317,7 +317,7 @@ function get_squad_goodwill_to_actor(squad_name) -- returns squad's relationship
 		return squad.relationship
 	end
 
-	local goodwill = relation_registry.community_relation(squad.player_id, alife():actor():community())
+	local goodwill = relation_registry.community_relation(squad.player_id, _G.sim:actor():community())
 
 	if goodwill >= 1000 then
 		return "friend"
@@ -351,7 +351,7 @@ function all_smart_members_hostile(smart_name)
 		return false
 	end
 
-	local smart = alife():object(smart_name)
+	local smart = _G.sim:object(smart_name)
 	if smart == nil then
 		return false
 	end
@@ -377,7 +377,7 @@ function some_smart_members_hostile(smart_name)
 		return false
 	end
 
-	local smart = alife():object(smart_name)
+	local smart = _G.sim:object(smart_name)
 	if smart == nil then
 		return false
 	end

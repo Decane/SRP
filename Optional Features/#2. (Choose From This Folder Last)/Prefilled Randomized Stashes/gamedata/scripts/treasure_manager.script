@@ -63,7 +63,7 @@ end
 
 function CTreasure:give_location_only()
 
-	local obj = alife():object(self.target)
+	local obj = _G.sim:object(self.target)
 	local treasure_name = self.name
 
 	if obj == nil then
@@ -94,7 +94,7 @@ end
 
 function CTreasure:populate_stash(box_name)
 
-	local sim = alife()
+	local sim = _G.sim
 	local obj = sim:object(box_name or self.target)
 
 	if obj == nil then
@@ -157,7 +157,7 @@ function use_box(box_name)
 	if treasure_on_level == nil then
 		treasure_on_level = {}
 		local level_name = level.name()
-		local sim = alife()
+		local sim = _G.sim
 		local GG = game_graph()
 		local c = 0
 		for k, treasure in pairs (treasures) do

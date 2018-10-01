@@ -188,7 +188,7 @@ function iterate_point(squad, src_smart_id, tgt_smart_id, arhive, front) -- init
 	local front_point = front[1]
 
 	if front_point == nil then
-		local sim = alife()
+		local sim = _G.sim
 		local src_smart_name, tgt_smart_name = sim:object(src_smart_id):name(), sim:object(tgt_smart_id):name()
 		abort("[sim_board.iterate_point]: Path between '%s' and '%s' does not exist for squad with ID '%s'.", tostring(src_smart_name), tostring(tgt_smart_name), tostring(squad.squad_id))
 	end
@@ -481,7 +481,7 @@ function sim_board:create_squad(faction_id, squad_class, spawn_smart, sq_id, set
 	self:assign_squad_to_smart(squad, spawn_smart.id)
 
 --	local board = squad.board
-	local sim = alife()
+	local sim = _G.sim
 	for npc_id in pairs (squad.squad_npc) do
 		local npc_obj = sim:object(npc_id)
 		self:setup_squad_and_group(npc_obj)
@@ -719,7 +719,7 @@ function sim_board:setup_squad_and_group(obj)
 		group = level_id
 	end
 
-	local se_obj = alife():object(obj.id)
+	local se_obj = _G.sim:object(obj.id)
 	local se_obj_team = se_obj.team
 
 	change_team_sqaud_group(se_obj, se_obj_team, se_obj.squad, group)

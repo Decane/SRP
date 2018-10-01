@@ -60,7 +60,7 @@ end
 
 function CTreasure:give_treasure()
 
-	local sim = alife()
+	local sim = _G.sim
 	local obj = sim:object(self.target)
 	local treasure_name = self.name
 

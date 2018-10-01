@@ -67,7 +67,7 @@ end
 
 function reset_show_spot(npc, scheme, st, section)
 
-	local sim = alife()
+	local sim = _G.sim
 	if not sim then
 		return
 	end
@@ -161,7 +161,7 @@ end
 
 function remove_level_spot(npc, st)
 
-	local sim = alife()
+	local sim = _G.sim
 	if not sim then
 		return
 	end

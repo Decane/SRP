@@ -387,7 +387,7 @@ function activate_surge(time)
 		local board = sim_board.get_sim_board()
 		local hide_tbl = {}
 		local n = 0
-		local sim = alife()
+		local sim = _G.sim
 		for k, v in pairs (board.smarts) do
 			local actor_hide_spots = v.smrt.actor_hides
 			if actor_hide_spots ~= nil then

@@ -45,7 +45,7 @@ function action_cover:activate_scheme()
 				local squad = board.squads[k]
 				local squad_smart = squad.smart
 				if squad_smart == nil or squad_smart.id ~= combat_smart_id then
-					local sim = alife()
+					local sim = _G.sim
 					for kk in pairs (squad.squad_npc) do
 						local obj = sim:object(kk)
 						self.enemy_random_position = obj.position

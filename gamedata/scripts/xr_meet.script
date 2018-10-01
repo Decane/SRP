@@ -74,7 +74,7 @@ function action_meet_wait:execute ()
 	elseif tostring(meet_manager.victim) == "nil" then
 		victim = nil
 	else
-		local sim = alife()
+		local sim = _G.sim
 		if sim then
 			victim = sim:story_object(victim)
 		end

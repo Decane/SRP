@@ -116,7 +116,7 @@ function se_smart_terrain:on_before_register()
 	local board = sim_board.get_sim_board()
 	self.board = board
 	board:register_smart(self)
-	self.smart_level = alife():level_name(game_graph():vertex(self.m_game_vertex_id):level_id())
+	self.smart_level = _G.sim:level_name(game_graph():vertex(self.m_game_vertex_id):level_id())
 end
 
 function se_smart_terrain:on_register()
@@ -745,7 +745,7 @@ function se_smart_terrain:init_npc_after_load()
 		end
 	end
 
-	local sim = alife()
+	local sim = _G.sim
 	local self_npc_info = self.npc_info
 
 	for k, v in pairs (self_npc_info) do
@@ -894,7 +894,7 @@ end
 function setup_gulag_and_logic_on_spawn(obj, st, se_obj, stype, loaded)
 	local strn_id = se_obj.m_smart_terrain_id
 	if strn_id ~= nil and strn_id ~= 65535 then
-		local strn = alife():object(strn_id)
+		local strn = _G.sim:object(strn_id)
 		local need_setup_logic = (not loaded) and (strn.npc_info[obj:id()].begin_job == true)
 		if need_setup_logic then
 			strn:setup_logic(obj)
@@ -905,7 +905,7 @@ function setup_gulag_and_logic_on_spawn(obj, st, se_obj, stype, loaded)
 end
 
 function on_death(se_obj)
-	local sim = alife()
+	local sim = _G.sim
 	if sim then
 --		local se_obj = sim:object(se_obj.id) -- se_obj is already a server object
 --		if se_obj == nil then return end -- not possible here

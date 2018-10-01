@@ -7,7 +7,6 @@ function allow_break_dialog(first_speaker, second_speaker, id)
 	end
 
 	local npc_id = npc:id()
-
 	local st = db.storage[npc_id].meet
 --[[
 	if st == nil then
@@ -22,7 +21,6 @@ function allow_break_dialog(first_speaker, second_speaker, id)
 ]]
 	return st == nil or st.allow_break ~= false
 end
-
 
 function break_dialog(first_speaker, second_speaker, id)
 	first_speaker:stop_talk()
@@ -115,53 +113,49 @@ end
 ]]
 --' Use this function instead.
 function relocate_item_section(victim, section, type, amount)
-	local actor = db.actor
-	if actor and victim then
-		local amount = amount
-		if not amount then
-			amount = 1
-		end
-		if type == "in" then
---			if quest_section[section] == true and victim:object(section) ~= nil then
---				for i = 1, amount do
---					victim:transfer_item(victim:object(section), actor)
---				end
---			else
-				local sim = alife()
-				local vec = vector()
-				local actor_id = actor:id()
-				for i = 1, amount do
---					alife():create(section, actor:position(), actor:level_vertex_id(), actor:game_vertex_id(), actor:id())
-					sim:create(section, vec, 0, 0, actor_id)
-				end
---			end
-		elseif type == "out" then
-			for i = 1, amount do
-				actor:transfer_item(actor:object(section), victim)
+	if victim then
+		local actor = db.actor
+		if actor then
+			local amount = amount
+			if not amount then
+				amount = 1
 			end
+			if type == "in" then
+				local sim = _G.sim
+				local vec = vector()
+				for i = 1, amount do
+					sim:create(section, vec, 0, 0, 0)
+				end
+			elseif type == "out" then
+				for i = 1, amount do
+					actor:transfer_item(actor:object(section), victim)
+				end
+			end
+			if ammo_section[section] == true then
+				local ltx = system_ini()
+				local box_size = ltx:r_s32(section, "box_size")
+				amount = amount * box_size
+			end
+			news_manager.relocate_item(actor, type, section, amount)
 		end
-		if ammo_section[section] == true then
-			local ltx = system_ini()
-			local box_size = ltx:r_s32(section, "box_size")
-			amount = amount * box_size
-		end
-		news_manager.relocate_item(actor, type, section, amount)
 	end
 end
 
 function relocate_money(victim, num, type)
-	local actor = db.actor
-	if actor and victim then
-		if type == "in" then
-			actor:give_money(num)
---			game_stats.money_quest_update (num)
-			xr_statistic.inc_recieved_money_counter(num)
-		elseif type == "out" then
-			actor:transfer_money(num, victim)
---			game_stats.money_quest_update (-num)
-			xr_statistic.inc_spent_money_counter(num)
+	if victim then
+		local actor = db.actor
+		if actor then
+			if type == "in" then
+				actor:give_money(num)
+--				game_stats.money_quest_update (num)
+				xr_statistic.inc_recieved_money_counter(num)
+			elseif type == "out" then
+				actor:transfer_money(num, victim)
+--				game_stats.money_quest_update (-num)
+				xr_statistic.inc_spent_money_counter(num)
+			end
+			news_manager.relocate_money(actor, type, num)
 		end
-		news_manager.relocate_money(actor, type, num)
 	end
 end
 
@@ -400,21 +394,12 @@ function relocate_item_section_to_actor(first_speaker, second_speaker, section, 
 		amount = 1
 	end
 
-	local actor = db.actor
+	local sim = _G.sim
+	local vec = vector()
 
---	if quest_section[section] == true and npc:object(section) ~= nil then
---		for i = 1, amount do
---			npc:transfer_item(npc:object(section), actor)
---		end
---	else
-		local sim = alife()
-		local vec = vector()
-		local actor_id = actor:id()
-		for i = 1, amount do
---			alife():create(section, actor:position(), actor:level_vertex_id(), actor:game_vertex_id(), actor:id())
-			sim:create(section, vec, 0, 0, actor_id)
-		end
---	end
+	for i = 1, amount do
+		sim:create(section, vec, 0, 0, 0)
+	end
 
 	if ammo_section[section] == true then
 		local ltx = system_ini()
@@ -422,7 +407,7 @@ function relocate_item_section_to_actor(first_speaker, second_speaker, section, 
 		amount = amount * box_size
 	end
 
-	news_manager.relocate_item(actor, "in", section, amount)
+	news_manager.relocate_item(db.actor, "in", section, amount)
 end
 
 function relocate_item_section_from_actor(first_speaker, second_speaker, section)
@@ -472,20 +457,20 @@ function is_pistol(npc, item)
 	local section = item:section()
 	if section == "wpn_beretta"
 	or section == "wpn_colt1911"
-	or section == "wpn_colt1911_up2"	-- SRP
+	or section == "wpn_colt1911_up2"     -- SRP
 	or section == "wpn_desert_eagle"
-	or section == "wpn_desert_eagle_up"	-- SRP
+	or section == "wpn_desert_eagle_up"  -- SRP
 	or section == "wpn_fort"
-	or section == "wpn_fort_up"		-- SRP
+	or section == "wpn_fort_up"          -- SRP
 	or section == "wpn_hpsa"
 	or section == "wpn_pb"
 	or section == "wpn_pm"
-	or section == "wpn_pm_up"		-- SRP
-	or section == "wpn_pm_9x19"		-- SRP
-	or section == "wpn_sig220"		-- SRP
+	or section == "wpn_pm_up"            -- SRP
+	or section == "wpn_pm_9x19"          -- SRP
+	or section == "wpn_sig220"           -- SRP
 	or section == "wpn_usp"
 	or section == "wpn_walther"
-	or section == "wpn_walther_up2" then	-- SRP
+	or section == "wpn_walther_up2" then -- SRP
 		db.actor.pistol = section
 	end
 end
@@ -525,25 +510,25 @@ end
 function is_gun(npc, item)
 	local section = item:section()
 	if section == "wpn_abakan"
-	or section == "wpn_abakan_up2"		-- SRP
+	or section == "wpn_abakan_up2"       -- SRP
 	or section == "wpn_ak74"
-	or section == "wpn_ak74_up"		-- SRP
-	or section == "wpn_ak74_up2"		-- SRP
+	or section == "wpn_ak74_up"          -- SRP
+	or section == "wpn_ak74_up2"         -- SRP
 	or section == "wpn_ak74u"
-	or section == "wpn_fn2000"		-- SRP
-	or section == "wpn_g36"			-- SRP
+	or section == "wpn_fn2000"           -- SRP
+	or section == "wpn_g36"              -- SRP
 	or section == "wpn_groza"
-	or section == "wpn_l85"			-- SRP
-	or section == "wpn_lr300"		-- SRP
-	or section == "wpn_lr300_up2"		-- SRP
-	or section == "wpn_mp5"			-- SRP
+	or section == "wpn_l85"              -- SRP
+	or section == "wpn_lr300"            -- SRP
+	or section == "wpn_lr300_up2"        -- SRP
+	or section == "wpn_mp5"              -- SRP
 	or section == "wpn_sig550"
-	or section == "wpn_sig550_up2"		-- SRP
-	or section == "wpn_svd"			-- SRP
-	or section == "wpn_svu"			-- SRP
-	or section == "wpn_val"			-- SRP
+	or section == "wpn_sig550_up2"       -- SRP
+	or section == "wpn_svd"              -- SRP
+	or section == "wpn_svu"              -- SRP
+	or section == "wpn_val"              -- SRP
 	or section == "wpn_vintorez"
-	or section == "wpn_vintorez_up" then	-- SRP
+	or section == "wpn_vintorez_up" then -- SRP
 		db.actor.gun = section
 	end
 end

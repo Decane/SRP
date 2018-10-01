@@ -225,7 +225,7 @@ function se_stalker:on_register()
 		return
 	end
 
-	alife():object(smart_obj.id):register_npc(self)
+	_G.sim:object(smart_obj.id):register_npc(self)
 end
 
 --------------------
@@ -233,7 +233,7 @@ end
 function se_stalker:on_unregister()
 	local strn_id = self:smart_terrain_id()
 	if strn_id ~= 65535 then
-		local smart = alife():object(strn_id)
+		local smart = _G.sim:object(strn_id)
 		if smart ~= nil then
 			smart:unregister_npc(self)
 		end

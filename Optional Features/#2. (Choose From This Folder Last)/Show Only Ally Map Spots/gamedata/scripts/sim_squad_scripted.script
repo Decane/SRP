@@ -76,7 +76,7 @@ function sim_squad_scripted:create_npc(spawn_smart)
 
 	local spawn_sections = utils.parse_names(spawn_sections_str)
 	local ltx = system_ini()
-	local sim = alife()
+	local sim = _G.sim
 
 	for k, npc_section in pairs (spawn_sections) do
 

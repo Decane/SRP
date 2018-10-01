@@ -11,8 +11,8 @@ local max_sleep_time = 12    -- Max value of time.
 local best_enemy     = nil   -- Best enamy.
 local danger         = 0     -- Danger value.
 
-local mutants = {
-
+local mutants =
+{
 	[clsid.bloodsucker_s] = 1,
 	[clsid.boar_s]        = 2,
 	[clsid.dog_s]         = 4,
@@ -34,7 +34,7 @@ local mutants = {
 ------------------------------------------------------------------------------------------------
 
 local function sim_create(section, position, lvid, gvid)
-	local sim = alife()
+	local sim = _G.sim
 	local sobj_id = sim:create(section, position, lvid, gvid).id
 	sim:set_switch_online(sobj_id, true)
 	sim:set_switch_offline(sobj_id, false)

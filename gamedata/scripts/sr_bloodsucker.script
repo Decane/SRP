@@ -37,7 +37,7 @@ end
 
 function bloodsucker_attack:enable_squad_reaction()
 	local restr_obj = self.object
-	self.attacked_squad_id = alife():object(self.target_obj:id()).squad_id
+	self.attacked_squad_id = _G.sim:object(self.target_obj:id()).squad_id
 	db.storage[restr_obj:id()].reaction_manager = reaction_manager(restr_obj, self)
 end
 
@@ -204,7 +204,7 @@ function bloodsucker_attack:update(delta)
 
 		self.panic_snd:stop()
 		bind_stalker.del_to_delayed_release(self.bloodsucker.id)
-		local sim = alife()
+		local sim = _G.sim
 		sim:release(self.bloodsucker, true)
 		sim:release(sim:object(self.target_obj_id), true)
 --		bind_stalker.add_to_delayed_release(self.target_obj_id)
@@ -281,7 +281,7 @@ function bloodsucker_attack:actor_update(delta)
 			xr_logic.mob_release(self.bloodsucker_obj)
 			db.del_obj(self.bloodsucker_obj)
 		end
-		alife():release(self.bloodsucker,true)
+		_G.sim:release(self.bloodsucker,true)
 		self.target_obj = nil
 		xr_motivator.bloodsucker_zone_enter = {}
 		self.bloodsucker = nil
@@ -351,7 +351,7 @@ function bloodsucker_attack:set_positions()
 					self.st.monster = "bloodsucker_jumper"
 				end
 			end
-			self.bloodsucker = alife():create(self.st.monster, self.current, self.object:level_vertex_id(), self.object:game_vertex_id())
+			self.bloodsucker = _G.sim:create(self.st.monster, self.current, self.object:level_vertex_id(), self.object:game_vertex_id())
 			self.bloodsucker.sim_forced_online = true
 			self.appear_snd:play_at_pos(db.actor, self.current, 0, sound_object.s3d)
 			if self.snd_obj and self.snd_obj:playing() then
@@ -426,7 +426,7 @@ function reaction_manager:__init (obj, sr_blood)
 	self.target_npc				= sr_blood.target_obj
 	self.target_npc_id			= self.target_npc:id()
 	self.obj					= obj
-	self.npc_squad				= sim_board.get_sim_board().squads[alife():object(self.target_npc:id()).squad_id]
+	self.npc_squad				= sim_board.get_sim_board().squads[_G.sim:object(self.target_npc:id()).squad_id]
 	self.squad_npc_state		= {}
 	self.squad					= {}
 	self.squad_objs				= {}

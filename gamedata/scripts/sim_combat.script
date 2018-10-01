@@ -194,7 +194,7 @@ function CCombat_manager:enemy_callback(my_squad, enemy_squad)
 --					end
 				end
 			end
-			self.cover_manager:calculate_covers(alife():object(enemy_squad.commander_id).position)
+			self.cover_manager:calculate_covers(_G.sim:object(enemy_squad.commander_id).position)
 --		else
 --			dbgmsg("Squad "..my_squad_id.." is not on combat smart.")
 		end
@@ -367,7 +367,7 @@ function CCombat_manager:update_squad(id, data)
 	end
 
 	local squad_npcs = squad.squad_npc
-	local sim = alife()
+	local sim = _G.sim
 
 	for k in pairs (squad_npcs) do
 		if sim:object(k) == nil then
@@ -918,7 +918,7 @@ function actor_come(squad, sim)
 	if actor == nil then
 		return false
 	end
-	local sim = sim or alife()
+	local sim = sim or _G.sim
 	local actor_position = actor:position()
 	local squad_npcs = squad.squad_npc
 	for k in pairs (squad_npcs) do

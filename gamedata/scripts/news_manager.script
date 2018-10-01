@@ -76,7 +76,7 @@ function send_tip(actor, news_id, timeout, sender, showtime, sender_id)
 	if news_id == nil then return false end
 
 	if sender_id ~= nil then
-		local sim = alife()
+		local sim = _G.sim
 		if sim ~= nil then
 			local npc = sim:story_object(sender_id)
 			if npc ~= nil then

@@ -1,3 +1,5 @@
+local sim = _G.sim
+
 --'------------------------------------------------------
 --' UI functions
 --'------------------------------------------------------
@@ -263,7 +265,7 @@ function take_money(actor, npc, p)
 end
 
 function give_actor(actor, npc, p)
-	local sim = alife()
+--	local sim = alife()
 	local vec = vector()
 	for k, v in pairs (p) do
 		sim:create(v, vec, 0, 0, 0)
@@ -271,7 +273,7 @@ function give_actor(actor, npc, p)
 end
 
 function give_items(actor, npc, p)
-	local sim = alife()
+--	local sim = alife()
 	local vec = vector()
 	local npc_id = npc:id()
 	for i, v in pairs (p) do
@@ -810,7 +812,7 @@ function spawn_object(actor, obj, p)
 
 	local ptr = patrol(path_name)
 	local index = p[3] or 0
-	local se_obj = alife():create(spawn_sect, ptr:point(index), ptr:level_vertex_id(0), ptr:game_vertex_id(0))
+	local se_obj = sim:create(spawn_sect, ptr:point(index), ptr:level_vertex_id(0), ptr:game_vertex_id(0))
 
 	if IsStalker(nil, se_obj:clsid()) then
 		local yaw = p[4] or 0
@@ -825,7 +827,7 @@ function spawn_object_in(actor, obj, p)
 		abort("[xr_effects.spawn_object_in]: Parameter(s) missing.")
 	end
 
-	local sim = alife()
+--	local sim = alife()
 	local box = sim:object(target_name)
 	if box == nil then
 		abort("[xr_effects.spawn_object_in]: Box '%s' does not exist.", tostring(target_name))
@@ -847,7 +849,7 @@ function spawn_npc_in_zone(actor, obj, p)
 		abort("[xr_effects.spawn_npc_in_zone]: Zone '%s' does not exist.", tostring(zone_name))
 	end
 
-	local spawned_obj = alife():create(spawn_sect, zone:position(), zone:level_vertex_id(), zone:game_vertex_id())
+	local spawned_obj = sim:create(spawn_sect, zone:position(), zone:level_vertex_id(), zone:game_vertex_id())
 
 	spawned_obj.sim_forced_online = true
 	spawned_obj.squad = 1 or p[3]
@@ -858,7 +860,7 @@ end
 function destroy_object(actor, obj, p)
 
 	local p1 = p and p[1]
-	local sim = alife()
+--	local sim = alife()
 	local sobj
 
 	if p1 == nil then
@@ -1252,7 +1254,7 @@ function kill_squad(actor, obj, p)
 		return
 	end
 
-	local sim = alife()
+--	local sim = alife()
 	for npc_id in pairs (squad.squad_npc) do
 		local st_npc = db.storage[npc_id]
 		local cl_obj = st_npc and st_npc.object
@@ -1472,7 +1474,7 @@ function set_level_faction_community(actor, npc, p) -- sets *goodwill* to player
 					goodwill = 9000 -- vanilla: 1000
 				end
 
-				local sim = alife()
+--				local sim = alife()
 				local GG = game_graph()
 
 				for k, squad in pairs (faction.squads) do
@@ -1723,7 +1725,7 @@ function stc_activate_weapon(actor, npc, p)
 end
 
 function stc_create_some_csky_stalkers(actor, npc, p)
-	local sim = alife()
+--	local sim = alife()
 	local patrol_point = patrol(p[1])
 	local rand = math.random
 	local patrol_point_count = patrol_point:count()
@@ -1752,7 +1754,7 @@ function stc_create_some_monolith_stalkers(actor, npc, p)
 	local act = db.actor
 	local rand = math.random
 	local rem = table.remove
-	local sim = alife()
+--	local sim = alife()
 	for i = 1, p[3] do
 		local rnd_point = rand(1, #used_points)
 		local patrol_point = used_points[rnd_point]
@@ -1859,7 +1861,7 @@ function add_map_spot(actor, npc, p)
 		local story_id = tonumber(p1)
 		local id = id_by_sid(story_id)
 		if id == nil then
-			local obj = alife():object(p1)
+			local obj = sim:object(p1)
 			id = obj and obj.id
 		else
 			local p2 = p[2] or "primary_task_location"
@@ -1885,7 +1887,7 @@ function remove_map_spot(actor, npc, p)
 		local story_id = tonumber(p1)
 		local id = id_by_sid(story_id)
 		if id == nil then
-			local obj = alife():object(p1)
+			local obj = sim:object(p1)
 			id = obj and obj.id
 		else
 			local p2 = p[2] or "primary_task_location"
@@ -1998,7 +2000,7 @@ function release_npc_item(actor, npc, p)
 	end
 	local item = npc:object(item_name)
 	if item ~= nil then
-		local sim = alife()
+--		local sim = alife()
 		sim:release(sim:object(item:id()), true)
 	end
 end

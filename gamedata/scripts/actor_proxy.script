@@ -7,8 +7,8 @@ end
 function actor_proxy:init()
 	if not self.initialized then
 		self.online = false
-		local sim = alife()
-		self.alife = sim
+		local sim = _G.sim
+--		self.alife = sim
 		if sim then
 			self.actor_id = sim:actor().id
 		end
@@ -19,7 +19,7 @@ end
 
 function actor_proxy:deinit()
 	if self.initialized then
-		self.alife = nil
+--		self.alife = nil
 		self.actor = nil
 		self.initialized = false
 	end

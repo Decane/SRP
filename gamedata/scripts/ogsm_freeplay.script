@@ -9,7 +9,7 @@ function set_lc()
 end
 
 function del_so(name)
-	local sim = alife()
+	local sim = _G.sim
 	local se_obj = sim:object(name)
 	if se_obj ~= nil then
 		sim:release(se_obj, true)
@@ -110,7 +110,7 @@ function spawn_lc(sid, from_level, from_pos, dest_level, dest_pos, spot, hint, m
 
 			}
 
-	local obj = alife():create("level_changer", from_pos, vertexes[from_level]["lvid"], vertexes[from_level]["gvid"])
+	local obj = _G.sim:create("level_changer", from_pos, vertexes[from_level]["lvid"], vertexes[from_level]["gvid"])
 
 --	if sid ~= 6003 then
 		level.map_add_object_spot_ser(obj.id, spot, hint)

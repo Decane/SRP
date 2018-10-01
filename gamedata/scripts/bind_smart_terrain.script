@@ -1,3 +1,4 @@
+local sim = _G.sim
 local object_binder_update = object_binder.update
 
 function bind(obj)
@@ -10,7 +11,7 @@ function bind(obj)
 
 	if ini:section_exist("smart_terrain") then
 		if obj:clsid() == clsid.smart_terrain then
-			if alife() then
+			if sim then
 				obj:bind_object(smart_terrain_binder(obj))
 			end
 		else
@@ -32,7 +33,7 @@ function smart_terrain_binder:net_spawn(server_object)
 		return false
 	end
 
-	self.se_smart_terrain = alife():object(server_object.id)
+	self.se_smart_terrain = sim:object(server_object.id)
 
 --	db.add_zone(self.object)
 --	db.add_smart_terrain(self.se_smart_terrain)

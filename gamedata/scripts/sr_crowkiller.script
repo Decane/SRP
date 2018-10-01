@@ -83,7 +83,7 @@ function crowkiller:check_for_spawn_new_crow()
 		rem(path_table, idx)
 		if self.spawn_points_idle[selected_path] <= TG then
 			local ptr = patrol(selected_path)
-			local obj = alife():create("m_crow", ptr:point(0), ptr:level_vertex_id(0), ptr:game_vertex_id(0))
+			local obj = _G.sim:create("m_crow", ptr:point(0), ptr:level_vertex_id(0), ptr:game_vertex_id(0))
 			self.spawn_points_idle[selected_path] = TG + 10000
 			return
 		end

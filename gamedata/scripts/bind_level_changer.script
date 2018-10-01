@@ -58,7 +58,7 @@ function lchanger_binder:net_spawn(sobject)
 	end
 	local obj = self.object
 	db.add_obj(obj)
-	local se_obj = alife():object(obj:id())
+	local se_obj = _G.sim:object(obj:id())
 	self.st.s_obj = se_obj
 	obj:enable_level_changer(se_obj.enabled)
 	obj:set_level_changer_invitation(se_obj.hint)

@@ -1,6 +1,8 @@
 -- nv170324, nv170508: Fixed the use_object callback for doors and buttons being reset on scheme switch.
 -- DC170518, DC180328: Optimization.
 
+local sim = _G.sim
+
 local function get_string(ini, section, field, default)
 	if section and ini:section_exist(section) and ini:line_exist(section, field) then
 		return ini:r_string(section, field) or default -- string if field has a value, else default
@@ -890,7 +892,7 @@ local function cfg_get_npc_and_zone_s(str, section, field, cond, npc)
 	local t = cfg_get_number_string_and_condlist_s(str, section, field, cond, npc)
 
 	if t then
-		local sim = alife()
+--		local sim = alife()
 		if sim then
 			local se_obj = sim:story_object(t.v1)
 			if se_obj then

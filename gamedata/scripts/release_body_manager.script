@@ -23,7 +23,7 @@ end
 
 local function try_to_release()
 
-	local sim = alife()
+	local sim = _G.sim
 	local session_time = math_ceil(0.001 * time_global()) - session_start_time
 	local t = {}
 	local c = 0

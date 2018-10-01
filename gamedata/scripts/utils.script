@@ -315,7 +315,7 @@ function send_to_nearest_accessible_vertex(npc, v_id)
 end
 
 function level_changing()
-	local sim = alife()
+	local sim = _G.sim
 	if not sim then
 		return false
 	end

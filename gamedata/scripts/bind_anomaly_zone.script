@@ -76,7 +76,7 @@ function anomaly_zone_binder:spawn_artefact_randomly()
 	local rnd_path_name = self.path_table[math_random(1, #self.path_table)]
 	local rnd_path = patrol(rnd_path_name)
 	local rnd_path_point = math_random(0, rnd_path:count() - 1)
-	local artefact_id = alife():create(rnd_artefact, rnd_path:point(rnd_path_point), self.object:level_vertex_id(), self.object:game_vertex_id()).id
+	local artefact_id = _G.sim:create(rnd_artefact, rnd_path:point(rnd_path_point), self.object:level_vertex_id(), self.object:game_vertex_id()).id
 
 	artefact_ways_by_id[artefact_id] = rnd_path_name
 	parent_zones_by_artefact_id[artefact_id] = self

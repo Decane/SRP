@@ -33,7 +33,7 @@ function crow_binder:update(delta)
 	local death_time = self.death_time
 	if death_time ~= nil then
 		if game.get_game_time():diffSec(death_time) >= 1200 then -- 10 * 120 seconds = 1200 game-seconds
-			local sim = alife()
+			local sim = _G.sim
 			sim:release(sim:object(self.object:id()), true)
 		end
 	end
@@ -45,7 +45,7 @@ function crow_binder:net_spawn(sobject)
 	end
 	local sobj = self.object
 	if not sobj:alive() then
-		local sim = alife()
+		local sim = _G.sim
 		sim:release(sim:object(sobj:id()), true)
 		return true
 	end

@@ -418,7 +418,7 @@ function actor_dont_pay(first_speaker, second_speaker)
 --	db.storage[db.storage[second_speaker:id()].robbery_zone_id].robbery_manager:set_danger_dist_check(true)
 --	local robber_squad_id = alife():object(second_speaker:id()).squad_id
 --	game_relations.set_squad_goodwill(robber_squad_id, "enemy")
-	local robber_smart_id = alife():object(second_speaker:id()).m_smart_terrain_id
+	local robber_smart_id = _G.sim:object(second_speaker:id()).m_smart_terrain_id
 	game_relations.set_gulag_relation_actor(robber_smart_id, "enemy")
 end
 

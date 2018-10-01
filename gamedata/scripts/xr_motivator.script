@@ -2,6 +2,7 @@
 -- lasthealth = 0
 -- lastime = nil
 
+local sim = _G.sim
 local object_binder_update = object_binder.update
 local bloodsuckers_restr = {}
 bloodsucker_zone_enter = {}
@@ -70,7 +71,7 @@ function motivator_binder:net_spawn(sobject)
 	xrs_dyn_music.add_object(npc)
 
 	local npc_st = db.storage[id]
-	local se_npc = alife():object(id)
+	local se_npc = sim:object(id)
 
 	npc_st.squad_obj = sim_board.get_sim_board().squads[se_npc.squad_id]
 
@@ -277,10 +278,10 @@ function motivator_binder:death_callback(victim, culprit)
 
 	sr_light.check_light(victim)
 
-	local sim = alife()
+--	local sim = alife()
 	local se_npc = sim:object(id)
 
-	death_manager.drop_manager(victim):create_release_item(sim, se_npc, id)
+	death_manager.drop_manager(victim):create_release_item(se_npc, id)
 
 	db.delete_enemy(self.e_index)
 
@@ -311,7 +312,7 @@ function motivator_binder:use_callback(used_npc, user)
 			xr_logic.issue_event(used_npc, npc_st[npc_st.active_scheme], "use_callback", used_npc, user)
 		end
 	else
-		local se_npc = alife():object(used_npc:id())
+		local se_npc = sim:object(used_npc:id())
 		if se_npc ~= nil and se_npc.treasure_processed ~= true then
 			treasure_manager.use(used_npc)
 			se_npc.treasure_processed = true
@@ -341,10 +342,10 @@ function motivator_binder:update(delta)
 		if npc_alive == true then
 			trade_manager.update(npc) -- update the NPC on first update to prevent e.g. his walkie-talkie (Suslov) or pistol (flea market night trader) vanishing from his hands if the first time the NPC is "used" after loading is with the item equipped
 		else
-			local sim = alife()
+--			local sim = alife()
 			local se_npc = sim:object(id)
 			if se_npc and se_npc.death_droped ~= true then
-				death_manager.drop_manager(npc):create_release_item(sim, se_npc, id) -- create drop items for perma-corpses if haven't already; they don't get a death_callback() call
+				death_manager.drop_manager(npc):create_release_item(se_npc, id) -- create drop items for perma-corpses if haven't already; they don't get a death_callback() call
 			end
 		end
 		if self.is_strelok then
@@ -561,7 +562,7 @@ function motivator_binder:hear_callback(self, who, sound_type, sound_position, s
 end
 ]]
 function AddToMotivator(npc)
-	if alife() then
+	if sim then
 		npc:bind_object(this.motivator_binder(npc))
 	end
 end

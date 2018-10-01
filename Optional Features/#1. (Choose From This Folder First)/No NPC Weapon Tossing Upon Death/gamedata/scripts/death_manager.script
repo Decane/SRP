@@ -1,5 +1,7 @@
 -- DC170429: Fixed hyphenated item names, appearing as dependees for ammo in section [item_dependence] in death_generic.ltx, being parsed incorrectly.
 
+local sim = _G.sim
+
 local math_random     = math.random
 local math_ceil       = math.ceil
 local vec             = vector()
@@ -132,7 +134,7 @@ function drop_manager:__init(npc)
 	self.npc = npc
 end
 
-function drop_manager:create_release_item(sim, se_npc, npc_id)
+function drop_manager:create_release_item(se_npc, npc_id)
 	local snpc = self.npc
 	se_npc.death_droped = true
 	snpc:iterate_inventory(keep_item, snpc)
@@ -215,7 +217,7 @@ function keep_item(npc, item)
 		end
 	end
 	if not npc:marked_dropped(item) then
-		local sim = alife()
+--		local sim = alife()
 		sim:release(sim:object(item:id()), true)
 	end
 end

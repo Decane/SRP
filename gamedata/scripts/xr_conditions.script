@@ -1,3 +1,5 @@
+local sim = _G.sim
+
 --'------------------------------------------------------
 --' Enemy functions
 --'------------------------------------------------------
@@ -235,12 +237,12 @@ end
 
 function is_alive(actor, npc, p)					-- if p[1] == nil and/or alife():story_object(p[1]) == nil, returns false
 --	local npc1 = level_object_by_sid(p[1])				-- don't use this, else when NPC goes offline, this evalutes to nil and func. returns false even though NPC is still alive
-	local npc1 = alife():story_object(p[1])
+	local npc1 = sim:story_object(p[1])
 	return npc1 and npc1:alive()
 end
 
 function is_dead_all(actor, npc, p)					-- if p[1] == nil and/or alife():story_object(p[1]) == nil, returns true
-	local sim = alife()
+--	local sim = alife()
 	for i, v in pairs (p) do
 --		local npc1 = level_object_by_sid(v)
 		local npc1 = sim:story_object(v)
@@ -918,7 +920,7 @@ function squad_in_zone(actor, npc, p)					-- returns true if even a single squad
 		return false
 	end
 
-	local sim = alife()
+--	local sim = alife()
 	for k in pairs (squad.squad_npc) do
 		if zone:inside(sim:object(k).position) then
 			return true
@@ -1093,7 +1095,7 @@ end
 
 function check_dist_to_obj_on_job_le(actor, npc, p)			-- if p[1]/p[2]/alife():object(p[1])/gulag:idNPCOnJob(p[2]) == nil, returns false; if p[3] == nil, crash the game
 
-	local gulag = alife():object(p[1])
+	local gulag = sim:object(p[1])
 	if gulag == nil then
 		return false
 	end
@@ -1124,7 +1126,7 @@ function check_npc_squad(actor, npc, p)					-- if p[1] == nil, crash the game; i
 		return false
 	end
 
-	local npc_id = alife():object(npc:name()).id
+	local npc_id = sim:object(npc:name()).id
 	for k in pairs (squad.squad_npc) do
 		if npc_id == k then
 			return true
@@ -1168,7 +1170,7 @@ function squad_in_zone_all(actor, npc, p)				-- returns false if any squad npc i
 		return false
 	end
 
-	local sim = alife()
+--	local sim = alife()
 	for k in pairs (squad.squad_npc) do
 		if not zone:inside(sim:object(k).position) then
 			return false
@@ -1477,13 +1479,13 @@ end
 
 function npc_is_squad_leader(actor, npc)
 	local npc_id = npc.id
-	local se_npc = alife():object(npc_id)
+	local se_npc = sim:object(npc_id)
 	local squad = sim_board.get_sim_board().squads[se_npc and se_npc.squad_id]
 	return squad and squad.commander_id == npc_id
 end
 
 function npc_is_in_attacking_squad(actor, npc)
-	local se_npc = alife():object(npc.id)
+	local se_npc = sim:object(npc.id)
 	local squad = sim_board.get_sim_board().squads[se_npc and se_npc.squad_id]
 	return squad and squad.current_action and squad.current_action.name == "attack_point"
 end

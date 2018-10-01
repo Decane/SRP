@@ -71,7 +71,7 @@ function add_actor(obj)
 
 	if not has_alife_info("has_sleeping_bag") then
 		obj:give_info_portion("has_sleeping_bag")
-		alife():create("sleepingbag", vector(), 0, 0, obj:id())
+		_G.sim:create("sleepingbag", vector(), 0, 0, 0)
 	end
 end
 

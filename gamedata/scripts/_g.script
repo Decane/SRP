@@ -42,6 +42,8 @@ end
 dev_debug = false
 ----------------------------------------------------------------------
 
+sim = nil -- global variable to store alife()
+
 local sim = nil
 
 function abort(fmt, ...)
@@ -939,6 +941,8 @@ end
 function start_game_callback()
 
 	sim = alife()
+
+	_G.sim = sim
 
 	monster_classes = {
 

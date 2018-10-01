@@ -9,7 +9,7 @@ class "bridge_binder" (object_binder)
 
 function bridge_binder:__init(obj) super(obj)
 	self.bridge = obj
-	local se_koleso = alife():story_object(516)
+	local se_koleso = _G.sim:story_object(516)
 	self.se_koleso_id = se_koleso and se_koleso.id
 end
 

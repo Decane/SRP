@@ -1,3 +1,5 @@
+local sim = _G.sim
+
 local monster_resource_by_level =
 {
 	marsh 		= {0,3},
@@ -133,7 +135,7 @@ function sim_squad_generic:spawn_box_items(smart_id)
 	end
 
 	local smart_name = smart:name()
-	local sim = alife()
+--	local sim = alife()
 	local box = sim:object(smart_name.."_box")
 
 	if not box then
@@ -237,7 +239,7 @@ function sim_squad_generic:create_npc(spawn_smart)
 		max_npc = monster_num[2]
 	end
 
-	local sim = alife()
+--	local sim = alife()
 	local faction = self.board.players[self.player_id]
 
 	for i = 1, math_random(min_npc, max_npc) do
@@ -315,7 +317,7 @@ function sim_squad_generic:set_squad_relation(relation)
 end
 
 function sim_squad_generic:clear_npc()
-	local sim = alife()
+--	local sim = alife()
 	for k in pairs (self.squad_npc) do
 		sim:release(sim:object(k), true)
 	end
@@ -325,7 +327,7 @@ function sim_squad_generic:clear_npc()
 end
 
 function sim_squad_generic:remove_npc(npc_id)
-	local sim = alife()
+--	local sim = alife()
 	local npc = sim:object(npc_id)
 	self:on_npc_death(npc)
 	sim:release(npc, true)
@@ -420,7 +422,7 @@ function sim_squad_generic:on_npc_death(npc, killer_id)
 end
 
 function sim_squad_generic:assign_smart(old_smart, old_smart_id, new_smart, new_smart_id)
-	local sim = alife()
+--	local sim = alife()
 	self.smart_id = new_smart_id
 	for npc_id in pairs (self.squad_npc) do
 		local se_npc = sim:object(npc_id)
@@ -987,7 +989,7 @@ function sim_squad_generic:issue_order(order)
 
 --	dbgmsg("Commander goodwill to actor: "..commander:general_goodwill(actor)..".")
 
-	local sim = alife()
+--	local sim = alife()
 	local com_pos = sim:object(commander_id).m_game_vertex_id
 	local actor_distance_to_commander = utils.graph_distance(sim:actor().m_game_vertex_id, com_pos)
 
@@ -1281,7 +1283,7 @@ function sim_squad_generic:init_squad_on_load()
 end
 
 function sim_squad_generic:force_online(to_online)
-	local sim = alife()
+--	local sim = alife()
 	for npc_id in pairs (self.squad_npc) do
 		local se_npc = sim:object(npc_id)
 		if se_npc ~= nil then
@@ -1536,7 +1538,7 @@ function sim_squad_generic:show()
 				end
 			else
 				local squad_faction = self.player_id
-				local actor_community = alife():actor():community()
+				local actor_community = sim:actor():community()
 				relation = relation_registry.community_goodwill(squad_faction, actor_community) + relation_registry.community_relation(squad_faction, actor_community)
 			end
 		end
@@ -1725,7 +1727,7 @@ function sim_attack_point:update()
 	end
 
 	local GG = game_graph()
-	local commander = alife():object(squad.commander_id)
+	local commander = sim:object(squad.commander_id)
 
 	if GG:vertex(commander.m_game_vertex_id):level_id() ~= GG:vertex(dest_smart.m_game_vertex_id):level_id() then
 --		dbgmsg(trans(squad.player_id).." commander level_id ["..GG:vertex(commander.m_game_vertex_id):level_id().."] ~= dest_smrt level_id ["..GG:vertex(dest_smart.m_game_vertex_id):level_id().."].")
@@ -1810,7 +1812,7 @@ function sim_attack_point:make()
 
 --	squad.current_action = self -- superfluous
 
-	local sim = alife()
+--	local sim = alife()
 	for npc_id in pairs (squad.squad_npc) do
 		local obj = sim:object(npc_id)
 		if obj ~= nil then

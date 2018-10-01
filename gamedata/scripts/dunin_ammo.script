@@ -1,7 +1,7 @@
 local ammo_data_table = {}
 local repack_needed = false
 local actor = db.actor
-local sim = alife()
+local sim = _G.sim
 
 local function get_ammo_count(ammo_id)
 	local packet = net_packet()

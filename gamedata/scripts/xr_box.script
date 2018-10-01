@@ -110,7 +110,7 @@ function ph_item_box:spawn_items()
 			c = c + 1
 			items[c] = item_data
 		end
-		local sim = alife()
+		local sim = _G.sim
 		local box_pos = box:position()
 		local box_lvid = box:level_vertex_id()
 		local box_gvid = box:game_vertex_id()
@@ -134,7 +134,7 @@ function ph_item_box:spawn_items()
 		spawn_items = item_by_community["def_box"]
 	end
 
-	local sim = alife()
+	local sim = _G.sim
 	local ini = system_ini()
 	local box_pos = box:position()
 	local box_lvid = box:level_vertex_id()

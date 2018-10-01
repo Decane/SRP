@@ -218,7 +218,7 @@ end
 ----------------------------------------------------------------------------------------------------------------------
 function actor_binder:on_use_item(obj)
 	if obj:section() == "sleepingbag" then
-		alife():create("sleepingbag", vector(), 0, 0, 0)
+		_G.sim:create("sleepingbag", vector(), 0, 0, 0)
 		level.start_stop_menu(atmsleep.UISleep(), true)
 	end
 end

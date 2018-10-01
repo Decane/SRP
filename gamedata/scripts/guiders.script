@@ -112,7 +112,7 @@ function action_fill_temp_teleport_points(fs, npc, dn, pi)
 
 	local act = db.actor
 	local marsh_base_zone = db.zone_by_name["mar_space_restrictor_csky_base_noweapon"]
-	local npc_smart_id = alife():object(npc_id).m_smart_terrain_id
+	local npc_smart_id = _G.sim:object(npc_id).m_smart_terrain_id
 	local act_pos = act:position()
 	local act_money = act:money()
 	local act_community = act:character_community()
