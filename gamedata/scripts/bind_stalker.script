@@ -19,6 +19,7 @@ local game_difficulty_by_num =
 }
 
 local clsid_wpn_ammo = clsid.wpn_ammo
+local clsid_equ_stalker_s = clsid.equ_stalker_s
 local object_binder_update = object_binder.update
 local tm = nil
 local actor = nil
@@ -199,8 +200,14 @@ function actor_binder:on_item_take(obj)
 			end
 		end
 	end
-	if obj:clsid() == clsid_wpn_ammo then
+	local obj_clsid = obj:clsid()
+	if obj_clsid == clsid_wpn_ammo then
 		dunin_ammo.on_take(obj)
+	elseif obj_clsid == clsid_equ_stalker_s then -- per NatVac: hack to undo reversion to default rookie jacket player model on picking up new armor
+		local actor_outfit = actor:item_in_slot(6)
+		if actor_outfit and obj:id() ~= actor_outfit:id() then
+			actor:transfer_item(actor_outfit, actor)
+		end
 	end
 end
 ----------------------------------------------------------------------------------------------------------------------
@@ -438,7 +445,7 @@ function actor_binder:update(delta)
 
 		level_tasks.add_lchanger_location()
 
-		-- Per NatVac: hack to display the current outfit's HUD arms mesh instead of the default rookie jacket's
+		-- Per NatVac: hack to undo reversion to default rookie jacket player model on game load
 		local actor_outfit = actor:item_in_slot(6)
 		if actor_outfit then
 			actor:transfer_item(actor_outfit, actor)
