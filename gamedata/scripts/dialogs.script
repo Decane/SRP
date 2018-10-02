@@ -434,7 +434,7 @@ function who_is_npc(first_speaker, second_speaker)
 	end
 	return npc
 ]]
-	return db.actor:id() == second_speaker:id() and first_speaker or second_speaker
+	return 0 == second_speaker:id() and first_speaker or second_speaker -- 0 = actor ID
 end
 
 --------------------------------------------------------------------------------

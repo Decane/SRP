@@ -387,7 +387,7 @@ function activate_surge(time)
 		phase = 1
 	elseif phase == 1 then
 		weather_surge = false
-		xr_sound.set_sound_play(db.actor:id(), "blowout_begin")
+		xr_sound.set_sound_play(0, "blowout_begin") -- 0 = actor ID
 		level.add_cam_effector("camera_effects\\shell_shock.anm", 20080501, false, "")
 		level.add_pp_effector("snd_shock.ppe", 20080401, false)
 		level.set_pp_effector_factor(20080401, 0, 1)

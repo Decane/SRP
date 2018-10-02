@@ -177,13 +177,12 @@ function set_level_faction_community(obj) -- sets personal_goodwill and communit
 
 	local obj_com = obj:character_community()
 	local obj_id = obj:id()
-	local act_id = act:id()
 
 	for k, v in pairs (temp_goodwill_table.communities) do
 		if obj_com == k then
 			for kk, vv in pairs (v) do
 				if kk == obj_id then
-					relation_registry.set_community_goodwill(k, act_id, vv)
+					relation_registry.set_community_goodwill(k, 0, vv) -- 0 = actor ID
 					obj:set_goodwill(vv, act)
 					v[kk] = nil
 				end

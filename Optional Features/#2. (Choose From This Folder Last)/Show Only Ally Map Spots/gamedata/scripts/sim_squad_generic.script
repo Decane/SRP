@@ -361,7 +361,7 @@ function sim_squad_generic:on_npc_death(npc, killer_id)
 
 	local st_npc = db.storage[npc_id]
 	if st_npc ~= nil then
-		if killer_id == db.actor:id() then
+		if killer_id == 0 then -- 0 = actor ID
 			local victim_squad = st_npc.squad_obj
 			local combat_smart_id = nil
 			if victim_squad ~= nil then

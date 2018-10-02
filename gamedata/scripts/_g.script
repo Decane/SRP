@@ -863,7 +863,7 @@ function remove_postprocess()
 end
 ]]
 function set_inactivate_input_time(delta)
-	local actor_storage = db.storage[db.actor:id()]
+	local actor_storage = db.storage[0] -- 0 = actor ID
 	actor_storage.disable_input_time = game.get_game_time()
 	actor_storage.disable_input_idle = delta
 	level.disable_input()

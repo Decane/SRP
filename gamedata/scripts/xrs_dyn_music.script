@@ -454,7 +454,7 @@ end
 function play_local_combat(actor, npc_obj, actor_pos, npc_id)
 	if npc_obj:relation(actor) == game_object.enemy then
 		local best_enemy = npc_obj:best_enemy()
-		if best_enemy and best_enemy:id() == actor:id() then
+		if best_enemy and best_enemy:id() == 0 then -- 0 = actor ID
 			if npc_obj:see(actor) then
 				play_consider_silence_zone(actor_pos, npc_id, 1)
 				return true

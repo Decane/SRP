@@ -102,7 +102,7 @@ function bloodsucker_attack:update(delta)
 
 		-- If marsh creature targeted NPC, not player, disable squad reaction to it:
 
-		if self.target_obj:id() ~= actor:id() then
+		if self.target_obj:id() ~= 0 then -- 0 = actor ID
 --			self:reset_restrictions()
 			self:disable_reaction_final()
 			if self.target_obj ~= nil and self.target_obj:alive() then
@@ -149,7 +149,7 @@ function bloodsucker_attack:update(delta)
 	-- If player is victim, ____________ and continue no further:
 
 	if self.target_obj ~= nil then
-		if self.target_obj:id() == actor:id() then
+		if self.target_obj:id() == 0 then -- 0 = actor ID
 			self:actor_update(delta)
 			return
 		end
@@ -342,7 +342,7 @@ function bloodsucker_attack:set_positions()
 
 	if (self:next_point() == 0) then
 		if self.bloodsucker == nil and self.played_count >= self.sound_count then
-			if self.target_obj:id() == db.actor:id() then
+			if self.target_obj:id() == 0 then -- 0 = actor ID
 				self.st.monster = "bloodsucker_fast"
 			else
 				if self.deadly_bloodsucker == true then
@@ -400,7 +400,7 @@ function death_hit(sucker, npc)
 	local hitted_obj = npc
 	local power      = 0
 
-	if hitted_obj:id() == db.actor:id() then
+	if hitted_obj:id() == 0 then -- 0 = actor ID
 		power = 0.1
 	else
 		power = 1000

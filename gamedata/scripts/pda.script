@@ -233,11 +233,10 @@ end
 function dialog_wnd_showed()
 --	dbglog("[pda.dialog_wnd_showed]: Called!")
 	dialog_closed = false
-	local actor_id = db.actor:id()
 	for id, v in pairs (db.storage) do
 		local obj = v.object
 		if obj ~= nil then
-			if obj:is_talking() and id ~= actor_id then
+			if obj:is_talking() and id ~= 0 then -- 0 = actor ID
 				local sound_theme = xr_sound.sound_table[id]
 				if sound_theme and sound_theme.reset then
 					sound_theme:reset(id)

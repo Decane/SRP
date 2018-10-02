@@ -1776,9 +1776,9 @@ end
 function stc_boom(actor, npc, p)
 	local p1 = p and p[1]
 	if p1 then
-		xr_sound.set_sound_play(db.actor:id(), p1)
+		xr_sound.set_sound_play(0, p1) -- 0 = actor ID
 	else
-		xr_sound.set_sound_play(db.actor:id(), "blowout_begin")
+		xr_sound.set_sound_play(0, "blowout_begin")
 	end
 	level.add_cam_effector("camera_effects\\shell_shock.anm", 20080501, false, "")
 	level.add_cam_effector("camera_effects\\earthquake_00.anm", 203450545, false, "")
@@ -1796,7 +1796,7 @@ end
 function start_surge_on_stancia_2(actor, npc, p)
 	local fx = (p and p[1]) or "fx_surge_day_3_stancia"
 	level.set_weather_fx(fx)
-	xr_sound.set_sound_play(db.actor:id(), "blowout_begin")
+	xr_sound.set_sound_play(0, "blowout_begin") -- 0 = actor ID
 	level.add_cam_effector("camera_effects\\earthquake.anm", 203450545, false, "")
 	level.add_cam_effector("camera_effects\\shell_shock.anm", 20080701, false, "")
 	level.add_pp_effector("snd_shock.ppe", 20080702, false)
@@ -1804,7 +1804,7 @@ function start_surge_on_stancia_2(actor, npc, p)
 end
 
 function continue_surge_on_stancia_2(actor, npc)
-	xr_sound.play_sound_looped(db.actor:id(), "blowout_rumble")
+	xr_sound.play_sound_looped(0, "blowout_rumble") -- 0 = actor ID
 	level.add_pp_effector("blink.ppe", 20080703, false)
 	level.add_pp_effector("snd_shock.ppe", 20080704, true)
 	level.set_pp_effector_factor(20080704, 0, 10)

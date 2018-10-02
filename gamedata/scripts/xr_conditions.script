@@ -5,7 +5,7 @@ local sim = _G.sim
 --'------------------------------------------------------
 
 function is_enemy_actor(enemy, object)
-	return enemy:id() == db.actor:id()
+	return enemy:id() == 0 -- actor ID
 end
 
 function fighting_dist_ge(enemy, npc, p)				-- if p[1] == nil, crashes the game
@@ -655,16 +655,14 @@ end
 
 function is_faction_enemy_to_actor(actor, npc, p)			-- if p[1] == nil, now crashes the game instead of returning false
 	local faction = p[1]
-	local act = db.actor
---	return faction ~= nil and relation_registry.community_goodwill(faction, act:id()) <= -1000
-	return (relation_registry.community_goodwill(faction, act:id()) + relation_registry.community_relation(faction, act:character_community())) <= -1000
+--	return faction ~= nil and relation_registry.community_goodwill(faction, db.actor:id()) <= -1000
+	return (relation_registry.community_goodwill(faction, 0) + relation_registry.community_relation(faction, db.actor:character_community())) <= -1000
 end
 
 function is_faction_friend_to_actor(actor, npc, p)			-- if p[1] == nil, now crashes the game instead of returning false
 	local faction = p[1]
-	local act = db.actor
---	return faction ~= nil and relation_registry.community_goodwill(faction, act:id()) >= 1000
-	return (relation_registry.community_goodwill(faction, act:id()) + relation_registry.community_relation(faction, act:character_community())) >= 1000
+--	return faction ~= nil and relation_registry.community_goodwill(faction, db.actor:id()) >= 1000
+	return (relation_registry.community_goodwill(faction, 0) + relation_registry.community_relation(faction, db.actor:character_community())) >= 1000
 end
 
 function is_squad_enemy_to_actor(actor, npc, p)				-- if p[1] == nil, now crashes the game instead of returning false
@@ -681,7 +679,7 @@ end
 
 function hit_by_actor(actor, npc)
 	local t = db.storage[npc:id()].hit
-	return t ~= nil and t.who == actor:id()
+	return t ~= nil and t.who == 0 -- actor ID
 end
 
 function actor_has_weapon(actor, npc)

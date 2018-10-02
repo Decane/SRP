@@ -33,13 +33,11 @@ function armagezdec()
 	del_so("stc_cut_scene_final")
 	del_so("stc_quest_controller")
 --	local obj_by_id = level.object_by_id
-	local actor_id = db.actor:id()
-	local npc
 --	for id = 1, 65535 do
 	for id, obj in pairs (db.storage) do
-		if id ~= actor_id then
-			npc = obj.object
---			npc = obj_by_id(id)
+		if id ~= 0 then -- 0 = actor ID
+			local npc = obj.object
+--			local npc = obj_by_id(id)
 			if npc ~= nil and npc:alive() == true then
 				npc:kill(npc)				-- kill every online NPC at the CNPP
 			end

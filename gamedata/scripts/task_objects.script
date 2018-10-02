@@ -2646,10 +2646,8 @@ function CHideFromSurgeTask:check_task(tm)
 		end
 	end
 
-	local act_id = act:id()
-
 	function blowout_hit_with_pp_and_cam_effectors(blowout_hit, cam_effector_id, pp_effector_id)
-		xr_sound.set_sound_play(act_id, blowout_hit)
+		xr_sound.set_sound_play(0, blowout_hit) -- 0 = actor ID
 		level.add_cam_effector("camera_effects\\shell_shock.anm", cam_effector_id, false, "")
 		level.add_pp_effector("snd_shock.ppe", pp_effector_id, false)
 		level.set_pp_effector_factor(pp_effector_id, 0, 1.5)
@@ -2693,7 +2691,7 @@ function CHideFromSurgeTask:check_task(tm)
 			self.effector_started_time = global_time
 			level.set_pp_effector_factor(200208, 1, 0.0075)
 			level.add_cam_effector("camera_effects\\earthquake.anm", 200209, true, "")
-			xr_sound.play_sound_looped(act_id, "surge_earthquake_sound")
+			xr_sound.play_sound_looped(0, "surge_earthquake_sound") -- 0 = actor ID
 		elseif not(self.disable_ui) and (_delta>=15000) then
 			level.set_weather("[default]", false)
 			xr_surge_hide.weather_surge = true
@@ -2712,7 +2710,7 @@ function CHideFromSurgeTask:check_task(tm)
 				if level.name()=="marsh" or level.name()=="marsh_nvidia" then
 					level.remove_pp_effector(200208)
 					level.remove_cam_effector(200209)
-					xr_sound.stop_sound_looped(act_id)
+					xr_sound.stop_sound_looped(0) -- 0 = actor ID
 					end_surge("reversed")
 				else
 					xr_effects.kill_actor()
@@ -2722,7 +2720,7 @@ function CHideFromSurgeTask:check_task(tm)
 		elseif(_delta>=35000) then
 			xr_effects.enable_ui(nil, nil)
 			level.remove_pp_effector(200208)
-			xr_sound.stop_sound_looped(act_id)
+			xr_sound.stop_sound_looped(0) -- 0 = actor ID
 			end_surge("complete")
 		elseif(_delta>=32500) then
 			level.remove_cam_effector(200209)
@@ -2757,7 +2755,7 @@ function CHideFromSurgeTask:check_task(tm)
 	end
 
 	function blowout_hit_with_pp_and_cam_effectors(blowout_hit, cam_effector_id, pp_effector_id)
-		xr_sound.set_sound_play(act_id, blowout_hit)
+		xr_sound.set_sound_play(0, blowout_hit) -- 0 = actor ID
 		level.add_cam_effector("camera_effects\\shell_shock.anm", cam_effector_id, false, "")
 		level.add_pp_effector("snd_shock.ppe", pp_effector_id, false)
 		level.set_pp_effector_factor(pp_effector_id, 0, 1.5)
@@ -2773,10 +2771,10 @@ function CHideFromSurgeTask:check_task(tm)
 
 	if (self.blowout_rumble_level < 1) and (xr_surge_hide.phase > 1) and (xr_surge_hide.phase < 4 or xr_surge_hide.phase == 5) then
 		self.blowout_rumble_level = self.blowout_rumble_level + 0.015
-		xr_sound.set_volume_sound_looped(act_id, "blowout_rumble", self.blowout_rumble_level)
+		xr_sound.set_volume_sound_looped(0, "blowout_rumble", self.blowout_rumble_level) -- 0 = actor ID
 	elseif self.blowout_rumble_level > 0 and xr_surge_hide.phase == 4 then
 		self.blowout_rumble_level = self.blowout_rumble_level - 0.11
-		xr_sound.set_volume_sound_looped(act_id, "blowout_rumble", self.blowout_rumble_level)
+		xr_sound.set_volume_sound_looped(0, "blowout_rumble", self.blowout_rumble_level) -- 0 = actor ID
 	end
 
 	local stt = db.storage[self.target]
@@ -2792,9 +2790,8 @@ function CHideFromSurgeTask:check_task(tm)
 end
 
 function CHideFromSurgeTask:give_task(community)
-	local act_id = db.actor:id()
-	xr_sound.play_sound_looped(act_id, "blowout_rumble")
-	xr_sound.set_volume_sound_looped(act_id, "blowout_rumble", self.blowout_rumble_level)
+	xr_sound.play_sound_looped(0, "blowout_rumble") -- 0 = actor ID
+	xr_sound.set_volume_sound_looped(0, "blowout_rumble", self.blowout_rumble_level) -- 0 = actor ID
 	task_objects.CGeneralTask.give_task(self, community)
 end
 

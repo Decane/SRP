@@ -23,7 +23,7 @@ function evaluator_combat_enemy:evaluate()
 	end
 
 	if st.timer == nil then
-		if st.last_best_enemy_id == db.actor:id() then
+		if st.last_best_enemy_id == 0 then -- 0 = actor ID
 			st.timer = time_global()
 			return false
 		else

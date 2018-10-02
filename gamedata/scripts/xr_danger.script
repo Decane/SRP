@@ -71,9 +71,9 @@ function evaluator_danger:evaluate()
 	end
 
 	local actor = db.actor
-	local actor_id = actor:id()
+--	local actor_id = actor:id()
 
-	if best_danger_object:id() == actor_id and (bd_type == danger_object_attack_sound or bd_type == danger_object_bullet_ricochet) then
+	if best_danger_object:id() == 0 and (bd_type == danger_object_attack_sound or bd_type == danger_object_bullet_ricochet) then -- 0 = actor ID
 		if sobj:best_enemy() == nil and sobj:relation(actor) ~= game_object_enemy then
 			return false
 		end

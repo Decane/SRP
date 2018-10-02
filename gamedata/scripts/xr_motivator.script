@@ -237,7 +237,7 @@ function motivator_binder:hit_callback(victim, amount, local_direction, hitter, 
 		local victim_id = victim:id()
 --		sr_territory.issue_event(victim, "hit_callback", victim, amount, local_direction, hitter, bone_index)
 		xr_wounded.hit_callback(victim_id)
-		if hitter:id() == db.actor:id() then
+		if hitter:id() == 0 then -- 0 = actor ID
 			sim_combat.hit_callback(victim_id)
 		end
 	end
@@ -254,7 +254,7 @@ function motivator_binder:death_callback(victim, culprit)
 
 	stalker_generic.remove_level_spot(victim, st)
 
-	if culprit:id() == db.actor:id() then
+	if culprit:id() == 0 then -- 0 = actor ID
 		xr_statistic.addKillCount(victim)
 		xr_statistic.inc_killed_stalkers_counter()
 	end

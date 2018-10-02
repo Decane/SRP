@@ -95,7 +95,7 @@ function send_tip(actor, news_id, timeout, sender, showtime, sender_id)
 	if timeout == nil then timeout = 0 end
 	if showtime == nil then showtime = 5000 end
 
-	xr_sound.set_sound_play(actor:id(), "pda_tips")
+	xr_sound.set_sound_play(0, "pda_tips") -- 0 = actor ID
 
 	local texture = "ui_iconsTotal_grouping"
 
@@ -187,7 +187,7 @@ local action_descr_by_type =
 
 function send_task(actor, type, _task)
 	if actor == nil then return false end
-	xr_sound.set_sound_play(actor:id(), "pda_task")
+	xr_sound.set_sound_play(0, "pda_task") -- 0 = actor ID
 	local news_caption = trans(action_descr_by_type[type])
 	local news_text = trans(_task:get_title())
 	local task_type = task_manager.get_task_manager():get_task_by_entity_id(tonumber(_task:get_id())).type
