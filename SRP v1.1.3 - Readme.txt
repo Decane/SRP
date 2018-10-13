@@ -242,7 +242,6 @@ Graphical fixes:
 + Replaced the inventory icon of the PM, PB, RPG-7, AKS-74U, and the exoskeleton to match their in-game appearance.
 + The correct HUD arm texture is now displayed for the Sunrise Suit, SEVA Suit, and the Bandit Jacket.
 + Fixed the issue where a squad commander icon would sometimes overlap with a guide icon, trader icon, or important character icon on the map.
-+ Fixed Sakharov and Lingov not being marked as important characters on the map.
 + Fixed the HUD bleeding icon being misaligned in widescreen mode.
 + Fixed the misaligned border on secondary task map spots.
 + Fixed the incorrect 'important character' and PDA map legend icon.

@@ -78,6 +78,18 @@
 	<string id="st_sleepingbag_descr">
 		<text>Переносной спальный мешок.</text>
 	</string>
+	<string id="st_sleepingbag_sleep">
+		<text>Спать</text>
+	</string>
+	<string id="st_sleepingbag_cancel">
+		<text>Отмена</text>
+	</string>
+	<string id="st_sleepingbag_safety">
+		<text>Безопасность:</text>
+	</string>
+	<string id="st_sleepingbag_duration">
+		<text>Продолжительность:</text>
+	</string>
 
 	<!-- Squad Stages -->
 

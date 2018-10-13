@@ -78,6 +78,18 @@
 	<string id="st_sleepingbag_descr">
 		<text>A portable sleeping bag.</text>
 	</string>
+	<string id="st_sleepingbag_sleep">
+		<text>Sleep</text>
+	</string>
+	<string id="st_sleepingbag_cancel">
+		<text>Cancel</text>
+	</string>
+	<string id="st_sleepingbag_safety">
+		<text>Safety:</text>
+	</string>
+	<string id="st_sleepingbag_duration">
+		<text>Duration:</text>
+	</string>
 
 	<!-- Squad Stages -->
 
