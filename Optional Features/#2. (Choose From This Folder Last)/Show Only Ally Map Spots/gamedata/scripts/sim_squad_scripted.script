@@ -21,25 +21,25 @@ function sim_squad_scripted:init_squad() -- smart)
 
 --	sim_squad_generic.sim_squad_generic.init_squad(self, smart)
 
-	local squad_ltx				= sim_board.squad_ltx
-	local settings_id			= self.settings_id
-	local parse_condlist		= xr_logic.parse_condlist
+	local squad_ltx        = sim_board.squad_ltx
+	local settings_id      = self.settings_id
+	local parse_condlist   = xr_logic.parse_condlist
 
 	if not squad_ltx:section_exist(settings_id) then
 		abort("[sim_squad_scripted:init_squad]: Squad section '%s' does not exist in misc\\squad_descr.ltx or any of its includes.", settings_id)
 	end
 
-	self.action_condlist		= parse_condlist(nil, nil, nil, get_string_field(squad_ltx, settings_id, "target_smart", ""))
-	self.death_condlist			= parse_condlist(nil, nil, nil, get_string_field(squad_ltx, settings_id, "on_death", ""))
-	self.attack_power			= parse_condlist(nil, nil, nil, get_string_field(squad_ltx, settings_id, "attack_power", ""))
-	self.invulnerability		= parse_condlist(nil, nil, nil, get_string_field(squad_ltx, settings_id, "invulnerability", ""))
-	self.show_spot				= parse_condlist(nil, nil, nil, get_string_field(squad_ltx, settings_id, "show_spot", "true"))
-	self.relationship			= get_string_field(squad_ltx, settings_id, "relationship", nil)
-	self.sympathy				= squad_ltx:line_exist(settings_id, "sympathy") and squad_ltx:r_float(settings_id, "sympathy") or nil
-	self.always_walk			= false -- utils.cfg_get_bool(squad_ltx, settings_id, "always_walk", self, false) -- unused in vanilla, defaults to false
+	self.action_condlist   = parse_condlist(nil, nil, nil, get_string_field(squad_ltx, settings_id, "target_smart", ""))
+	self.death_condlist    = parse_condlist(nil, nil, nil, get_string_field(squad_ltx, settings_id, "on_death", ""))
+	self.attack_power      = parse_condlist(nil, nil, nil, get_string_field(squad_ltx, settings_id, "attack_power", ""))
+--	self.invulnerability   = parse_condlist(nil, nil, nil, get_string_field(squad_ltx, settings_id, "invulnerability", "")) -- see comments in check_invulnerability() below
+	self.show_spot         = parse_condlist(nil, nil, nil, get_string_field(squad_ltx, settings_id, "show_spot", "true"))
+	self.relationship      = get_string_field(squad_ltx, settings_id, "relationship", nil)
+	self.sympathy          = squad_ltx:line_exist(settings_id, "sympathy") and squad_ltx:r_float(settings_id, "sympathy") or nil
+	self.always_walk       = false -- utils.cfg_get_bool(squad_ltx, settings_id, "always_walk", self, false) -- unused in vanilla, defaults to false
 
 	if not xr_surge_hide.surge_activated then
-		self.show_disabled		= xr_logic.pick_section_from_condlist(db.actor, self, self.show_spot) == "false"
+		self.show_disabled = xr_logic.pick_section_from_condlist(db.actor, self, self.show_spot) == "false"
 	end
 end
 
