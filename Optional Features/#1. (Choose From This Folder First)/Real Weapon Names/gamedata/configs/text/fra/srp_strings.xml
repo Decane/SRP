@@ -90,6 +90,12 @@
 	<string id="st_sleepingbag_duration">
 		<text>Duration:</text>
 	</string>
+	<string id="st_sleepingbag_1h">
+		<text>1h</text>
+	</string>
+	<string id="st_sleepingbag_h">
+		<text>h</text>
+	</string>
 
 	<!-- Squad Stages -->
 

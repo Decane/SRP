@@ -90,6 +90,12 @@
 	<string id="st_sleepingbag_duration">
 		<text>Продолжительность:</text>
 	</string>
+	<string id="st_sleepingbag_1h">
+		<text>1ч</text>
+	</string>
+	<string id="st_sleepingbag_h">
+		<text>ч</text>
+	</string>
 
 	<!-- Squad Stages -->
 

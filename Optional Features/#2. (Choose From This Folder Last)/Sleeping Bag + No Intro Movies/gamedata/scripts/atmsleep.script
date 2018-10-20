@@ -11,6 +11,8 @@ local max_sleep_time = 12    -- Max value of time.
 local best_enemy     = nil   -- Best enamy.
 local danger         = 0     -- Danger value.
 
+local hr = game.translate_string("st_sleepingbag_h")
+
 local mutants =
 {
 	[clsid.bloodsucker_s] = 1,
@@ -289,7 +291,7 @@ end
 function UISleep:add_to_time()
 	if sleep_time < max_sleep_time then
 		sleep_time = sleep_time + 1
-		self.display:SetText(sleep_time.."h")
+		self.display:SetText(sleep_time..hr)
 		self.display:SetTextX(44)
 	end
 end
@@ -301,7 +303,7 @@ end
 function UISleep:sub_to_time()
 	if sleep_time > min_sleep_time then
 		sleep_time = sleep_time - 1
-		self.display:SetText(sleep_time.."h")
+		self.display:SetText(sleep_time..hr)
 		self.display:SetTextX(44)
 	end
 end
