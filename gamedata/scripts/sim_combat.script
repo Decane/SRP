@@ -571,30 +571,32 @@ function CCombat_manager:update_squad(id, data)
 							if level.name() == smrt.smart_level then
 								local actor = db.actor
 								if actor and actor:position():distance_to_sqr(smrt.position) <= TASK_DISTANCE then
---									dbgmsg("[sim_combat.CCombat_manager:update_squad]: Trying to assign a help task...")
+--									dbgmsg("[sim_combat.CCombat_manager:update_squad]: Trying to assign a help task. Checking tasks already in progress...")
 									local tm = task_manager.get_task_manager()
-									for k, v in pairs (tm.inited_tasks) do
---										dbgmsg("[sim_combat.CCombat_manager:update_squad]: Checking tasks already in progress...")
-										local v_type = v.type
-										if v_type == "defend_smart" or v_type == "defend_smart_delay" or tm:get_tasks_by_smart(smrt.id) ~= nil then
-											if v.status == "selected" then
+									if tm:get_tasks_by_smart(smrt.id) ~= nil then
+--										dbgmsg("[sim_combat.CCombat_manager:update_squad]: Can't assign help task because combat task already in progress for smart!")
+										self.combat_quest = "nil"
+									else
+										for k, task in pairs (tm.task_info) do
+											local task_type = task.type
+											if task_type == "defend_smart" or task_type == "defend_smart_delay" then
 --												dbgmsg("[sim_combat.CCombat_manager:update_squad]: Can't assign help task because defensive task already in progress!")
 												self.combat_quest = "nil"
 												break
 											end
 										end
-									end
-									if self.combat_quest == "defend" then
-										if game_relations.check_all_squad_members(id, "enemy") == true then
---											dbgmsg("[sim_combat.CCombat_manager:update_squad]: Can't assign help task because distressed squad is hostile!")
-											self.combat_quest = "nil"
-										else
-											local task = tm:select_task("defend_smart", smrt, squad.player_id)
-											task.src_squad_id = attack_squad
-											self.task = task.entity_id
-											self.actor_defence_come = false
-											task:give_task(squad.player_id)
---											data._last_defence_kill_time = nil		-- not used
+										if self.combat_quest == "defend" then
+											if game_relations.check_all_squad_members(id, "enemy") == true then
+--												dbgmsg("[sim_combat.CCombat_manager:update_squad]: Can't assign help task because distressed squad is hostile!")
+												self.combat_quest = "nil"
+											else
+												local task = tm:select_task("defend_smart", smrt, squad.player_id)
+												task.src_squad_id = attack_squad
+												self.task = task.entity_id
+												self.actor_defence_come = false
+												task:give_task(squad.player_id)
+--												data._last_defence_kill_time = nil -- not used
+											end
 										end
 									end
 								else

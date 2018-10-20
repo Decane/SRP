@@ -712,12 +712,10 @@ function sim_squad_generic:get_next_action()
 
 	-- If we are the squad joining the player in an active 'capture' task received via dialog, 'target_smart' = task target. (Higher priority.)
 
-	for k, task in pairs (tm.inited_tasks) do
+	for k, task in pairs (tm.task_info) do
 		if task.src_obj == self.squad_id then
-			if task.status == "selected" then
-				target_smart = board.smarts[task.target].smrt
-				break
-			end
+			target_smart = board.smarts[task.target].smrt
+			break
 		end
 	end
 
@@ -757,7 +755,7 @@ function sim_squad_generic:get_next_action()
 		local exist_task_type = nil
 		local exist_task_community = nil
 
-		task = tm:get_tasks_by_smart(next_point.id)
+--		task = tm:get_tasks_by_smart(next_point.id)
 
 		if task ~= nil then
 			exist_task_type = task.type

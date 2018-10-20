@@ -245,9 +245,9 @@ function CRandomTask:load(reader)
 			inited_tasks[key] = task
 			if task.status == "selected" then
 				task_info[tostring(task.entity_id)] = task
-			end
-			if (t == "eliminate_smart") or (t == "capture_smart") or (t == "defend_smart") or (t == "defend_smart_delay") then
-				tasks_by_smarts[task.target] = task
+				if (t == "eliminate_smart") or (t == "capture_smart") or (t == "defend_smart") or (t == "defend_smart_delay") then
+					tasks_by_smarts[task.target] = task
+				end
 			end
 		end
 	end

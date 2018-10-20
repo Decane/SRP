@@ -14,6 +14,7 @@ v1.1.3
 + Fixed a rare crash: xr_kamp.script:433: bad argument #1 to 'random' (interval is empty). - Decane
 + Fixed the issue where speaking to a mechanic with incomplete 'find upgrade' tasks would leak task entity IDs. - Decane
 + Implemented a tail-recursive algorithm to automatically detect and resolve faction war stalemates arising out of a squad being grid-locked into a camp by all surrounding camps being occupied by non-hostiles, thereby preventing the grid-locked squad from leaving the camp. - Decane
++ Fixed the issue where loading a savegame would make the game copy offered but unassigned combat tasks to a Lua table intended only for assigned combat tasks. This caused various bugs ranging from stuck faction wars to the bandit robbery scheme ceasing to activate. - Decane
 + Worked around an SRP v1.0.4 regression where the AI of NPCs approaching the Fishing Hamlet from the Hidden Camp would occasionally break. - Decane
 + Fixed the issue where the player's assistance could fail to be registered in a random faction war task, causing the task to be cancelled when it should be completed. - Decane
 + Fixed the issue where a 'defend' task could occasionally be received in unwarranted circumstances, most frequently resulting in the task being immediately cancelled. - Decane
