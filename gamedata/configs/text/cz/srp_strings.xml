@@ -39,6 +39,9 @@
 	<string id="nothing_to_repair">
 		<text>Nothing to repair!</text>
 	</string>
+	<string id="st_stash_emptied">
+		<text>Stash emptied:</text>
+	</string>
 
 	<!-- NPCs -->
 

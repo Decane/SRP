@@ -39,6 +39,9 @@
 	<string id="nothing_to_repair">
 		<text>Нечего ремонтировать!</text>
 	</string>
+	<string id="st_stash_emptied">
+		<text>Тайник опустошён:</text>
+	</string>
 
 	<!-- NPCs -->
 

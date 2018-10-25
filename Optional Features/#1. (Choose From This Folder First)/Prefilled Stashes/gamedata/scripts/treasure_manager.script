@@ -209,7 +209,7 @@ local function treasure_empty(box)
 
 				-- Give the actor a 'stash emptied' news update.
 
-				act:give_game_news("Stash emptied:", trans(level.name())..": "..trans(v.name), "ui_iconsTotal_found_thing", 0, 3000)
+				act:give_game_news(trans("st_stash_emptied"), trans(level.name())..": "..trans(v.name), "ui_iconsTotal_found_thing", 0, 3000)
 
 --				dbglog("Emptied box with name "..box_name.." and ID "..id..".")
 			end
