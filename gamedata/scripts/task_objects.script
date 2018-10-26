@@ -2356,7 +2356,10 @@ function CRecoverItemTask:spawn_recoveritem()
 	local target_npc_or_box = sim:object(self.target_npc_or_box_table[index])
 	if target_npc_or_box then
 		local container_id = target_npc_or_box.id
-		self.target_obj_id = sim:create(self.requested_item, vector(), 0, 0, container_id).id
+		local container_pos = target_npc_or_box.position
+		local container_lvx = target_npc_or_box.m_level_vertex_id
+		local container_gvx = target_npc_or_box.m_game_vertex_id
+		self.target_obj_id = sim:create(self.requested_item, container_pos, container_lvx, container_gvx, container_id).id
 		self.target = container_id
 	else
 		abort("[task_objects.CRecoverItemTask:spawn_recoveritem]: There is no such target npc or box: '%s'.", tostring(self.target_npc_or_box_table[index]))
