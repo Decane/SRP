@@ -34,16 +34,16 @@ function CCombat_manager:register_squad(squad)
 	end
 	local self_smart_id = self.smart.id
 	if squad.smart_id == self_smart_id then
-		self_squads[squad_id] = {_stage = "idle", _attack_squad = false, _attack_shouted = false, _prepare_shouted = false, _squad_power = squad.squad_power}
 		self.cover_manager:register_squad(squad)
-		for k, squad_data in pairs (self_squads) do
-			if squad_data._attack_squad then
-				local squad_stage = squad_data._stage
-				if squad_stage == "idle" or squad_stage == "post_combat" then
-					squad_data._stage = "prepare"
+		for k, data in pairs (self_squads) do
+			if data._attack_squad then
+				local stage = data._stage
+				if stage == "idle" or stage == "post_combat" then
+					data._stage = "prepare"
 				end
 			end
 		end
+		self_squads[squad_id] = {_stage = "idle", _attack_squad = false, _attack_shouted = false, _prepare_shouted = false, _squad_power = squad.squad_power}
 	else
 		self_squads[squad_id] = {_stage = "move", _attack_squad = true, _attack_shouted = false, _prepare_shouted = false, _squad_power = squad.squad_power}
 	end
@@ -74,7 +74,6 @@ function CCombat_manager:unregister_squad(squad)
 				end
 			end
 		end
-		return
 	end
 end
 
@@ -82,12 +81,12 @@ function CCombat_manager:squad_go_online(squad)
 	if self.force_online == false then
 		local self_squads = self.squads
 		local board_squads = self.board.squads
-		for k in pairs (self_squads) do
-			local sq = board_squads[k]
+		for id in pairs (self_squads) do
+			local sq = board_squads[id]
 			if sq ~= nil then
 				sq:force_online(true)
 			else
-				self_squads[k] = nil
+				self_squads[id] = nil
 			end
 		end
 		self.force_online = true
@@ -101,15 +100,15 @@ function CCombat_manager:squad_go_offline(squad)
 	if force_online_squads[squad_id] ~= nil then
 		force_online_squads[squad_id] = nil
 		local exist = false
-		for k in pairs (force_online_squads) do
+		for id in pairs (force_online_squads) do
 			exist = true
 			break
 		end
 		if exist == false then
 			self.force_online = false
 			local board_squads = self.board.squads
-			for k in pairs (self.squads) do
-				local sq = board_squads[k]
+			for id in pairs (self.squads) do
+				local sq = board_squads[id]
 				sq:force_online(false)
 			end
 		end
@@ -132,16 +131,16 @@ function CCombat_manager:hit_callback(victim_squad, is_attack)
 			task:actor_comed(self)
 			self.actor_defence_come = true
 		else
-			for k, data in pairs (self.squads) do
+			for id, data in pairs (self.squads) do
 				if data._stage ~= "combat" then
-					local sq = self.board.squads[k]
+					local sq = self.board.squads[id]
 					if sq.current_action == nil or sq.current_action.name == "stay_point" then
 						sq:issue_order("attack")
 					else
 						sq:issue_order("alife_we_spoted")
 					end
+					data._stage = "combat"
 				end
-				data._stage = "combat"
 			end
 			self.actor_combat = true
 		end
@@ -151,16 +150,16 @@ function CCombat_manager:hit_callback(victim_squad, is_attack)
 			task:actor_ignored(self)
 			task.last_check_task = "fail"
 		end
-		for k, data in pairs (self.squads) do
+		for id, data in pairs (self.squads) do
 			if data._stage ~= "combat" then
-				local sq = self.board.squads[k]
+				local sq = self.board.squads[id]
 				if sq.current_action == nil or sq.current_action.name == "stay_point" then
 					sq:issue_order("attack")
 				else
 					sq:issue_order("alife_we_spoted")
 				end
+				data._stage = "combat"
 			end
-			data._stage = "combat"
 		end
 		self.actor_combat = true
 	end
@@ -169,19 +168,19 @@ end
 function CCombat_manager:enemy_callback(my_squad, enemy_squad)
 	local my_squad_id = my_squad.squad_id
 	local self_squads = self.squads
-	local self_my_squad = self_squads[my_squad_id]
-	if self_my_squad == nil then
+	local my_squad_data = self_squads[my_squad_id]
+	if my_squad_data == nil then
 		return
 	end
-	local self_enemy_squad = self_squads[enemy_squad.squad_id]
-	if self_enemy_squad == nil then
+	local enemy_squad_data = self_squads[enemy_squad.squad_id]
+	if enemy_squad_data == nil then
 		return
 	end
-	if self_enemy_squad._stage == "combat" then
-		self_my_squad._stage = "combat"
+	if enemy_squad_data._stage == "combat" then
+		my_squad_data._stage = "combat"
 		return
 	end
-	local my_stage = self_my_squad._stage
+	local my_stage = my_squad_data._stage
 	if my_stage == "idle" then
 		if my_squad.smart_id == self.smart.id then
 			for k, data in pairs (self_squads) do
@@ -205,7 +204,7 @@ function CCombat_manager:enemy_callback(my_squad, enemy_squad)
 				if task.type == "capture_smart" then
 					if task.state == "counter_attack" then
 						my_squad:issue_order("counter_attack_spotted")
-						self_my_squad._stage = "combat"
+						my_squad_data._stage = "combat"
 					end
 				end
 			end
@@ -220,14 +219,14 @@ end
 
 function CCombat_manager:request_squad_stage(squad, stage)
 	if stage == "prepare" then
-		local self_squad = self.squads[squad.squad_id]
-		if self_squad._stage == "move" then
+		local squad_data = self.squads[squad.squad_id]
+		if squad_data._stage == "move" then
 			local self_owner = self.smart.player_name
 			if self_owner == "none" or self_owner == squad.player_id then
-				self_squad._stage = "idle"
+				squad_data._stage = "idle"
 				return
 			end
-			self_squad._stage = "prepare"
+			squad_data._stage = "prepare"
 		end
 	elseif stage == "combat" then
 		if squad ~= nil then
@@ -243,18 +242,18 @@ function CCombat_manager:update()
 	self:update_actor()
 	local self_squads = self.squads
 	local board_squads = self.board.squads
-	for k, v in pairs (self_squads) do
-		local squad = board_squads[k]
+	for id, data in pairs (self_squads) do
+		local squad = board_squads[id]
 		if squad ~= nil and not empty(squad.squad_npc) then
-			self:update_squad(k, v)
+			self:update_squad(id, data)
 		else
-			self_squads[k] = nil
+			self_squads[id] = nil
 		end
 	end
 --[[
-	for k, data in pairs (self_squads) do
-		local squad = board_squads[k]
-		if not squad.squad_online then				-- prevents NPCs vanishing in front of the player
+	for id, data in pairs (self_squads) do
+		local squad = board_squads[id]
+		if not squad.squad_online then -- prevents NPCs vanishing in front of the player
 			if squad.squad_power > data._squad_power then
 				for npc_id in pairs (squad.squad_npc) do
 					squad:remove_npc(npc_id)
@@ -269,6 +268,21 @@ function CCombat_manager:update()
 --	self.smart:refresh()
 end
 
+local function actor_come(squad)
+	local actor = db.actor
+	if actor == nil then
+		return false
+	end
+	local sim = _G.sim
+	local actor_position = actor:position()
+	for npc_id in pairs (squad.squad_npc) do
+		if sim:object(npc_id).position:distance_to_sqr(actor_position) < ACTOR_COME_ATTACK_DIST then
+			return true
+		end
+	end
+	return false
+end
+
 function CCombat_manager:update_actor()
 	local enemy_who_saw_actor = self.see_actor_enemy
 	if enemy_who_saw_actor == nil then
@@ -277,7 +291,7 @@ function CCombat_manager:update_actor()
 	end
 	local self_squads = self.squads
 --[[
-	if self_squads[enemy_who_saw_actor] == nil then	-- this block precludes the more expansive block below from executing
+	if self_squads[enemy_who_saw_actor] == nil then -- this block precludes the more expansive block below from executing
 		self.actor_combat = false
 		return
 	end
@@ -289,9 +303,9 @@ function CCombat_manager:update_actor()
 		if self:point_under_attack() then
 			return
 		end
-		for k, v in pairs (self_squads) do
-			if v._stage ~= "idle" then
-				v._stage = "idle"
+		for k, data in pairs (self_squads) do
+			if data._stage ~= "idle" then
+				data._stage = "idle"
 			end
 		end
 		return
@@ -304,9 +318,9 @@ function CCombat_manager:update_actor()
 		if self:point_under_attack() then
 			return
 		end
-		for k, v in pairs (self_squads) do
-			if v._stage ~= "idle" then
-				v._stage = "idle"
+		for k, data in pairs (self_squads) do
+			if data._stage ~= "idle" then
+				data._stage = "idle"
 			end
 		end
 		return
@@ -328,9 +342,9 @@ function CCombat_manager:update_actor()
 		end
 	else
 		if actor_come(my_squad) then
-			for k, data in pairs (self_squads) do
+			for id, data in pairs (self_squads) do
 				if data._stage ~= "combat" then
-					local sq = board_squads[k]
+					local sq = board_squads[id]
 					local sq_action = sq.current_action
 					if sq_action == nil or sq_action.name == "stay_point" then
 						sq:issue_order("attack")
@@ -366,24 +380,11 @@ function CCombat_manager:update_squad(id, data)
 		abort("[sim_combat.update_squad]: Squad with ID '%s' is nil.", tostring(id))
 	end
 
-	local squad_npcs = squad.squad_npc
 	local sim = _G.sim
-
-	for k in pairs (squad_npcs) do
-		if sim:object(k) == nil then
-			squad_npcs[k] = nil
-			if squad.commander_id == k then
-				for kk in pairs (squad_npcs) do
-					squad.commander_id = kk
-					break
-				end
-			end
-		end
-	end
 
 	if data._stage == "move" then
 		if not squad.squad_online then
-			local comander = sim:object(squad.commander_id)
+			local comander = _G.sim:object(squad.commander_id)
 			if comander.attack_position ~= nil then
 				local GG = game_graph()
 				local smrt = self.smart
@@ -405,7 +406,7 @@ function CCombat_manager:update_squad(id, data)
 		if squad.squad_online then
 			if data._prepare_shouted ~= true then
 				data._prepare_shouted = true
-				if actor_come(squad, sim) then
+				if actor_come(squad) then
 					squad:issue_order("prepare")
 				end
 				if self.combat_quest == "nil" then
@@ -440,8 +441,8 @@ function CCombat_manager:update_squad(id, data)
 				end
 			end
 			local st = db.storage
-			for kk in pairs (squad_npcs) do
-				local npc_storage = st[kk]
+			for npc_id in pairs (squad.squad_npc) do
+				local npc_storage = st[npc_id]
 				if npc_storage ~= nil then
 					if xr_logic.check_action(npc_storage.object, npc_storage[npc_storage.active_scheme], "position_riched") == false then
 						return false
@@ -520,7 +521,7 @@ function CCombat_manager:update_squad(id, data)
 					end
 				end
 			elseif combat_quest == "capture" then
-				if actor_come(squad, sim) then
+				if actor_come(squad) then
 					squad:issue_order("wait_again_signal")
 				else
 					squad:issue_order("attack")
@@ -539,7 +540,7 @@ function CCombat_manager:update_squad(id, data)
 				if start_attack_wait == nil then
 					GAME_TIME = game.get_game_time()
 					data._start_attack_wait = GAME_TIME
-				elseif id ~= "esc_smart_terrain_5_9_military_2_squad" then	-- exempt Cordon Bus Stop military squad
+				elseif id ~= "esc_smart_terrain_5_9_military_2_squad" then -- exempt Cordon Bus Stop military squad
 					GAME_TIME = game.get_game_time()
 					if GAME_TIME:diffSec(start_attack_wait) > DEFENDER_DELAY_UNTIL_ATTACK then
 						for kk, kdata in pairs (self.squads) do
@@ -646,30 +647,31 @@ function CCombat_manager:update_squad(id, data)
 			end
 			local GG
 			local my_squad_level_id
-			local data_squad_pow
+			local my_squad_pow
 			local casualities
+			local sim = _G.sim
 			local squad_faction = squad.player_id
-			for kk, vv in pairs (self.squads) do
-				if vv._stage == "combat" then
+			for kk, kdata in pairs (self.squads) do
+				if kdata._stage == "combat" then
 					local enemy_squad = board_squads[kk]
 					if enemy_squad.player_id ~= squad_faction then
 						GG = GG or game_graph()
 						my_squad_level_id = my_squad_level_id or GG:vertex(sim:object(squad.commander_id).m_game_vertex_id):level_id()
 						if my_squad_level_id == GG:vertex(sim:object(enemy_squad.commander_id).m_game_vertex_id):level_id() then
-							data_squad_pow = data_squad_pow or data._squad_power
-							casualities = casualities or math_random(data_squad_pow / 5, data_squad_pow / 3)
-							vv._squad_power = math_max(0, vv._squad_power - casualities)
-							if enemy_squad.squad_power > vv._squad_power then
+							my_squad_pow = my_squad_pow or data._squad_power
+							casualities = casualities or math_random(my_squad_pow / 5, my_squad_pow / 3)
+							kdata._squad_power = math_max(0, kdata._squad_power - casualities)
+							if enemy_squad.squad_power > kdata._squad_power then
 --								if not enemy_squad.squad_online then
 									for npc_id in pairs (enemy_squad.squad_npc) do
 										enemy_squad:remove_npc(npc_id)
-										if enemy_squad.squad_power <= vv._squad_power then
+										if enemy_squad.squad_power <= kdata._squad_power then
 											break
 										end
 									end
-								end
+--								end
 							end
---						end
+						end
 					end
 				end
 			end
@@ -679,8 +681,8 @@ function CCombat_manager:update_squad(id, data)
 	if data._stage == "post_combat" then
 		if squad.squad_online then
 			local st = db.storage
-			for kk in pairs (squad_npcs) do
-				local npc_storage = st[kk]
+			for npc_id in pairs (squad.squad_npc) do
+				local npc_storage = st[npc_id]
 				if npc_storage ~= nil then
 					if IsStalker(npc_storage.object) then
 						local manager = npc_storage.object:motivation_action_manager()
@@ -696,9 +698,9 @@ function CCombat_manager:update_squad(id, data)
 			end
 			squad:issue_order("combat_done")
 		end
-		for kk, vv in pairs (self.squads) do
-			if vv._stage == "post_combat" then
-				vv._stage = "idle"
+		for kk, kdata in pairs (self.squads) do
+			if kdata._stage == "post_combat" then
+				kdata._stage = "idle"
 			end
 		end
 		return true
@@ -710,12 +712,6 @@ end
 function CCombat_manager:get_squad_stage(squad)
 	local sq = self.squads[squad.squad_id]
 	return sq ~= nil and sq._stage or nil
---[[
-	if sq == nil then
-		return nil
-	end
-	return sq._stage
-]]
 end
 
 function CCombat_manager:point_under_attack()
@@ -723,8 +719,8 @@ function CCombat_manager:point_under_attack()
 	local num_attackers = 0
 	local self_smart_id = self.smart.id
 	local board_squads = self.board.squads
-	for k in pairs (self.squads) do
-		local squad = board_squads[k]
+	for id in pairs (self.squads) do
+		local squad = board_squads[id]
 		if squad ~= nil then
 			local player_id = squad.player_id
 			if community_list[player_id] == nil then
@@ -749,8 +745,8 @@ end
 function CCombat_manager:get_squad_enemy(my_squad)
 	local my_faction = my_squad.player_id
 	local board_squads = self.board.squads
-	for k in pairs (self.squads) do
-		local squad = board_squads[k]
+	for id in pairs (self.squads) do
+		local squad = board_squads[id]
 		if squad.player_id ~= my_faction then
 			return squad
 		end
@@ -836,12 +832,12 @@ function CCombat_manager:load(packet)
 	if flag then
 		self.see_actor_enemy_time = utils.r_CTime(packet)
 	end
-	local n, k = packet:r_u8()
+	local n = packet:r_u8()
 	local T = self.squads
 	for i = 1, n do
-		k = packet:r_stringZ()
+		local id = packet:r_stringZ()
 		local squad_data = {}
-		T[k] = squad_data
+		T[id] = squad_data
 		squad_data._stage = packet:r_stringZ()
 		squad_data._attack_shouted = packet:r_bool()
 		squad_data._prepare_shouted = packet:r_bool()
@@ -859,7 +855,7 @@ function CCombat_manager:load(packet)
 		if flag then
 			squad_data._last_defence_kill_time = utils.r_CTime(packet)
 		end
-		dbglog(i..": ["..k.."]: _inited_defend_time: "..tostring(squad_data._inited_defend_time ~= nil)..", _start_attack_wait: "..tostring(squad_data._start_attack_wait ~= nil)..", _last_defence_kill_time: "..tostring(squad_data._last_defence_kill_time ~= nil))
+		dbglog(i..": ["..id.."]: _inited_defend_time: "..tostring(squad_data._inited_defend_time ~= nil)..", _start_attack_wait: "..tostring(squad_data._start_attack_wait ~= nil)..", _last_defence_kill_time: "..tostring(squad_data._last_defence_kill_time ~= nil))
 ]]
 		squad_data._squad_power = packet:r_float()
 	end
@@ -867,8 +863,8 @@ function CCombat_manager:load(packet)
 	n = packet:r_u8()
 	T = self.force_online_squads
 	for i = 1, n do
-		k = packet:r_stringZ()
-		T[k] = true
+		local id = packet:r_stringZ()
+		T[id] = true
 	end
 	self.cover_manager:load(packet)
 	set_save_marker(packet, "load", true, "CCombat_manager")
@@ -911,31 +907,6 @@ function actor_come_to_point(smart)
 			end
 		end
 ]]
-	end
-	return false
-end
-
-function actor_come(squad, sim)
-	local actor = db.actor
-	if actor == nil then
-		return false
-	end
-	local sim = sim or _G.sim
-	local actor_position = actor:position()
-	local squad_npcs = squad.squad_npc
-	for k in pairs (squad_npcs) do
-		local npc_obj = sim:object(k)
-		if npc_obj == nil then
-			squad_npcs[k] = nil
-			if squad.commander_id == k then
-				for kk in pairs (squad_npcs) do
-					squad.commander_id = kk
-					break
-				end
-			end
-		elseif npc_obj.position:distance_to_sqr(actor_position) < ACTOR_COME_ATTACK_DIST then
-			return true
-		end
 	end
 	return false
 end

@@ -1,4 +1,4 @@
-squad_ltx = ini_file("misc\\squad_descr.ltx")
+squad_ltx = nil
 
 local board = nil
 local string_sub = string.sub
@@ -119,40 +119,6 @@ function calc_point(point, prev_point, squad, src_smart_id, tgt_smart_id, arhive
 			end
 		else
 			point_value = point_value + 2000
-
-			-- Now handled in sim_squad_generic:get_next_action(), where it belongs:
---[[
-			if point.player_name == squad_faction then
-				for k, rogue_squad in pairs (board.smarts[point_id].squads) do
-					local current_action = rogue_squad.current_action
-					if current_action ~= nil then
-						if current_action.name == "stay_point" then
-							if not rogue_squad:get_script_target() then
-								for nearest_smart_id, nearest_smart in pairs (board:get_nearest_smarts(point)) do
-									if is_point_avail(nearest_smart, squad_faction) then
-										local nearest_smart_owner = nearest_smart.player_name
-										local friendly_squad_quan
-										if nearest_smart_owner == "none" or game_relations.is_factions_enemies(squad_faction, nearest_smart_owner) then
-											friendly_squad_quan = board:get_smart_squad_quantity(nearest_smart, board.players[squad_faction])
-										elseif nearest_smart_owner == squad_faction then
-											friendly_squad_quan = board:get_smart_squad_quantity(nearest_smart, board.players[squad_faction]) + board:get_smart_population(nearest_smart)
-										end
-										if friendly_squad_quan ~= nil then
-											if friendly_squad_quan < nearest_smart.squad_capacity then
---												dbgmsg("Assigned "..rogue_squad.squad_id.." to: "..smart_names.get_smart_terrain_name(nearest_smart))
-												rogue_squad.current_action = sim_squad_generic.sim_attack_point(rogue_squad, nearest_smart_id, true)
-												rogue_squad.current_action:make()
-												break
-											end
-										end
-									end
-								end
-							end
-						end
-					end
-				end
-			end
-]]
 		end
 	else
 		point_value = point_value + 2000
@@ -482,9 +448,10 @@ function sim_board:create_squad(faction_id, squad_class, spawn_smart, sq_id, set
 
 --	local board = squad.board
 	local sim = _G.sim
+
 	for npc_id in pairs (squad.squad_npc) do
-		local npc_obj = sim:object(npc_id)
-		self:setup_squad_and_group(npc_obj)
+		local se_npc = sim:object(npc_id)
+		self:setup_squad_and_group(se_npc)
 	end
 
 	local faction = self.players[faction_id]
@@ -710,21 +677,22 @@ function sim_board:enter_smart(squad, smart_id, after_load)
 	end
 end
 
-function sim_board:setup_squad_and_group(obj)
+function sim_board:setup_squad_and_group(se_obj)
 
 	local group = 0
-
 	local level_id = squad_by_level[level.name()]
+
 	if level_id ~= nil then
 		group = level_id
 	end
 
-	local se_obj = _G.sim:object(obj.id)
+--	local se_obj = _G.sim:object(se_obj.id)
 	local se_obj_team = se_obj.team
 
 	change_team_sqaud_group(se_obj, se_obj_team, se_obj.squad, group)
 
 	local squad = self.squads[se_obj.squad_id]
+
 	if squad == nil then
 		change_team_sqaud_group(se_obj, se_obj_team, 0, se_obj.group)
 		return
@@ -733,6 +701,7 @@ function sim_board:setup_squad_and_group(obj)
 	local self_smarts = self.smarts
 	local smart = self_smarts[squad.smart_id].smrt
 	local squad_action = squad.current_action
+
 	if squad_action ~= nil and squad_action.name == "attack_point" then
 		smart = self_smarts[squad_action.dest_smrt_id].smrt
 	end
@@ -897,6 +866,7 @@ end
 
 function clear()
 	board = nil
+	squad_ltx = ini_file("misc\\squad_descr.ltx")
 end
 
 local function outta_my_way_fools(faction_name, point_name)

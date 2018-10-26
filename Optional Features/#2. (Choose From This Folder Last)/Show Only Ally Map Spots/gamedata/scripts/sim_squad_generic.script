@@ -428,25 +428,15 @@ function sim_squad_generic:assign_smart(old_smart, old_smart_id, new_smart, new_
 	self.smart_id = new_smart_id
 	for npc_id in pairs (self.squad_npc) do
 		local se_npc = sim:object(npc_id)
-		if se_npc ~= nil then
-			if se_npc.m_smart_terrain_id == new_smart_id then
-				return
-			end
-			if se_npc.m_smart_terrain_id ~= 65535 then
-				if se_npc.m_smart_terrain_id == old_smart_id then -- if old_smart_id is nil, this test fails
-					old_smart:unregister_npc(se_npc)
-				end
-			end
-			new_smart:register_npc(se_npc)
-		else
-			self.squad_npc[npc_id] = nil
-			if self.commander_id == npc_id then
-				for kk in pairs (self.squad_npc) do
-					self.commander_id = kk
-					break
-				end
+		if se_npc.m_smart_terrain_id == new_smart_id then
+			return
+		end
+		if se_npc.m_smart_terrain_id ~= 65535 then
+			if se_npc.m_smart_terrain_id == old_smart_id then -- if old_smart_id is nil, this test fails
+				old_smart:unregister_npc(se_npc)
 			end
 		end
+		new_smart:register_npc(se_npc)
 	end
 end
 
@@ -1828,19 +1818,9 @@ function sim_attack_point:make()
 
 --	local sim = alife()
 	for npc_id in pairs (squad.squad_npc) do
-		local obj = sim:object(npc_id)
-		if obj ~= nil then
-			board:setup_squad_and_group(obj)
-			src_smart:update_jobs(obj)
-		else
-			squad.squad_npc[npc_id] = nil
-			if squad.commander_id == npc_id then
-				for kk in pairs (squad.squad_npc) do
-					squad.commander_id = kk
-					break
-				end
-			end
-		end
+		local se_npc = sim:object(npc_id)
+		board:setup_squad_and_group(se_npc)
+		src_smart:update_jobs(se_npc)
 	end
 
 	squad.last_action_timer = get_game_time()

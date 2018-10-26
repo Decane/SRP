@@ -81,7 +81,7 @@ function CRandomTask:save(packet)
 
 	local inited_tasks = self.inited_tasks
 --[[
-	The block below clears any unstarted bring_item and recover_item tasks.
+	The block below clears any unstarted bring_item, recover_item, and capture_smart tasks.
 	An autosave while the player has the random task dialog open would erase the
 	entity IDs of any tasks of the aforementioned types that have by then been
 	allocated for player selection in that dialog by task_dialogs.squad_has_capture_tasks().
@@ -97,6 +97,21 @@ function CRandomTask:save(packet)
 					local task_squad = sim_board.get_sim_board().squads[task.squad_id]
 					if task_squad then
 						task_squad.random_tasks[id] = nil
+					end
+					inited_tasks[key] = nil
+				end
+			elseif task.type == "capture_smart" then
+				if task.status == "normal" then
+					local task_eid = task.entity_id
+					self.id_generator:remove(task_eid)
+					local task_squad = sim_board.get_sim_board().squads[task.squad_id]
+					if task_squad then
+						for id, entity_id in pairs (task_squad.random_tasks) do
+							if entity_id == task_eid then
+								task_squad.random_tasks[id] = nil
+								break
+							end
+						end
 					end
 					inited_tasks[key] = nil
 				end
