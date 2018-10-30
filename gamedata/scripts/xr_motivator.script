@@ -426,19 +426,20 @@ function motivator_binder:update(delta)
 		else
 			npc:set_tip_text("")
 		end
+
+		local squad = npc_st.squad_obj
+
+		if squad ~= nil then
+			if squad.commander_id == id then
+				squad:update()
+			end
+		end
 	else
 		if npc_st.state_mgr then
 			npc_st.state_mgr = nil
 		end
 		npc:set_tip_text_default()
 		self.death_recorded = true
-	end
-
-	local squad = npc_st.squad_obj
-	if squad ~= nil then
-		if squad.commander_id == id then
-			squad:update()
-		end
 	end
 end
 

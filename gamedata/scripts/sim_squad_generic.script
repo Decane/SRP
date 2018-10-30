@@ -415,6 +415,7 @@ function sim_squad_generic:on_npc_death(npc, killer_id)
 			xr_logic.pick_section_from_condlist(db.actor, self, self.death_condlist)
 		end
 		self.board:remove_squad(self, self.board.smarts[self.smart_id].smrt)
+		self.commander_id = nil
 		return
 	end
 
@@ -1141,7 +1142,7 @@ function sim_squad_generic:save(packet)
 	packet:w_u16(self.commander_id)
 
 	n = 0
-	for k in pairs (self.squad_npc) do
+	for k in pairs (self.squad_npc) do -- TODO: Just use self.npc_count when next new game requirement
 		n = n + 1
 	end
 
@@ -1231,7 +1232,7 @@ function sim_squad_generic:load(packet) --, registred)
 --	self.squad_npc = {}
 	T = self.squad_npc
 
-	n = packet:r_u8()
+	n = packet:r_u8() -- TODO: Just use self.npc_count when next new game requirement
 
 	for i = 1, n do
 		local k = packet:r_u16()

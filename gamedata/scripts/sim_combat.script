@@ -244,7 +244,8 @@ function CCombat_manager:update()
 	local board_squads = self.board.squads
 	for id, data in pairs (self_squads) do
 		local squad = board_squads[id]
-		if squad ~= nil and not empty(squad.squad_npc) then
+--		if squad ~= nil and not empty(squad.squad_npc) then
+		if squad ~= nil and squad.npc_count ~= 0 then -- squad.npc_count should always match squad.squad_npc count
 			self:update_squad(id, data)
 		else
 			self_squads[id] = nil
@@ -328,9 +329,9 @@ function CCombat_manager:update_actor()
 	local board_squads = self.board.squads
 	local my_squad = board_squads[enemy_who_saw_actor]
 	local my_squad_action = my_squad.current_action
-	local my_squad_data = self_squads[my_squad.squad_id]
 	if my_squad_action ~= nil and my_squad_action.name == "attack_point" then
 		if actor_come(my_squad) then
+			local my_squad_data = self_squads[my_squad.squad_id]
 			my_squad_data._stage = "combat"
 			self.actor_combat = true
 		end
@@ -362,7 +363,7 @@ function CCombat_manager:update_actor()
 					data._inited_defend_time = game_time
 				end
 			end
-			 -- DC170501:
+			-- DC170501:
 			local actor = db.actor
 			if actor then
 				self.cover_manager:calculate_covers(actor:position())
@@ -376,19 +377,17 @@ function CCombat_manager:update_squad(id, data)
 	local board_squads = self.board.squads
 	local squad = board_squads[id]
 
-	if squad == nil then
-		abort("[sim_combat.update_squad]: Squad with ID '%s' is nil.", tostring(id))
-	end
-
-	local sim = _G.sim
+--	Already checked in CCombat_manager:update()
+--	if squad == nil then
+--		abort("[sim_combat.update_squad]: Squad with ID '%s' is nil.", tostring(id))
+--	end
 
 	if data._stage == "move" then
 		if not squad.squad_online then
 			local comander = _G.sim:object(squad.commander_id)
 			if comander.attack_position ~= nil then
 				local GG = game_graph()
-				local smrt = self.smart
-				if GG:vertex(smrt.m_game_vertex_id):level_id() == GG:vertex(comander.m_game_vertex_id):level_id() then
+				if GG:vertex(self.smart.m_game_vertex_id):level_id() == GG:vertex(comander.m_game_vertex_id):level_id() then
 					if comander.position:distance_to_sqr(comander.attack_position) < SQUAD_COME_ATTACK_OFFLINE_DIST then
 						data._stage = "prepare"
 					end
