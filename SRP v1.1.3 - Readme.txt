@@ -129,6 +129,7 @@ Quest fixes:
 + Fixed the storyline breaking if the player suppresses the Limansk military MG nest during the interval between receiving and completing the task to speak to the Clear Sky squad commander.
 + Fixed the storyline breaking if the player speaks to Forester before responding to the SOS signal in the Red Forest.
 + Fixed the issue where the dogs that spawn to attack Vasyan might fail to do so due to nearby NPC interference, hindering storyline progress.
++ Fixed the issue where the skirmish between the loners and military at the Cordon bus stop could begin prematurely, preventing the player from receiving the task to defend the loner patrol.
 + Fixed the issue where the dogs spawned for Wolf's "Help the stalker" task would not attack Drifter if the player picks up Sidorovich's loot before taking the task.
 + Fixed the issue where the player would in some circumstances fail to properly receive credit for killing the boars during the tutorial mission in the Swamp.
 + Fixed the issue where 'return item' tasks would sometimes be unavailable to the player when they should be available.

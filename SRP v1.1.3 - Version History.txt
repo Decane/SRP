@@ -19,6 +19,7 @@ v1.1.3
 + Fixed the issue where the player's assistance could fail to be registered in a random faction war task, causing the task to be cancelled when it should be completed. - Decane
 + Fixed the issue where a 'defend' task could occasionally be received in unwarranted circumstances, most frequently resulting in the task being immediately cancelled. - Decane
 + Fixed the issue where 'find upgrade' tasks would not cancel when the mechanic who gave them dies or becomes hostile after loading a savegame. - Decane
++ Fixed the issue where the skirmish between the loners and military at the Cordon bus stop could begin prematurely, preventing the player from receiving the task to defend the loner patrol. - Decane
 + Fixed the issue where non-scripted squads loaded from a savegame, as opposed to spawning into the Zone in the current game session, would not spawn inventory box items. - Decane
 + Fixed a typo in gulag_general.script that prevented mutants from behaving aggressively on patrol paths linking them to attack-targets. - Decane
 + Fixed four invalid waypoint name indices in all.spawn to make two waypoints at the 'Boat park' and two at the 'Village ruins' available to NPCs. - Decane

@@ -382,14 +382,16 @@ function CCombat_manager:update_squad(id, data)
 --		abort("[sim_combat.update_squad]: Squad with ID '%s' is nil.", tostring(id))
 --	end
 
-	if data._stage == "move" then
-		if not squad.squad_online then
-			local comander = _G.sim:object(squad.commander_id)
-			if comander.attack_position ~= nil then
-				local GG = game_graph()
-				if GG:vertex(self.smart.m_game_vertex_id):level_id() == GG:vertex(comander.m_game_vertex_id):level_id() then
-					if comander.position:distance_to_sqr(comander.attack_position) < SQUAD_COME_ATTACK_OFFLINE_DIST then
-						data._stage = "prepare"
+	if id ~= "esc_smart_terrain_5_9_military_2_squad" then -- exempt Cordon Bus Stop military squad
+		if data._stage == "move" then
+			if not squad.squad_online then
+				local comander = _G.sim:object(squad.commander_id)
+				if comander.attack_position ~= nil then
+					local GG = game_graph()
+					if GG:vertex(self.smart.m_game_vertex_id):level_id() == GG:vertex(comander.m_game_vertex_id):level_id() then
+						if comander.position:distance_to_sqr(comander.attack_position) < SQUAD_COME_ATTACK_OFFLINE_DIST then
+							data._stage = "prepare"
+						end
 					end
 				end
 			end
