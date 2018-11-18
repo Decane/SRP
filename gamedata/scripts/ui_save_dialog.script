@@ -33,7 +33,7 @@ class "save_dialog" (CUIScriptWnd)
 function save_dialog:__init() super()
 	self:InitControls()
 	self:InitCallBacks()
-	self:FillList()
+--	self:FillList()
 end
 
 function save_dialog:__finalize()
@@ -44,13 +44,14 @@ function save_dialog:FillList()
 	self.list_box:RemoveAll()
 
 	local flist = getFS():file_list_open_ex("$game_saves$", FS.FS_ListFiles, "*.sav")
-	local f_cnt = flist:Size()
 
 	flist:Sort(FS.FS_sort_by_modif_down)
 
-	for it = 0, f_cnt - 1 do
+	local string_sub = string.sub
+
+	for it = 0, flist:Size() - 1 do
 		local file = flist:GetAt(it)
-		local file_name = string.sub(file:NameFull(), 0, (string.len(file:NameFull()) - 4))
+		local file_name = string_sub(file:NameFull(), 1, -5) -- string.sub(file:NameFull(), 0, (string.len(file:NameFull()) - 4))
 		local date_time = "[" .. file:ModifDigitOnly() .. "]"
 		self:AddItemToList(file_name, date_time)
 	end
@@ -59,9 +60,6 @@ end
 function save_dialog:InitControls()
 
 	self:SetWndRect                (Frect():set(0, 0, 1024, 768))
-
---	self.list_file_font            = GetFontMedium()
---	self.list_date_font            = GetFontMedium()
 
 	local xml                      = CScriptXmlInit()
 

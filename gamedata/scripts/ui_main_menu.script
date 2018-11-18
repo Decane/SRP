@@ -80,9 +80,35 @@ function main_menu:OnMsgCancel()
 	self.mbox_mode = 0
 end
 
+local function LoadLastSave()
+	local console = get_console()
+	console:execute("main_menu off")
+	console:execute("load_last_save") -- returns nothing, can't programmatically tell if succeeds or fails
+--[[
+	-- The code below would always load the latest save. If the one tracked by the engine were deleted,
+	-- the next one down would be loaded instead. Alas, always loading the most recent save would break
+	-- loading the last loaded savegame if that isn't also the most recent.
+
+	local flist = getFS():file_list_open_ex("$game_saves$", bit_or(FS.FS_ListFiles, FS.FS_RootOnly), "*.sav")
+	if flist:Size() == 0 then
+		dbglog("No save files found, can't load last save")
+		return
+	end
+	flist:Sort(FS.FS_sort_by_modif_down)
+	local newest = flist:GetAt(0)
+	local fname = string.sub(newest:NameFull(), 1, -5)
+	if valid_saved_game(fname) then
+		bind_stalker.quitting_game = true
+		console:execute("load " .. fname)
+	else
+		dbglog("Last save '%s' is invalid, can't load it", fname)
+	end
+]]
+end
+
 function main_menu:OnMsgYes()
 	if self.mbox_mode == 1 then
-		self:LoadLastSave()
+		LoadLastSave()
 	end
 	self.mbox_mode = 0
 end
@@ -91,20 +117,14 @@ function main_menu:OnMsgNo()
 	self.mbox_mode = 0
 end
 
-function main_menu:LoadLastSave()
-	local console = get_console()
-	console:execute("main_menu off")
-	console:execute("load_last_save")
-end
-
 function main_menu:OnButton_last_save()
 	if alife() == nil then
-		self:LoadLastSave()
+		LoadLastSave()
 		return
 	end
 	local actor = db.actor
 	if actor ~= nil and actor:alive() == false then
-		self:LoadLastSave()
+		LoadLastSave()
 		return
 	end
 	self.mbox_mode = 1
@@ -252,40 +272,18 @@ function main_menu:Dispatch(cmd, param) -- virtual function
 	return true
 end
 
--- ZRP functions:
-
-local function AddTimeDigits(str, dig)
-	if (dig > 9) then
-		str = str .. dig
-	else
-		str = str .. "0" .. dig
-	end
-	return str
-end
-
 function main_menu:OnButton_save_level_clicked()
 
-	local y,m,d,h,min,sec,ms = 0,0,0,0,0,0,0
-	y,m,d,h,min,sec,ms = game.get_game_time():get(y,m,d,h,min,sec,ms)
+	local y, m, d, h, min, sec, ms = 0, 0, 0, 0, 0, 0, 0
 
-	local date_time = "_"
+	y, m, d, h, min, sec, ms = game.get_game_time():get(y, m, d, h, min, sec, ms)
 
-	date_time = date_time .. y
-	date_time = date_time .. "-"
-	date_time = AddTimeDigits(date_time, m)
-	date_time = date_time .. "-"
-	date_time = AddTimeDigits(date_time, d)
-	date_time = date_time .. "_"
-	date_time = AddTimeDigits(date_time, h)
-	date_time = AddTimeDigits(date_time, min)
-	-- date_time = AddTimeDigits(date_time, sec)
-
+	local date_time = string.format("_%d-%02d-%02d_%02d%02d", y, m, d, h, min)
 	local console = get_console()
+
 	console:execute("main_menu off")
 	console:execute("save " .. level.name() .. date_time)
 end
-
--- /ZRP functions
 
 function main_menu:OnKeyboard(dik, keyboard_action) -- virtual function
 

@@ -450,7 +450,6 @@ function CCombat_manager:update_squad(id, data)
 					end
 				end
 			end
-			data._stage = "wait"
 		else
 			data._prepare_shouted = true
 			if self.combat_quest == "nil" then
@@ -483,8 +482,9 @@ function CCombat_manager:update_squad(id, data)
 					end
 				end
 			end
-			data._stage = "wait"
 		end
+
+		data._stage = "wait"
 	end
 
 	local GAME_TIME = nil
@@ -619,14 +619,9 @@ function CCombat_manager:update_squad(id, data)
 	if data._stage == "combat" then
 		if self.actor_combat == false then
 			local under_attack, num_attackers = self:point_under_attack()
-			if not under_attack then
+			if not under_attack or (self.smart.player_name == "none" and num_attackers < 2) then
 				data._stage = "post_combat"
 				return false
-			else
-				if self.smart.player_name == "none" and num_attackers < 2 then
-					data._stage = "post_combat"
-					return false
-				end
 			end
 		end
 		if squad.squad_online then
