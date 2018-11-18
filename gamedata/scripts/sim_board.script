@@ -365,7 +365,6 @@ function sim_board:init_smart(smart) -- called (only) from smart_terrain.on_regi
 	if temp_squad_table ~= nil then
 		for k, squad in pairs (temp_squad_table) do
 --			dbglog("Delay-entering %s squad with ID '%s' to smart '%s'", game.translate_string(squad.player_id), tostring(squad.squad_id), smart_names.get_smart_terrain_name(smart))
---			self:assign_squad_to_smart(squad, smart_id)
 			self:enter_smart(squad, smart_id) -- delay-enters squads from early instances of enter_smart(squad, smart_id) where self.smarts[smart_id] was still nil
 		end
 		self.tmp_entered_squad[smart_id] = nil
@@ -521,9 +520,9 @@ end
 
 Summary of operations:
 
-(1) old_smart_info.squads[squad.squad_id] = nil
-(2) squad.smart_id = new_smart_id
-(3) new_smart_info.squads[squad.squad_id] = squad
+(1) squad.smart_id = new_smart_id
+(2) squad NPCs unregistered from old smart
+(3) squad NPCs registered to new smart
 
 ]]
 
@@ -548,7 +547,7 @@ function sim_board:assign_squad_to_smart(squad, new_smart_id) -- first unassigns
 	if old_smart_id ~= nil then
 		local old_smart_info = self.smarts[old_smart_id]
 		old_smart = old_smart_info.smrt
-		old_smart_info.squads[squad.squad_id] = nil
+--		old_smart_info.squads[squad.squad_id] = nil -- already nil for attack_point squads, pointless for others
 --		old_smart:refresh()
 	end
 --[[
@@ -556,14 +555,39 @@ function sim_board:assign_squad_to_smart(squad, new_smart_id) -- first unassigns
 		return
 	end
 ]]
+	squad.smart_id = new_smart_id -- moved from sim_squad_generic:assign_smart()
+
 	local new_smart = new_smart_info.smrt
+	local sim = _G.sim
 
-	squad:assign_smart(old_smart, old_smart_id, new_smart, new_smart_id)
+	for npc_id in pairs (squad.squad_npc) do -- ditto
+		local se_npc = sim:object(npc_id)
+		if se_npc.m_smart_terrain_id == new_smart_id then
+			return
+		end
+		if se_npc.m_smart_terrain_id ~= 65535 then
+			if se_npc.m_smart_terrain_id == old_smart_id then -- if old_smart_id is nil, this test fails
+				old_smart:unregister_npc(se_npc)
+			end
+		end
+		new_smart:register_npc(se_npc)
+	end
 
-	new_smart_info.squads[squad.squad_id] = squad
+--	new_smart_info.squads[squad.squad_id] = squad -- moved to enter_smart()
 
 --	new_smart:refresh()
 end
+
+--[[
+
+Summary of operations:
+
+(1) smart_info.stayed_squad_quan = smart_info.stayed_squad_quan - 1
+(2) smart_info.squads[squad.squad_id] = nil
+(3) squad_faction.resource_level decremented if appropriate
+(4) smart.player_name = "none" if appropriate
+
+]]
 
 function sim_board:exit_smart(squad, smart, skip_brain_update)
 --[[
@@ -616,11 +640,12 @@ end
 
 Summary of operations:
 
-(1) squad.entered_smart = smart_id
-(2) smart.player_name = squad_faction.player_name
-(3) squad_faction.resource_level incremented if appropriate
-(4) squad faction brain updates as appropriate
-(5) smart_info.stayed_squad_quan = smart_info.stayed_squad_quan + 1
+(1) smart_info.squads[squad.squad_id] = squad
+(2) squad.entered_smart = smart_id
+(3) smart.player_name = squad_faction.player_name
+(4) squad_faction.resource_level incremented if appropriate
+(5) squad faction brain updates as appropriate
+(6) smart_info.stayed_squad_quan = smart_info.stayed_squad_quan + 1
 
 ]]
 
@@ -641,10 +666,12 @@ function sim_board:enter_smart(squad, smart_id, after_load)
 		abort("[sim_board:enter_smart]: Squad with ID '%s' tried to enter smart with ID '%s' without first leaving its old one.", tostring(squad.squad_id), tostring(smart_id))
 	end
 
-	local smart = smart_info.smrt
-	local squad_faction = self.players[squad.player_id]
+	smart_info.squads[squad.squad_id] = squad -- moved from assign_squad_to_smart()
 
 	squad.entered_smart = smart_id
+
+	local smart = smart_info.smrt
+	local squad_faction = self.players[squad.player_id]
 
 	if smart_info.stayed_squad_quan == 0 then
 
@@ -833,19 +860,17 @@ end
 
 function sim_board:reset_nearest_squads(smart)
 	local self_smarts = self.smarts
-	for nearest_smart_id, nearest_smart in pairs (self:get_nearest_smarts(smart)) do
+	for nearest_smart_id in pairs (self:get_nearest_smarts(smart)) do
 		for kk, squad in pairs (self_smarts[nearest_smart_id].squads) do
 			local squad_action = squad.current_action
-			if squad_action ~= nil then
-				if squad_action.name == "stay_point" then
-					if nearest_smart.sim_combat_id ~= nil then
-						local sim_combat = self_smarts[nearest_smart.sim_combat_id].smrt.combat_manager
-						sim_combat:unregister_squad(squad)
-					end
-					squad_action:finalize()
-					squad.current_action = nil
-					squad:update()
+			if squad_action and squad_action.name == "stay_point" then
+				if squad.sim_combat_id ~= nil then
+					local sim_combat = self_smarts[squad.sim_combat_id].smrt.combat_manager
+					sim_combat:unregister_squad(squad)
 				end
+--				squad_action:finalize() -- does nothing for stay_point
+				squad.current_action = nil
+				squad:update()
 			end
 		end
 	end
@@ -949,11 +974,7 @@ function is_point_avail(point, faction_id) -- returns nil, true, or false (false
 		end
 	end
 
-	if point.sim_avail == nil then
-		return true
-	end
-
-	return xr_logic.pick_section_from_condlist(db.actor_proxy, nil, point.sim_avail) == "true"
+	return point.sim_avail == nil or xr_logic.pick_section_from_condlist(db.actor_proxy, nil, point.sim_avail) == "true"
 end
 
 -- function print()

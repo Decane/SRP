@@ -422,23 +422,6 @@ function sim_squad_generic:on_npc_death(npc, killer_id)
 	self:refresh()
 end
 
-function sim_squad_generic:assign_smart(old_smart, old_smart_id, new_smart, new_smart_id)
---	local sim = alife()
-	self.smart_id = new_smart_id
-	for npc_id in pairs (self.squad_npc) do
-		local se_npc = sim:object(npc_id)
-		if se_npc.m_smart_terrain_id == new_smart_id then
-			return
-		end
-		if se_npc.m_smart_terrain_id ~= 65535 then
-			if se_npc.m_smart_terrain_id == old_smart_id then -- if old_smart_id is nil, this test fails
-				old_smart:unregister_npc(se_npc)
-			end
-		end
-		new_smart:register_npc(se_npc)
-	end
-end
-
 local faction_activity =
 {
 	csky		= {
@@ -543,7 +526,7 @@ function sim_squad_generic:update()
 	self.sound_manager:update()
 
 	if self.current_action ~= nil then
-		local is_finished = self.current_action:update(self)
+		local is_finished = self.current_action:update()
 		if not is_finished then
 			self:adaptive_refresh()
 			return
@@ -1265,7 +1248,7 @@ function sim_squad_generic:init_squad_on_load()
 	local board = self.board
 	local squad_smart_id = self.smart_id
 	local squad_action = self.current_action
-	board:assign_squad_to_smart(self, squad_smart_id)
+	board:assign_squad_to_smart(self, squad_smart_id) -- loaded attack_point squads, like non-loaded ones, get squad.smart_id = squad_smart_id but not board.smarts[squad_smart_id].squads[self.squad_id] = self
 	if squad_action == nil or squad_action.name == "stay_point" then
 		board:enter_smart(self, squad_smart_id, true)
 	end
