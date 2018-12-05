@@ -158,7 +158,9 @@ function load_dialog:OnListItemClicked()
 	if item == nil then
 		self.file_caption:SetText("")
 		self.file_data:SetText("")
+		local r = picture:GetOriginalRect()
 		picture:InitTexture("ui\\ui_noise")
+		picture:SetOriginalRect(Frect():set(r.x1, r.y1, r.x2, r.y2))
 		return
 	end
 
