@@ -9,18 +9,20 @@ v1.1.3
 
 + Script optimizations. - Decane, NatVac
 + Fixed the issue where the game would occasionally corrupt during the Fang basement mugging scene at the Flea Market in the Garbage. - Decane
-+ Fixed a rare crash upon reloading a savegame: sim_combat.script:348: attempt to index field 'actor' (a nil value). - Decane
-+ Fixed a rare crash upon a smart terrain being captured: sim_squad_generic.script:471: attempt to index field 'current_action' (a nil value). - Decane
++ Fixed a rare crash upon reloading a savegame: sim_combat.script:419: attempt to index field 'actor' (a nil value). - Decane
++ Fixed a rare crash upon a smart terrain being captured: sim_squad_generic.script:456: attempt to index field 'current_action' (a nil value). - Decane
 + Fixed a rare crash: xr_kamp.script:433: bad argument #1 to 'random' (interval is empty). - Decane
 + Fixed the issue where speaking to a mechanic with incomplete 'find upgrade' tasks would leak task entity IDs. - Decane
 + Implemented a tail-recursive algorithm to automatically detect and resolve faction war stalemates arising out of a squad being grid-locked into a camp by all surrounding camps being occupied by non-hostiles, thereby preventing the grid-locked squad from leaving the camp. - Decane
-+ Fixed the issue where loading a savegame would make the game copy offered but unassigned combat tasks to a Lua table intended only for assigned combat tasks. This caused various bugs ranging from stuck faction wars to the bandit robbery scheme ceasing to activate. - Decane
++ Fixed the issue where loading a savegame would make the game copy offered but unassigned combat tasks to a Lua table intended only for assigned combat tasks, causing various bugs ranging from stuck faction wars to the robbery scheme ceasing to activate. - Decane
 + Worked around an SRP v1.0.4 regression where the AI of NPCs approaching the Fishing Hamlet from the Hidden Camp would occasionally break. - Decane
 + Fixed the issue where the player's assistance could fail to be registered in a random faction war task, causing the task to be cancelled when it should be completed. - Decane
 + Fixed the issue where a 'defend' task could occasionally be received in unwarranted circumstances, most frequently resulting in the task being immediately cancelled. - Decane
 + Fixed the issue where 'find upgrade' tasks would not cancel when the mechanic who gave them dies or becomes hostile after loading a savegame. - Decane
 + Fixed the issue where the skirmish between the loners and military at the Cordon bus stop could begin prematurely, preventing the player from receiving the task to defend the loner patrol. - Decane
 + Fixed the issue where non-scripted squads loaded from a savegame, as opposed to spawning into the Zone in the current game session, would not spawn inventory box items. - Decane
++ Fixed the issue where squads could prioritize secondary faction war targets over primary targets, potentially leading to absurd behavior such as Freedom preferring to send squads towards a loner-captured Barrier rather than sending them to capture the Duty base. - Decane
++ Fixed the issue where squads would readily abandon forward targets during the faction war upon loss of an earlier target even if squads at less important smart terrains are available to resecure the earlier target. - Decane
 + Fixed a typo in gulag_general.script that prevented mutants from behaving aggressively on patrol paths linking them to attack-targets. - Decane
 + Fixed four invalid waypoint name indices in all.spawn to make two waypoints at the 'Boat park' and two at the 'Village ruins' available to NPCs. - Decane
 + Fixed the bridge to Limansk in the Red Forest not aligning properly when lowered, which in rare cases would cause NPCs to never reach the other side. - PYP
@@ -31,6 +33,7 @@ v1.1.3
 + Fixed Sakharov and Lingov not being marked as important characters on the map. - Decane
 + Fixed the issue where a squad commander icon could overlap with a trader icon on the map. - Decane
 + Made a couple of drop-boxes in the Abandoned Hospital destructible that mistakenly were not so in the unmodded game. - Decane
++ Fixed the all.spawn typos preventing a few drop-boxes in Limansk from spawning loot when broken. - Decane
 + Fixed a few instances of a mechanic not being able to upgrade a pre-upgraded variant of a weapon even if they could upgrade the base weapon. - Decane
 + Fixed the incorrect parsing of hyphenated item names appearing as dependees for ammo in section 'item_dependence' in death_generic.ltx. - Decane
 + Fixed a typo in Sakharov's trade config that prevented the right multiplier being applied to the sell-price of shotgun ammo. - warcatt00
@@ -50,7 +53,8 @@ v1.1.3
 ~ Enabled the possibility of returning the items requested in a 'bring item' task to the new squad leader if the original dies (new game recommended). - Decane
 ~ Moved some previously 'hard-coded' lists in a few scripts to appropriate configuration files. - Decane
 ~ The SVD and SVU are now included among the weapons not tossed when using the optional 'No NPC Weapon Tossing Upon Death' feature.
-- Reversed the decision to 'fix' the "Return the experimental device", "Find the missing stalker’s loot", and "Take the artifact from the dead stalker" tasks being available from Duty members despite each's description purportedly implying the task-giver to be a neutral stalker. Each description can be read in a way that does not render it inconsistent with the tasker being a Duty member.
+- Reversed the SRP v1.0.4 decision to 'fix' the "Return the experimental device", "Find the missing stalker’s loot", and "Take the artifact from the dead stalker" tasks being available from Duty members despite each's description purportedly implying the task-giver to be a neutral stalker. Each description can be read in a way that does not render it inconsistent with the tasker being a Duty member.
+- Reversed the SRP v1.0.4 decision to make Clear Sky squads attempt to capture several further explicitly defined smart terrains after capturing the Southern Farmstead.
 
 -----------------------------------------------------------------------------
 
@@ -146,7 +150,7 @@ v1.0.5
 
 + Minor script optimizations. - Decane
 + Fixed a crash possibly enabled by SRP v1.0.4: Insufficient smart_terrain jobs gar_smart_terrain_6_6. - Decane
-+ Fixed a rare crash upon reloading a savegame: sim_combat.script:892: attempt to index field 'actor' (a nil value). - Decane
++ Fixed a rare crash upon reloading a savegame: sim_combat.script:968: attempt to index field 'actor' (a nil value). - Decane
 + Fixed the issue where the dogs that spawn to attack Vasyan might fail to do so due to nearby NPC interference, hindering storyline progress. - Decane
 + Fixed the issue where the reward in secondary task tooltips would fail to update properly after resuming progress from a savegame wherein the player already has an outstanding reward from the relevant faction. - Decane
 + Fixed the mechanic specialization tooltip displaying 'none' for some mechanics who do not lack a specialization, e.g. Yar and Major Zvyagintsev. - Decane
@@ -166,13 +170,14 @@ v1.0.4
 + Miscellaneous tasking fixes and improvements. - Decane
 + Fixed various logic script errors. - Decane
 + Fixed the buggy updating of NPC trade supplies. - Decane
-+ Fixed several memory leaks in task_manager.script which could eventually crash the game or corrupt a save file. - Decane
++ Fixed a task entity identifier leak in task_manager.script which could eventually destabilize the game. - Decane
 + Partly fixed the broken wet surfaces effect. - MacroN, Decane
 + Fixed the issue where squad NPCs could sometimes vanish right in front of the player. - Decane
 + Fixed the issue where NPCs would sometimes perceive an enemy as a threat even after the enemy has been killed. - Decane
 + Added the possibility to continue playing in freeplay mode after the main storyline. - DEXXX, with Decane tweaks
 + Fixed the broken artifact respawn timer. Consequently, artifacts now respawn as they are supposed to. - Decane
 + Fixed the broken final squad spawner in Limansk which could cause crashing and savegame corruption in case the player does not swiftly exit Limansk after disabling the electricity supply to the fence. - Decane
++ Fixed an occasional crash upon the game evaluating whether to assign the player a 'help' task: sim_combat.script:614: attempt to index local 'attack_squad_obj' (a nil value). - Decane
 + Fixed a rare waypoint crash in the Cordon: [error]Description : patrol path[esc_smart_terrain_3_7_walker_1_walk], point on path [name05],object [sim_default_stalker_228836]. - Decane
 + Fixed several potential crashes caused by the game attempting to alter the attitude of a non-existing squad. - Decane
 + Fixed a crash in the Red Forest if the trader in the mine strays from his spot at the desk. - Decane
@@ -302,7 +307,7 @@ v1.0.3
 + Fixed the issue where the player could ask Major Zvyagintsev about Mitay even before learning of Mitay. - Decane
 + Fixed the game crashing due to a task identifier data overflow: ! [LUA][ERROR] ERROR: You are saving too much. - IG2007
 + Fixed a crash in Agroprom due to a bad space restrictor conflicting with Orest's patrol path: [error]Description : any vertex in patrol path [agr_stalker_leader_walk] is inaccessible for object [agr_stalker_base_leader]. - Decane
-+ Fixed a crash in the Garbage if the flea market is attacked while the player has an active task from Wild Napr: ! [LUA][ERROR] ERROR: wrong target for storyline quest: logic@work5,gar_smart_terrain_6_3. - Decane
++ Fixed a crash in the Garbage if the player receives a task with Wild Napr as its target while a squad registered to the Flea Market is in a combat/defense state: ! [LUA][ERROR] ERROR: wrong target for storyline quest: logic@work5,gar_smart_terrain_6_3. - Decane
 + Fixed Lebedev's audio transmission being initiated mid-sentence upon the player's first arrival in the Red Forest. - Decane
 + Fixed the Duty outpost commander's audio transmission being initiated mid-sentence upon the player's first arrival at Agroprom. - Decane
 + Fixed the issue where the Duty outpost commander at Agroprom would be flagged as an important character even after he has become functionally generic. - Decane
@@ -355,7 +360,7 @@ v1.0.2
 + Fixed erratic corpse cleanup behavior. - Decane
 + Fixed unlit campfires emitting a burning sound. - Decane
 + Optimized some logic scripts by replacing continuous health restore calls with discrete calls. - Decane
-+ Fixed a crash which would occur whenever the game would try to assign a 'capture' task to a non-existing squad. - Decane
++ Fixed a crash upon the game attempting to assign a 'capture' task to a non-existing squad: task_objects.script:718: attempt to index field '?' (a nil value). - Decane
 + Fixed the issue where friendly NPCs would not turn hostile to the player when they should. For example, bandit robber squads in the Garbage now behave as they are supposed to when the player refuses cooperation with them whilst being on good terms with the bandits generally. - Decane
 + Fixed the issue where, under some circumstances, important characters would not disappear if their parent smart terrain is hostile to the player. Almost all traders, barmen, mechanics, leaders, and minigame NPCs will now 'go in hiding' if the player attacks their base. The only exceptions are the Agroprom stalker trader and mechanic since GSC's code reveals that they were intended to remain put. - Decane
 + Fixed a glitch which would allow the player to use a guide's services even if the player couldn't afford it, potentially leading to a situation where the player has negative money. - Decane
@@ -373,7 +378,7 @@ v1.0.2
 + Fixed the storyline breaking if the player does not respond to the SOS signal in the Red Forest before speaking with Forester. - Decane
 + Fixed a range of errors in the Red Forest bridge ambush squad logic. The stalker who tries to lure the player into an ambush, for example, will no longer shout "That's him! Take him down!" if his pals are already dead. - Decane
 + Fixed the exploit with the Forester 'Compass' artifact submission dialog where the player could repeatedly break the dialog before being told the space anomaly coordinates and then re-enter it to receive the reward (a VSS "Vintorez") again and again an endless amount of times. - Decane
-+ Enabled stash coordinate purchases from the two bar stalkers in Agroprom who lacked them due to a missing dialog option. This oversight had made it impossible to acquire all four agroprom bar stashes. - SetaKat
++ Enabled stash coordinate purchases from the two bar stalkers in Agroprom who lacked them due to a missing dialog option. - SetaKat
 + Fixed Yoga's logic getting broken if the player takes the task to kill Stringov, accepts Stringov's bribe, doesn't kill him and then runs to the south-east of the bus stop such that Yoga goes offline before the task is finished. - Decane
 + Fixed a crash indirectly caused by the above where the game would try to repopulate an already-populated stash whenever the player exits and re-enters the Garbage while Stringov is still alive: ! [LUA][ERROR] ERROR: Unable to give treasure [gar_treasure_quest_smuggler_weapons] because inventory box is already in use by treasure [gar_treasure_quest_smuggler_weapons]. - Decane
 + Fixed several other possible scenarios where Yoga's logic would get broken. - Decane
@@ -388,7 +393,7 @@ v1.0.2
 + Fixed all potential 'missing texture' errors related to different controller variants. - Decane
 + Fixed the Bandit Jacket using the Sunrise Suit's HUD arm texture; it now has its own unique texture. - Decane
 + Fixed the HUD bleeding icon being misaligned in widescreen mode. - Armada
-+ Fixed the game crashing if the player deletes the bottom-most savegame in a list of more than one savegame in the load menu and then attempts to either load or delete the savegame without first selecting another item from the list. - Decane
++ Fixed the game crashing if the player deletes the bottom-most savegame in a list of more than one savegame in the load menu and then attempts to load or delete the savegame without first selecting another item from the list. - Decane
 + Enabled deletion of saved games via the 'delete' keyboard button in the load menu and save menu. - Decane
 + Added the SRP version number to the left lower corner of the main menu in the style of the ZRP.
 + (Optional) Tweaked the faction wars to be less frustrating. - Decane, Lobstris
@@ -438,7 +443,7 @@ v0.8.2 BETA
 
 + Fixed the Army Warehouses 'return item' task where multiple Meat Chunk artifacts would be taken from the player for completion of the task if the player was in possession of more than one Meat Chunk artifact upon returning to the task-giver. - Decane
 + Fixed the Army Warehouses 'return item' task where multiple boxes of 7.62x54 mm 7N1 rounds would be taken from the player for completion of the task if the player was in possession of more than one box of 7.62x54 mm 7N1 rounds upon returning to the task-giver. - Decane
-+ Fixed a rare crash in the Red Forest which would occur if the player followed one of Strelok's helpers into the ambush at the Witch Circle when the ambush squad had already been killed. - Decane
++ Fixed a crash in the Red Forest upon the player following one of Strelok's helpers into the ambush at the Witch Circle when the ambush squad has already been killed: ! [LUA][ERROR] ERROR: There is no squad [red_pursuit_bounty_hunters_squad_3] in sim_board. - Decane
 + Fixed an info_portion related console error: ! attempt to use non-existent INFOPORTION [yan_zabor_stalker_3_on_position]. - Decane
 + Resolved a console error concerning a missing controller icon: ! Can't find texture 'ui_npc_monster_controller'. - Decane
 + Finished correcting global dialog and message texts. - Decane

@@ -13,7 +13,7 @@ end
 -- Locals
 -------------------------------------------------------------------------------
 
--- local motivator_obj = nil
+local console = get_console()
 local combat_table = {}
 local suspence_table = {}
 local npc_table = {}
@@ -35,10 +35,12 @@ local music_obj = nil
 local music_lo_lvl = 7
 local music_hi_lvl = 17
 local music_graph = {}
-local ambient_vol = get_console():get_float('snd_volume_music')
+local ambient_vol = console:get_float('snd_volume_music')
 local last_max_update = 0
 local last_min_update = 0
 local max_alerted_time = 15000
+local fade_in_check_time = nil
+local fade_out_check_time = nil
 
 -- local debug_on = false
 -- local debug_spot_type = "green_location"
@@ -65,20 +67,48 @@ function stop_sound()
 end
 
 -------------------------------------------------------------------------------
+-- Local helpers
+-------------------------------------------------------------------------------
+
+function fade_in(cur_amb_vol, timer, counter)
+	if fade_in_check_time ~= nil and time_global() - fade_in_check_time <= timer then
+		return
+	end
+	fade_in_check_time = time_global()
+	if cur_amb_vol < ambient_vol then
+		cur_amb_vol = cur_amb_vol + counter
+		if cur_amb_vol > ambient_vol then
+			cur_amb_vol = ambient_vol
+		end
+		--printf("fade_in:SET = "..ambient_vol)
+		console:execute('snd_volume_music '..cur_amb_vol)
+	end
+end
+
+function fade_out(cur_amb_vol, timer, counter)
+	if fade_out_check_time ~= nil and time_global() - fade_out_check_time <= timer then
+		return
+	end
+	fade_out_check_time = time_global()
+	if cur_amb_vol > 0 then
+		cur_amb_vol = cur_amb_vol - counter
+		if cur_amb_vol < 0 then cur_amb_vol = 0 end
+		--printf("fade_out:SET = "..ambient_vol)
+		console:execute('snd_volume_music '..cur_amb_vol)
+	end
+end
+
+-------------------------------------------------------------------------------
 -- Exported callbacks
 -------------------------------------------------------------------------------
 
 function on_actor_update()
 
 	local actor = db.actor
+
 	if actor:alive() then
-		if not IsDynamicMusic() then
-			if play_combat ~= 0 then
-				for npc_id in pairs (npc_table) do
-					stop_combat(npc_id)
-				end
-			end
-		else
+
+		if IsDynamicMusic() then
 			local actor_pos = actor:position()
 			for npc_id, npc_obj in pairs (npc_table) do
 				if npc_obj:alive() then
@@ -88,23 +118,14 @@ function on_actor_update()
 					play_local_suspence(actor, npc_obj, actor_pos, npc_id)
 				end
 			end
-		end
---[[
-		local playing_back = IsDynamicMusic()
-		local actor_pos = actor:position()
-		for npc_id, npc_obj in pairs (npc_table) do
-			if not playing_back and play_combat ~= 0 then
-				stop_combat(npc_id)
-			elseif playing_back then
-				if npc_obj:alive() then
-					if play_local_combat(actor, npc_obj, actor_pos, npc_id) then
-						break
-					end
-					play_local_suspence(actor, npc_obj, actor_pos, npc_id)
+		else
+			if play_combat ~= 0 then
+				for npc_id in pairs (npc_table) do
+					stop_combat(npc_id)
 				end
 			end
 		end
-]]
+
 		if play_combat == 0 then
 			interactive_music(0)
 		elseif play_combat == 1 then
@@ -116,7 +137,8 @@ function on_actor_update()
 		stop_sound()
 	end
 
-	local cur_amb_vol = get_console():get_float('snd_volume_music')
+	local cur_amb_vol = console:get_float('snd_volume_music')
+
 	if music then
 		fade_out(cur_amb_vol, 100, 0.1)
 	else
@@ -144,21 +166,21 @@ end
 function restore_ambient_on_end()
 	if music_obj and music_obj:playing() then music_obj:stop() end
 	--printf("restore_ambient_on_end:SET = "..ambient_vol)
-	get_console():execute('snd_volume_music '..ambient_vol)
+	console:execute('snd_volume_music '..ambient_vol)
 end
 
 function main_menu_on()
 	--printf("main_menu_on:SET = "..ambient_vol)
-	get_console():execute('snd_volume_music '..ambient_vol)	
+	console:execute('snd_volume_music '..ambient_vol)
 end
 
 function main_menu_off()
-	local cur_amb = get_console():get_float('snd_volume_music')
+	local cur_amb = console:get_float('snd_volume_music')
 	if cur_amb~=ambient_vol then
 		ambient_vol = cur_amb
 	end
 	--printf("main_menu_off:SET = "..ambient_vol)
-	get_console():execute('snd_volume_music '..ambient_vol)
+	console:execute('snd_volume_music '..ambient_vol)
 end
 
 -------------------------------------------------------------------------------
@@ -182,7 +204,7 @@ end
 
 local function debug_log(message)
 	if debug_on then
-		get_console():execute("load ~~ "..message)
+		console:execute("load ~~ "..message)
 	end
 end
 ]]
@@ -201,7 +223,7 @@ local function table_cleanup()
 	end
 	for npc_id in pairs (suspence_table) do
 		local npc_obj = npc_table[npc_id]
-		if npc_obj ~= nil then	
+		if npc_obj ~= nil then
 			play_cnt = play_cnt + 1
 			--debug_add_spot(npc_id, "suspence")
 		else
@@ -231,38 +253,18 @@ local function play_suspence()
 end
 
 local function stop_suspence()
-	local n = 0
-	for k in pairs (suspence_table) do
-		n = 1
-		break
+	if next(suspence_table) ~= nil then
+		return
 	end
-	if n == 0 then
-		suspence_enemy_update = 0
-		if play_combat ~= 0 then
-			play_combat = 0
-		end
-	end
-end
-
-local function play_combat_sound()
-	if play_combat ~= 1 then
-		play_combat = 1
-	end
+	suspence_enemy_update = 0
+	play_combat = 0
 end
 
 local function stop_combat_sound()
-	local n = 0
-	for k in pairs (combat_table) do
-		--printf("combat NPC NAME = "..k)
-		n = 1
-		break
+	if next(combat_table) ~= nil then
+		return
 	end
-	if n == 0 and play_combat ~= 0 then
-		-- for k, v in pairs (suspence_table) do
-			-- suspence_table[k] = nil
-		-- end
-		play_combat = 0
-	end
+	play_combat = 0
 end
 
 local function music_start(sound)
@@ -307,7 +309,7 @@ function interactive_music(number)
 		if music_init == 0 then
 			prepare_tracks()
 			if xrs_dynamic_music_themes and xrs_dynamic_music_themes.themes and #xrs_dynamic_music_themes.themes > 0 then
-				ambient_vol = get_console():get_float('snd_volume_music')
+				ambient_vol = console:get_float('snd_volume_music')
 				music_init = 1
 			else
 				music_init = -1
@@ -387,7 +389,7 @@ function music_select_section(number)
 		if v[1] == 'hi' then glevel = music_hi_lvl end
 
 		if v[2] == "<" and glevel < last_sel_min then
-			if glevel > number then 
+			if glevel > number then
 				music_section = k
 				last_sel_min = glevel
 			end
@@ -419,13 +421,13 @@ function stop_combat(npc_id)
 	end
 end
 
-function play_music(mode, npc_id)
+local function play_music(mode, npc_id)
 	local npc_obj = npc_table[npc_id]
 	if npc_obj == nil then return end
 	if mode == 1 then
 		--debug_add_spot(npc_id, "play_music(comb):"..npc_obj:name())
 		combat_table[npc_id] = time_global()
-		play_combat_sound()
+		play_combat = 1
 	else
 		--debug_add_spot(npc_id, "play_music(susp):"..npc_obj:name())
 		suspence_table[npc_id] = time_global()
@@ -462,8 +464,7 @@ function play_local_combat(actor, npc_obj, actor_pos, npc_id)
 				if play_combat ~= 2 then
 					local last_contact = combat_table[npc_id]
 					if last_contact then
-						local distance_to_enemy = actor_pos:distance_to_sqr(npc_obj:position())
-						if (time_global() - last_contact > max_alerted_time or distance_to_enemy > min_suspence_limit) then
+						if (time_global() - last_contact > max_alerted_time or actor_pos:distance_to_sqr(npc_obj:position()) > min_suspence_limit) then
 							stop_combat(npc_id)
 							--debug_remove_spot(npc_id, "play_music(comb):"..npc_obj:name())
 						end
@@ -473,6 +474,18 @@ function play_local_combat(actor, npc_obj, actor_pos, npc_id)
 			end
 		end
 	end
+end
+
+local function i_am_is_enemy(obj, enemy, st)
+	local overrides = st.overrides
+	if overrides and overrides.combat_ignore then
+		if xr_logic.pick_section_from_condlist(enemy, obj, overrides.combat_ignore.condlist) ~= nil then
+			--printf("pl:Disabling_memory_object[10] obj [%s]", obj:name())
+			--obj:enable_memory_object(enemy, false)
+			return false
+		end
+	end
+	return true
 end
 
 function play_local_suspence(actor, npc_obj, actor_pos, npc_id)
@@ -504,38 +517,4 @@ function play_local_suspence(actor, npc_obj, actor_pos, npc_id)
 			end
 		end
 	end
-end
-
-function fade_in(cur_amb_vol, timer, counter)
-	if fade_in_check_time ~= nil and time_global() - fade_in_check_time <= timer then return end
-	fade_in_check_time = time_global()
-	if cur_amb_vol < ambient_vol then
-		cur_amb_vol = cur_amb_vol + counter
-		if cur_amb_vol > ambient_vol then cur_amb_vol = ambient_vol end
-		--printf("fade_in:SET = "..ambient_vol)
-		get_console():execute('snd_volume_music '..cur_amb_vol)
-	end
-end
-
-function fade_out(cur_amb_vol, timer, counter)
-	if fade_out_check_time ~= nil and time_global() - fade_out_check_time <= timer then return end
-	fade_out_check_time = time_global()
-	if cur_amb_vol > 0 then
-		cur_amb_vol = cur_amb_vol - counter
-		if cur_amb_vol < 0 then cur_amb_vol = 0 end
-		--printf("fade_out:SET = "..ambient_vol)
-		get_console():execute('snd_volume_music '..cur_amb_vol)
-	end
-end
-
-function i_am_is_enemy(obj, enemy, st)
-	local overrides = st.overrides
-	if overrides and overrides.combat_ignore then
-		if xr_logic.pick_section_from_condlist(enemy, obj, overrides.combat_ignore.condlist) ~= nil then
-			--printf("pl:Disabling_memory_object[10] obj [%s]", obj:name())
-			--obj:enable_memory_object(enemy, false)
-			return false
-		end
-	end
-	return true
 end

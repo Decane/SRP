@@ -244,26 +244,27 @@ function load_dialog:OnButton_load_clicked()
 		return
 	end
 	local item = self.list_box:GetItem(index)
-	if item then
-		local fname = item.fn:GetText()
-		if not valid_saved_game(fname) then
-			self.msgbox_id = 0
-			self.message_box:InitMessageBox("message_box_invalid_saved_game")
-			self:GetHolder():start_stop_menu(self.message_box, true)
-			return
-		end
-		if alife() == nil then
-			self:load_game_internal()
-			return
-		else
-			self.message_box:InitMessageBox("message_box_confirm_load_save")
-			self:GetHolder():start_stop_menu(self.message_box, true)
-		end
-		local act = db.actor
-		if act and act:alive() == false then
-			self:load_game_internal()
-			return
-		end
+	if item == nil then
+		return
+	end
+	local fname = item.fn:GetText()
+	if not valid_saved_game(fname) then
+		self.msgbox_id = 0
+		self.message_box:InitMessageBox("message_box_invalid_saved_game")
+		self:GetHolder():start_stop_menu(self.message_box, true)
+		return
+	end
+	if alife() == nil then
+		self:load_game_internal()
+		return
+	else
+		self.message_box:InitMessageBox("message_box_confirm_load_save")
+		self:GetHolder():start_stop_menu(self.message_box, true)
+	end
+	local act = db.actor
+	if act and act:alive() == false then
+		self:load_game_internal()
+		return
 	end
 	self.msgbox_id = 2
 end

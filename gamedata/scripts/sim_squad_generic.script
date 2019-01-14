@@ -2,14 +2,14 @@ local sim = _G.sim
 
 local monster_resource_by_level =
 {
-	marsh 		= {0,3},
-	escape 		= {1,3},
-	garbage 	= {1,4},
-	darkvalley 	= {1,5},
-	agroprom 	= {1,5},
-	yantar 		= {3,6},
-	red_forest 	= {3,4},
-	military 	= {1,5}
+	marsh      = {0,3},
+	escape     = {1,3},
+	garbage    = {1,4},
+	darkvalley = {1,5},
+	agroprom   = {1,5},
+	yantar     = {3,6},
+	red_forest = {3,4},
+	military   = {1,5}
 }
 
 local monster_num_by_resource =
@@ -526,8 +526,7 @@ function sim_squad_generic:update()
 	self.sound_manager:update()
 
 	if self.current_action ~= nil then
-		local is_finished = self.current_action:update()
-		if not is_finished then
+		if not self.current_action:is_finished() then
 --			if self.player_id ~= "monster" then -- our relationship with mutants won't change, but their squad status might
 				self:adaptive_refresh()
 --			end
@@ -624,12 +623,10 @@ function sim_squad_generic:get_next_action()
 
 	-- If simulation not started for us, stay.
 
-	if db.actor then
-		if not board.simulation_started then
-			self.current_action = sim_stay_point(self, true)
-			self.current_action:make()
-			return
-		end
+	if db.actor and not board.simulation_started then
+		self.current_action = sim_stay_point(self, true)
+		self.current_action:make()
+		return
 	end
 
 	-- If we are delay attacking or our smart is being attacked, stay.
@@ -637,19 +634,19 @@ function sim_squad_generic:get_next_action()
 	local smart_id = self.smart_id
 	local smart = board.smarts[smart_id].smrt
 
-	if self.delayed_attack_task ~= nil or smart.combat_manager:point_under_attack()	then
-		if self.squad_id ~= "gar_digger_messenger_dogs" then				-- except (verb) Vasyan's dogs
+	if self.delayed_attack_task ~= nil or smart.combat_manager:point_under_attack() then
+		if self.squad_id ~= "gar_digger_messenger_dogs" then -- except (verb) Vasyan's dogs
 			self.current_action = sim_stay_point(self, true)
 			self.current_action:make()
 			return
 		end
 	end
 
-	-- If our smart is the target of an active defend task, stay.	-- test
+	-- If our smart is the target of an active defend task, stay. -- test
 
 	local tm = task_manager.get_task_manager()
-
 	local current_smart_task = tm:get_tasks_by_smart(smart_id)
+
 	if current_smart_task ~= nil then
 		local current_smart_task_type = current_smart_task.type
 		if current_smart_task_type == "defend_smart" or current_smart_task_type == "defend_smart_delay" then
@@ -680,6 +677,7 @@ function sim_squad_generic:get_next_action()
 	-- If we have been assigned a target smart, 'target_smart' = our target. (Lower priority.)
 
 	local target_smart = nil
+
 	if self.assigned_target_smart_id ~= nil then
 		target_smart = board.smarts[self.assigned_target_smart_id].smrt
 	end
@@ -701,8 +699,8 @@ function sim_squad_generic:get_next_action()
 		return
 	end
 
-	local clear_path = board:find_path(smart.id, target_smart.id, self)
-	local next_point = clear_path[1]
+	local clear_path = board:find_path(smart_id, target_smart.id, self)
+	local next_point = clear_path[#clear_path]
 
 	self.attacking_by_quest = nil
 
@@ -711,11 +709,9 @@ function sim_squad_generic:get_next_action()
 
 	if task ~= nil then
 		if task.support_attack == true and task.community == self.player_id then
-			if target_smart ~= nil then
-				if task.target == next_point.id then
-					self.attacking_by_quest = task.entity_id
-					attack_threshold = 999
-				end
+			if task.target == next_point.id then
+				self.attacking_by_quest = task.entity_id
+				attack_threshold = 999
 			end
 		end
 	end
@@ -946,9 +942,7 @@ function sim_squad_generic:issue_order(order)
 --		return false
 --	end
 
-	local our_faction = self.board.players[self.player_id]
-
-	if our_faction.brain.use_issue_order ~= true then
+	if self.board.players[self.player_id].brain.use_issue_order ~= true then
 		return false
 	end
 
@@ -961,15 +955,10 @@ function sim_squad_generic:issue_order(order)
 		return false
 	end
 
---	dbgmsg("Commander goodwill to actor: "..commander:general_goodwill(actor)..".")
-
 --	local sim = alife()
 	local com_pos = sim:object(commander_id).m_game_vertex_id
-	local actor_distance_to_commander = utils.graph_distance(sim:actor().m_game_vertex_id, com_pos)
 
---	dbgmsg("Actor distance to commander: "..actor_distance_to_commander..".")
-
-	if actor_distance_to_commander > 150 then
+	if utils.graph_distance(sim:actor().m_game_vertex_id, com_pos) > 150 then
 		return false
 	end
 
@@ -994,88 +983,87 @@ function sim_squad_generic:issue_order(order)
 
 	elseif order == "wait_again_signal" then
 
---		if utils.graph_distance(sim:object(self.current_action.dest_smrt_id).m_game_vertex_id, com_pos) < 40 then
-			xr_sound.set_sound_play(commander_id, "alife_wait_actor_signal", our_faction.player_name, self.current_action.dest_smrt_id)
---		elseif utils.graph_distance(sim:object(self.smart_id).m_game_vertex_id, com_pos) < 40 then
---			xr_sound.set_sound_play(commander_id, "alife_wait_actor_signal", our_faction.player_name, self.smart_id)
---		end
+		xr_sound.set_sound_play(commander_id, "alife_wait_actor_signal", self.player_id, self.current_action.dest_smrt_id)
 
 	elseif order == "alife_we_spoted" then
 
 		if self.spoted_shouted == false then
-			if utils.graph_distance(sim:object(self.current_action.dest_smrt_id).m_game_vertex_id, com_pos) > 40 then
-				xr_sound.set_sound_play(commander_id, "alife_we_spoted_now", our_faction.player_name, self.smart_id)
+			local target_id = self.current_action.dest_smrt_id
+			local dist_to_target = utils.graph_distance(sim:object(target_id).m_game_vertex_id, com_pos)
+			if dist_to_target > 40 then
+				local dist_to_origin = utils.graph_distance(sim:object(self.smart_id).m_game_vertex_id, com_pos)
+				xr_sound.set_sound_play(commander_id, "alife_we_spoted_now", self.player_id, dist_to_target > dist_to_origin and self.smart_id or target_id)
 			end
 			self.spoted_shouted = true
 		end
 
 	elseif order == "counter_attack_spotted" then
 
-		xr_sound.set_sound_play(commander_id, "alife_see_counter", our_faction.player_name, self.smart_id)
+		xr_sound.set_sound_play(commander_id, "alife_see_counter", self.player_id, self.smart_id)
 
 	elseif order == "defend_sos_monster" then
 
-		xr_sound.set_sound_play(commander_id, "alife_defence_vs_mutant", our_faction.player_name, self.smart_id)
+		xr_sound.set_sound_play(commander_id, "alife_defence_vs_mutant", self.player_id, self.smart_id)
 
 	elseif order == "defend_sos_bandit" then
 
-		xr_sound.set_sound_play(commander_id, "alife_defence_vs_bandit", our_faction.player_name, self.smart_id)
+		xr_sound.set_sound_play(commander_id, "alife_defence_vs_bandit", self.player_id, self.smart_id)
 
 	elseif order == "defend_sos_army" then
 
-		xr_sound.set_sound_play(commander_id, "alife_defence_vs_army", our_faction.player_name, self.smart_id)
+		xr_sound.set_sound_play(commander_id, "alife_defence_vs_army", self.player_id, self.smart_id)
 
 --	elseif order == "defend_sos_monolith" then
 
---		xr_sound.set_sound_play(commander_id, "alife_defence_vs_zombied", our_faction.player_name, self.smart_id)
+--		xr_sound.set_sound_play(commander_id, "alife_defence_vs_zombied", self.player_id, self.smart_id)
 
 	elseif order == "defend_sos_zombied" then
 
-		xr_sound.set_sound_play(commander_id, "alife_defence_vs_zombied", our_faction.player_name, self.smart_id)
+		xr_sound.set_sound_play(commander_id, "alife_defence_vs_zombied", self.player_id, self.smart_id)
 
 	elseif order == "defend_sos_renegade" then
 
-		xr_sound.set_sound_play(commander_id, "alife_defence_vs_bandit", our_faction.player_name, self.smart_id)
+		xr_sound.set_sound_play(commander_id, "alife_defence_vs_bandit", self.player_id, self.smart_id)
 
 	elseif order == "defend_sos_stalker" then
 
-		xr_sound.set_sound_play(commander_id, "alife_defence_vs_stalker", our_faction.player_name, self.smart_id)
+		xr_sound.set_sound_play(commander_id, "alife_defence_vs_stalker", self.player_id, self.smart_id)
 
 	elseif order == "defend_sos_dolg" then
 
-		xr_sound.set_sound_play(commander_id, "alife_defence_vs_dolg", our_faction.player_name, self.smart_id)
+		xr_sound.set_sound_play(commander_id, "alife_defence_vs_dolg", self.player_id, self.smart_id)
 
 	elseif order == "defend_sos_freedom" then
 
-		xr_sound.set_sound_play(commander_id, "alife_defence_vs_freedom", our_faction.player_name, self.smart_id)
+		xr_sound.set_sound_play(commander_id, "alife_defence_vs_freedom", self.player_id, self.smart_id)
 
 	elseif order == "defend_wait" then
 
-		xr_sound.set_sound_play(commander_id, "alife_defence_wait_help", our_faction.player_name, self.smart_id)
+		xr_sound.set_sound_play(commander_id, "alife_defence_wait_help", self.player_id, self.smart_id)
 
 	elseif order == "defend_actor_come" then
 
-		xr_sound.set_sound_play(commander_id, "alife_defence_actor_come", our_faction.player_name, self.smart_id)
+		xr_sound.set_sound_play(commander_id, "alife_defence_actor_come", self.player_id, self.smart_id)
 
 --	elseif order == "defend_actor_ignore" then
 
---		xr_sound.set_sound_play(commander_id, "alife_defence_actor_ignore", our_faction.player_name, self.smart_id)
+--		xr_sound.set_sound_play(commander_id, "alife_defence_actor_ignore", self.player_id, self.smart_id)
 
 	elseif order == "defend_actor_help" then
 
-		xr_sound.set_sound_play(commander_id, "alife_defence_actor_help", our_faction.player_name, self.smart_id)
+		xr_sound.set_sound_play(commander_id, "alife_defence_actor_help", self.player_id, self.smart_id)
 
 	elseif order == "combat_done" then
 
 		local squad_action = self.current_action
 		if squad_action ~= nil and squad_action.name == "attack_point" then
 			if utils.graph_distance(sim:object(squad_action.dest_smrt_id).m_game_vertex_id, com_pos) < 40 then
-				xr_sound.set_sound_play(commander_id, "alife_attack_done", our_faction.player_name, squad_action.dest_smrt_id)
+				xr_sound.set_sound_play(commander_id, "alife_attack_done", self.player_id, squad_action.dest_smrt_id)
 			elseif utils.graph_distance(sim:object(self.smart_id).m_game_vertex_id, com_pos) < 40 then
-				xr_sound.set_sound_play(commander_id, "alife_attack_done", our_faction.player_name, self.smart_id)
+				xr_sound.set_sound_play(commander_id, "alife_attack_done", self.player_id, self.smart_id)
 			end
 		else
-			xr_sound.set_sound_play(commander_id, "alife_defence_done", our_faction.player_name, self.smart_id)
+			xr_sound.set_sound_play(commander_id, "alife_defence_done", self.player_id, self.smart_id)
 		end
 	end
 end
@@ -1123,14 +1111,14 @@ function sim_squad_generic:save(packet)
 	packet:w_u8(self.npc_count)
 	packet:w_float(self.squad_power)
 	packet:w_u16(self.commander_id)
-
+--[[
 	n = 0
-	for k in pairs (self.squad_npc) do -- TODO: Just use self.npc_count when next new game requirement
+	for k in pairs (self.squad_npc) do
 		n = n + 1
 	end
 
 	packet:w_u8(n)
-
+]]
 	for k, v in pairs (self.squad_npc) do
 		packet:w_u16(v)
 	end
@@ -1215,9 +1203,9 @@ function sim_squad_generic:load(packet) --, registred)
 --	self.squad_npc = {}
 	T = self.squad_npc
 
-	n = packet:r_u8() -- TODO: Just use self.npc_count when next new game requirement
+--	n = packet:r_u8()
 
-	for i = 1, n do
+	for i = 1, self.npc_count do
 		local k = packet:r_u16()
 		T[k] = k
 		self.sound_manager:register_npc(k)
@@ -1403,7 +1391,7 @@ function sim_squad_generic:adaptive_refresh()
 	if orig_spot == spot then
 		if has_alife_info("ui_pda") then
 			self.info_string = self:get_squad_props()
-			map_change_spot_hint(self.current_spot_id, orig_spot, self.info_string)	-- update info string iff PDA is open
+			map_change_spot_hint(self.current_spot_id, orig_spot, self.info_string) -- update info string iff PDA is open
 		end
 		return
 	elseif orig_spot ~= nil then
@@ -1526,14 +1514,14 @@ function sim_squad_generic:show()
 			spot = "alife_presentation_friend_squad_attack_point"
 		elseif spot == "alife_presentation_squad_neutral" then
 			spot = "alife_presentation_neutral_squad_attack_point"
-		elseif spot == "alife_presentation_squad_enemy" or spot == "alife_presentation_squad_monster" then	-- let's make mutant map spots change color as well
+		elseif spot == "alife_presentation_squad_enemy" or spot == "alife_presentation_squad_monster" then -- let's make mutant map spots change color as well
 			spot = "alife_presentation_enemy_squad_attack_point"
 		end
 	end
 	if orig_spot == spot then
 		if has_alife_info("ui_pda") then
 			self.info_string = self:get_squad_props()
-			map_change_spot_hint(self.current_spot_id, orig_spot, self.info_string)	-- update info string iff PDA is open
+			map_change_spot_hint(self.current_spot_id, orig_spot, self.info_string) -- update info string iff PDA is open
 		end
 		return
 	elseif orig_spot ~= nil then
@@ -1550,13 +1538,13 @@ end
 
 local stage_name_table = {
 
---	idle		= "st_stage_idle",
---	move		= "st_stage_move",
-	combat		= "st_stage_combat",
-	post_combat	= "st_stage_post_combat",
-	defence		= "st_stage_defence",
-	wait		= "st_stage_wait",
-	prepare		= "st_stage_prepare"
+--	idle        = "st_stage_idle",
+--	move        = "st_stage_move",
+	combat      = "st_stage_combat",
+	post_combat = "st_stage_post_combat",
+	defence     = "st_stage_defence",
+	wait        = "st_stage_wait",
+	prepare     = "st_stage_prepare"
 }
 
 function sim_squad_generic:get_squad_props()
@@ -1603,18 +1591,9 @@ function sim_squad_generic:get_squad_props()
 		end
 	end
 
-	if current_action then
-		if current_action.name == "attack_point" then
-			local cache_target = board.players[self.player_id].squad_target_cache[self.squad_id]
-			if cache_target ~= nil then
-				str = str.."\\n"..trans("st_target")..": "..smart_names.get_smart_terrain_name(board.smarts[cache_target].smrt)
-			else
-				local assigned_target = self.assigned_target_smart_id
-				if assigned_target ~= nil then
-					str = str.."\\n"..trans("st_target")..": "..smart_names.get_smart_terrain_name(board.smarts[assigned_target].smrt)
-				end
-			end
-		end
+	if current_action and current_action.name == "attack_point" then
+		local dest_smart_id = board.players[self.player_id].squad_target_cache[self.squad_id] or current_action.dest_smrt_id
+		str = str.."\\n"..trans("st_target")..": "..smart_names.get_smart_terrain_name(board.smarts[dest_smart_id].smrt)
 	end
 
 	-----------------
@@ -1684,7 +1663,7 @@ function sim_attack_point:load(packet)
 	set_save_marker(packet, "load", true, "sim_attack_point")
 end
 
-function sim_attack_point:update()
+function sim_attack_point:is_finished()
 
 	local board = self.board
 	local squad = self.squad
@@ -1692,17 +1671,14 @@ function sim_attack_point:update()
 	local dest_smart = board.smarts[dest_smrt_id].smrt
 	local squad_stage = dest_smart.combat_manager:get_squad_stage(squad)
 
-	if squad_stage ~= "idle" then
-		if squad_stage ~= "defence" then
-			return false
-		end
+	if squad_stage ~= "idle" and squad_stage ~= "defence" then
+		return false
 	end
 
 	local GG = game_graph()
 	local commander = sim:object(squad.commander_id)
 
 	if GG:vertex(commander.m_game_vertex_id):level_id() ~= GG:vertex(dest_smart.m_game_vertex_id):level_id() then
---		dbgmsg(trans(squad.player_id).." commander level_id ["..GG:vertex(commander.m_game_vertex_id):level_id().."] ~= dest_smrt level_id ["..GG:vertex(dest_smart.m_game_vertex_id):level_id().."].")
 		return false
 	end
 
@@ -1710,7 +1686,6 @@ function sim_attack_point:update()
 		local obj_pos = commander.position
 		local dest_def_restr = db.zone_by_name[dest_smart.def_restr]
 		if (dest_def_restr ~= nil and not dest_def_restr:inside(obj_pos) and dest_smart:name() ~= "mar_smart_terrain_5_12") or (dest_def_restr == nil and obj_pos:distance_to_sqr(dest_smart.position) > 900) then
---			dbgmsg("Online "..trans(squad.player_id).." squad rejected entry to "..smart_names.get_smart_terrain_name(dest_smart)..".")
 			return false
 		end
 --	else
@@ -1734,12 +1709,14 @@ function sim_attack_point:update()
 	end
 
 	dest_smart.combat_manager:unregister_squad(squad)
+
 	board:assign_squad_to_smart(squad, dest_smrt_id)
 	board:enter_smart(squad, dest_smrt_id)
 
 --	dbgmsg(trans(squad_faction).." squad entered "..smart_names.get_smart_terrain_name(dest_smart)..".")
 
 	squad:refresh() -- refresh squad props
+
 	return true
 end
 
@@ -1748,8 +1725,7 @@ function sim_attack_point:make()
 	local board = self.board
 	local squad = self.squad
 	local squad_faction_name = squad.player_id
-	local squad_faction = board.players[squad_faction_name]
-	local cur_attack_quantity = squad_faction.current_attack_quantity
+	local cur_attack_quantity = board.players[squad_faction_name].current_attack_quantity
 	local dest_smrt_id = self.dest_smrt_id
 
 	if cur_attack_quantity[dest_smrt_id] == nil then
@@ -1764,12 +1740,10 @@ function sim_attack_point:make()
 	local dest_smart = board_smarts[dest_smrt_id].smrt
 	local attack_smart_owner = dest_smart.player_name -- use this local instead of 'self.attack_smart_owner'
 
-	if attack_smart_owner ~= "none" then
-		if attack_smart_owner ~= squad_faction_name then
-			self.target_was_hostile = true
-			squad.sound_manager:set_storyteller(squad.commander_id)
-			squad.sound_manager:set_story("squad_begin_attack")
-		end
+	if attack_smart_owner ~= "none" and attack_smart_owner ~= squad_faction_name then
+		self.target_was_hostile = true
+		squad.sound_manager:set_storyteller(squad.commander_id)
+		squad.sound_manager:set_story("squad_begin_attack")
 	end
 
 	local src_smart = board_smarts[self.src_smrt_id].smrt
@@ -1785,6 +1759,7 @@ function sim_attack_point:make()
 --	squad.current_action = self -- superfluous
 
 --	local sim = alife()
+
 	for npc_id in pairs (squad.squad_npc) do
 		local se_npc = sim:object(npc_id)
 		board:setup_squad_and_group(se_npc)
@@ -1794,7 +1769,8 @@ function sim_attack_point:make()
 	squad.last_action_timer = get_game_time()
 	squad:calculate_attack_power(0)
 	squad:refresh()
---	squad_faction:refresh()
+
+--	board.players[squad_faction_name]:refresh()
 end
 
 function sim_attack_point:finalize()
@@ -1851,15 +1827,14 @@ function sim_stay_point:load(packet)
 	set_save_marker(packet, "load", true, "sim_stay_point")
 end
 
-function sim_stay_point:update()
+function sim_stay_point:is_finished()
 
 	local squad = self.squad
-
+	local task_entity_id = squad.random_tasks[3]
 	local tm = task_manager.get_task_manager()
 
 	-- We can't leave smart if we've assigned the player a recover item task.
 
-	local task_entity_id = squad.random_tasks[3]
 	if task_entity_id ~= nil then
 		local task = tm:get_task_by_entity_id(task_entity_id)
 		if task.status == "selected" then
@@ -1870,6 +1845,7 @@ function sim_stay_point:update()
 	-- We can't leave smart if we've assigned the player a bring item task.
 
 	task_entity_id = squad.random_tasks[4]
+
 	if task_entity_id ~= nil then
 		local task = tm:get_task_by_entity_id(task_entity_id)
 		if task.status == "selected" then
@@ -1885,16 +1861,12 @@ function sim_stay_point:update()
 	end
 
 	local src_smart = self.board.smarts[self.src_smrt_id].smrt
-	local squad_stage = src_smart.combat_manager:get_squad_stage(squad)
 
-	if squad_stage ~= "idle" then
+	if src_smart.combat_manager:get_squad_stage(squad) ~= "idle" then
 		return false
 	end
 
-	local player = self.board.players[squad.player_id]
-	local player_target = player.squad_target_cache[squad.squad_id]
-
-	if player_target ~= squad.assigned_target_smart_id then
+	if self.board.players[squad.player_id].squad_target_cache[squad.squad_id] ~= squad.assigned_target_smart_id then
 		return true
 	end
 
@@ -1913,7 +1885,8 @@ function sim_stay_point:update()
 		sim_combat:unregister_squad(squad)
 	end
 
-	self.begin_time	= nil
+	self.begin_time = nil
+
 	return true
 end
 
@@ -1936,7 +1909,7 @@ function sim_stay_point:init_defend_smart_delay(attack_squad)
 	if self.board.players[attack_squad.player_id].brain.use_delay_attack ~= true then
 		return
 	end
-	if attack_squad.delayed_attack_task ~= nil then	-- if squad is already attacking
+	if attack_squad.delayed_attack_task ~= nil then -- if squad is already attacking
 		return
 	end
 	local target_smart = self.board.smarts[self.delay_attack_id]

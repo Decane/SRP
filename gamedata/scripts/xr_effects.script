@@ -1161,7 +1161,7 @@ function update_faction_brain(actor, obj, p)
 		if player == nil then
 			abort("[xr_effects.update_faction_brain]: Faction with identifier '%s' does not exist.", tostring(p1))
 		end
-		player:faction_brain_update()
+		player.brain:calculate_current_expansion()
 	else
 		abort("[xr_effects.update_faction_brain]: Parameter missing.")
 	end

@@ -167,52 +167,52 @@ function se_smart_terrain:read_params()
 		return
 	end
 
-	local get_string = utils.cfg_get_string
-	local get_bool = utils.cfg_get_bool
-	local get_number = utils.cfg_get_number
+	local get_string          = utils.cfg_get_string
+	local get_bool            = utils.cfg_get_bool
+	local get_number          = utils.cfg_get_number
 
-	self.sim_type		= get_string(ini, sect, "sim_type", self, false, "", "default")
+	self.sim_type             = get_string(ini, sect, "sim_type", self, false, "", "default")
 
 	if valid_territory[self.sim_type] == nil then
 		abort("[smart_terrain.se_smart_terrain:read_params]: Wrong sim_type value [%s] in smart [%s].", self.sim_type, self:name())
 	end
 
-	self.squad_capacity	= get_number(ini, sect, "squad_capacity", self, false, 1)
-	self.player_name	= "none"
-	self.squad_id		= get_number(ini, sect, "squad_id", self, false, 0)
-	local respawn_sector	= get_string(ini, sect, "respawn_sector", self, false, "")
---	self.respawn_sector	= respawn_sector
-	self.respawn_radius	= get_number(ini, sect, "respawn_radius", self, false, 150)
+	self.squad_capacity       = get_number(ini, sect, "squad_capacity", self, false, 1)
+	self.player_name          = "none"
+--	self.squad_id             = get_number(ini, sect, "squad_id", self, false, 0)
+	self.respawn_radius       = get_number(ini, sect, "respawn_radius", self, false, 150)
+
+	local respawn_sector      = get_string(ini, sect, "respawn_sector", self, false, "")
 
 	if respawn_sector ~= nil then
-		if respawn_sector == "default" then
-			respawn_sector = "all"
-		end
+--		if respawn_sector == "default" then
+--			respawn_sector = "all"
+--		end
 		respawn_sector = xr_logic.parse_condlist(nil, nil, nil, respawn_sector)
 	end
 
-	self.respawn_sector	= respawn_sector
+	self.respawn_sector       = respawn_sector
+--	self.important_point      = get_bool(ini, sect, "important_point", self, false)
+--	self.mutant_lair          = get_bool(ini, sect, "mutant_lair", self, false)
+	self.no_mutant            = get_bool(ini, sect, "no_mutant", self, false)
+--	self.forbidden_point      = get_string(ini, sect, "forbidden_point", self, false, "")
+	self.def_restr            = get_string(ini, sect, "def_restr", self, false, "", nil)
+	self.att_restr            = get_string(ini, sect, "att_restr", self, false, "", nil)
+	self.spawn_point          = get_string(ini, sect, "spawn_point", self, false, "")
 
-	self.important_point	= get_bool(ini, sect, "important_point", self, false)
-	self.mutant_lair	= get_bool(ini, sect, "mutant_lair", self, false)
-	self.no_mutant		= get_bool(ini, sect, "no_mutant", self, false)
---	self.forbidden_point	= get_string(ini, sect, "forbidden_point", self, false, "") -- unused in vanilla
-	self.def_restr		= get_string(ini, sect, "def_restr", self, false, "", nil)
-	self.att_restr		= get_string(ini, sect, "att_restr", self, false, "", nil)
-	self.spawn_point	= get_string(ini, sect, "spawn_point", self, false, "")
-	local sim_avail		= get_string(ini, sect, "sim_avail", self, false, "")
+	local sim_avail           = get_string(ini, sect, "sim_avail", self, false, "")
 
 	if sim_avail ~= nil then
-		sim_avail	= xr_logic.parse_condlist(nil, nil, nil, sim_avail)
+		sim_avail = xr_logic.parse_condlist(nil, nil, nil, sim_avail)
 	end
 
-	self.sim_avail		= sim_avail
+	self.sim_avail            = sim_avail
 
---	self.respawn		= get_string(ini, sect, "respawn", self, false, "", nil)
+--	self.respawn              = get_string(ini, sect, "respawn", self, false, "", nil)
 
 	self.surge_hide_avaliable = get_bool(ini, sect, "surge_hide_avaliable", self, false, false)
 
-	local hides		= get_string(ini, sect, "actor_hides", self, false, "")
+	local hides               = get_string(ini, sect, "actor_hides", self, false, "")
 
 	if hides ~= nil then
 		self.actor_hides = utils.parse_names(hides)

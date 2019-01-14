@@ -139,7 +139,7 @@ function action_fill_temp_teleport_points(fs, npc, dn, pi)
 					path = board:find_conductor_path(npc_smart_id, smart.id, npc)
 				end
 
-				if path ~= nil and #path ~= 0 then
+				if #path ~= 0 then
 					cost = path[#path].value
 					if v.level == level_name then
 						cost = floor(cost / 10)
@@ -200,10 +200,7 @@ function precondition_teleport_points_available() -- (fs, ss, dn, ppi, pi)
 	end
 	return n > 0
 ]]
-	for k in pairs (temp_points_table) do
-		return true
-	end
-	return false
+	return next(temp_points_table) ~= nil
 end
 
 function precondition_teleport_to_point_available(fs, ss, dn, ppi, pi)

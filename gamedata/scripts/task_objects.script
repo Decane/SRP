@@ -646,18 +646,11 @@ function CEliminateSmartTask:deactivate_task(_task) -- called 7th
 	end
 
 	local faction = self.faction
-	if faction ~= nil then
-		if faction.random_tasks ~= nil then
-			faction.random_tasks[self.target] = nil
-		end
-	end
 ]]
 	local faction = self.board.players[self.community]
 	if faction ~= nil then
 		if faction.random_tasks ~= nil then
-			if faction.random_tasks[self.target] ~= nil then
-				faction.random_tasks[self.target] = nil
-			end
+			faction.random_tasks[self.target] = nil
 		end
 	end
 end
@@ -1007,9 +1000,7 @@ function CCaptureSmartTask:deactivate_task(_task) -- called 7th
 	local faction = self.board.players[self.community]
 	if faction ~= nil then
 		if faction.random_tasks ~= nil then
-			if faction.random_tasks[self.target] ~= nil then
-				faction.random_tasks[self.target] = nil
-			end
+			faction.random_tasks[self.target] = nil
 		end
 	end
 end

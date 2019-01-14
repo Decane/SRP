@@ -135,13 +135,13 @@ function sim_squad_scripted:get_script_target()
 		self.next_target = 1
 	end
 
-	local nt = self:pick_next_target()
+	local nt = self.parsed_targets[self.next_target]
 
 	if nt == "nil" then
 		return nil
 	elseif nt == "loop" then
 		self.next_target = 1
-		nt = self:pick_next_target()
+		nt = self.parsed_targets[1]
 	end
 
 	local point = self.board.smarts_by_names[nt]
@@ -153,9 +153,9 @@ function sim_squad_scripted:get_script_target()
 	return point.id
 end
 
-function sim_squad_scripted:pick_next_target()
-	return self.parsed_targets[self.next_target]
-end
+-- function sim_squad_scripted:pick_next_target()
+--	return self.parsed_targets[self.next_target]
+-- end
 
 function sim_squad_scripted:calculate_attack_power()
 
@@ -185,18 +185,11 @@ function sim_squad_scripted:check_squad_come_to_point()
 
 	return false
 end
-
+--[[
 function sim_squad_scripted:update_current_action()
---[[
-	local is_finished = self.current_action:update()
-	if not is_finished then
-		return false
-	end
-	return true
-]]
-	return self.current_action:update()
+	return self.current_action:is_finished()
 end
---[[
+
 function sim_squad_scripted:check_invulnerability()
 
 	if self.squad_online ~= true then
@@ -240,16 +233,16 @@ function sim_squad_scripted:update()
 
 	local need_to_find_new_action = false
 
-	if self.assigned_target_smart_id ~= nil and self.assigned_target_smart_id == script_target then
+	if self.assigned_target_smart_id == script_target then
 		if self.current_action ~= nil then
 			if self.current_action.name == "stay_point" then
 				if self:check_squad_come_to_point() then
 					need_to_find_new_action = true
 				else
-					need_to_find_new_action = self:update_current_action()
+					need_to_find_new_action = self.current_action:is_finished()
 				end
 			else
-				if self:update_current_action() then
+				if self.current_action:is_finished() then
 					self:check_squad_come_to_point()
 					need_to_find_new_action = true
 				end
@@ -264,7 +257,7 @@ function sim_squad_scripted:update()
 			need_to_find_new_action = true
 		else
 			if self.current_action.major == true then
-				if self:update_current_action() then
+				if self.current_action:is_finished() then
 					self:check_squad_come_to_point()
 					need_to_find_new_action = true
 				end

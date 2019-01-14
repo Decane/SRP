@@ -1,11 +1,3 @@
-[settings]
-glory_0 = 0
-glory_1 = 1
-glory_2 = 2
-glory_3 = 2
-glory_4 = 3
-glory_5 = 3
-
 [spawn_by_resource]
 0 = sim_default_freedom_0, 80, sim_default_freedom_1, 20
 1 = sim_default_freedom_0, 50, sim_default_freedom_1, 30, sim_default_freedom_2, 20
@@ -13,146 +5,140 @@ glory_5 = 3
 3 = sim_default_freedom_2, 50, sim_default_freedom_3, 30, sim_default_freedom_4, 20
 
 [spawn_by_level]
-marsh		= sim_default_freedom_0, 40, sim_default_freedom_1, 30, sim_default_freedom_2, 15, sim_default_freedom_3, 10, sim_default_freedom_4, 5
-escape		= sim_default_freedom_0, 40, sim_default_freedom_1, 30, sim_default_freedom_2, 15, sim_default_freedom_3, 10, sim_default_freedom_4, 5
-garbage		= sim_default_freedom_0, 30, sim_default_freedom_1, 40, sim_default_freedom_2, 15, sim_default_freedom_3, 10, sim_default_freedom_4, 5
-darkvalley	= sim_default_freedom_0, 10, sim_default_freedom_1, 20, sim_default_freedom_2, 40, sim_default_freedom_3, 20, sim_default_freedom_4, 10
-agroprom	= sim_default_freedom_0, 20, sim_default_freedom_1, 30, sim_default_freedom_2, 30, sim_default_freedom_3, 10, sim_default_freedom_4, 10
-yantar		= sim_default_freedom_0, 10, sim_default_freedom_1, 15, sim_default_freedom_2, 30, sim_default_freedom_3, 45, sim_default_freedom_4, 20
-red_forest	= sim_default_freedom_0,  5, sim_default_freedom_1, 10, sim_default_freedom_2, 15, sim_default_freedom_3, 30, sim_default_freedom_4, 40
-military	= sim_default_freedom_0,  5, sim_default_freedom_1, 10, sim_default_freedom_2, 15, sim_default_freedom_3, 30, sim_default_freedom_4, 40
+marsh      = sim_default_freedom_0, 40, sim_default_freedom_1, 30, sim_default_freedom_2, 15, sim_default_freedom_3, 10, sim_default_freedom_4, 5
+escape     = sim_default_freedom_0, 40, sim_default_freedom_1, 30, sim_default_freedom_2, 15, sim_default_freedom_3, 10, sim_default_freedom_4, 5
+garbage    = sim_default_freedom_0, 30, sim_default_freedom_1, 40, sim_default_freedom_2, 15, sim_default_freedom_3, 10, sim_default_freedom_4, 5
+darkvalley = sim_default_freedom_0, 10, sim_default_freedom_1, 20, sim_default_freedom_2, 40, sim_default_freedom_3, 20, sim_default_freedom_4, 10
+agroprom   = sim_default_freedom_0, 20, sim_default_freedom_1, 30, sim_default_freedom_2, 30, sim_default_freedom_3, 10, sim_default_freedom_4, 10
+yantar     = sim_default_freedom_0, 10, sim_default_freedom_1, 15, sim_default_freedom_2, 30, sim_default_freedom_3, 45, sim_default_freedom_4, 20
+red_forest = sim_default_freedom_0,  5, sim_default_freedom_1, 10, sim_default_freedom_2, 15, sim_default_freedom_3, 30, sim_default_freedom_4, 40
+military   = sim_default_freedom_0,  5, sim_default_freedom_1, 10, sim_default_freedom_2, 15, sim_default_freedom_3, 30, sim_default_freedom_4, 40
 
 ;-----------------------
 
 [expansion_0]
-base_squad_number		= 13;20
-precondition_target		= val_smart_terrain_7_3, val_smart_terrain_7_4, val_smart_terrain_7_5
-;precondition_power		= 0
-precondition_cond		= {+val_strike_antenna_ready} true, false
+base_squad_number             = 13 ; 20
+precondition_target           = val_smart_terrain_7_3, val_smart_terrain_7_4, val_smart_terrain_7_5 ; Uncle Yar's hangar, Freedom base, Gulp of Freedom bar
+precondition_cond             = {+val_strike_antenna_ready} true, false
 
 ;-----------------------
 
 [expansion_1]
-base_squad_number		= 20
-;precondition_power		= 0
-precondition_target		= val_smart_terrain_7_8, val_smart_terrain_4_0	; Swamp camp, Encampment on farm
-precondition_cond		= {+val_freedom_2_1_dead} true, {+val_destroy_killer_base_done} true, false
+base_squad_number             = 20
+precondition_target           = val_smart_terrain_7_8, val_smart_terrain_4_0 ; Swamp camp, Encampment on farm
+precondition_cond             = {+val_freedom_2_1_dead} true, {+val_destroy_killer_base_done} true, false
 
 ;-----------------------
 
 [expansion_2]
-base_squad_number		= 20
-;precondition_power		= 0
-precondition_target_eliminate	= val_smart_terrain_1_2				; Factory lobby
-precondition_cond		= {+val_destroy_killer_base_done} true, false
+base_squad_number             = 20
+precondition_target_eliminate = val_smart_terrain_1_2 ; Factory lobby
+precondition_cond             = {+val_destroy_killer_base_done} true, false
 
 ;-----------------------
 
 [expansion_3]
-base_squad_number		= 20
-;precondition_power		= 0
-precondition_target		= val_smart_terrain_5_7, val_smart_terrain_5_8	; End outpost, Field camp
-precondition_actor_in_faction	= true
+base_squad_number             = 20
+precondition_target           = val_smart_terrain_5_7, val_smart_terrain_5_8 ; End outpost, Field camp
+precondition_actor_in_faction = true
 
-war_target_title		= st_faction_war_freedom_secure_level
+war_target_title              = st_faction_war_freedom_secure_level
+war_stage_icon                = st_stage_icon_freedom_secure_darkvalley_no
+war_stage_icon_complete       = st_stage_icon_freedom_secure_darkvalley_yes
+war_stage_icon_hint           = st_stage_icon_freedom_secure_darkvalley_no
+war_stage_icon_hint_complete  = st_stage_icon_freedom_secure_darkvalley_yes
 
-war_stage_icon			= st_stage_icon_freedom_secure_darkvalley_no
-war_stage_icon_complete		= st_stage_icon_freedom_secure_darkvalley_yes
-war_stage_icon_hint		= st_stage_icon_freedom_secure_darkvalley_no
-war_stage_icon_hint_complete	= st_stage_icon_freedom_secure_darkvalley_yes
-
-level_up_snd			= val_freedom_expansion_1_up
+level_up_snd                  = val_freedom_expansion_1_up
 
 ;-----------------------
 
 [expansion_4]
-base_squad_number		= 30
-precondition_target		= gar_smart_terrain_8_3, gar_smart_terrain_8_7	; Defensive outpost, Encampment on path
+base_squad_number             = 30
+precondition_target           = gar_smart_terrain_8_3, gar_smart_terrain_8_7 ; Defensive outpost, Encampment on path
 
-war_target_title		= st_faction_war_freedom_capture_garbage
+war_target_title              = st_faction_war_freedom_capture_garbage
+war_stage_icon                = st_stage_icon_freedom_capture_garbage_no
+war_stage_icon_complete       = st_stage_icon_freedom_capture_garbage_yes
+war_stage_icon_hint           = st_stage_icon_freedom_capture_garbage_no
+war_stage_icon_hint_complete  = st_stage_icon_freedom_capture_garbage_yes
 
-war_stage_icon			= st_stage_icon_freedom_capture_garbage_no
-war_stage_icon_complete		= st_stage_icon_freedom_capture_garbage_yes
-war_stage_icon_hint		= st_stage_icon_freedom_capture_garbage_no
-war_stage_icon_hint_complete	= st_stage_icon_freedom_capture_garbage_yes
-
-level_up_snd			= val_freedom_expansion_2_up
-level_down_snd			= val_freedom_expansion_2_down
+level_up_snd                  = val_freedom_expansion_2_up
+level_down_snd                = val_freedom_expansion_2_down
 
 ;-----------------------
 
 [expansion_5]
-base_squad_number		= 40
-precondition_target		= gar_smart_terrain_1_5, gar_smart_terrain_1_7	; Barricades, Encampment in hills
+base_squad_number             = 40
+precondition_target           = gar_smart_terrain_1_5, gar_smart_terrain_1_7 ; Barricades, Encampment in hills
 
-war_target_title		= st_faction_war_freedom_secure_garbage
+war_target_title              = st_faction_war_freedom_secure_garbage
+war_stage_icon                = st_stage_icon_freedom_secure_garbage_no
+war_stage_icon_complete       = st_stage_icon_freedom_secure_garbage_yes
+war_stage_icon_hint           = st_stage_icon_freedom_secure_garbage_no
+war_stage_icon_hint_complete  = st_stage_icon_freedom_secure_garbage_yes
 
-war_stage_icon			= st_stage_icon_freedom_secure_garbage_no
-war_stage_icon_complete		= st_stage_icon_freedom_secure_garbage_yes
-war_stage_icon_hint		= st_stage_icon_freedom_secure_garbage_no
-war_stage_icon_hint_complete	= st_stage_icon_freedom_secure_garbage_yes
-
-level_up_snd			= val_freedom_expansion_3_up
-level_down_snd			= val_freedom_expansion_3_down
+level_up_snd                  = val_freedom_expansion_3_up
+level_down_snd                = val_freedom_expansion_3_down
 
 ;-----------------------
 
 [expansion_6]
-base_squad_number		= 50
-precondition_target		= agr_smart_terrain_7_4, agr_smart_terrain_6_6	; Road to the Garbage, Makeshift camp
+base_squad_number             = 50
+precondition_target           = agr_smart_terrain_7_4, agr_smart_terrain_6_6 ; Road to the Garbage, Makeshift camp
 
-war_target_title		= st_faction_war_freedom_capture_agroprom
+war_target_title              = st_faction_war_freedom_capture_agroprom
+war_stage_icon                = st_stage_icon_freedom_capture_agroprom_no
+war_stage_icon_complete       = st_stage_icon_freedom_capture_agroprom_yes
+war_stage_icon_hint           = st_stage_icon_freedom_capture_agroprom_no
+war_stage_icon_hint_complete  = st_stage_icon_freedom_capture_agroprom_yes
 
-war_stage_icon			= st_stage_icon_freedom_capture_agroprom_no
-war_stage_icon_complete		= st_stage_icon_freedom_capture_agroprom_yes
-war_stage_icon_hint		= st_stage_icon_freedom_capture_agroprom_no
-war_stage_icon_hint_complete	= st_stage_icon_freedom_capture_agroprom_yes
-
-level_up_snd			= val_freedom_expansion_4_up
-level_down_snd			= val_freedom_expansion_4_down
+level_up_snd                  = val_freedom_expansion_4_up
+level_down_snd                = val_freedom_expansion_4_down
 
 ;-----------------------
 
 [expansion_7]
-base_squad_number		= 60
-precondition_target		= agr_smart_terrain_1_6				; Duty base
+base_squad_number             = 60
+precondition_target           = agr_smart_terrain_1_6 ; Duty base
 
-war_target_title		= st_faction_war_freedom_eliminate_base
+war_target_title              = st_faction_war_freedom_eliminate_base
+war_stage_icon                = st_stage_icon_freedom_eliminate_duty_no
+war_stage_icon_complete       = st_stage_icon_freedom_eliminate_duty_yes
+war_stage_icon_hint           = st_stage_icon_freedom_eliminate_duty_no
+war_stage_icon_hint_complete  = st_stage_icon_freedom_eliminate_duty_yes
 
-war_stage_icon			= st_stage_icon_freedom_eliminate_duty_no
-war_stage_icon_complete		= st_stage_icon_freedom_eliminate_duty_yes
-war_stage_icon_hint		= st_stage_icon_freedom_eliminate_duty_no
-war_stage_icon_hint_complete	= st_stage_icon_freedom_eliminate_duty_yes
-
-level_up_snd			= val_freedom_expansion_5_up
-level_down_snd			= val_freedom_expansion_5_down
+level_up_snd                  = val_freedom_expansion_5_up
+level_down_snd                = val_freedom_expansion_5_down
 
 ;-----------------------
 
 [expansion_8]
-base_squad_number		= 60
-precondition_target_no_task	= agr_smart_terrain_1_6_near_2			; Eastern entrance
+base_squad_number             = 60
+precondition_target           = agr_smart_terrain_1_6_near_2 ; Eastern entrance
 
-war_target_title		= st_faction_war_freedom_relax
+war_target_title              = st_faction_war_freedom_relax
 
-level_down_snd			= val_freedom_expansion_6_down
+level_down_snd                = val_freedom_expansion_6_down
 
 ;-----------------------
 
 [secondary_targets]
-mil_smart_terrain_3_8 = true							; Barrier
+mil_smart_terrain_3_8 ; Barrier
+
+[forbidden_points]
+gar_smart_terrain_3_5 ; Depot
 
 [start_position]
-val_smart_terrain_7_4_freedom			= val_smart_terrain_7_4		; Freedom base
-val_smart_terrain_7_3_freedom			= val_smart_terrain_7_3		; Uncle Yar's hangar
-val_smart_terrain_7_5_freedom			= val_smart_terrain_7_5		; Gulp of Freedom bar
-val_smart_terrain_7_11_freedom			= val_smart_terrain_7_11	; Outpost near farm
-val_smart_terrain_5_7_freedom			= val_smart_terrain_5_7		; End outpost
-val_smart_terrain_5_8_freedom			= val_smart_terrain_5_8		; Field camp
-val_smart_terrain_9_5_freedom			= val_smart_terrain_9_5		; Encampment at foothill
-mil_smart_terrain_2_2_freedom_squad_1		= mil_smart_terrain_2_2		; Far fortification area
-mil_smart_terrain_2_2_freedom_squad_2		= mil_smart_terrain_2_2		; Far fortification area
-mil_smart_terrain_7_4_freedom_base_squad_1	= mil_smart_terrain_7_4		; Abandoned farmstead
-mil_smart_terrain_7_2_freedom_squad		= mil_smart_terrain_7_2		; Entrance to army warehouses
-mil_smart_terrain_5_2_freedom_squad_1		= mil_smart_terrain_5_2		; Barricades on hill
-mil_smart_terrain_5_2_freedom_squad_2		= mil_smart_terrain_5_2		; Barricades on hill
+val_smart_terrain_7_4_freedom              = val_smart_terrain_7_4  ; Freedom base
+val_smart_terrain_7_3_freedom              = val_smart_terrain_7_3  ; Uncle Yar's hangar
+val_smart_terrain_7_5_freedom              = val_smart_terrain_7_5  ; Gulp of Freedom bar
+val_smart_terrain_7_11_freedom             = val_smart_terrain_7_11 ; Outpost near farm
+val_smart_terrain_5_7_freedom              = val_smart_terrain_5_7  ; End outpost
+val_smart_terrain_5_8_freedom              = val_smart_terrain_5_8  ; Field camp
+val_smart_terrain_9_5_freedom              = val_smart_terrain_9_5  ; Encampment at foothill
+mil_smart_terrain_2_2_freedom_squad_1      = mil_smart_terrain_2_2  ; Far fortification area
+mil_smart_terrain_2_2_freedom_squad_2      = mil_smart_terrain_2_2  ; Far fortification area
+mil_smart_terrain_7_4_freedom_base_squad_1 = mil_smart_terrain_7_4  ; Abandoned farmstead
+mil_smart_terrain_7_2_freedom_squad        = mil_smart_terrain_7_2  ; Entrance to army warehouses
+mil_smart_terrain_5_2_freedom_squad_1      = mil_smart_terrain_5_2  ; Barricades on hill
+mil_smart_terrain_5_2_freedom_squad_2      = mil_smart_terrain_5_2  ; Barricades on hill

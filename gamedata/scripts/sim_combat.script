@@ -244,7 +244,7 @@ function CCombat_manager:update()
 	local board_squads = self.board.squads
 	for id, data in pairs (self_squads) do
 		local squad = board_squads[id]
---		if squad ~= nil and not empty(squad.squad_npc) then
+--		if squad ~= nil and next(squad.squad_npc) ~= nil then
 		if squad ~= nil and squad.npc_count ~= 0 then -- squad.npc_count should always match squad.squad_npc count
 			self:update_squad(id, data)
 		else

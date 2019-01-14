@@ -80,13 +80,14 @@ Crash fixes:
 
 + Fixed instability and savegame corruption in Limansk.
 + Fixed occasional savegame corruption during the Fang basement mugging scene in the Garbage.
-+ Fixed some memory leaks which could eventually crash the game and/or corrupt a save file.
++ Fixed two task entity identifier leaks which could eventually destabilize the game.
 + Fixed a crash in Agroprom if Orest strays from his spot by the loner base window.
 + Fixed a crash in the Red Forest if the trader in the mine strays from his spot at the desk.
-+ Fixed a crash in the Garbage if the flea market is attacked while the player has an active task from Wild Napr.
++ Fixed a crash in the Garbage if the player receives a task with Wild Napr as its target while the Flea Market is in combat.
 + Fixed a crash upon entering the Garbage if the player took Yoga's task to kill Stringov, accepted Stringov's bribe, left Stringov alive, finished the task while Yoga was offline, and did not loot Stringov's stash.
 + Fixed potential crashing due to smart terrain overloading.
 + Fixed several potential crashes caused by the game attempting to alter the attitude of a non-existing squad.
++ Fixed an occasional crash upon the game evaluating whether to assign the player a 'help' task.
 + Fixed several potential crashes caused by missing script logic sections.
 + Fixed several potential crashes caused by buggy dialog trees.
 + Fixed a potential Army Warehouses waypoint crash when mutants attack the military base.
@@ -178,7 +179,7 @@ Gameplay fixes:
 + Fixed the issue where the Witch Circle squad in the Red Forest would not necessarily turn hostile if the player kills the ambush squad traitor while he is still yelling for help.
 + Fixed the issue with the first Clear Sky 'return item' task where the Makarov PM on the soldier's corpse is not actually "modified" despite the task description clearly stating that it is.
 + Fixed the issue with several Army Warehouses 'return item' tasks where multiple units of the requested item would be taken from the player for completion of the task if the player is in possession of more than one unit of the relevant item upon returning to the task-giver.
-+ Fixed the issue where Drifter would not offer any reward after the player saves him from dogs. He should offer stash coordinates for the third Cordon flash drive: 'electronic stabilization system for shotguns'.
++ Fixed ten stash coordinates being unattainable due to programming mistakes. Most notably, Drifter now offers coordinates to a stash containing the third Cordon flash drive as a reward to the player for saving him from dogs.
 + Fixed the issue where the reward in secondary task tooltips would fail to update properly after resuming progress from a savegame wherein the player already has an outstanding reward from the relevant faction.
 + Fixed all issues where submitting a flash drive with upgrade schematics would unlock the wrong upgrade.
 + Fixed the issue where the 'Lost Party's PDA' in Yantar would not be transferred to Sakharov upon talking to him following completion of the task to retrieve it.
@@ -213,7 +214,6 @@ Gameplay fixes:
 + Fixed armor descriptions pertaining to artifact containers and upgrade possibilities.
 + Assigned unique names to some quest weapons and armors that were missing them.
 + Corrected several typos and standardized the formatting of all dialog, UI, and PDA message texts.
-+ Fixed all buggy stash coordinate reception conditions.
 + Slightly improved stealth across saves.
 
 Dialog fixes:

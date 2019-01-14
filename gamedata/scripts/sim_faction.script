@@ -4,7 +4,7 @@ local math_random = math.random
 
 local cse_alife_smart_zone_update = cse_alife_smart_zone.update
 
-local _sort_by_squad_dist_asc = function(a, b) return a.squads[1].dist < b.squads[1].dist end
+local _sort_by_value_desc_then_squad_dist_asc = function(a, b) return a.value > b.value or (a.value == b.value and a.squads[1].dist < b.squads[1].dist) end
 local _sort_by_dist_asc = function(a, b) return a.dist < b.dist end
 local _sort_by_target_dist_asc = function(a, b) return a.dist_to_target < b.dist_to_target end
 
@@ -12,14 +12,14 @@ class "se_sim_faction" (cse_alife_smart_zone)
 
 function se_sim_faction:__init (section) super (section)
 --	self.sid = math_random(100000)
-	self.squad_population_max = 0
-	self.resource_level = 0	
-	self.glory_level = 0
+--	self.squad_population_max = 0
+	self.resource_level = 0
+--	self.glory_level = 0
 	self.absolute_power = 0
 	self.squad_target_cache = {}
 	self.spawn_by_resource = {}
 	self.spawn_by_level = {}
-	self.squads_by_glory = {}
+--	self.squads_by_glory = {}
 	self.community_player = false
 	self.expansion_level = {}
 	self.current_expansion_level = 0
@@ -34,97 +34,99 @@ end
 
 function se_sim_faction:read_params()
 
-	local ini = self:spawn_ini()
 	local get_string = utils.cfg_get_string
+	local get_number = utils.cfg_get_number
+
+	local ini = self:spawn_ini()
+	local setting_ini = ini_file(get_string(ini, "faction", "settings", self, true, ""))
 
 	self.board = sim_board.get_sim_board()
 	self.player_name = get_string(ini, "faction", "name", self, true, "")
-
-	local setting_ini = ini_file(get_string(ini, "faction", "settings", self, true, ""))
 	self.setting_ini = setting_ini
 
 	local i = 0
 	local section = "0"
-	local T = self.spawn_by_resource
+	local spawn_by_resource = self.spawn_by_resource
+
 	while setting_ini:line_exist("spawn_by_resource", section) do
-		T[i] = utils.parse_spawns(get_string(setting_ini, "spawn_by_resource", section, self, true, ""))
+		spawn_by_resource[i] = utils.parse_spawns(get_string(setting_ini, "spawn_by_resource", section, self, true, ""))
 		i = i + 1
 		section = tostring(i)
 	end
 
-	local result, id, value = "", "", ""
-	local n = setting_ini:line_count("spawn_by_level")
+	local spawn_by_level = self.spawn_by_level
 
-	T = self.spawn_by_level
-	for i = 0, n - 1 do
-		result, id, value = setting_ini:r_line("spawn_by_level", i, "", "")
-		T[id] = utils.parse_spawns(value)
+	for i = 0, setting_ini:line_count("spawn_by_level") - 1 do
+		local result, id, value = setting_ini:r_line("spawn_by_level", i, "", "")
+		spawn_by_level[id] = utils.parse_spawns(value)
 	end
-
+--[[
 	i = 0
 	section = "glory_0"
-	T = self.squads_by_glory
+	local squads_by_glory = self.squads_by_glory
+
 	while setting_ini:line_exist("settings", section) do
-		T[i] = utils.cfg_get_number(setting_ini, "settings", section, self, true)
+		squads_by_glory[i] = get_number(setting_ini, "settings", section, self, true)
 		i = i + 1
 		section = "glory_"..i
 	end
-
+]]
 	i = 0
 	section = "expansion_0"
-	T = self.expansion_level
+	local exp_table = self.expansion_level
+
 	while setting_ini:section_exist(section) do
 
 		local t = {}
 
-		t.id				= i
-		t.section			= section
-		t.base_squad_number		= xr_logic.parse_condlist(nil, nil, nil, get_string(setting_ini, section, "base_squad_number", self, true, ""))
+		t.id                            = i
+		t.section                       = section
+--		t.base_squad_number             = xr_logic.parse_condlist(nil, nil, nil, get_string(setting_ini, section, "base_squad_number", self, true, ""))
+		t.base_squad_number             = get_number(setting_ini, section, "base_squad_number", self, true)
+		t.forbidden_points              = parse_names_to_hash(get_string(setting_ini, section, "forbidden_points", self, false, "", ""))
 
-		t.respawn_idle_time		= utils.cfg_get_number(setting_ini, section, "respawn_idle_time", self, false, 30) * 60
-		local t_respawn_hours		= {}
-		t.respawn_hours			= t_respawn_hours
+		t.respawn_idle_time             = get_number(setting_ini, section, "respawn_idle_time", self, false, 30) * 60
+		t.respawn_hours                 = parse_names_to_hash(get_string(setting_ini, section, "respawn_hours", self, false, "", "0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23"))
 
-		local respawn_hours		= parse_names(get_string(setting_ini, section, "respawn_hours", self, false, "", "0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23"))
+		t.war_target_title              = get_string(setting_ini, section, "war_target_title", self, false, "", "")
+		t.war_stage_icon                = get_string(setting_ini, section, "war_stage_icon", self, false, "", "")
+		t.war_stage_icon_complete       = get_string(setting_ini, section, "war_stage_icon_complete", self, false, "", "")
+		t.war_stage_icon_hint           = get_string(setting_ini, section, "war_stage_icon_hint", self, false, "", "")
+		t.war_stage_icon_hint_complete  = get_string(setting_ini, section, "war_stage_icon_hint_complete", self, false, "", "")
 
- 		for k, v in pairs (respawn_hours) do
- 			t_respawn_hours[v] = true
- 		end
+		t.precondition_power            = get_number(setting_ini, section, "precondition_power", self, false, 0)
+		t.precondition_target           = parse_names(get_string(setting_ini, section, "precondition_target", self, false, "", ""))
+--		t.precondition_target_optional  = parse_names(get_string(setting_ini, section, "precondition_target_optional", self, false, "", ""))
+		t.precondition_target_eliminate = parse_names(get_string(setting_ini, section, "precondition_target_eliminate", self, false, "", ""))
+--		t.precondition_target_order     = get_string(setting_ini, section, "precondition_target_order", self, false, "", "free")
+		t.precondition_actor_in_faction = utils.cfg_get_bool(setting_ini, section, "precondition_actor_in_faction", self, false, false)
+		t.precondition_cond             = xr_logic.parse_condlist(nil, nil, nil, get_string(setting_ini, section, "precondition_cond", self, false, "", "true"))
 
-		t.war_target_title		= get_string(setting_ini, section, "war_target_title", self, false, "", "")
-		t.war_stage_icon		= get_string(setting_ini, section, "war_stage_icon", self, false, "", "")
-		t.war_stage_icon_complete	= get_string(setting_ini, section, "war_stage_icon_complete", self, false, "", "")
-		t.war_stage_icon_hint		= get_string(setting_ini, section, "war_stage_icon_hint", self, false, "", "")
-		t.war_stage_icon_hint_complete	= get_string(setting_ini, section, "war_stage_icon_hint_complete", self, false, "", "")
+		t.level_up_snd                  = get_string(setting_ini, section, "level_up_snd", self, false, "")
+		t.level_down_snd                = get_string(setting_ini, section, "level_down_snd", self, false, "")
 
-		t.precondition_power		= utils.cfg_get_number(setting_ini, section, "precondition_power", self, false, 0)
-		t.precondition_target		= utils.parse_names(get_string(setting_ini, section, "precondition_target", self, false, "", ""))
-		t.precondition_target_no_task	= utils.parse_names(get_string(setting_ini, section, "precondition_target_no_task", self, false, "", ""))
-		t.precondition_target_eliminate	= utils.parse_names(get_string(setting_ini, section, "precondition_target_eliminate", self, false, "", ""))
---		t.precondition_target_order	= get_string(setting_ini, section, "precondition_target_order", self, false, "", "free")
-		t.precondition_actor_in_faction	= utils.cfg_get_bool(setting_ini, section, "precondition_actor_in_faction", self, false, false)
-
-		t.precondition_cond		= xr_logic.parse_condlist(nil, nil, nil, get_string(setting_ini, section, "precondition_cond", self, false, "", "true"))
-
-		t.level_up_snd			= get_string(setting_ini, section, "level_up_snd", self, false, "")
-		t.level_down_snd		= get_string(setting_ini, section, "level_down_snd", self, false, "")
+		exp_table[i] = t
 
 		i = i + 1
-
---		table.insert(self.expansion_level, t) -- faster to use the method below
-		T[i] = t
-
 		section = "expansion_"..i
 	end
 
-	table_sort(T, function(a, b) return a.id < b.id end)
+--	table_sort(exp_table, function(a, b) return a.id < b.id end) -- already sorted
 
 	if setting_ini:section_exist("secondary_targets") then
-		n = setting_ini:line_count("secondary_targets")
-		T = self.secondary_targets
-		for i = 0, n - 1 do
-			result, id, value = setting_ini:r_line("secondary_targets", i, "", "")
-			T[id] = xr_logic.parse_condlist(nil, nil, nil, value)
+		local secondary_targets = self.secondary_targets
+		for i = 0, setting_ini:line_count("secondary_targets") - 1 do
+			local result, point_name = setting_ini:r_line("secondary_targets", i, "", "")
+			secondary_targets[point_name] = true -- xr_logic.parse_condlist(nil, nil, nil, value)
+		end
+	end
+
+	if setting_ini:section_exist("forbidden_points") then
+		for i = 0, setting_ini:line_count("forbidden_points") - 1 do
+			local result, point_name = setting_ini:r_line("forbidden_points", i, "", "")
+			for j = 0, #exp_table do
+				exp_table[j].forbidden_points[point_name] = true
+			end
 		end
 	end
 end
@@ -147,11 +149,10 @@ function se_sim_faction:on_register()
 		self.brain = sim_faction_brain_human.faction_brain_human(self)
 	end
 
-	self.brain:calculate_expansion_targets()
-
-	local faction_squads = self.squads
 	local board_squads = board.squads
+	local faction_squads = self.squads
 	local c = #faction_squads
+
 	for k, squad in pairs (self.init_squad_queue) do
 --		table.insert(self.squads, squad)
 		c = c + 1
@@ -160,14 +161,17 @@ function se_sim_faction:on_register()
 		board_squads[squad.squad_id] = squad
 	end
 
-	self:fill_start_position() -- executes once at the start of every new game
+	self:fill_start_position() -- most of this executes only once, at the start of a new game
 
-	for k, v in pairs (faction_squads) do -- loads all squad map spots on initialization
-		v:refresh()
+	self.brain:calculate_expansion_targets() -- now done just once, not after each squad spawns
+
+	for k, squad in pairs (faction_squads) do -- loads all squad map spots on initialization
+		squad:refresh()
 	end
 
 	local precondition_targets = self.precondition_targets
 	local smarts_by_name = board.smarts_by_names
+
 	for k, expansion in pairs (self.expansion_level) do
 		for kk, target_name in pairs (expansion.precondition_target) do
 			precondition_targets[smarts_by_name[target_name].id] = true
@@ -188,11 +192,11 @@ function se_sim_faction:fill_start_position()
 	self.start_position_filled = true
 
 	local setting_ini = self.setting_ini
+
 	if not setting_ini:section_exist("start_position") then
 		return
 	end
 
-	local n = setting_ini:line_count("start_position")
 	local board = self.board
 	local smarts_by_name = board.smarts_by_names
 	local squad_ltx = sim_board.squad_ltx
@@ -201,21 +205,21 @@ function se_sim_faction:fill_start_position()
 	local get_bool = utils.cfg_get_bool
 	local sim_squad_scripted = sim_squad_scripted.sim_squad_scripted
 
-	for i = 0, n - 1 do
-		local result, id, value = setting_ini:r_line("start_position", i, "", "")
-		local smrt_names = parse_names(value)
-		for k, v in pairs (smrt_names) do
-			local smart = smarts_by_name[v]
+	for i = 0, setting_ini:line_count("start_position") - 1 do
+		local result, squad_id, smart_list = setting_ini:r_line("start_position", i, "", "")
+		local smart_names = parse_names(smart_list)
+		for k, smart_name in pairs (smart_names) do
+			local smart = smarts_by_name[smart_name]
 			if smart == nil then
-				abort("[sim_faction.fill_start_position]: Smart '%s' is not a valid start position for faction '%s'.", tostring(v), tostring(our_faction))
+				abort("[sim_faction.fill_start_position]: Smart '%s' is not a valid start position for faction '%s'.", tostring(smart_name), tostring(our_faction))
 				return
 			end
 --			local squad
-			local is_autogenerated_id = get_bool(squad_ltx, id, "auto_id", self, false, false)
+			local is_autogenerated_id = get_bool(squad_ltx, squad_id, "auto_id", self, false, false)
 			if is_autogenerated_id then
-				board:create_squad(our_faction, sim_squad_scripted, smart, nil, id)
+				board:create_squad(our_faction, sim_squad_scripted, smart, nil, squad_id, true)
 			else
-				board:create_squad(our_faction, sim_squad_scripted, smart, id)
+				board:create_squad(our_faction, sim_squad_scripted, smart, squad_id, nil, true)
 			end
 --			board:enter_smart(squad, smart.id) -- now done in create_squad()
 		end
@@ -228,45 +232,35 @@ function se_sim_faction:update()
 
 	self:calculate_absolute_power()
 
-	local current_expansion_level = self.expansion_level[self.current_expansion_level]
-	if current_expansion_level == nil then
-		return
-	end
-
 	if db.actor then
 		local board = self.board
+		local calculated_expansion_targets = false
 		if board.simulation_started then
-			if current_expansion_level.respawn_hours[tostring(level.get_time_hours())] == true then
+			local expansion = self.expansion_level[self.current_expansion_level]
+			if expansion.respawn_hours[tostring(level.get_time_hours())] == true then
 				local last_spawn_time, current_game_time = self.last_spawn_time, game.get_game_time()
-				if last_spawn_time == nil or current_game_time:diffSec(last_spawn_time) >= current_expansion_level.respawn_idle_time then
-					local squad_population = #self.squads
-					local squad_population_max = self.squad_population_max
+				if last_spawn_time == nil or current_game_time:diffSec(last_spawn_time) >= expansion.respawn_idle_time then
 					local is_spawned = false
---					local sim = alife()
-					if squad_population < squad_population_max then
-						local spawn_smart
---						for i = squad_population, squad_population_max do -- suppose squad_population = 3, squad_population_max = 5; then with GSC's code, we spawn squads for i = 3, 4, and 5 -- that makes 3(!) squads, which is 1 too many!
-						for i = 1, (squad_population_max - squad_population) do
-							spawn_smart = board:get_spawn_smart(self)
-							if spawn_smart ~= nil then
-								local squad = board:create_squad(self.player_name, sim_squad_generic.sim_squad_generic, spawn_smart)
---[[
-								board:enter_smart(squad, spawn_smart.id) -- now done in create_squad()
-								for k in pairs (squad.squad_npc) do -- already done in create_squad()
-									local se_npc = sim:object(k)
-									board:setup_squad_and_group(se_npc)
-								end
-]]
-								squad:update()
---								squad:refresh() -- already done in update()
-								is_spawned = true
-							else
-								break
-							end
+					for i = #self.squads, expansion.base_squad_number - 1 do
+						local spawn_smart = board:get_spawn_smart(self)
+						if spawn_smart == nil then
+							break
 						end
+						local squad = board:create_squad(self.player_name, sim_squad_generic.sim_squad_generic, spawn_smart)
+--[[
+						board:enter_smart(squad, spawn_smart.id) -- now done in create_squad()
+						for k in pairs (squad.squad_npc) do -- already done in create_squad()
+							local se_npc = alife():object(k)
+							board:setup_squad_and_group(se_npc)
+						end
+]]
+						squad:update()
+--						squad:refresh() -- already done in update()
+						is_spawned = true
 					end
 					if is_spawned == false then
 						self.brain:calculate_expansion_targets()
+						calculated_expansion_targets = true
 					end
 					self.last_spawn_time = current_game_time
 				end
@@ -274,12 +268,10 @@ function se_sim_faction:update()
 		end
 
 		if self.community_player == true then
-			if self.brain.reset_actor_tasks ~= nil then
-				if self.target_smart_value == nil then
-					self.brain:calculate_expansion_targets()
-				end
+			if not calculated_expansion_targets and self.brain.reset_actor_tasks ~= nil then
 				self.brain:reset_actor_tasks()
 			end
+--[[
 ----------------------------------------------------------------------------------------------------------------------------------------- SRP >>>
 			local last_update_time = self.last_update_time
 			if last_update_time == nil then
@@ -287,88 +279,79 @@ function se_sim_faction:update()
 			else
 				local current_game_time = game.get_game_time()
 				if current_game_time:diffSec(last_update_time) >= 150 then
+					self.last_update_time = current_game_time
 					if board.simulation_started then
-						if self.target_smart_value ~= nil then
-							for target_smart_id, target_smart_data in pairs (self.target_smart_value) do
-								if target_smart_data.advance_point == true then				-- for each advance_point of our current expansion level:
-									local precond_target_obj = target_smart_data.smart
-									local our_faction = self.player_name
-									if precond_target_obj.player_name ~= our_faction then		-- if the advance_point is not yet captured by us:
-										local we_are_moving_to_target = false
-										for k, squad in pairs (self.squads) do
-											local current_action = squad.current_action
-											if current_action ~= nil then
-												if current_action.dest_smrt_id == target_smart_id or (current_action.name == "attack_point" and squad.assigned_target_smart_id == target_smart_id) then
---													dbgmsg("Squad "..squad.squad_id.." is already going to the target: "..smart_names.get_smart_terrain_name(precond_target_obj))
-													we_are_moving_to_target = true
-													break
-												end
+						for target_smart_id, target_smart_data in pairs (self.target_smart_value) do
+							if target_smart_data.advance_point == true then				-- for each advance_point of our current expansion level:
+								local precond_target_obj = target_smart_data.smart
+								local our_faction = self.player_name
+								if precond_target_obj.player_name ~= our_faction then		-- if the advance_point is not yet captured by us:
+									local we_are_moving_to_target = false
+									for k, squad in pairs (self.squads) do
+										local current_action = squad.current_action
+										if current_action ~= nil then
+											if current_action.dest_smrt_id == target_smart_id or (current_action.name == "attack_point" and squad.assigned_target_smart_id == target_smart_id) then
+--												dbgmsg("Squad "..squad.squad_id.." is already going to the target: "..smart_names.get_smart_terrain_name(precond_target_obj))
+												we_are_moving_to_target = true
+												break
 											end
 										end
-										if we_are_moving_to_target == false then			-- if we are not moving to it:
-											local avail_squads = {}
-											local c = 0
-											local GG = game_graph()
-											for k, squad in pairs (self.squads) do				-- for each of our squads:
-												local squad_smart_id = squad.smart_id
-												local squad_smart_data = board.smarts[squad_smart_id]
-												local try_to_assign_a_squad = false
-												if squad_smart_data.stayed_squad_quan >= 2 then		-- if at least one other squad on same smart, or:
-													try_to_assign_a_squad = true
-												else
-													if self.precondition_targets[squad_smart_id] == nil then	-- if squad is not on a precondition_target for any expansion level:
-														try_to_assign_a_squad = true
-													end
-												end
-												if try_to_assign_a_squad == true then
-													if not squad:get_script_target() then				-- if squad has no scripted target:
-														local current_action = squad.current_action
-														if current_action ~= nil then
-															if current_action.name == "stay_point" and current_action.next_point_id == nil and self.squad_target_cache[squad_id] ~= target_smart_id then	-- if squad is idle and not blocked and not trying to get to the advance_point:
-																local level_cluster = sim_board.sim_level_cluster
-																local squad_smart_obj = squad_smart_data.smrt
-																if level_cluster[squad_smart_obj.smart_level] == level_cluster[precond_target_obj.smart_level] then					-- if squad is on a suitable level:
-																	c = c + 1
-																	avail_squads[c] = {														-- insert squad into the avail_squads table
-																		squad = squad,
---																		squad_smart_id = squad_smart_id,
-																		squad_id = squad.squad_id,
-																		dist_to_target = GG:vertex(precond_target_obj.m_game_vertex_id):game_point():distance_to(GG:vertex(squad_smart_obj.m_game_vertex_id):game_point())
-																	}
-																end
+									end
+									if we_are_moving_to_target == false then			-- if we are not moving to it:
+										local avail_squads = {}
+										local c = 0
+										local GG = game_graph()
+										for k, squad in pairs (self.squads) do				-- for each of our squads:
+											local squad_smart_id = squad.smart_id
+											local squad_smart_data = board.smarts[squad_smart_id]
+											if squad_smart_data.stayed_squad_quan >= 2 or self.precondition_targets[squad_smart_id] == nil then -- if at least one other squad on same smart or squad is not on a precondition_target for any expansion level:
+												if not squad:get_script_target() then				-- if squad has no scripted target:
+													local current_action = squad.current_action
+													if current_action ~= nil then
+														if current_action.name == "stay_point" and current_action.next_point_id == nil and self.squad_target_cache[squad_id] ~= target_smart_id then	-- if squad is idle and not blocked and not trying to get to the advance_point:
+															local level_cluster = sim_board.sim_level_cluster
+															local squad_smart_obj = squad_smart_data.smrt
+															if level_cluster[squad_smart_obj.smart_level] == level_cluster[precond_target_obj.smart_level] then					-- if squad is on a suitable level:
+																c = c + 1
+																avail_squads[c] = {														-- insert squad into the avail_squads table
+																	squad = squad,
+--																	squad_smart_id = squad_smart_id,
+																	squad_id = squad.squad_id,
+																	dist_to_target = GG:vertex(precond_target_obj.m_game_vertex_id):game_point():distance_to(GG:vertex(squad_smart_obj.m_game_vertex_id):game_point())
+																}
 															end
 														end
 													end
 												end
 											end
-											if c > 0 then												-- if there are squads available to be assigned to the advance_point:
-												table_sort(avail_squads, _sort_by_target_dist_asc)		-- sort the squads in order of distance to target
---												for i = 1, #avail_squads do
---													dbglog(i..": "..avail_squads[i].squad_id..", "..avail_squads[i].dist_to_target)
---												end
-												self.squad_target_cache[avail_squads[1].squad_id] = target_smart_id				-- assign the nearest squad to the target
-												local assigned_squad = avail_squads[1].squad
-												assigned_squad.assigned_target_smart_id = target_smart_id
-												if assigned_squad.sim_combat_id ~= nil then
-													board.smarts[assigned_squad.sim_combat_id].smrt.combat_manager:unregister_squad(assigned_squad)
-												end
-												if assigned_squad.current_action ~= nil then
-													assigned_squad.current_action:finalize()
-													assigned_squad.current_action = nil
-												end
-												assigned_squad:get_next_action()
---												dbgmsg("Assigned squad "..avail_squads[1].squad_id.." on "..smart_names.get_smart_terrain_name(board.smarts[avail_squads[1].squad_smart_id].smrt).." to "..smart_names.get_smart_terrain_name(precond_target_obj))
+										end
+										if c > 0 then												-- if there are squads available to be assigned to the advance_point:
+											table_sort(avail_squads, _sort_by_target_dist_asc)		-- sort the squads in order of distance to target
+--											for i = 1, #avail_squads do
+--												dbglog(i..": "..avail_squads[i].squad_id..", "..avail_squads[i].dist_to_target)
+--											end
+											self.squad_target_cache[avail_squads[1].squad_id] = target_smart_id				-- assign the nearest squad to the target
+											local assigned_squad = avail_squads[1].squad
+											assigned_squad.assigned_target_smart_id = target_smart_id
+											if assigned_squad.sim_combat_id ~= nil then
+												board.smarts[assigned_squad.sim_combat_id].smrt.combat_manager:unregister_squad(assigned_squad)
 											end
+											if assigned_squad.current_action ~= nil then
+												assigned_squad.current_action:finalize()
+												assigned_squad.current_action = nil
+											end
+											assigned_squad:get_next_action()
+--											dbgmsg("Assigned squad "..avail_squads[1].squad_id.." on "..smart_names.get_smart_terrain_name(board.smarts[avail_squads[1].squad_smart_id].smrt).." to "..smart_names.get_smart_terrain_name(precond_target_obj))
 										end
 									end
 								end
 							end
 						end
 					end
-					self.last_update_time = current_game_time
 				end
 			end
 ----------------------------------------------------------------------------------------------------------------------------------------- <<< SRP
+]]
 		end
 	end
 
@@ -378,6 +361,7 @@ end
 function se_sim_faction:get_spawn_section(level_name, custom_resource)
 
 	local resource_spawn_data
+
 	if custom_resource ~= nil then
 		resource_spawn_data = self.spawn_by_resource[custom_resource]
 	else
@@ -404,7 +388,9 @@ function se_sim_faction:get_spawn_section(level_name, custom_resource)
 		abort("[sim_faction.get_spawn_section]: Spawn data for faction '%s' and level '%s' is missing.", self:name(), tostring(level_name))
 	end
 
-	local spawn_data, c = {}, 0
+	local spawn_data = {}
+	local c = 0
+
 	for k, v in pairs (resource_spawn_data) do
 		for kk, vv in pairs (level_spawn_data) do
 			if v.section == vv.section then
@@ -417,6 +403,7 @@ function se_sim_faction:get_spawn_section(level_name, custom_resource)
 	end
 
 	local sum = 0
+
 	for k, v in pairs (spawn_data) do
 		sum = sum + v.prob
 	end
@@ -424,6 +411,7 @@ function se_sim_faction:get_spawn_section(level_name, custom_resource)
 	local spawn_section = nil
 
 	sum = math_random(0, sum)
+
 	for k, v in pairs (spawn_data) do
 		sum = sum - v.prob
 		if sum <= 0 then
@@ -438,12 +426,12 @@ function se_sim_faction:get_spawn_section(level_name, custom_resource)
 
 	return spawn_section
 end
-
+--[[
 function se_sim_faction:calculate_total_squads()
 
-	local total_squad = self.squads_by_glory[self.glory_level]
+	local total_squad = self.squads_by_glory[self.glory_level] -- self.glory_level is always 0 in vanilla
 
-	if total_squad == nil then
+	if total_squad == nil then -- never the case in vanilla
 		local n = 0
 		while n < self.glory_level do
 			total_squad = self.squads_by_glory[n]
@@ -467,54 +455,38 @@ function se_sim_faction:faction_brain_update(after_load)
 	end
 end
 
--- function se_sim_faction:give_squad_task()
--- end
-
+function se_sim_faction:give_squad_task()
+end
+]]
 function se_sim_faction:calculate_squad_tasks()
 
-	self.squad_target_cache = {}
+--	dbglog("Iteration time for "..self.player_name.." is "..tostring(time_global())..".")
 
-	local squad_need_task = {}
-	local distance_table = {}
+	self.squad_target_cache = {}
 
 	for k, target_smart in pairs (self.target_smart_value) do -- for all registered target smarts, set number of squads assigned to that smart to 0
 		target_smart.num = 0
 	end
 
-	local c = 0
+	local board_smarts = self.board.smarts
+	local squad_need_task = {}
 
 	for k, squad in pairs (self.squads) do -- for all squads:
+
 		local script_target = squad:get_script_target()
+
 		if script_target ~= nil then
 			self.squad_target_cache[squad.squad_id] = script_target -- if squad has script target then assign squad to that target and
 			if self.target_smart_value[script_target] ~= nil then -- if script target is a registered target smart then
 				self.target_smart_value[script_target].num = self.target_smart_value[script_target].num + 1 -- increase number of squads going to that target smart by 1
 			end
 		else
-			c = c + 1
-			squad_need_task[c] = squad -- else insert this squad to table squad_need_task
---			dbglog("Inserted "..self.player_name.." squad with ID "..tostring(squad.squad_id).." to squad_need_task.")
-		end
-	end
-
-	local level_cluster = sim_board.sim_level_cluster
-	local board_smarts = self.board.smarts
-	local graph_distance = utils.graph_distance
-
-	c = 0
-
-	for k, target_smart in pairs (self.target_smart_value) do -- for all registered target smarts:
-
-		local squads = {}
-		local num_squads = 0
-		local target_smart_obj = target_smart.smart
-
-		for kk, squad in pairs (squad_need_task) do -- for all squads in need of task (i.e. any squad not assigned to a script target):
-
 			if squad.smart_id == nil then
 				abort("[sim_faction.calculate_squad_tasks]: Squad with ID '%s' has no registered source smart.", tostring(squad.squad_id))
 				return
 			end
+
+			squad.assigned_target_smart_id = nil
 
 			local is_stay = false
 			local squad_location
@@ -526,32 +498,56 @@ function se_sim_faction:calculate_squad_tasks()
 				squad_location = board_smarts[squad.current_action.dest_smrt_id].smrt -- else 'squad_location' = squad's target smart (prevents squad from being re-assigned on way there)
 			end
 
-			if level_cluster[squad_location.smart_level] == level_cluster[target_smart_obj.smart_level] then -- if registered target smart is in the same level cluster as 'squad_location' then
+			squad_need_task[squad.squad_id] = {squad_location = squad_location, is_stay = is_stay} -- else insert this squad to table squad_need_task
+--			dbglog("Inserted "..self.player_name.." squad with ID "..tostring(squad.squad_id).." to squad_need_task.")
+		end
+	end
 
-				local gr_dist = graph_distance(squad_location.m_game_vertex_id, target_smart_obj.m_game_vertex_id)
+	local distance_table = {}
+	local level_cluster = sim_board.sim_level_cluster
+	local graph_distance = utils.graph_distance
+	local c = 0
 
-				if is_stay == false then -- if squad is not idling around then increase graph distance between
+	for k, target_smart in pairs (self.target_smart_value) do -- for all registered target smarts:
+
+		local squads = {}
+		local suitable_squads = 0
+		local target_smart_obj = target_smart.smart
+
+		for squad_id, squad_data in pairs (squad_need_task) do -- for all squads in need of task (i.e. any squad not assigned to a script target):
+
+			if level_cluster[squad_data.squad_location.smart_level] == level_cluster[target_smart_obj.smart_level] then -- if registered target smart is in the same level cluster as 'squad_location' then
+
+				local gr_dist = graph_distance(squad_data.squad_location.m_game_vertex_id, target_smart_obj.m_game_vertex_id)
+
+				if not squad_data.is_stay then -- if squad is not idling around then increase graph distance between
 					gr_dist = gr_dist + 1 -- registered target smart and 'squad_location' by 1
 				end
 
-				num_squads = num_squads + 1
-				squads[num_squads] = {squad_id = squad.squad_id, dist = gr_dist} -- add squad info to table 'squads'
+				suitable_squads = suitable_squads + 1
+				squads[suitable_squads] = {squad_id = squad_id, dist = gr_dist} -- add squad info to table 'squads'
 			end
 		end
 
-		if num_squads > 0 then -- if at least one squad is in the same level cluster as registered target smart then
+		if suitable_squads > 0 then -- if at least one squad is in the same level cluster as registered target smart then
 			table_sort(squads, _sort_by_dist_asc) -- sort 'squads' by squad distance to registered target smart in ascending order
 			c = c + 1
-			distance_table[c] = {target_smart = target_smart, squads = squads} -- and add {target_smart, squad infos from 'squads'} to distance_table
+			distance_table[c] = {target_smart = target_smart, squads = squads, value = target_smart.value} -- and add {target_smart, squad infos from 'squads', target_smart value} to distance_table
 		end
 	end
 
 	while #distance_table > 0 do -- while there are target smarts with available squads unassigned to them:
 
---		dbglog("Iteration time is "..tostring(time_global())..".")
-
-		table_sort(distance_table, _sort_by_squad_dist_asc) -- sort distance_table in ascending order of distance between smart and closest squad
-
+		table_sort(distance_table, _sort_by_value_desc_then_squad_dist_asc) -- sort distance_table in descending order of smart value and ascending order of distance between smart and closest squad for smarts of equal value
+--[[
+		dbglog("Printing distance_table before squad-to-smart assignment:")
+		for i = 1, #distance_table do
+			dbglog("[%u] target_smart = [%s], value = [%u], squads =", i, game.translate_string("st_name_"..distance_table[i].target_smart.smart:name()), distance_table[i].value)
+			for j = 1, #distance_table[i].squads do
+				dbglog("  [%u] squad_id = [%s], dist = [%s]", j, distance_table[i].squads[j].squad_id, distance_table[i].squads[j].dist)
+			end
+		end
+]]
 		local tmp_smart = distance_table[1].target_smart
 		local tmp_squad_id = distance_table[1].squads[1].squad_id -- first element in table will be smart-squad pair with least distance between them
 		                                                          -- often that means smart-squad pair with *no* distance between them
@@ -572,14 +568,16 @@ function se_sim_faction:calculate_squad_tasks()
 			local smart_data = distance_table[i]
 			for j = #smart_data.squads, 1, -1 do
 				if smart_data.squads[j].squad_id == tmp_squad_id then
---					dbglog("Made "..self.player_name.." squad with ID "..tostring(tmp_squad_id).." unassignable to ["..game.translate_string("st_name_"..smart_data.target_smart.smart:name()).."].")
-					table_remove(smart_data.squads, j) -- remove the assigned squad wherever it occurs in distance_table
+--					local smart_name = game.translate_string("st_name_"..smart_data.target_smart.smart:name())
+--					dbglog("Made "..self.player_name.." squad with ID "..tostring(tmp_squad_id).." unassignable to ["..smart_name.."].")
+					if #smart_data.squads == 1 then
+--						dbglog("Removed ["..smart_name.."] from distance_table since no "..self.player_name.." squad is assignable to it.")
+						table_remove(distance_table, i) -- remove any smarts from distance_table to which no squad is assignable
+					else
+						table_remove(smart_data.squads, j) -- remove the assigned squad wherever it occurs in distance_table
+					end
 					break
 				end
-			end
-			if #smart_data.squads == 0 then
---				dbglog("Removed ["..game.translate_string("st_name_"..smart_data.target_smart.smart:name()).."] from distance_table since no "..self.player_name.." squad is assignable to it.")
-				table_remove(distance_table, i) -- remove any smarts from distance_table to which no squad is assignable
 			end
 		end
 	end
@@ -608,7 +606,7 @@ end
 function se_sim_faction:calculate_absolute_power()
 
 	self.npc_count = 0
-	self.npc_power = 0
+--	self.npc_power = 0 -- not used
 	self.absolute_power = 0
 
 	for k, v in pairs (self.squads) do
