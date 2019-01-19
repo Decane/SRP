@@ -468,6 +468,8 @@ function se_sim_faction:calculate_squad_tasks()
 		target_smart.num = 0
 	end
 
+	local GG = game_graph()
+	local sim = _G.sim
 	local board_smarts = self.board.smarts
 	local squad_need_task = {}
 
@@ -476,7 +478,7 @@ function se_sim_faction:calculate_squad_tasks()
 		local script_target = squad:get_script_target()
 
 		if script_target ~= nil then
-			self.squad_target_cache[squad.squad_id] = script_target -- if squad has script target then assign squad to that target and
+			self.squad_target_cache[squad.squad_id] = script_target -- if squad has script target then assign squad to that target
 			if self.target_smart_value[script_target] ~= nil then -- if script target is a registered target smart then
 				self.target_smart_value[script_target].num = self.target_smart_value[script_target].num + 1 -- increase number of squads going to that target smart by 1
 			end
@@ -489,40 +491,59 @@ function se_sim_faction:calculate_squad_tasks()
 			squad.assigned_target_smart_id = nil
 
 			local is_stay = false
-			local squad_location
+			local dest_smart, graph_point, graph_point_dest
 
 			if squad.current_action == nil or squad.current_action.name == "stay_point" then -- if squad is idling around then:
 				is_stay = true
-				squad_location = board_smarts[squad.smart_id].smrt -- 'squad_location' = squad's current smart
+				dest_smart = board_smarts[squad.smart_id].smrt -- 'dest_smart' = squad's current smart
+				graph_point = GG:vertex(dest_smart.m_game_vertex_id):game_point()
 			else
-				squad_location = board_smarts[squad.current_action.dest_smrt_id].smrt -- else 'squad_location' = squad's target smart (prevents squad from being re-assigned on way there)
+				dest_smart = board_smarts[squad.current_action.dest_smrt_id].smrt -- else 'dest_smart' = squad's target smart (prevents squad from being re-assigned on way there)
+				graph_point = GG:vertex(sim:object(squad.commander_id).m_game_vertex_id):game_point()
+				graph_point_dest = GG:vertex(dest_smart.m_game_vertex_id):game_point()
 			end
 
-			squad_need_task[squad.squad_id] = {squad_location = squad_location, is_stay = is_stay} -- else insert this squad to table squad_need_task
---			dbglog("Inserted "..self.player_name.." squad with ID "..tostring(squad.squad_id).." to squad_need_task.")
+			squad_need_task[squad.squad_id] =
+			{
+				dest_smart = dest_smart,
+				is_stay = is_stay,
+				graph_point = graph_point,
+				graph_point_dest = graph_point_dest
+			}
+
+--			dbglog("Inserted "..self.player_name.." squad with ID "..tostring(squad.squad_id).." and dest smart ["..game.translate_string("st_name_"..dest_smart:name()).."] to squad_need_task.")
 		end
 	end
 
 	local distance_table = {}
 	local level_cluster = sim_board.sim_level_cluster
-	local graph_distance = utils.graph_distance
 	local c = 0
 
-	for k, target_smart in pairs (self.target_smart_value) do -- for all registered target smarts:
+	for target_smart_id, target_smart in pairs (self.target_smart_value) do -- for all registered target smarts:
 
 		local squads = {}
 		local suitable_squads = 0
 		local target_smart_obj = target_smart.smart
+		local target_smart_gpoint
 
 		for squad_id, squad_data in pairs (squad_need_task) do -- for all squads in need of task (i.e. any squad not assigned to a script target):
 
-			if level_cluster[squad_data.squad_location.smart_level] == level_cluster[target_smart_obj.smart_level] then -- if registered target smart is in the same level cluster as 'squad_location' then
+			if level_cluster[squad_data.dest_smart.smart_level] == level_cluster[target_smart_obj.smart_level] then -- if registered target smart is in the same level cluster as 'dest_smart' then
 
-				local gr_dist = graph_distance(squad_data.squad_location.m_game_vertex_id, target_smart_obj.m_game_vertex_id)
+				target_smart_gpoint = target_smart_gpoint or GG:vertex(target_smart_obj.m_game_vertex_id):game_point()
+				local gr_dist
 
-				if not squad_data.is_stay then -- if squad is not idling around then increase graph distance between
-					gr_dist = gr_dist + 1 -- registered target smart and 'squad_location' by 1
+				if squad_data.is_stay then
+					gr_dist = squad_data.graph_point:distance_to(target_smart_gpoint)
+				else
+					if squad_data.dest_smart.id == target_smart_id then
+						gr_dist = squad_data.graph_point:distance_to(target_smart_gpoint) * 0.001
+					else
+						gr_dist = squad_data.graph_point_dest:distance_to(target_smart_gpoint) + 1
+					end
 				end
+
+--				dbglog("Graph distance of "..self.player_name.." squad with ID "..tostring(squad_id).." to smart ["..game.translate_string("st_name_"..target_smart_obj:name()).."] is ["..gr_dist.."].")
 
 				suitable_squads = suitable_squads + 1
 				squads[suitable_squads] = {squad_id = squad_id, dist = gr_dist} -- add squad info to table 'squads'
