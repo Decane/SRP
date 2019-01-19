@@ -85,6 +85,8 @@ Crash fixes:
 + Fixed a crash in the Red Forest if the trader in the mine strays from his spot at the desk.
 + Fixed a crash in the Garbage if the player receives a task with Wild Napr as its target while the Flea Market is in combat.
 + Fixed a crash upon entering the Garbage if the player took Yoga's task to kill Stringov, accepted Stringov's bribe, left Stringov alive, finished the task while Yoga was offline, and did not loot Stringov's stash.
++ Fixed a crash in the Garbage if a bandit robber squad suddenly leaves for another camp during a hold-up.
++ Fixed a crash in the Garbage if the robbery scheme tries to assign the robber leader role to a mutant due to incorrect detection of squads belonging to a robbery camp.
 + Fixed potential crashing due to smart terrain overloading.
 + Fixed several potential crashes caused by the game attempting to alter the attitude of a non-existing squad.
 + Fixed an occasional crash upon the game evaluating whether to assign the player a 'help' task.
