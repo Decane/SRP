@@ -742,6 +742,7 @@
 				<text>esc_wolf_other_works_0</text>
 				<action>dialog_manager.action_disable_phrase</action> <!-- SRP -->
 				<next>1</next>
+				<next>11</next>
 				<next>111</next>
 				<next>1111</next>
 				<next>11111</next>
@@ -750,7 +751,7 @@
 				<text>esc_wolf_other_works_1</text>
 				<dont_has_info>esc_wolf_brother_1</dont_has_info>
 				<has_info>esc_bring_habar_complete</has_info>
-				<has_info>esc_wolf_novice</has_info>
+				<has_info>esc_wolf_novice_3</has_info>
 				<next>2</next>
 				<next>3</next>
 			</phrase>
@@ -761,6 +762,12 @@
 			</phrase>
 			<phrase id="3">
 				<text>esc_wolf_other_works_3</text>
+			</phrase>
+			<phrase id="11">
+				<text>esc_wolf_other_works_1111</text>
+				<dont_has_info>esc_wolf_novice_3</dont_has_info>
+				<has_info>esc_bring_habar_complete</has_info>
+				<has_info>esc_wolf_novice</has_info>
 			</phrase>
 			<phrase id="22">
 				<text>esc_wolf_other_works_22</text>
@@ -773,7 +780,7 @@
 			</phrase>
 			<phrase id="1111">
 				<text>esc_wolf_other_works_1111</text>
-				<dont_has_info>esc_wolf_brother_1</dont_has_info>
+<!--			<dont_has_info>esc_wolf_brother_1</dont_has_info> -->
 				<dont_has_info>esc_bring_habar_complete</dont_has_info>
 				<has_info>esc_wolf_novice</has_info>
 			</phrase>
@@ -788,7 +795,7 @@
 			</phrase>
 			<phrase id="11111">
 				<text>esc_wolf_other_works_11111</text>
-				<has_info>esc_wolf_novice</has_info>
+<!--			<has_info>esc_wolf_novice</has_info> -->
 				<has_info>esc_wolf_brother_1</has_info>
 			</phrase>
 			<phrase id="11121">

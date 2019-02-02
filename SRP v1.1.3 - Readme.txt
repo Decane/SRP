@@ -113,7 +113,7 @@ Quest fixes:
 + Fixed the issue where failing or cancelling a 'return item' task at the Army Warehouses would make the task available again, yielding an exploit whereby the player could gain an indefinite supply of the requested item(s).
 + Fixed the Yantar "Help: Scientists' camp" task being received and immediately cancelled when the player attacks the scientists' camp.
 + Fixed the Yantar "Follow the stalker onto the hangar roof" task being completed rather than cancelled if the player does not get into position before the cooling device has been repaired.
-+ Fixed Freedom's "Eliminate the potential threat at the gas station" task being cancelled when the player completes the task.
++ Fixed Freedom's "Eliminate the potential threat at the gas station" task being cancelled when the player completes its objective.
 + Fixed Freedom's "Deliver ammo to the outpost" task being completed rather than cancelled when Chekhov informs the player that the outpost has been attacked.
 + Fixed Freedom's "Respond to the SOS signal" task being received and immediately failed whenever the player goes near the dead squad if the player initially fails the task.
 + Fixed Freedom's "Respond to the SOS signal" task being received and immediately completed after the player talks to the outpost commander if the player has already discovered the squad's fate.
@@ -182,7 +182,7 @@ Gameplay fixes:
 + Fixed the issue with the first Clear Sky 'return item' task where the Makarov PM on the soldier's corpse is not actually "modified" despite the task description clearly stating that it is.
 + Fixed the issue with several Army Warehouses 'return item' tasks where multiple units of the requested item would be taken from the player for completion of the task if the player is in possession of more than one unit of the relevant item upon returning to the task-giver.
 + Fixed ten stash coordinates being unattainable due to programming mistakes. Most notably, Drifter now offers coordinates to a stash containing the third Cordon flash drive as a reward to the player for saving him from dogs.
-+ Fixed the issue where the reward in secondary task tooltips would fail to update properly after resuming progress from a savegame wherein the player already has an outstanding reward from the relevant faction.
++ Fixed faction reward tooltips failing to update to reflect new rewards after resuming progress from a savegame in which the player already has an outstanding reward from the relevant faction.
 + Fixed all issues where submitting a flash drive with upgrade schematics would unlock the wrong upgrade.
 + Fixed the issue where the 'Lost Party's PDA' in Yantar would not be transferred to Sakharov upon talking to him following completion of the task to retrieve it.
 + Fixed the issue where several varieties of weapon would not be properly identified as such when the player's inventory is checked for dialog availability purposes.
@@ -190,15 +190,16 @@ Gameplay fixes:
 + Fixed the issue where non-scripted squads loaded from a savegame (as opposed to spawning into the Zone in the current game session) would not spawn inventory box items.
 + Fixed the issue where supply boxes on smart terrains controlled by online squads would generate more supplies with every game reload.
 + Fixed the issue where NPCs would drop the wrong type of ammo for some weapons.
-+ Fixed mutants not behaving aggressively on patrol paths linking them to attack-targets until aggravated by e.g. the player.
++ Fixed mutants not behaving aggressively on patrol paths linking them to attack-targets unless aggravated by an external force (e.g. the player).
 + Fixed the issues where (i) Chekhov, Lingov, and Sakharov would not be marked as important characters on the map and (ii) the Duty outpost commander at Agroprom would be flagged as an important character even after he has become functionally generic.
 + Fixed the mechanic specialization tooltip displaying 'none' for some mechanics who do not lack a specialization, e.g. Yar and Major Zvyagintsev.
 + Fixed the issue where squad info tooltips would fail to update properly and would, consequently, sometimes display the wrong target location.
 + Fixed several bugs pertaining to the displaying of squad map spots, including the issue where its color would react sluggishly to relationship changes to the player.
 + Fixed the issue where crows could get stuck floating in the air upon being shot.
-+ Fixed the issue where the health restore upgrade for the Freedom Exoskeleton would make the player bleed out faster rather than slower as intended.
++ Fixed the "Life support system" upgrade for the Freedom Exoskeleton making the player bleed out faster rather than slower as intended.
 + Fixed the issue where the VSS "Vintorez" received as a reward from Forester could not be upgraded.
 + Added the missing 'doesn't use shot' text to the threaded barrel upgrade tooltip for the Mossberg 88.
++ Fixed the "Relief backpack" upgrade for various armors wrongly incrementing the carry weight tooltip value by only 5kg instead of the 15kg actually unlocked by the upgrade.
 + Corrected the behavior of shot megaphones.
 + Fixed the player's character model reverting back to the default rookie jacket model upon loading a savegame / changing maps.
 + Corrected the mesh, name, icon, and description of the several varieties of 7.62x54 mmR ammunition.
@@ -245,9 +246,9 @@ Graphical fixes:
 + Replaced the inventory icon of the PM, PB, RPG-7, AKS-74U, and the exoskeleton to match their in-game appearance.
 + The correct HUD arm texture is now displayed for the Sunrise Suit, SEVA Suit, and the Bandit Jacket.
 + Fixed the issue where a squad commander icon would sometimes overlap with a guide icon, trader icon, or important character icon on the map.
-+ Fixed the HUD bleeding icon being misaligned in widescreen mode.
++ Fixed the HUD bleeding icon being misaligned with its background in widescreen mode.
 + Fixed the misaligned border on secondary task map spots.
-+ Fixed the incorrect 'important character' and PDA map legend icon.
++ Fixed the incorrect 'important character' PDA map legend icon.
 + Fixed some NPCs having the wrong PDA message avatar.
 + Disabled the annoying, redundant flashing diskette icon appearing on screen every now and then.
 + Fixed the alignment of the off-center 'Game Over' text and accompanying flashing prompt in widescreen mode.
@@ -257,7 +258,7 @@ Graphical fixes:
 Audio fixes:
 
 + Fixed the issue where dynamic music would sometimes persist even after a battle is over and erratically fade in/out during a battle due to intermittent visibility loss.
-+ Fixed the music associated with an NPC's instrument-playing animation continuing to play even when the animation is interrupted by the NPC getting up intermittently.
++ Fixed the audio of an NPC's instrument-playing animation continuing to play even when the animation is interrupted by the NPC getting up intermittently.
 + Fixed the parting audio of an NPC playing prematurely upon entering the trade or upgrade screen with them.
 + Fixed the final portion of General Krylov's briefing dialog with the player being cut off following his walkie-talkie conversation with Sergeant Cheersov.
 + Fixed the issue where the player could rush out of Sakharov's bunker to meet Lefty before Sakharov has finished his first walkie-talkie conversation with him, thereby triggering a second transmission on top of the first one.

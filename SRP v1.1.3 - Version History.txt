@@ -25,15 +25,16 @@ v1.1.3
 + Fixed the issue where non-scripted squads loaded from a savegame, as opposed to spawning into the Zone in the current game session, would not spawn inventory box items. - Decane
 + Fixed the issue where squads could prioritize secondary faction war targets over primary targets, potentially leading to absurd behavior such as Freedom preferring to send squads towards a loner-captured Barrier rather than sending them to capture the Duty base. - Decane
 + Fixed the issue where squads would readily abandon forward targets during the faction war upon loss of an earlier target even if squads at less important smart terrains are available to resecure the earlier target. - Decane
-+ Fixed a typo in gulag_general.script that prevented mutants from behaving aggressively on patrol paths linking them to attack-targets. - Decane
++ Fixed a typo in gulag_general.script that prevented mutants from behaving aggressively on patrol paths linking them to attack-targets. This caused them to move sluggishly to camps that the player had been tasked to defend, unless aggravated by an external force (e.g. the player). - Decane
 + Fixed four invalid waypoint name indices in all.spawn to make two waypoints at the 'Boat park' and two at the 'Village ruins' available to NPCs. - Decane
 + Fixed the bridge to Limansk in the Red Forest not aligning properly when lowered, which in rare cases would cause NPCs to never reach the other side. - PYP
 + Fixed a few remaining NPC disposition bugs. - Decane
-+ Fixed the audio associated with an NPC's instrument-playing animation continuing to play even when the animation is interrupted by the NPC getting up intermittently. - Decane
++ Fixed the audio of an NPC's instrument-playing animation continuing to play even when the animation is interrupted by the NPC getting up intermittently. - Decane
 + Fixed the parting audio of an NPC playing prematurely upon entering the trade or upgrade screen with them. - Decane
 + Worked around the death of a squad poltergeist failing to be processed correctly if the death callback from its object binder triggers before that of its server entity equivalent, se_monster:on_death(). As a side-effect, poltergeists now leave behind a corpse when killed. - Decane
 + Fixed Sakharov and Lingov not being marked as important characters on the map. - Decane
 + Fixed the issue where a squad commander icon could overlap with a trader icon on the map. - Decane
++ Made the task to rescue Hound become available only upon the player having completed the task to rescue Drifter rather than upon having initiated it, as likely intended. - Decane
 + Made a couple of drop-boxes in the Abandoned Hospital destructible that mistakenly were not so in the unmodded game. - Decane
 + Fixed the all.spawn typos preventing a few drop-boxes in Limansk from spawning loot when broken. - Decane
 + Fixed a few instances of a mechanic not being able to upgrade a pre-upgraded variant of a weapon even if they could upgrade the base weapon. - Decane
@@ -41,7 +42,7 @@ v1.1.3
 + Fixed a typo in Sakharov's trade config that prevented the right multiplier being applied to the sell-price of shotgun ammo. - warcatt00
 + Improved error diagnostics on _g.abort() invocation - a Lua stack traceback is now printed by default. - Decane
 + Russian translation. - olegj5, SurDno
-+ Fixed the second-tier weight carry upgrade for various armors wrongly incrementing the tooltip value by only 5kg instead of the intended 15kg. - vlad54rus
++ Fixed the "Relief backpack" upgrade for various armors wrongly incrementing the carry weight tooltip value by only 5kg instead of the 15kg actually unlocked by the upgrade. - vlad54rus
 + Restored a few unused parting phrases for Sidorovich and one unused greeting phrase for Forester. - Decane
 + Fixed the game crashing if the player deletes the bottom-most savegame in a list of more than one savegame in the save menu and then attempts to delete the savegame without first selecting another item from the list. - Decane
 + (ZRP import) Fixed the player's character model reverting back to the default rookie jacket model upon loading a savegame / changing maps. - NatVac
@@ -55,7 +56,7 @@ v1.1.3
 ~ Enabled the possibility of returning the items requested in a 'bring item' task to the new squad leader if the original dies (new game recommended). - Decane
 ~ Moved some previously 'hard-coded' lists in a few scripts to appropriate configuration files. - Decane
 ~ The SVD and SVU are now included among the weapons not tossed when using the optional 'No NPC Weapon Tossing Upon Death' feature.
-- Reversed the SRP v1.0.4 decision to 'fix' the "Return the experimental device", "Find the missing stalker’s loot", and "Take the artifact from the dead stalker" tasks being available from Duty members despite each's description purportedly implying the task-giver to be a neutral stalker. Each description can be read in a way that does not render it inconsistent with the tasker being a Duty member.
+- Reversed the SRP v1.0.4 'fix' to make the "Return the experimental device", "Find the missing stalker’s loot", and "Take the artifact from the dead stalker" tasks unavailable from Duty members due to each's description purportedly implying the task-giver to be a neutral stalker. Each description can be read in a way that does not render it inconsistent with the tasker being a Duty member.
 - Reversed the SRP v1.0.4 decision to make Clear Sky squads attempt to capture several further explicitly defined smart terrains after capturing the Southern Farmstead.
 
 -----------------------------------------------------------------------------
@@ -63,7 +64,7 @@ v1.1.3
 v1.1.2
 
 + Conclusively fixed the issue where the Swamp faction war could come to a standstill due to the leader of a Clear Sky squad headed to the Machine Yard assuming the role of the guide at the Southern Farmstead. - Decane
-+ Fixed the issue where the Red Forest bridge lowering sequence would become unlocked as soon as the player completes the task to "Go to the army base" rather than only after the player has transmitted the coordinates to free Leshiy's squad from the space bubble. - Decane
++ Fixed the Red Forest bridge lowering sequence becoming prematurely unlocked as soon as the player completes the "Go to the army base" task rather than only after the player has transmitted the coordinates to free Leshiy's squad from the space bubble. - Decane
 
 -----------------------------------------------------------------------------
 
@@ -142,7 +143,7 @@ v1.0.7
 v1.0.6
 
 + Reduced the probability of the Swamp faction war coming to a standstill due to the leader of a Clear Sky squad headed to the Machine Yard assuming the role of the guide at the Southern Farmstead. - Decane
-+ Fixed the issue where the health restore upgrade for the Freedom Exoskeleton would make the player bleed out faster rather than slower as intended. - Decane per Talrivian
++ Fixed the "Life support system" upgrade for the Freedom Exoskeleton making the player bleed out faster rather than slower as intended. - Talrivian
 + Changed the name of the 'Hunting Rifle' to 'Hunting Shotgun' to reflect its actual weapon class. - Decane
 ~ Slightly increased the crosshair's length when using the optional smaller crosshair feature. - Decane
 
@@ -154,7 +155,7 @@ v1.0.5
 + Fixed a crash possibly enabled by SRP v1.0.4: Insufficient smart_terrain jobs gar_smart_terrain_6_6. - Decane
 + Fixed a rare crash upon reloading a savegame: sim_combat.script:968: attempt to index field 'actor' (a nil value). - Decane
 + Fixed the issue where the dogs that spawn to attack Vasyan might fail to do so due to nearby NPC interference, hindering storyline progress. - Decane
-+ Fixed the issue where the reward in secondary task tooltips would fail to update properly after resuming progress from a savegame wherein the player already has an outstanding reward from the relevant faction. - Decane
++ Fixed faction reward tooltips failing to update to reflect new rewards after resuming progress from a savegame in which the player already has an outstanding reward from the relevant faction. - Decane
 + Fixed the mechanic specialization tooltip displaying 'none' for some mechanics who do not lack a specialization, e.g. Yar and Major Zvyagintsev. - Decane
 + Fixed the issue where the Dark Valley entrance hold-up could occur prematurely if the player enters the Dark Valley before being tasked with chasing Fang there. - Decane
 + Fixed the issue where the stalker squad headed toward the Devilish Encampment in the Red Forest could, in rare circumstances, spawn right in front of the player. - Decane
@@ -178,7 +179,7 @@ v1.0.4
 + Fixed the issue where NPCs would sometimes perceive an enemy as a threat even after the enemy has been killed. - Decane
 + Added the possibility to continue playing in freeplay mode after the main storyline. - DEXXX, with Decane tweaks
 + Fixed the broken artifact respawn timer. Consequently, artifacts now respawn as they are supposed to. - Decane
-+ Fixed the broken final squad spawner in Limansk which could cause crashing and savegame corruption in case the player does not swiftly exit Limansk after disabling the electricity supply to the fence. - Decane
++ Fixed the broken final squad spawner in Limansk which could cause crashing and savegame corruption if the player did not swiftly exit Limansk after disabling the electricity supply to the fence. - Decane
 + Fixed an occasional crash upon the game evaluating whether to assign the player a 'help' task: sim_combat.script:614: attempt to index local 'attack_squad_obj' (a nil value). - Decane
 + Fixed a rare waypoint crash in the Cordon: [error]Description : patrol path[esc_smart_terrain_3_7_walker_1_walk], point on path [name05],object [sim_default_stalker_228836]. - Decane
 + Fixed several potential crashes caused by the game attempting to alter the attitude of a non-existing squad. - Decane
@@ -241,7 +242,7 @@ v1.0.4
 + Fixed the script bugs preventing the map spots of several ambush enemies in Limansk being hidden. - Decane
 + Fixed the issue where squad info tooltips would fail to update properly and would, consequently, sometimes display the wrong target location. - Decane
 + Fixed Chekhov not being marked as an important character on the map. - Decane
-+ Fixed the incorrect important character PDA map legend icon. - Decane
++ Fixed the incorrect 'important character' PDA map legend icon. - Decane
 + Fixed the issue where several varieties of weapon would not be properly identified as such when the player's inventory is checked for dialog availability purposes. - Decane
 + Fixed the issue where Sidorovich would answer only one question per game session after the player returns him his case. - Decane
 + Fixed the issue where a squad NPC would not always be assigned the role of a guide when the relevant squad enters a camp for which a guide is suitable. - Decane
@@ -394,7 +395,7 @@ v1.0.2
 + Re-aligned the ironsights of all the game's primary weapons; they should now be perfectly aligned. - b1ub4k, Anonymous, Control volume, Decane
 + Fixed all potential 'missing texture' errors related to different controller variants. - Decane
 + Fixed the Bandit Jacket using the Sunrise Suit's HUD arm texture; it now has its own unique texture. - Decane
-+ Fixed the HUD bleeding icon being misaligned in widescreen mode. - Armada
++ Fixed the HUD bleeding icon being misaligned with its background in widescreen mode. - Armada
 + Fixed the game crashing if the player deletes the bottom-most savegame in a list of more than one savegame in the load menu and then attempts to load or delete the savegame without first selecting another item from the list. - Decane
 + Enabled deletion of saved games via the 'delete' keyboard button in the load menu and save menu. - Decane
 + Added the SRP version number to the left lower corner of the main menu in the style of the ZRP.
@@ -432,7 +433,7 @@ v1.0.1
 v1.0.0
 
 + Fixed a few more info_portion related console errors. - Decane
-+ Fixed the Clear Sky "Find a way to Chernobyl NPP" task not completing. - Decane
++ Fixed Clear Sky's "Find a way to Chernobyl NPP" task not completing. - Decane
 + Fixed the issue where the player's weapon would sometimes be intermittently holstered during a firefight at the bandit base, despite being an enemy to the bandits. - Decane
 + Synchronized the bore and reload sounds of the following weapons: Abakan, AKS-74, AKS-74U, TOZ-66, F2000, G36, LR-300, PKM, SVD, SVU, TOZ-34. - RoboMook, smrtphoneusr
 + Added a sound for the 2nd bore animation of the following weapons: G36, L85, LR-300, MP5, SIG 550. - Decane
@@ -473,7 +474,7 @@ v0.8.0 BETA
 + Added an alleged fix for the broken DX10 wet surfaces effect. - BaconBuster
 + Corrected the SPAS-12 ironsights for 16:9 resolutions. - Tariq
 + Fixed armor descriptions pertaining to artifact containers and upgrade possibilities. - Decane
-+ Fixed the Freedom barman's task to eliminate the threat at the gas station being cancelled when the player completes the task. - Decane
++ Fixed Freedom's "Eliminate the potential threat at the gas station" task being cancelled when the player completes its objective. - Decane
 + Fixed the Army Warehouses 'return item' task where multiple Flame artifacts would be taken from the player for completion of the task if the player was in possession of more than one Flame artifact upon returning to the task-giver. - Decane
 + Fixed a typo in the all.spawn file (new game required for effect). - PhoenixHeart
 + Fixed a possible all.spawn Army Warehouses waypoint CTD when mutants attack the military base (new game required for effect). - smoq2
