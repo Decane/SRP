@@ -20,6 +20,7 @@ v1.1.3
 + Worked around an SRP v1.0.4 regression where the AI of NPCs approaching the Fishing Hamlet from the Hidden Camp would occasionally break. - Decane
 + Fixed the issue where the player's assistance could fail to be registered in a random faction war task, causing the task to be cancelled when it should be completed. - Decane
 + Fixed the issue where a 'defend' task could occasionally be received in unwarranted circumstances, most frequently resulting in the task being immediately cancelled. - Decane
++ Fixed the issue where 'capture' tasks would sometimes be offered by NPCs even for smart terrains unreachable to them. - Decane
 + Fixed the issue where 'find upgrade' tasks would not cancel when the mechanic who gave them dies or becomes hostile after loading a savegame. - Decane
 + Fixed the issue where the skirmish between the loners and military at the Cordon bus stop could begin prematurely, preventing the player from receiving the task to defend the loner patrol. - Decane
 + Fixed the issue where non-scripted squads loaded from a savegame, as opposed to spawning into the Zone in the current game session, would not spawn inventory box items. - Decane
@@ -34,7 +35,7 @@ v1.1.3
 + Worked around the death of a squad poltergeist failing to be processed correctly if the death callback from its object binder triggers before that of its server entity equivalent, se_monster:on_death(). As a side-effect, poltergeists now leave behind a corpse when killed. - Decane
 + Fixed Sakharov and Lingov not being marked as important characters on the map. - Decane
 + Fixed the issue where a squad commander icon could overlap with a trader icon on the map. - Decane
-+ Made the task to rescue Hound become available only upon the player having completed the task to rescue Drifter rather than upon having initiated it, as likely intended. - Decane
++ Made the task to rescue Hound become available only upon the player having completed the task to rescue Drifter, as likely intended, rather than merely upon having initiated it. - Decane
 + Made a couple of drop-boxes in the Abandoned Hospital destructible that mistakenly were not so in the unmodded game. - Decane
 + Fixed the all.spawn typos preventing a few drop-boxes in Limansk from spawning loot when broken. - Decane
 + Fixed a few instances of a mechanic not being able to upgrade a pre-upgraded variant of a weapon even if they could upgrade the base weapon. - Decane

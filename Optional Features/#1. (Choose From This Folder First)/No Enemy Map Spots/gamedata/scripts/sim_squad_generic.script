@@ -814,6 +814,7 @@ end
 function sim_squad_generic:init_squad_task()
 
 	local board = self.board
+	local level_cluster = sim_board.sim_level_cluster
 	local tm = task_manager.get_task_manager()
 	local squad_faction_name = self.player_id
 	local random_tasks = self.random_tasks
@@ -828,20 +829,23 @@ function sim_squad_generic:init_squad_task()
 
 	if board:get_smart_population(squad_smart) > 1 or (board_factions[squad_faction_name].precondition_targets[squad_smart_id] == nil and smart_under_attack(squad_faction_name, board_factions, squad_smart_id) == false) then
 		if self:get_script_target() == nil then
+			local squad_smart_cluster = level_cluster[squad_smart.smart_level]
 			for neighbor_smart_id, neighbor_smart in pairs (board:get_nearest_smarts(squad_smart)) do
-				if sim_board.is_point_avail(neighbor_smart, squad_faction_name) then
-					local neighbor_faction_name = neighbor_smart.player_name
-					if neighbor_faction_name ~= "none" then
-						if game_relations.is_factions_enemies(squad_faction_name, neighbor_faction_name) then
-							if smart_under_attack(neighbor_faction_name, board_factions, neighbor_smart_id) == false then
-								local neighbor_smart_task = tm:get_tasks_by_smart(neighbor_smart_id)
-								if not neighbor_smart_task or neighbor_smart_task.base_prior == 3 then
-									task = tm:select_task("capture_smart", neighbor_smart, squad_faction_name)
-									task.src_obj = self.squad_id
-									if random_tasks[1] == nil then
-										random_tasks[1] = task.entity_id
-									elseif random_tasks[2] == nil then
-										random_tasks[2] = task.entity_id
+				if level_cluster[neighbor_smart.smart_level] == squad_smart_cluster then
+					if sim_board.is_point_avail(neighbor_smart, squad_faction_name) then
+						local neighbor_faction_name = neighbor_smart.player_name
+						if neighbor_faction_name ~= "none" then
+							if game_relations.is_factions_enemies(squad_faction_name, neighbor_faction_name) then
+								if smart_under_attack(neighbor_faction_name, board_factions, neighbor_smart_id) == false then
+									local neighbor_smart_task = tm:get_tasks_by_smart(neighbor_smart_id)
+									if not neighbor_smart_task or neighbor_smart_task.base_prior == 3 then
+										task = tm:select_task("capture_smart", neighbor_smart, squad_faction_name)
+										task.src_obj = self.squad_id
+										if random_tasks[1] == nil then
+											random_tasks[1] = task.entity_id
+										elseif random_tasks[2] == nil then
+											random_tasks[2] = task.entity_id
+										end
 									end
 								end
 							end
