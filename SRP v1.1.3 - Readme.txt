@@ -366,10 +366,11 @@ Unable to choose DX10/10.1 mode in the graphics settings menu?
 
  • Uninstall SweetFX if you have it installed — it is known to disable DX10/10.1 support on some configurations.
 
-Trying to run the game in DX10/10.1 mode? Getting crashes? Try these in sequence:
+Trying to run the game in DX10/10.1 mode? Getting random freezes? Try these in sequence:
 
  • Install the optional 'DX10 Patch' included with the SRP.
  • Uninstall 'Update for Microsoft Windows (KB2670838)' if you have it installed — it is known to cause problems with Clear Sky, but should be uninstalled only if the patch above does not work.
+ • Disable anti-aliasing in the game's graphics settings.
  • Switch to DX9 mode.
 
 Still have trouble?
