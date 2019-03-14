@@ -46,6 +46,7 @@ v1.1.3
 + Fixed the "Relief backpack" upgrade for various armors wrongly incrementing the carry weight tooltip value by only 5kg instead of the 15kg actually unlocked by the upgrade. - vlad54rus
 + Restored a few unused parting phrases for Sidorovich and one unused greeting phrase for Forester. - Decane
 + Fixed the game crashing if the player deletes the bottom-most savegame in a list of more than one savegame in the save menu and then attempts to delete the savegame without first selecting another item from the list. - Decane
++ Replaced the generic masked face of the player's unarmored character model with Scar's face, as in the leather jacket armored character model. - Decane
 + (ZRP import) Fixed the player's character model reverting back to the default rookie jacket model upon loading a savegame / changing maps. - NatVac
 + (ZRP import) Fixed the use_object callback for doors and buttons being reset on scheme switch. - NatVac
 + (ZRP import) Fixed NPCs sharing a common global variable in state_mgr.evaluator_state_mgr_idle_alife:evaluate() to determine their individual behavior. - NatVac per Alundaio
@@ -218,7 +219,7 @@ v1.0.4
 + Fixed the issue where 'find upgrade' tasks would not cancel when the player joins a faction hostile to the task-giver. - Decane
 + Fixed the issue where the "Receive the reward from Krylov" task in agroprom would not cancel if the player joins the bandits or Freedom. - Decane
 + Fixed the issue where any active 'defend' tasks would be cancelled upon loading a savegame. - Decane
-+ Fixed the issue where the Freedom base gate would open before the player has found the active PDA on the dead blockpost commander's corpse, enabling the player to speak to Chekhov prematurely and break the storyline. - Decane
++ Fixed the issue where the Freedom base gate would open upon completion of the "Deliver ammo to the outpost" task instead of only after the player has found the active PDA on the dead blockpost commander's corpse, enabling the player to speak to Chekhov prematurely and break the storyline. - Decane
 + Fixed the issue where the player would in some circumstances fail to properly receive credit for killing the boars during the tutorial mission in the Swamp. - Decane
 + Fixed the issue where the player's 'stashes found' statistic would rise even when emptying a stash box of items placed inside it by the player. - Decane
 + Fixed the exploit whereby the player could obtain multiple sets of stash coordinates from a corpse by re-checking it after leaving and re-entering the map it is on. - Decane, barin
@@ -248,7 +249,7 @@ v1.0.4
 + Fixed the issue where Sidorovich would answer only one question per game session after the player returns him his case. - Decane
 + Fixed the issue where a squad NPC would not always be assigned the role of a guide when the relevant squad enters a camp for which a guide is suitable. - Decane
 + Fixed the issue where the 'Lost Party's PDA' in Yantar would not be transferred to Sakharov upon talking to him following completion of the task to retrieve it. - Decane
-+ Fixed several issues in the Cordon if the player circumvents the military MG nest before talking to Sidorovich by returning to the Swamp and entering the Cordon through the northern level-changer. - Decane
++ Fixed several issues in the Cordon if the player circumvents the military machine gun nest before talking to Sidorovich by returning to the Swamp and entering the Cordon through the northern level-changer. - Decane
 + Fixed the duplicate supply box spawn at the Trailhead in the Swamp. - angrydog
 + Fixed and optimized all buggy Cordon, Garbage, Yantar, Army Warehouses, and Limansk dialog trees. - Decane
 + Fixed the issue where the player could ask Sakharov about Lefty even before learning of him. - Decane
@@ -372,13 +373,13 @@ v1.0.2
 + Fixed the overlapping audio during the initial cutscene in the Abandoned Hospital. - Decane
 + Fixed an onslaught of tasks being suddenly received and completed in the Abandoned Hospital if the player kills the sniper earlier than intended. - Decane
 + Fixed several crashes in Limansk caused by non-existing logic sections. - Decane, InnerGround
-+ Fixed the issue in Limansk where the Clear Sky bridge squad logic would break for the interval between killing the military MG nest and purging the building of its last inhabitant. - Decane
++ Fixed the issue in Limansk where the Clear Sky bridge squad logic would break for the interval between killing the military machine gun nest and purging the building of its last inhabitant. - Decane
 + Fixed the issue in Limansk where one of the Clear Sky electric fence squad soldiers would get stuck in perpetual combat mode after Lebedev orders the squad to move to the abandoned hospital. - Decane
 + Fixed a range of other minor issues with Limansk NPC logic. - Decane
 + Fixed the Limansk "Find the generator" task failing to complete when the player deactivates the generator if the player rushes to the apartment building and climbs onto the roof before the squad leader has finished the dialog which assigns the task. - Decane
 + Fixed the Limansk "Return to the group commander" task failing to cancel when the player deactivates the generator if the player has not by then returned to speak with the squad commander. - Decane
 + Fixed the Limansk "Return to the group commander" task becoming available multiple times if the player moves outside of the squad commander's immediate proximity while he is speaking. - Decane
-+ Fixed the storyline breaking if the player suppresses the Limansk military MG nest during the interval after receiving the task to speak to the Clear Sky squad commander and before completing the task. - Decane
++ Fixed the storyline temporarily breaking if the player suppresses the Limansk military machine gun nest during the interval between receiving and completing the task to speak to the Clear Sky squad commander. - Decane
 + Fixed the storyline breaking if the player does not respond to the SOS signal in the Red Forest before speaking with Forester. - Decane
 + Fixed a range of errors in the Red Forest bridge ambush squad logic. The stalker who tries to lure the player into an ambush, for example, will no longer shout "That's him! Take him down!" if his pals are already dead. - Decane
 + Fixed the exploit with the Forester 'Compass' artifact submission dialog where the player could repeatedly break the dialog before being told the space anomaly coordinates and then re-enter it to receive the reward (a VSS "Vintorez") again and again an endless amount of times. - Decane

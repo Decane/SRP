@@ -129,7 +129,7 @@ Quest fixes:
 + Fixed an onslaught of tasks being suddenly received and completed in the Abandoned Hospital if the player kills the sniper earlier than intended.
 + Fixed the issue where the player could break the storyline at Agroprom by killing the Duty outpost commander while he is speaking or by leaving the map before he has finished.
 + Fixed the storyline breaking if the player kills every stalker in the Cordon stalker base before extracting the location of Sidorovich's loot from Khaletskiy, even after paying Sidorovich to set things right with the stalkers.
-+ Fixed the storyline breaking if the player suppresses the Limansk military MG nest during the interval between receiving and completing the task to speak to the Clear Sky squad commander.
++ Fixed the storyline temporarily breaking if the player suppresses the Limansk military machine gun nest during the interval between receiving and completing the task to speak to the Clear Sky squad commander.
 + Fixed the storyline breaking if the player speaks to Forester before responding to the SOS signal in the Red Forest.
 + Fixed the issue where the dogs that spawn to attack Vasyan might fail to do so due to nearby NPC interference, hindering storyline progress.
 + Fixed the issue where the skirmish between the loners and military at the Cordon bus stop could begin prematurely, preventing the player from receiving the task to defend the loner patrol.
@@ -162,7 +162,7 @@ Gameplay fixes:
 + Fixed the issue where some factions would spawn well-equipped NPCs even before their resource level has increased by the amount intended as a prerequisite for doing so.
 + Fixed the issue where, upon leaving the Swamp for the first time, the player's relation to the Clear Sky faction would reset in its entirety instead of only in respect of that component of it which was yielded just by being a member of the faction.
 + Fixed a glitch which would allow the player to use a guide's services even if the player couldn't afford it, potentially leading to a situation where the player has negative money.
-+ Fixed the issue where the Freedom base gate would open before the player has found the active PDA on the dead blockpost commander's corpse, enabling the player to speak to Chekhov prematurely and break the storyline.
++ Fixed the issue where the Freedom base gate would open upon completion of the "Deliver ammo to the outpost" task instead of only after the player has found the active PDA on the dead blockpost commander's corpse, enabling the player to speak to Chekhov prematurely and break the storyline.
 + Fixed the issue where the player's weapon would sometimes be intermittently holstered during a firefight at a faction base despite being an enemy to the current residents of the base.
 + Fixed the issue where the bandit base gate would get closed and locked when the base is assaulted even if not captured by bandits.
 + Fixed the issue where bandits would try to mug the player even if the player has joined their ranks.
@@ -201,6 +201,7 @@ Gameplay fixes:
 + Added the missing 'doesn't use shot' text to the threaded barrel upgrade tooltip for the Mossberg 88.
 + Fixed the "Relief backpack" upgrade for various armors wrongly incrementing the carry weight tooltip value by only 5kg instead of the 15kg actually unlocked by the upgrade.
 + Corrected the behavior of shot megaphones.
++ Replaced the generic masked face of the player's unarmored character model with Scar's face, as in the leather jacket armored character model.
 + Fixed the player's character model reverting back to the default rookie jacket model upon loading a savegame / changing maps.
 + Corrected the mesh, name, icon, and description of the several varieties of 7.62x54 mmR ammunition.
 + Extended GSC's implementation of rank-dependent NPC money from just Duty, Freedom, and the bandits, to all the game's factions.
@@ -477,5 +478,6 @@ Xetrill
 
  • Useful feedback and testing:
 
-100RadsBar, Ceano, Charcharo, Compizfox, Crew 900, EliteHunter39, Firon, lowenz, Marius
-Petran, motiv-8, Paul Jaye, RK Roadkill, Stryker7, SurDno, Talrivian, TKGP, VicRattlehead
+100RadsBar, AR2R, Ceano, Charcharo, Compizfox, Crew 900, EliteHunter39, Firon, lowenz,
+Marius Petran, motiv-8, Paul Jaye, RK Roadkill, Stryker7, SurDno, Talrivian, TKGP,
+VicRattlehead
