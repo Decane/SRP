@@ -26,6 +26,7 @@ v1.1.3
 + Fixed the issue where non-scripted squads loaded from a savegame, as opposed to spawning into the Zone in the current game session, would not spawn inventory box items. - Decane
 + Fixed the issue where squads could prioritize secondary faction war targets over primary targets, potentially leading to absurd behavior such as Freedom preferring to send squads towards a loner-captured Barrier rather than sending them to capture the Duty base. - Decane
 + Fixed the issue where squads would readily abandon forward targets during the faction war upon loss of an earlier target even if squads at less important smart terrains are available to resecure the earlier target. - Decane
++ Fixed the issue where submitting the item requested in a 'return item' task would not complete the task if the player possesses multiple units of the item when submitting it. (Previous fixes will already have prevented this situation in the SRP. This fix is listed for completeness only.) - Decane
 + Fixed a typo in gulag_general.script that prevented mutants from behaving aggressively on patrol paths linking them to attack-targets. This caused them to move sluggishly to camps that the player had been tasked to defend, unless aggravated by an external force (e.g. the player). - Decane
 + Fixed four invalid waypoint name indices in all.spawn to make two waypoints at the 'Boat park' and two at the 'Village ruins' available to NPCs. - Decane
 + Fixed the bridge to Limansk in the Red Forest not aligning properly when lowered, which in rare cases would cause NPCs to never reach the other side. - PYP
@@ -186,7 +187,7 @@ v1.0.4
 + Fixed an occasional crash upon the game evaluating whether to assign the player a 'help' task: sim_combat.script:614: attempt to index local 'attack_squad_obj' (a nil value). - Decane
 + Fixed a rare waypoint crash in the Cordon: [error]Description : patrol path[esc_smart_terrain_3_7_walker_1_walk], point on path [name05],object [sim_default_stalker_228836]. - Decane
 + Fixed several potential crashes caused by the game attempting to alter the attitude of a non-existing squad. - Decane
-+ Fixed a crash in the Red Forest if the trader in the mine strays from his spot at the desk. - Decane
++ Fixed a crash in the Red Forest if the trader in the mine strays from his spot at the desk: [error]Description : any vertex in patrol path [red_smart_terrain_3_2_patrol_1_walk] is inaccessible for object [sim_default_duty_221783]. - Decane
 + Fixed a rare crash caused by a missing mesh: [error]Arguments : Can't find model file 'dynamics\equipments\item_rukzak.ogf'. - Decane
 + Fixed a range of issues with the faction wars: - Decane
   + Fixed the issue where a squad might never show up to a capture point.
@@ -224,6 +225,7 @@ v1.0.4
 + Fixed the issue where the player would in some circumstances fail to properly receive credit for killing the boars during the tutorial mission in the Swamp. - Decane
 + Fixed the issue where the player's 'stashes found' statistic would rise even when emptying a stash box of items placed inside it by the player. - Decane
 + Fixed the exploit whereby the player could obtain multiple sets of stash coordinates from a corpse by re-checking it after leaving and re-entering the map it is on. - Decane, barin
++ Fixed the issue where failing or cancelling a 'return item' task at the Army Warehouses would make the task available again, yielding an exploit whereby the player could gain an indefinite supply of the requested item(s). - Decane
 + Fixed the issue where dynamic music would sometimes persist even after a battle is over and erratically fade in/out during a battle due to intermittent visibility loss. - notanumber
 + Fixed the issue where NPCs would drop the wrong type of ammo for some weapons. - Decane
 + Fixed all issues where submitting a flash drive with upgrade schematics would unlock the wrong upgrade. - Decane, Fangion
@@ -280,7 +282,6 @@ v1.0.4
 + Stopped PSI emission hit intensity doubling on save/reload. - Decane
 + Added a squad state indicator to squad info tooltips on the world map. - Decane
 + (ZRP import) Stopped PSI emission audio and visual effector intensity doubling on save/reload. - NatVac
-+ (ZRP import) Improved stealth across savegames: "If your enemy didn't identify any enemy before they die, they now take that lack of knowledge with them to the grave in the save. (If they have identified an enemy, you're hosed just as before.)" - NatVac
 + (ZRP import) Added missing 'self' reference to xr_remark.script in order to "better look at target of speaker". - NatVac per castl
 + (ZRP import) Added isWeapon() support for the RG-6; makes NPCs behave as they should when the player approaches them with the RG-6 drawn. - castl
 + (ZRP import) Implemented level-specific autosaves. - NatVac, with Decane tweaks
@@ -312,7 +313,7 @@ v1.0.3
 + Fixed the branching of some Duty member dialogs in Agroprom. - Decane
 + Fixed the issue where the player could ask Major Zvyagintsev about Mitay even before learning of Mitay. - Decane
 + Fixed the game crashing due to a task identifier data overflow: ! [LUA][ERROR] ERROR: You are saving too much. - IG2007
-+ Fixed a crash in Agroprom due to a bad space restrictor conflicting with Orest's patrol path: [error]Description : any vertex in patrol path [agr_stalker_leader_walk] is inaccessible for object [agr_stalker_base_leader]. - Decane
++ Fixed a crash in Agroprom if Orest is displaced from his designated space restrictor: [error]Description : any vertex in patrol path [agr_stalker_leader_walk] is inaccessible for object [agr_stalker_base_leader]. - Decane
 + Fixed a crash in the Garbage if the player receives a task with Wild Napr as its target while a squad registered to the Flea Market is in a combat/defense state: ! [LUA][ERROR] ERROR: wrong target for storyline quest: logic@work5,gar_smart_terrain_6_3. - Decane
 + Fixed Lebedev's audio transmission being initiated mid-sentence upon the player's first arrival in the Red Forest. - Decane
 + Fixed the Duty outpost commander's audio transmission being initiated mid-sentence upon the player's first arrival at Agroprom. - Decane

@@ -180,7 +180,7 @@ Gameplay fixes:
 + Fixed the issue where the stalker squad headed toward the Devilish Encampment in the Red Forest could, in rare circumstances, spawn right in front of the player.
 + Fixed the issue where the Witch Circle squad in the Red Forest would not necessarily turn hostile if the player kills the ambush squad traitor while he is still yelling for help.
 + Fixed the issue with the first Clear Sky 'return item' task where the Makarov PM on the soldier's corpse is not actually "modified" despite the task description clearly stating that it is.
-+ Fixed the issue with several Army Warehouses 'return item' tasks where multiple units of the requested item would be taken from the player for completion of the task if the player is in possession of more than one unit of the relevant item upon returning to the task-giver.
++ Fixed the issue where submitting the item requested in a 'return item' task would not complete the task if the player possesses multiple units of the item when submitting it.
 + Fixed ten stash coordinates being unattainable due to programming mistakes. Most notably, Drifter now offers coordinates to a stash containing the third Cordon flash drive as a reward to the player for saving him from dogs.
 + Fixed faction reward tooltips failing to update to reflect new rewards after resuming progress from a savegame in which the player already has an outstanding reward from the relevant faction.
 + Fixed all issues where submitting a flash drive with upgrade schematics would unlock the wrong upgrade.
@@ -218,7 +218,6 @@ Gameplay fixes:
 + Fixed armor descriptions pertaining to artifact containers and upgrade possibilities.
 + Assigned unique names to some quest weapons and armors that were missing them.
 + Corrected several typos and standardized the formatting of all dialog, UI, and PDA message texts.
-+ Slightly improved stealth across saves.
 
 Dialog fixes:
 
@@ -408,7 +407,7 @@ Bugs still in the game:
 • Scar's avatar in the inventory screen may occasionally turn a red hue for no obvious reason. Restart the game to fix this.
 • Zombified stalkers sometimes use smartcovers like ordinary stalkers.
 • Forester's animation transitions are sometimes jerky.
-• The trader in the Red Forest mine often levitates in the air beside his stool in a sitting position rather than being positioned on the stool itself.
+• The trader in the Red Forest mine often levitates in the air beside his stool in a sitting position rather than being positioned on the stool itself. This is an SRP v1.0.4 regression.
 • Upon entering the Dark Valley to find Fang and receiving the task to speak to the outpost commander, the mission marker on the map will always point to the north-western entrance of the Dark Valley, even if the player entered through the south-west and should therefore speak to the south-western commander.
 • The emission timer text is wonky - the tooltip might display 5 hr. even when the map spot says that 21 minutes remain until an emission.
 • Weapon attachment icons on primary weapons are misaligned in the inventory slot in widescreen mode.
