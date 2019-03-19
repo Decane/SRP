@@ -126,13 +126,13 @@ on_info = {+mar_story_go_to_marsh_done} sr_idle@expansion_0_main
 ;-----------------------------------------------------------------------
 
 [sr_idle@expansion_0_main]
-on_info = {-mar_csky_expansion_changed =is_csky_at_expansion_0} %+mar_csky_expansion_changed =give_inited_task(storyline:mar_story_empower_csky:csky) =update_faction_brain(csky)%, {!is_csky_at_expansion_0} sr_idle@expansion_1_main %-mar_csky_expansion_changed +mar_story_empower_csky_done%
+on_info = {-mar_csky_expansion_changed =is_csky_at_expansion_0} %+mar_csky_expansion_changed =give_inited_task(storyline:mar_story_empower_csky:csky) =update_faction_brain(csky)%, {!is_csky_at_expansion_0} sr_idle@expansion_1_main %-mar_csky_expansion_changed +mar_story_empower_csky_done%, {+mar_story_go_to_escape_done} sr_idle@level_changer_to_agroprom %=enable_level_changer(311) =enable_level_changer(312)%
 
 [sr_idle@expansion_1_main]
-on_info = {-mar_csky_expansion_changed =is_csky_at_expansion_1} %+mar_csky_expansion_changed =update_faction_brain(csky)%, {=is_csky_at_expansion_0} sr_idle@expansion_0_main %-mar_csky_expansion_changed -mar_story_empower_csky_done%, {!is_csky_at_expansion_1} sr_idle@expansion_2_main %-mar_csky_expansion_changed%
+on_info = {-mar_csky_expansion_changed =is_csky_at_expansion_1} %+mar_csky_expansion_changed =update_faction_brain(csky)%, {=is_csky_at_expansion_0} sr_idle@expansion_0_main %-mar_csky_expansion_changed -mar_story_empower_csky_done%, {!is_csky_at_expansion_1} sr_idle@expansion_2_main %-mar_csky_expansion_changed%, {+mar_story_go_to_escape_done} sr_idle@level_changer_to_agroprom %=enable_level_changer(311) =enable_level_changer(312)%
 
 [sr_idle@expansion_2_main]
-on_info = {-mar_csky_expansion_changed =is_csky_at_expansion_2} %+mar_csky_expansion_changed =update_faction_brain(csky)%, {=is_csky_at_expansion_3_or_higher} sr_idle@expansion_3_main %-mar_csky_expansion_changed%, {!is_csky_at_expansion_2} sr_idle@expansion_1_main %-mar_csky_expansion_changed%
+on_info = {-mar_csky_expansion_changed =is_csky_at_expansion_2} %+mar_csky_expansion_changed =update_faction_brain(csky)%, {=is_csky_at_expansion_3_or_higher} sr_idle@expansion_3_main %-mar_csky_expansion_changed%, {!is_csky_at_expansion_2} sr_idle@expansion_1_main %-mar_csky_expansion_changed%, {+mar_story_go_to_escape_done} sr_idle@level_changer_to_agroprom %=enable_level_changer(311) =enable_level_changer(312)%
 
 [sr_idle@expansion_3_main]
 on_info = {-mar_csky_expansion_changed =is_csky_at_expansion_3_or_higher} %+mar_csky_expansion_changed =give_inited_task(storyline:mar_story_go_to_escape:csky) =update_faction_brain(csky)%, {!is_csky_at_expansion_3_or_higher} sr_idle@expansion_2_main %-mar_csky_expansion_changed%, {+mar_story_go_to_escape_done} sr_idle@level_changer_to_agroprom %=enable_level_changer(311) =enable_level_changer(312)%
