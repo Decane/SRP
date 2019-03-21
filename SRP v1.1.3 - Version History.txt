@@ -46,6 +46,7 @@ v1.1.3
 + Improved error diagnostics on _g.abort() invocation - a Lua stack traceback is now printed by default. - Decane
 + Russian translation. - olegj5, SurDno
 + Fixed the "Relief backpack" upgrade for various armors wrongly incrementing the carry weight tooltip value by only 5kg instead of the 15kg actually unlocked by the upgrade. - vlad54rus
++ Fixed the issue where stationary squad commanders would claim hostiles are nearby when greeting the player even if only neutral/friendly factions occupy neighboring smart terrains. - Decane
 + Restored a few unused parting phrases for Sidorovich and one unused greeting phrase for Forester. - Decane
 + Fixed the game crashing if the player deletes the bottom-most savegame in a list of more than one savegame in the save menu and then attempts to delete the savegame without first selecting another item from the list. - Decane
 + Replaced the generic masked face of the player's unarmored character model with Scar's face, as in the leather jacket armored character model (new game required for effect). - Decane

@@ -12,9 +12,9 @@ on_hit = hit
 wounded = wounded
 path_walk = esc_novice_stalker_walk_1
 path_look = esc_novice_stalker_look_1
-on_info = {+esc_wolf_novice_3} walker@idle									; if escorted drifter, go directly to idle logic
-on_info2 = {-esc_wolf_novice_3 +esc_stalker_novice_defend} walker@wait						; if not escorted drifter and been in defend zone then walker@wait
-on_info3 = {-esc_wolf_novice_3 !squad_exist(esc_dogs_lair_guard_5_12)} walker@run %+esc_wolf_novice_2%		; if not escorted drifter (and not been in defend zone) and dogs dead then walker@run, elseif dogs not dead then wait
+on_info = {+esc_wolf_novice_3} walker@idle ; if escorted drifter, go directly to idle logic
+on_info2 = {+esc_stalker_novice_defend} walker@wait ; if not escorted drifter and been in defend zone
+on_info3 = {!squad_exist(esc_dogs_lair_guard_5_12)} walker@run %+esc_wolf_novice_2% ; if not escorted drifter (and not been in defend zone) and dogs dead
 ;meet = meet
 combat_ignore_cond = true
 combat_ignore_keep_when_attacked = true
@@ -25,7 +25,7 @@ out_restr = esc_novice_stalker_out_restr
 wounded = wounded
 path_walk = esc_novice_stalker_walk_1
 path_look = esc_novice_stalker_look_1
-on_info = {!squad_exist(esc_dogs_lair_guard_5_12)} walker@run %+esc_wolf_novice_2%				; if dogs dead then give info dogs dead and walker@run, else wait
+on_info = {!squad_exist(esc_dogs_lair_guard_5_12)} walker@run %+esc_wolf_novice_2% ; if dogs dead
 ;meet = meet
 out_restr = esc_novice_stalker_out_restr
 
@@ -36,26 +36,14 @@ path_look = esc_novice_stalker_look_2
 def_state_moving = run
 meet = no_meet
 ;on_info = {-esc_novice_info_enemy_dogs =squad_exist(esc_dogs_lair_guard_5_12)} %=set_squad_goodwill_to_npc(esc_dogs_lair_guard_5_12:enemy) +esc_novice_info_enemy_dogs%
-on_npc_in_zone = 433 | esc_space_restrictors_2_12_sr_defense | walker@idle %+esc_wolf_novice_3 =restore_health%									; restore full health at rookie camp and walker@idle
-on_actor_dist_ge_nvis = 100 | %+esc_stalker_novice_fail =kill_npc%														; kill drifter on player distance >= 100 iff not escorted drifter
-
-;[walker@walk]
-;wounded = wounded
-;path_walk = esc_novice_stalker_walk_2
-;path_look = esc_novice_stalker_look_2
-;on_info = %+esc_wolf_novice_3%
+on_npc_in_zone = 433 | esc_space_restrictors_2_12_sr_defense | walker@idle %+esc_wolf_novice_3 =restore_health% ; restore full health at rookie camp
+on_actor_dist_ge_nvis = 100 | %+esc_stalker_novice_fail =kill_npc% ; kill drifter on player distance >= 100 iff not escorted drifter
 
 [walker@idle]
 wounded = wounded
 path_walk = esc_novice_stalker_walk_2
 path_look = esc_novice_stalker_look_2
 ;meet = meet
-
-;[walker@death]
-;wounded = wounded
-;path_walk = esc_novice_stalker_walk_2
-;path_look = esc_novice_stalker_look_2
-;meet = no_meet
 
 [death]
 on_info = %+esc_stalker_novice_fail%

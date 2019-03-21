@@ -670,25 +670,25 @@ end
 function CRandomTask:register_tasker(npc_id, community)
 	self.taskers[community] = npc_id
 end
-
-function CRandomTask:immediate_give_reward(first_speaker, second_speaker, id)
+--[[
+function CRandomTask:immediate_give_reward(id)
 
 	local task_ini = self.task_ini
 	local immediate_reward = utils.cfg_get_bool(task_ini, id, "immediate_reward", nil, false, false)
 
 	if immediate_reward then
 
-		local npc = dialogs.who_is_npc(first_speaker, second_speaker)
 		local act = db.actor
 		local reward_money = xr_logic.parse_condlist(nil, nil, nil, utils.cfg_get_string(task_ini, id, "reward_money", nil, false, "", ""))
 		local reward_item = xr_logic.parse_condlist(nil, nil, nil, utils.cfg_get_string(task_ini, id, "reward_item", nil, false, "", ""))
 		local money = xr_logic.pick_section_from_condlist(act, act, reward_money)
 
 		if money ~= nil then
-			dialogs.relocate_money(npc, tonumber(money), "in")
+			dialogs.relocate_money(nil, tonumber(money), "in")
 		end
 
 		local items = xr_logic.pick_section_from_condlist(act, act, reward_item)
+
 		if items ~= nil then
 			local ancillary_item_table = {}
 			for k, v in pairs (utils.parse_names(items)) do
@@ -698,13 +698,13 @@ function CRandomTask:immediate_give_reward(first_speaker, second_speaker, id)
 					ancillary_item_table[v] = ancillary_item_table[v] + 1
 				end
 			end
-			for k, v in pairs (ancillary_item_table) do
-				dialogs.relocate_item_section(npc, k, "in", v)
+			for section, amount in pairs (ancillary_item_table) do
+				dialogs.relocate_item_section(nil, section, "in", amount)
 			end
 		end
 	end
 end
-
+]]
 function CRandomTask:update()
 end
 

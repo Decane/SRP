@@ -368,7 +368,7 @@ function CGeneralTask:init_reward()
 			is_reward = true
 		end
 	else
-		local npc = inventory_upgrades.victim
+--		local npc = inventory_upgrades.victim
 
 		if money ~= nil then
 
@@ -376,7 +376,7 @@ function CGeneralTask:init_reward()
 				abort("[task_objects.CGeneralTask:init_reward]: init_reward:task_id = "..tostring(self.id))
 			end
 
-			dialogs.relocate_money(npc, tonumber(money), "in")
+			dialogs.relocate_money(nil, tonumber(money), "in")
 		end
 
 		if items ~= nil then
@@ -392,7 +392,7 @@ function CGeneralTask:init_reward()
 			end
 
 			for k, v in pairs (ancillary_item_table) do
-				dialogs.relocate_item_section(npc, k, "in", v)
+				dialogs.relocate_item_section(nil, k, "in", v)
 			end
 		end
 	end
@@ -1965,7 +1965,7 @@ function CBringItemTask:init_task(squad_id) -- called 4th (not on load)
 --	self.npc = nil
 --	self.tmp_counter = 0
 	self.state = "started"
-	-- db.actor:iterate_inventory(set_inventory_item_count, self) -- iterate on give task
+	-- db.actor:iterate_inventory(set_inventory_item_count, self.requested_items) -- iterate on give task
 	self:set_task_text_for_bring_item()
 end
 
@@ -2008,9 +2008,8 @@ function CBringItemTask:set_task_text_for_bring_item()
 	self.text = s
 end
 
-local function set_inventory_item_count(task, item)
+local function set_inventory_item_count(requested_items, item)
 	local sect = item:section()
-	local requested_items = task.requested_items
 	for item_name in pairs (requested_items) do
 		if item_name == sect then
 			local cnt_table = requested_items[item_name]
@@ -2028,7 +2027,7 @@ function CBringItemTask:give_task(community) -- called 5th (not on load)
 --		squad.bring_item_inited_time = self.inited_time
 --	end
 	self.squad.bring_item_inited_time = self.inited_time -- self.squad set by task_dialogs.give_squad_capture_task()
-	db.actor:iterate_inventory(set_inventory_item_count, self)
+	db.actor:iterate_inventory(set_inventory_item_count, self.requested_items)
 end
 
 function CBringItemTask:check_task(tm) -- called 6th
@@ -2122,7 +2121,7 @@ function CBringItemTask:on_item_take(item)
 	if cnt_table then
 		cnt_table.num = cnt_table.num + 1
 	end
---	db.actor:iterate_inventory(set_inventory_item_count, self)
+--	db.actor:iterate_inventory(set_inventory_item_count, self.requested_items)
 	self:set_task_text_for_bring_item()
 end
 
@@ -2131,12 +2130,12 @@ function CBringItemTask:on_item_drop(item)
 	if cnt_table then
 		cnt_table.num = cnt_table.num - 1
 	end
---	db.actor:iterate_inventory(set_inventory_item_count, self)
+--	db.actor:iterate_inventory(set_inventory_item_count, self.requested_items)
 	self:set_task_text_for_bring_item()
 end
 
 function CBringItemTask:on_load(actor)
-	actor:iterate_inventory(set_inventory_item_count, self)
+	actor:iterate_inventory(set_inventory_item_count, self.requested_items)
 end
 
 local function transfer_non_slotted_items(task, item)

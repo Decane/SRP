@@ -1,16 +1,20 @@
 local disabled_phrases = {}	-- table of phrases which have been disabled during a conversation
 local id_counter = 1		-- start from 1 because of adding root phrases
 
-phrase_table = {	hello = {},
-			information = {},
-			occupation = {},
-			place = {}
+phrase_table =
+{
+	hello = {},
+	information = {},
+	occupation = {},
+	place = {}
 }
 
-priority_table = {	hello = {},
-			information = {},
-			occupation = {},
-			place = {}
+priority_table =
+{
+	hello = {},
+	information = {},
+	occupation = {},
+	place = {}
 }
 
 function get_id()			-- Generate id for phrase
@@ -475,36 +479,23 @@ end
 
 local rnd = 0
 
-function action_sim_action_dialog(npc, actor, dialog_name, id)	-- Set phrase end action for place dialog
+function action_sim_action_dialog()	-- Set phrase end action for place dialog
 	rnd = 0
 end
 
-function precondition_sim_action_dialog(npc, actor, dialog_name)
+function precondition_sim_action_dialog(npc)
 	if xr_wounded.is_heavy_wounded_by_id(npc:id()) then
 		return false
 	end
 	local squad = db.storage[npc:id()].squad_obj
-	if squad ~= nil then
-		if squad.current_action ~= nil then
-			if rnd == 0 then
-				rnd = math.random(1, 100)
-			end
---[[
-			if rnd > 0 then
-				return true
-			end
-]]
-			return rnd > 0
-		end
-	end
-	return false
+	return squad ~= nil and squad.current_action ~= nil
 end
 
-function precondition_not_sim_action_dialog(npc, actor, dialog_name)
-	return not precondition_sim_action_dialog(npc, actor, dialog_name)
+function precondition_not_sim_action_dialog(npc)
+	return not precondition_sim_action_dialog(npc)
 end
 
-function precondition_sim_action_attack_point_none(npc, actor, dialog_name)
+function precondition_sim_action_attack_point_none(npc)
 	local squad = db.storage[npc:id()].squad_obj
 	if squad.current_action.name == "attack_point" then
 		local smart = sim_board.get_sim_board().smarts[squad.current_action.dest_smrt_id].smrt
@@ -513,7 +504,7 @@ function precondition_sim_action_attack_point_none(npc, actor, dialog_name)
 	return false
 end
 
-function precondition_sim_action_attack_point_friend(npc, actor, dialog_name)
+function precondition_sim_action_attack_point_friend(npc)
 	local squad = db.storage[npc:id()].squad_obj
 	if squad.current_action.name == "attack_point" then
 		local smart = sim_board.get_sim_board().smarts[squad.current_action.dest_smrt_id].smrt
@@ -523,7 +514,7 @@ function precondition_sim_action_attack_point_friend(npc, actor, dialog_name)
 	return false
 end
 
-function precondition_sim_action_attack_point_enemy(npc, actor, dialog_name)
+function precondition_sim_action_attack_point_enemy(npc)
 	local squad = db.storage[npc:id()].squad_obj
 	if squad.current_action.name == "attack_point" then
 		local smart = sim_board.get_sim_board().smarts[squad.current_action.dest_smrt_id].smrt
@@ -534,13 +525,13 @@ function precondition_sim_action_attack_point_enemy(npc, actor, dialog_name)
 	return false
 end
 
-function precondition_sim_action_stay_point_none_near(npc, actor, dialog_name)
+function precondition_sim_action_stay_point_none_near(npc)
 	local squad = db.storage[npc:id()].squad_obj
 	if squad.current_action.name ~= "attack_point" then
 		local smart = sim_board.get_sim_board().smarts[squad.current_action.src_smrt_id]
-		for k, v in pairs (smart.targets) do
-			if v.player_name ~= "none" then
---			if game_relations.is_factions_enemies(squad.player_id, smart.player_name) then
+		for k, neighbor_smart in pairs (smart.targets) do
+--			if neighbor_smart.player_name ~= "none" then
+			if game_relations.is_factions_enemies(squad.player_id, neighbor_smart.player_name) then
 				return false
 			end
 		end
@@ -549,13 +540,13 @@ function precondition_sim_action_stay_point_none_near(npc, actor, dialog_name)
 	return false
 end
 
-function precondition_sim_action_stay_point_enemy_near(npc, actor, dialog_name)
+function precondition_sim_action_stay_point_enemy_near(npc)
 	local squad = db.storage[npc:id()].squad_obj
 	if squad.current_action.name ~= "attack_point" then
 		local smart = sim_board.get_sim_board().smarts[squad.current_action.src_smrt_id]
-		for k, v in pairs (smart.targets) do
-			if v.player_name ~= "none" then
---			if game_relations.is_factions_enemies(squad.player_id, smart.player_name) then
+		for k, neighbor_smart in pairs (smart.targets) do
+--			if neighbor_smart.player_name ~= "none" then
+			if game_relations.is_factions_enemies(squad.player_id, neighbor_smart.player_name) then
 				return true
 			end
 		end
@@ -565,115 +556,79 @@ function precondition_sim_action_stay_point_enemy_near(npc, actor, dialog_name)
 end
 
 function precondition_is_phrase_disabled(fs, ss, dn, ppi, pi)
-	local npc = dialogs.who_is_npc(fs, ss)
 	if pi == "" then
 		pi = dn
 	end
-	local npc_id = npc:id()
---[[
-	if disabled_phrases[npc_id] and disabled_phrases[npc_id][pi] then
-		return false
-	else
-		return true
-	end
-]]
-	return disabled_phrases[npc_id] == nil or disabled_phrases[npc_id][pi] == nil
+	local npc = dialogs.who_is_npc(fs, ss)
+	local npc_disabled_phrases = disabled_phrases[npc:id()]
+	return npc_disabled_phrases == nil or npc_disabled_phrases[pi] == nil
 end
 
 function action_disable_phrase(fs, ss, dn, pi)
-	local npc = dialogs.who_is_npc(fs, ss)
 	if pi == "0" then
 		pi = dn
 	end
+	local npc = dialogs.who_is_npc(fs, ss)
 	local npc_id = npc:id()
-	if disabled_phrases[npc_id] == nil then
-		disabled_phrases[npc_id] = {}
+	local npc_disabled_phrases = disabled_phrases[npc_id]
+	if npc_disabled_phrases == nil then
+		npc_disabled_phrases = {}
+		disabled_phrases[npc_id] = npc_disabled_phrases
 	end
-	disabled_phrases[npc_id][pi] = true
+	npc_disabled_phrases[pi] = true
 end
 
 function restore_certain_disabled_phrases(npc)
 	local disabled_npc_phrases = disabled_phrases[npc:id()]
 	if disabled_npc_phrases ~= nil then
-		if disabled_npc_phrases["actor_news_dialog"] ~= nil then
-			disabled_npc_phrases["actor_news_dialog"] = nil
-		end
-		if disabled_npc_phrases["guiders_dialog"] ~= nil then
-			disabled_npc_phrases["guiders_dialog"] = nil
-		end
-		if disabled_npc_phrases["tm_random_task"] ~= nil then
-			disabled_npc_phrases["tm_random_task"] = nil
-		end
-		if disabled_npc_phrases["tm_reward_task"] ~= nil then
-			disabled_npc_phrases["tm_reward_task"] = nil
-		end
-		if disabled_npc_phrases["treasure_dialog"] ~= nil then
-			disabled_npc_phrases["treasure_dialog"] = nil
-		end
-		if disabled_npc_phrases["mar_csky_tactic_situation_dialog"] ~= nil then
-			disabled_npc_phrases["mar_csky_tactic_situation_dialog"] = nil
-		end
-		if disabled_npc_phrases["mar_csky_tactic_task_dialog"] ~= nil then
-			disabled_npc_phrases["mar_csky_tactic_task_dialog"] = nil
-		end
-		if disabled_npc_phrases["esc_wolf_other_works"] ~= nil then
-			disabled_npc_phrases["esc_wolf_other_works"] = nil
-		end
-		if disabled_npc_phrases["esc_driver_quest"] ~= nil then
-			disabled_npc_phrases["esc_driver_quest"] = nil
-		end
-		if disabled_npc_phrases["esc_leader_join_stalker"] ~= nil then
-			disabled_npc_phrases["esc_leader_join_stalker"] = nil
-		end
-		if disabled_npc_phrases["esc_stalker_trader_quest"] ~= nil then
-			disabled_npc_phrases["esc_stalker_trader_quest"] = nil
-		end
-		if disabled_npc_phrases["gar_bandit_leader_join_main"] ~= nil then
-			disabled_npc_phrases["gar_bandit_leader_join_main"] = nil
-		end
-		if disabled_npc_phrases["val_freedom_leader_join_main"] ~= nil then
-			disabled_npc_phrases["val_freedom_leader_join_main"] = nil
-		end
-		if disabled_npc_phrases["agr_stalker_secret_trader_quest"] ~= nil then
-			disabled_npc_phrases["agr_stalker_secret_trader_quest"] = nil
-		end
+		disabled_npc_phrases["actor_news_dialog"] = nil
+		disabled_npc_phrases["guiders_dialog"] = nil
+		disabled_npc_phrases["tm_random_task"] = nil
+		disabled_npc_phrases["tm_reward_task"] = nil
+		disabled_npc_phrases["treasure_dialog"] = nil
+		disabled_npc_phrases["mar_csky_tactic_situation_dialog"] = nil
+		disabled_npc_phrases["mar_csky_tactic_task_dialog"] = nil
+		disabled_npc_phrases["esc_wolf_other_works"] = nil
+		disabled_npc_phrases["esc_driver_quest"] = nil
+		disabled_npc_phrases["esc_leader_join_stalker"] = nil
+		disabled_npc_phrases["esc_stalker_trader_quest"] = nil
+		disabled_npc_phrases["gar_bandit_leader_join_main"] = nil
+		disabled_npc_phrases["val_freedom_leader_join_main"] = nil
+		disabled_npc_phrases["agr_stalker_secret_trader_quest"] = nil
 	end
 end
 
 function restore_disabled_guide_phrase(npc)
 	local disabled_npc_phrases = disabled_phrases[npc:id()]
-	if disabled_npc_phrases ~= nil and disabled_npc_phrases["guiders_dialog"] ~= nil then
+	if disabled_npc_phrases ~= nil then
 		disabled_npc_phrases["guiders_dialog"] = nil
 	end
 end
 
 function restore_disabled_task_phrase(npc)
 	local disabled_npc_phrases = disabled_phrases[npc:id()]
-	if disabled_npc_phrases ~= nil and disabled_npc_phrases["tm_random_task"] ~= nil then
+	if disabled_npc_phrases ~= nil then
 		disabled_npc_phrases["tm_random_task"] = nil
 	end
 end
 
 function restore_disabled_treasure_phrase(npc)
 	local disabled_npc_phrases = disabled_phrases[npc:id()]
-	if disabled_npc_phrases ~= nil and disabled_npc_phrases["treasure_dialog"] ~= nil then
+	if disabled_npc_phrases ~= nil then
 		disabled_npc_phrases["treasure_dialog"] = nil
 	end
 end
 
 --[[
-
 function restore_npc_disabled_phrases(npc_id)
 	disabled_phrases[npc_id] = nil
 end
-
 ]]
 
 function create_bye_phrase()
 	if rnd == 0 then
 		rnd = math.random(1, 99)
 	end
---[[
 	if rnd >= 66 then
 		return game.translate_string("actor_break_dialog_1")
 	elseif rnd >= 33 then
@@ -681,31 +636,20 @@ function create_bye_phrase()
 	else
 		return game.translate_string("actor_break_dialog_3")
 	end
-]]
-	return (rnd >= 66 and game.translate_string("actor_break_dialog_1")) or (rnd >= 33 and game.translate_string("actor_break_dialog_2")) or game.translate_string("actor_break_dialog_3")
 end
 
-function news_dialog_precondition(fs, ss, dn, pi)
---[[
-	local npc = ss
-	if disabled_phrases[npc:id()] ~= nil then
-		if disabled_phrases[npc:id()]["dm_information_dialog"] ~= nil and
-			disabled_phrases[npc:id()]["dm_occupation_dialog"] ~= nil and
-			disabled_phrases[npc:id()]["dm_place_dialog"] ~= nil then
-			return true
-		end
-	end
-	return false
-]]
-	local npc_id = ss:id()
-	return disabled_phrases[npc_id] ~= nil and disabled_phrases[npc_id]["dm_information_dialog"] ~= nil and disabled_phrases[npc_id]["dm_occupation_dialog"] ~= nil and disabled_phrases[npc_id]["dm_place_dialog"] ~= nil
+function news_dialog_precondition(fs, ss)
+	local disabled_npc_phrases = disabled_phrases[ss:id()]
+	return disabled_npc_phrases ~= nil
+	and disabled_npc_phrases["dm_information_dialog"] ~= nil
+	and disabled_npc_phrases["dm_occupation_dialog"] ~= nil
+	and disabled_npc_phrases["dm_place_dialog"] ~= nil
 end
 
 function create_question_phrase()
 	if rnd == 0 then
 		rnd = math.random(1, 99)
 	end
---[[
 	if rnd >= 66 then
 		return game.translate_string("dm_actor_news_1")
 	elseif rnd >= 33 then
@@ -713,14 +657,12 @@ function create_question_phrase()
 	else
 		return game.translate_string("dm_actor_news_3")
 	end
-]]
-	return (rnd >= 66 and game.translate_string("dm_actor_news_1")) or (rnd >= 33 and game.translate_string("dm_actor_news_2")) or game.translate_string("dm_actor_news_3")
 end
 
-function create_answer_phrase(fs, dn, pi)
---	local npc = fs
---	local community = npc:character_community()
+function create_answer_phrase(fs)
+
 	local community = fs:character_community()
+
 	if community ~= "bandit" and community ~= "army" and community ~= "dolg" and community ~= "freedom" and community ~= "csky" then
 		community = "default"
 	end
@@ -728,7 +670,7 @@ function create_answer_phrase(fs, dn, pi)
 	if rnd == 0 then
 		rnd = math.random(1, 80)
 	end
---[[
+
 	if rnd >= 60 then
 		return game.translate_string("dm_"..community.."_no_news_1")
 	elseif rnd >= 40 then
@@ -738,6 +680,4 @@ function create_answer_phrase(fs, dn, pi)
 	else
 		return game.translate_string("dm_"..community.."_no_news_4")
 	end
-]]
-	return (rnd >= 60 and game.translate_string("dm_"..community.."_no_news_1")) or (rnd >= 40 and game.translate_string("dm_"..community.."_no_news_2")) or (rnd >= 20 and game.translate_string("dm_"..community.."_no_news_3")) or game.translate_string("dm_"..community.."_no_news_4")
 end

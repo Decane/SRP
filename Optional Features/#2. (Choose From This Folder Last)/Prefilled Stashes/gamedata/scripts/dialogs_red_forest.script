@@ -12,30 +12,30 @@ function actor_hasnt_compass(first_speaker, second_speaker)
 	return not actor_has_compass(first_speaker, second_speaker)
 end
 ]]
-function forester_reward_for_compass(first_speaker, second_speaker)
-	dialogs.relocate_item_section_to_actor(first_speaker, second_speaker, "wpn_vintorez_up", 1)
+function forester_reward_for_compass()
+	dialogs.relocate_item_section_to_actor(nil, nil, "wpn_vintorez_up", 1)
 end
 
-function leshiy_reward_very_good(first_speaker, second_speaker)
-	dialogs.relocate_item_section_to_actor(first_speaker, second_speaker, "af_fuzz_kolobok")
+function leshiy_reward_very_good()
+	dialogs.relocate_item_section_to_actor(nil, nil, "af_fuzz_kolobok")
 end
 
-function leshiy_reward_good(first_speaker, second_speaker)
-	dialogs.relocate_item_section_to_actor(first_speaker, second_speaker, "af_fire")
+function leshiy_reward_good()
+	dialogs.relocate_item_section_to_actor(nil, nil, "af_fire")
 end
 
-function leshiy_reward_averge(first_speaker, second_speaker)
-	dialogs.relocate_item_section_to_actor(first_speaker, second_speaker, "af_soul")
+function leshiy_reward_averge()
+	dialogs.relocate_item_section_to_actor(nil, nil, "af_soul")
 end
 
-function leshiy_reward_bead(first_speaker, second_speaker)
-	dialogs.relocate_item_section_to_actor(first_speaker, second_speaker, "af_eye")
-end
-
-function leshiy_reward_very_bead(first_speaker, second_speaker)
-	dialogs.relocate_item_section(second_speaker, "kolbasa", "in")
+function leshiy_reward_bead()
+	dialogs.relocate_item_section_to_actor(nil, nil, "af_eye")
 end
 --[[
+function leshiy_reward_very_bead()
+	dialogs.relocate_item_section_to_actor(nil, nil, "kolbasa")
+end
+
 function give_red_forest_pda_map(first_speaker, second_speaker)
 	if second_speaker:object("red_forest_pda_map") ~= nil then
 		dialogs.relocate_item_section_from_actor(first_speaker, second_speaker, "red_forest_pda_map")
@@ -46,12 +46,12 @@ function actor_has_red_forest_pda_map(first_speaker)
 	return first_speaker:object("red_forest_pda_map") ~= nil
 end
 
-function give_red_forest_pda_map_2(first_speaker, second_speaker)
-	dialogs.relocate_item_section_to_actor(first_speaker, second_speaker, "red_forest_pda_map_2")
+function give_red_forest_pda_map_2()
+	dialogs.relocate_item_section_to_actor(nil, nil, "red_forest_pda_map_2")
 end
 ]]
-function ahuntesr_give_reward(first_speaker, second_speaker)
-	dialogs.relocate_item_section_to_actor(first_speaker, second_speaker, "af_gravi")
+function ahuntesr_give_reward()
+	dialogs.relocate_item_section_to_actor(nil, nil, "af_gravi")
 end
 
 function give_strelok_treasure()

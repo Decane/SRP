@@ -305,7 +305,7 @@ function motivator_binder:use_callback(used_npc, user)
 	if used_npc:alive() then
 		trade_manager.update(used_npc)
 		dialog_manager.restore_certain_disabled_phrases(used_npc)
-		inventory_upgrades.need_victim(used_npc) --' Distemper 03.2008
+--		inventory_upgrades.need_victim(used_npc) --' Distemper 03.2008
 		xr_use.notify_on_use(used_npc, user)
 		local npc_st = self.st
 		if npc_st.active_section then

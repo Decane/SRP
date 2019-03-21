@@ -1,4 +1,4 @@
-function allow_break_dialog(first_speaker, second_speaker, id)
+function allow_break_dialog(first_speaker, second_speaker)
 
 	local npc = who_is_npc(first_speaker, second_speaker)
 
@@ -6,389 +6,182 @@ function allow_break_dialog(first_speaker, second_speaker, id)
 		return false
 	end
 
-	local npc_id = npc:id()
-	local st = db.storage[npc_id].meet
---[[
-	if st == nil then
-		return true
-	end
+	local st = db.storage[npc:id()].meet
 
-	if st.allow_break == false then
-		return false
-	end
-
-	return true
-]]
 	return st == nil or st.allow_break ~= false
 end
 
-function break_dialog(first_speaker, second_speaker, id)
+function break_dialog(first_speaker, second_speaker)
 	first_speaker:stop_talk()
 	second_speaker:stop_talk()
 end
---[[
-function disable_talk_self(first_speaker, second_speaker)
-	first_speaker:disable_talk()
+
+function is_wounded(first_speaker, second_speaker)
+	local npc = who_is_npc(first_speaker, second_speaker)
+	local st_wounded = db.storage[npc:id()].wounded
+	return (st_wounded == nil or st_wounded.wound_manager.can_use_medkit ~= true) and xr_wounded.is_wounded(npc)
 end
 
-function disable_talk_victim(first_speaker, second_speaker)
-	second_speaker:disable_talk()
+function is_not_wounded(first_speaker, second_speaker)
+	return not this.is_wounded(first_speaker, second_speaker)
 end
 
-function punch(first_speaker, second_speaker)
-	db.storage[second_speaker:id()].punch.enabled = true
+function actor_have_medkit()
+	local actor = db.actor
+	return actor:object("medkit") ~= nil or actor:object("medkit_army") ~= nil or actor:object("medkit_scientic") ~= nil
 end
 
-function get_money_then_leave(first_speaker, second_speaker)
-	local fs_id = first_speaker:id()
-	db.storage[fs_id].meet.enabled = false
-	db.storage[fs_id].robber.enabled = true
-end
-]]
-function is_wounded(first_speaker, second_speaker, dn)
-	local fs_id = first_speaker:id()
---[[
-	if db.storage[fs_id].wounded ~= nil and db.storage[fs_id].wounded.wound_manager.can_use_medkit == true then
-		return false
-	end
-	return xr_wounded.is_wounded(first_speaker)
-]]
-	return (db.storage[fs_id].wounded == nil or db.storage[fs_id].wounded.wound_manager.can_use_medkit ~= true) and xr_wounded.is_wounded(first_speaker)
-end
---[[
-function is_opp_wounded(first_speaker, second_speaker, dialog_id)
-	local ss_id = second_speaker:id()
-
---	if db.storage[ss_id].wounded ~= nil and db.storage[ss_id].wounded.wound_manager.can_use_medkit == true then
---		return false
---	end
---	return xr_wounded.is_wounded(second_speaker)
-
-	return (db.storage[ss_id].wounded == nil or db.storage[ss_id].wounded.wound_manager.can_use_medkit ~= true) and xr_wounded.is_wounded(second_speaker)
-end
-]]
-function is_not_wounded(first_speaker, second_speaker, dn)
-	return not this.is_wounded(first_speaker, second_speaker, dn)
+function actor_hasnt_medkit()
+	return actor_have_medkit() == false
 end
 
-function actor_have_medkit(first_speaker, second_speaker)
-	return first_speaker:object("medkit") ~= nil or first_speaker:object("medkit_army") ~= nil or first_speaker:object("medkit_scientic") ~= nil
-end
-
-function actor_hasnt_medkit(first_speaker, second_speaker)
-	return actor_have_medkit(first_speaker, second_speaker) == false
-end
-
-function actor_have_bandage(first_speaker, second_speaker)
-	return first_speaker:object("bandage") ~= nil
+function actor_have_bandage()
+	return db.actor:object("bandage") ~= nil
 end
 
 function transfer_medkit(first_speaker, second_speaker)
 
-	if first_speaker:object("medkit") ~= nil then
-		dialogs.relocate_item_section(second_speaker, "medkit", "out")
-	elseif first_speaker:object("medkit_army") ~= nil then
-		dialogs.relocate_item_section(second_speaker, "medkit_army", "out")
+	local actor = db.actor
+
+	if actor:object("medkit") ~= nil then
+		relocate_item_section_from_actor(first_speaker, second_speaker, "medkit")
+	elseif actor:object("medkit_army") ~= nil then
+		relocate_item_section_from_actor(first_speaker, second_speaker, "medkit_army")
 	else
-		dialogs.relocate_item_section(second_speaker, "medkit_scientic", "out")
+		relocate_item_section_from_actor(first_speaker, second_speaker, "medkit_scientic")
 	end
 
-	xr_wounded.unlock_medkit(second_speaker)
+	local npc = who_is_npc(first_speaker, second_speaker)
 
-	if second_speaker:relation(first_speaker) ~= game_object.enemy then
-		second_speaker:set_relation(game_object.friend, first_speaker)
+	xr_wounded.unlock_medkit(npc)
+
+	if npc:relation(actor) ~= game_object.enemy then
+		npc:set_relation(game_object.friend, actor)
 	end
 
-	first_speaker:change_character_reputation(10)
+	actor:change_character_reputation(10)
 end
 
 function transfer_bandage(first_speaker, second_speaker)
-	dialogs.relocate_item_section(second_speaker, "bandage", "out")
-	second_speaker:set_relation(game_object.friend, first_speaker)
-end
---[[
-function kill_yourself(npc, actor)
-	npc:kill(actor)
-end
-]]
---' Use this function instead.
-function relocate_item_section(victim, section, type, amount)
-	if victim then
-		local actor = db.actor
-		if actor then
-			local amount = amount
-			if not amount then
-				amount = 1
-			end
-			if type == "in" then
-				local sim = _G.sim
-				local vec = vector()
-				for i = 1, amount do
-					sim:create(section, vec, 0, 0, 0)
-				end
-			elseif type == "out" then
-				for i = 1, amount do
-					actor:transfer_item(actor:object(section), victim)
-				end
-			end
-			if ammo_section[section] == true then
-				local ltx = system_ini()
-				local box_size = ltx:r_s32(section, "box_size")
-				amount = amount * box_size
-			end
-			news_manager.relocate_item(actor, type, section, amount)
-		end
-	end
+	relocate_item_section_from_actor(first_speaker, second_speaker, "bandage")
+	local npc = who_is_npc(first_speaker, second_speaker)
+	npc:set_relation(game_object.friend, db.actor)
 end
 
-function relocate_money(victim, num, type)
-	if victim then
-		local actor = db.actor
-		if actor then
-			if type == "in" then
-				actor:give_money(num)
---				game_stats.money_quest_update (num)
-				xr_statistic.inc_recieved_money_counter(num)
-			elseif type == "out" then
-				actor:transfer_money(num, victim)
---				game_stats.money_quest_update (-num)
-				xr_statistic.inc_spent_money_counter(num)
-			end
-			news_manager.relocate_money(actor, type, num)
+function relocate_item_section(npc, section, type, amount)
+	local actor = db.actor
+	if actor then
+		if not amount then
+			amount = 1
 		end
-	end
-end
-
---'---------------------------------------------------------------------------------
---' DIALOG ALLOWED
---'---------------------------------------------------------------------------------
---[[
-function dialog_allowed(object, victim, id)
-	local actor_dialogs = db.storage[victim:id()].actor_dialogs
-	if actor_dialogs ~= nil then
-		for k, v in pairs (actor_dialogs) do
-			if v == id then
-				return true
+		if type == "in" then
+			local sim = _G.sim
+			local vec = vector()
+			for i = 1, amount do
+				sim:create(section, vec, 0, 0, 0) -- 0 = actor ID
+			end
+		elseif npc and type == "out" then
+			for i = 1, amount do
+				actor:transfer_item(actor:object(section), npc)
 			end
 		end
-	end
-	return false
-end
-
-function dialog_not_disable(object, victim, id)
-	local actor_disable = db.storage[victim:id()].actor_disable
-	if actor_disable ~= nil then
-		for k, v in pairs (actor_disable) do
-			if v == id then
-				return false
-			end
+		if ammo_section[section] == true then
+			local box_size = system_ini():r_s32(section, "box_size")
+			amount = amount * box_size
 		end
+		news_manager.relocate_item(actor, type, section, amount)
 	end
-	return true
 end
 
-function allow_wounded_dialog(object, victim, id)
-	local st_wounded = db.storage[victim:id()].wounded
-
---	if st_wounded == nil then
---		return false
---	end
---	if st_wounded.help_dialog == id then
---		return true
---	end
---	return false
-
-	return st_wounded ~= nil and st_wounded.help_dialog == id
-end
-]]
-function allow_guide_dialog(object, victim, id)
-	local section = db.storage[victim:id()].active_section
---[[
-	if section == nil then
-		return false
-	end
-	if string.find(section, "conductor", 1) ~= nil then
-		if this.is_wounded(victim, object, id) then
-			return false
+function relocate_money(npc, num, type)
+	local actor = db.actor
+	if actor then
+		if type == "in" then
+			actor:give_money(num)
+--			game_stats.money_quest_update(num)
+			xr_statistic.inc_recieved_money_counter(num)
+		elseif npc and type == "out" then
+			actor:transfer_money(num, npc)
+--			game_stats.money_quest_update(-num)
+			xr_statistic.inc_spent_money_counter(num)
 		end
-		return true
+		news_manager.relocate_money(actor, type, num)
 	end
-	return false
-]]
-	return section ~= nil and string.find(section, "conductor", 1) ~= nil and not this.is_wounded(victim, object, id)
 end
 
 -----------------------------------------------------------------------------------
--- LEVELS
+-- DIALOG ALLOWED
 -----------------------------------------------------------------------------------
---[[
-function level_escape(first_speaker, second_speaker)
-	return level.name() == "l01_escape"
+
+function allow_guide_dialog(first_speaker, second_speaker, id)
+	local npc = who_is_npc(first_speaker, second_speaker)
+	local section = db.storage[npc:id()].active_section
+	return section ~= nil and string.find(section, "conductor", 1) ~= nil and not this.is_wounded(first_speaker, second_speaker, id)
 end
 
-function level_garbage(first_speaker, second_speaker)
-	return level.name() == "l02_garbage"
-end
-
-function level_agroprom(first_speaker, second_speaker)
-	return level.name() == "l03_agroprom_ai2" or level.name() == "l03_agroprom"
-end
-]]
------------------------------------------------------------------------------------
--- Relation functions
------------------------------------------------------------------------------------
---[[
-function is_friend(first_speaker, second_speaker)
-	return first_speaker:relation(second_speaker) == game_object.friend
-end
-
-function is_not_friend(first_speaker, second_speaker)
-	return not is_friend(first_speaker, second_speaker)
-end
-
-function become_friend(first_speaker, second_speaker)
-	first_speaker:set_relation(game_object.friend, second_speaker)
-end
-]]
 -----------------------------------------------------------------------------------
 -- Community
 -----------------------------------------------------------------------------------
 
-function actor_in_dolg(actor, npc)
-	for k, v in pairs (sim_board.get_sim_board().players) do
-		if v.community_player == true and v.player_name == "dolg" then
-			return true
-		end
-	end
-	return false
+function actor_in_dolg()
+	return db.actor:character_community() == "actor_dolg"
 end
 
-function actor_not_in_dolg(actor, npc)
-	for k, v in pairs (sim_board.get_sim_board().players) do
-		if v.community_player == true and v.player_name == "dolg" then
-			return false
-		end
-	end
-	return true
+function actor_not_in_dolg()
+	return db.actor:character_community() ~= "actor_dolg"
 end
 
-function actor_set_dolg(actor, npc)
+function actor_set_dolg()
 	sim_board.get_sim_board():set_actor_community("dolg")
-	return true
 end
 
-function actor_in_freedom(actor, npc)
-	for k, v in pairs (sim_board.get_sim_board().players) do
-		if v.community_player == true and v.player_name == "freedom" then
-			return true
-		end
-	end
-	return false
+--------------------------------------------------------------------------------
+
+function actor_in_freedom()
+	return db.actor:character_community() == "actor_freedom"
 end
 
-function actor_not_in_freedom(actor, npc)
-	for k, v in pairs (sim_board.get_sim_board().players) do
-		if v.community_player == true and v.player_name == "freedom" then
-			return false
-		end
-	end
-	return true
+function actor_not_in_freedom()
+	return db.actor:character_community() ~= "actor_freedom"
 end
 
-function actor_set_freedom(actor, npc)
+function actor_set_freedom()
 	sim_board.get_sim_board():set_actor_community("freedom")
-	return true
 end
 
-function actor_in_bandit(actor, npc)
-	for k, v in pairs (sim_board.get_sim_board().players) do
-		if v.community_player == true and v.player_name == "bandit" then
-			return true
-		end
-	end
-	return false
+--------------------------------------------------------------------------------
+
+function actor_in_bandit()
+	return db.actor:character_community() == "actor_bandit"
 end
 
-function actor_not_in_bandit(actor, npc)
-	for k, v in pairs (sim_board.get_sim_board().players) do
-		if v.community_player == true and v.player_name == "bandit" then
-			return false
-		end
-	end
-	return true
+function actor_not_in_bandit()
+	return db.actor:character_community() ~= "actor_bandit"
 end
 
-function actor_set_bandit(actor, npc)
+function actor_set_bandit()
 	sim_board.get_sim_board():set_actor_community("bandit")
-	return true
 end
 
-function actor_in_stalker(actor, npc)
-	for k, v in pairs (sim_board.get_sim_board().players) do
-		if v.community_player == true and v.player_name == "stalker" then
-			return true
-		end
-	end
-	return false
+--------------------------------------------------------------------------------
+
+function actor_in_stalker()
+	return db.actor:character_community() == "actor_stalker"
 end
 
-function actor_not_in_stalker(actor, npc)
-	for k, v in pairs (sim_board.get_sim_board().players) do
-		if v.community_player == true and v.player_name == "stalker" then
-			return false
-		end
-	end
-	return true
+function actor_not_in_stalker()
+	return db.actor:character_community() ~= "actor_stalker"
 end
 
-function actor_set_stalker(actor, npc)
+function actor_set_stalker()
 	sim_board.get_sim_board():set_actor_community("stalker")
-	return true
 end
 
-function actor_clear_community(actor, npc)
-	sim_board.get_sim_board():set_actor_community("none")
-	return true
-end
-
------------------------------------------------------------------------------------
--- Money functions
------------------------------------------------------------------------------------
---[[
-function has_2000_money(first_speaker, second_speaker)
-	return first_speaker:money() >= 2000
-end
-]]
------------------------------------------------------------------------------------
--- TRADE
------------------------------------------------------------------------------------
---[[
-function trade_init(seller, buyer)
-	db.storage[seller:id()].meet.begin_wait_to_see.begin = time_global()/1000
-	xr_position.setPosition(db.storage[seller:id()].meet.Seller, db.storage[seller:id()].meet.Seller:level_vertex_id())
-	db.storage[seller:id()].meet.Buyer = buyer
-end
-
-function want_trade(seller, buyer)
-	if seller:relation(buyer) == game_object.friend or seller:relation(buyer) == game_object.neutral then
-		return true
-	else
-		return false
-	end
-end
-
-function dont_want_trade(seller, buyer)
-	return not want_trade(seller,buyer)
-end
-]]
 ----------------------------------------------------------------------------------
 -- Transfer functions
 ----------------------------------------------------------------------------------
 
 function relocate_item_section_to_actor(first_speaker, second_speaker, section, amount)
-
-	local npc = who_is_npc(first_speaker, second_speaker)
-	local amount = amount
 
 	if not amount then
 		amount = 1
@@ -398,12 +191,11 @@ function relocate_item_section_to_actor(first_speaker, second_speaker, section, 
 	local vec = vector()
 
 	for i = 1, amount do
-		sim:create(section, vec, 0, 0, 0)
+		sim:create(section, vec, 0, 0, 0) -- 0 = actor ID
 	end
 
 	if ammo_section[section] == true then
-		local ltx = system_ini()
-		local box_size = ltx:r_s32(section, "box_size")
+		local box_size = system_ini():r_s32(section, "box_size")
 		amount = amount * box_size
 	end
 
@@ -417,197 +209,142 @@ function relocate_item_section_from_actor(first_speaker, second_speaker, section
 	news_manager.relocate_item(actor, "out", section)
 end
 
-function actor_has_item(first_speaker, second_speaker, section)
-	return db.actor:object(section) ~= nil
-end
---[[
-function npc_has_item(first_speaker, second_speaker, section)
-	local npc = who_is_npc(first_speaker, second_speaker)
-	return npc:object(section) ~= nil
-end
-]]
 function who_is_npc(first_speaker, second_speaker)
---[[
-	local npc = second_speaker
-	if db.actor:id() == npc:id() then
-		npc = first_speaker
-	end
-	return npc
-]]
 	return 0 == second_speaker:id() and first_speaker or second_speaker -- 0 = actor ID
 end
 
 --------------------------------------------------------------------------------
 
+local function is_pistol(t, item)
+
+	if t.pistol then
+		return
+	end
+
+	local item_clsid = item:clsid()
+
+	if item_clsid == clsid.wpn_hpsa_s
+	or item_clsid == clsid.wpn_pm_s
+	or item_clsid == clsid.wpn_usp45_s
+	or item_clsid == clsid.wpn_walther_s then
+		t.pistol = item
+	end
+end
+
 function transfer_any_pistol_from_actor(first_speaker, second_speaker)
 
-	local npc = who_is_npc(first_speaker, second_speaker)
 	local actor = db.actor
+	local t = {}
 
-	actor:iterate_inventory(is_pistol, npc)
+	actor:iterate_inventory(is_pistol, t)
 
-	if actor.pistol ~= nil then
-		actor:transfer_item(actor:object(actor.pistol), npc)
-		news_manager.relocate_item(actor, "out", actor.pistol)
-		actor.pistol = nil
+	if t.pistol then
+		local npc = who_is_npc(first_speaker, second_speaker)
+		actor:transfer_item(t.pistol, npc)
+		news_manager.relocate_item(actor, "out", t.pistol:section())
 	end
 end
 
-function is_pistol(npc, item)
-	local section = item:section()
-	if section == "wpn_beretta"
-	or section == "wpn_colt1911"
-	or section == "wpn_colt1911_up2"     -- SRP
-	or section == "wpn_desert_eagle"
-	or section == "wpn_desert_eagle_up"  -- SRP
-	or section == "wpn_fort"
-	or section == "wpn_fort_up"          -- SRP
-	or section == "wpn_hpsa"
-	or section == "wpn_pb"
-	or section == "wpn_pm"
-	or section == "wpn_pm_up"            -- SRP
-	or section == "wpn_pm_9x19"          -- SRP
-	or section == "wpn_sig220"           -- SRP
-	or section == "wpn_usp"
-	or section == "wpn_walther"
-	or section == "wpn_walther_up2" then -- SRP
-		db.actor.pistol = section
-	end
-end
-
-function have_actor_any_pistol(first_speaker, second_speaker)
-
-	local npc = who_is_npc(first_speaker, second_speaker)
-	local actor = db.actor
-
-	actor:iterate_inventory(is_pistol, npc)
---[[
-	if actor.pistol ~= nil then
-		return true
-	else
-		return false
-	end
-]]
-	return actor.pistol ~= nil
+function have_actor_any_pistol()
+	local t = {}
+	db.actor:iterate_inventory(is_pistol, t)
+	return t.pistol ~= nil
 end
 
 --------------------------------------------------------------------------------
+
+local function is_gun(t, item)
+
+	if t.rifle then
+		return
+	end
+
+	local item_clsid = item:clsid()
+
+	if item_clsid == clsid.wpn_ak74_s
+	or item_clsid == clsid.wpn_lr300_s
+	or item_clsid == clsid.wpn_groza_s
+	or item_clsid == clsid.wpn_svd_s
+	or item_clsid == clsid.wpn_svu_s
+	or item_clsid == clsid.wpn_val_s
+	or item_clsid == clsid.wpn_vintorez_s then
+		t.rifle = item
+	end
+end
 
 function transfer_any_gun_from_actor(first_speaker, second_speaker)
 
-	local npc = who_is_npc(first_speaker, second_speaker)
 	local actor = db.actor
+	local t = {}
 
-	actor:iterate_inventory(is_gun, npc)
+	actor:iterate_inventory(is_gun, t)
 
-	if actor.gun ~= nil then
-		actor:transfer_item(actor:object(actor.gun), npc)
-		news_manager.relocate_item(actor, "out", actor.gun)
-		actor.gun = nil
+	if t.rifle then
+		local npc = who_is_npc(first_speaker, second_speaker)
+		actor:transfer_item(t.rifle, npc)
+		news_manager.relocate_item(actor, "out", t.rifle:section())
 	end
 end
 
-function is_gun(npc, item)
-	local section = item:section()
-	if section == "wpn_abakan"
-	or section == "wpn_abakan_up2"       -- SRP
-	or section == "wpn_ak74"
-	or section == "wpn_ak74_up"          -- SRP
-	or section == "wpn_ak74_up2"         -- SRP
-	or section == "wpn_ak74u"
-	or section == "wpn_fn2000"           -- SRP
-	or section == "wpn_g36"              -- SRP
-	or section == "wpn_groza"
-	or section == "wpn_l85"              -- SRP
-	or section == "wpn_lr300"            -- SRP
-	or section == "wpn_lr300_up2"        -- SRP
-	or section == "wpn_mp5"              -- SRP
-	or section == "wpn_sig550"
-	or section == "wpn_sig550_up2"       -- SRP
-	or section == "wpn_svd"              -- SRP
-	or section == "wpn_svu"              -- SRP
-	or section == "wpn_val"              -- SRP
-	or section == "wpn_vintorez"
-	or section == "wpn_vintorez_up" then -- SRP
-		db.actor.gun = section
-	end
-end
-
-function have_actor_any_gun(first_speaker, second_speaker)
-
-	local npc = who_is_npc(first_speaker, second_speaker)
-	local actor = db.actor
-
-	actor:iterate_inventory(is_gun, npc)
---[[
-	if actor.gun ~= nil then
-		return true
-	else
-		return false
-	end
-]]
-	return actor.gun ~= nil
+function have_actor_any_gun()
+	local t = {}
+	db.actor:iterate_inventory(is_gun, t)
+	return t.rifle ~= nil
 end
 
 --------------------------------------------------------------------------------
+
+local function is_shootgun(t, item)
+
+	if t.shotgun then
+		return
+	end
+
+	local item_clsid = item:clsid()
+
+	if item_clsid == clsid.wpn_shotgun_s
+	or item_clsid == clsid.wpn_bm16_s then
+		t.shotgun = item
+	end
+end
 
 function transfer_any_shootgun_from_actor(first_speaker, second_speaker)
 
-	local npc = who_is_npc(first_speaker, second_speaker)
 	local actor = db.actor
+	local t = {}
 
-	actor:iterate_inventory(is_shootgun, npc)
+	actor:iterate_inventory(is_shootgun, t)
 
-	if actor.shootgun ~= nil then
-		actor:transfer_item(actor:object(actor.shootgun), npc)
-		news_manager.relocate_item(actor, "out", actor.shootgun)
-		actor.shootgun = nil
+	if t.shotgun then
+		local npc = who_is_npc(first_speaker, second_speaker)
+		actor:transfer_item(t.shotgun, npc)
+		news_manager.relocate_item(actor, "out", t.shotgun:section())
 	end
 end
 
-function is_shootgun(npc, item)
-	local section = item:section()
-	if section == "wpn_bm16"
-	or section == "wpn_toz34"
-	or section == "wpn_wincheaster1300"
-	or section == "wpn_spas12" then
-		db.actor.shootgun = section
-	end
-end
-
-function have_actor_any_shootgun(first_speaker, second_speaker)
-
-	local npc = who_is_npc(first_speaker, second_speaker)
-	local actor = db.actor
-
-	actor:iterate_inventory(is_shootgun, npc)
---[[
-	if actor.shootgun ~= nil then
-		return true
-	else
-		return false
-	end
-]]
-	return actor.shootgun ~= nil
+function have_actor_any_shootgun()
+	local t = {}
+	db.actor:iterate_inventory(is_shootgun, t)
+	return t.shotgun ~= nil
 end
 
 --------------------------------------------------------------------------------
---			ALIFE SUPPORT
+-- ALIFE SUPPORT
 --------------------------------------------------------------------------------
 
-function is_csky_at_expansion_0(first_speaker, second_speaker)
+function is_csky_at_expansion_0()
 	return sim_faction.get_current_expansion("csky") == "expansion_0"
 end
 
-function is_csky_at_expansion_1(first_speaker, second_speaker)
+function is_csky_at_expansion_1()
 	return sim_faction.get_current_expansion("csky") == "expansion_1"
 end
 
-function is_csky_at_expansion_2(first_speaker, second_speaker)
+function is_csky_at_expansion_2()
 	return sim_faction.get_current_expansion("csky") == "expansion_2"
 end
 
-function is_csky_at_expansion_3_or_higher(first_speaker, second_speaker)
+function is_csky_at_expansion_3_or_higher()
 	local cur_exp = sim_faction.get_current_expansion("csky")
 	return cur_exp ~= "expansion_0" and cur_exp ~= "expansion_1" and cur_exp ~= "expansion_2"
 end

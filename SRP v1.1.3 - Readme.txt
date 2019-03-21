@@ -227,6 +227,7 @@ Dialog fixes:
 + Fixed the issues in the Cordon where the player could pay the stalker squad on the hill (i) multiple times for their assistance in dealing with the vehicle station military squad and (ii) even after dealing with the military squad without the stalker squad's assistance.
 + Fixed the Uncle Yar dialog succeeding the completion of the night bloodsucker task where the player could reply to Yar's greeting only with a prompt "bye", making it impossible to e.g. submit flash drives to him.
 + Fixed the issues with the Professor Sakharov dialog where (i) he would ask the player to go see Lefty even after the player has restarted the cooling device, (ii) the player could ask for information about zombie attacks even after perpetually terminating them, and (iii) the player could ask about Lefty even before learning of him.
++ Fixed the issue where stationary squad commanders would claim hostiles are nearby when greeting the player even if only neutral/friendly factions occupy neighboring smart terrains.
 + Fixed the issue where the player could ask Major Zvyagintsev about Mitay even before learning of Mitay.
 + Fixed the issue where Sidorovich would answer only one question per game session after Scar returns him his case.
 + Fixed the branching of some Duty member dialogs in Agroprom.
