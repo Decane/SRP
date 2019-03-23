@@ -186,7 +186,7 @@ Gameplay fixes:
 + Fixed ten stash coordinates being unattainable due to programming mistakes. Most notably, Drifter now offers coordinates to a stash containing the third Cordon flash drive as a reward to the player for saving him from dogs.
 + Fixed faction reward tooltips failing to update to reflect new rewards after resuming progress from a savegame in which the player already has an outstanding reward from the relevant faction.
 + Fixed all issues where submitting a flash drive with upgrade schematics would unlock the wrong upgrade.
-+ Fixed the issue where the 'Lost Party's PDA' in Yantar would not be transferred to Sakharov upon talking to him following completion of the task to retrieve it.
++ Fixed a script typo preventing the Lost Party's PDA from being transferred to Sakharov upon talking to him following completion of the task to retrieve it.
 + Fixed the issue where several varieties of weapon would not be properly identified as such when the player's inventory is checked for dialog availability purposes.
 + Fixed the issue where ammunition would not aggregate into full boxes in the inventory, making its transference to a container tedious and providing a profitable exploit for 'bring ammo' tasks.
 + Fixed the issue where non-scripted squads loaded from a savegame (as opposed to spawning into the Zone in the current game session) would not spawn inventory box items.
@@ -199,7 +199,7 @@ Gameplay fixes:
 + Fixed several bugs pertaining to the displaying of squad map spots, including the issue where its color would react sluggishly to relationship changes to the player.
 + Fixed the issue where crows could get stuck floating in the air upon being shot.
 + Fixed the "Life support system" upgrade for the Freedom Exoskeleton making the player bleed out faster rather than slower as intended.
-+ Fixed the issue where the VSS "Vintorez" received as a reward from Forester could not be upgraded.
++ Fixed a few instances of a mechanic not being able to upgrade a pre-upgraded variant of a weapon even if they could upgrade the base weapon.
 + Added the missing 'doesn't use shot' text to the threaded barrel upgrade tooltip for the Mossberg 88.
 + Fixed the "Relief backpack" upgrade for various armors wrongly incrementing the carry weight tooltip value by only 5kg instead of the 15kg actually unlocked by the upgrade.
 + Corrected the behavior of shot megaphones.
@@ -314,6 +314,7 @@ Optional additional features:
 • Less frequent / disabled emissions
 • Disabled developer startup videos
 • Alternative SSAO implementation
+• Alternative wet surfaces implementation
 • Smaller inventory grids
 • Transparent inventory
 

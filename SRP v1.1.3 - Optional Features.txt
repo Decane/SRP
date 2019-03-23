@@ -37,6 +37,14 @@ Complete feature list:
 
 
 ====================================================
+Alternative Wet Surfaces Shader
+====================================================
+
+
+An experimental wet surfaces shader that introduces visible rain puddles, prominent streaks of rain pouring down surfaces, and a more realistic 'dampness' effect on surfaces.
+
+
+====================================================
 DX10 Patch
 ====================================================
 

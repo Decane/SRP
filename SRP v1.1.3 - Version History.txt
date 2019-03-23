@@ -55,6 +55,7 @@ v1.1.3
 + (ZRP import) Fixed NPCs sharing a common global variable in state_mgr.evaluator_state_mgr_idle_alife:evaluate() to determine their individual behavior. - NatVac per Alundaio
 + (ZRP import) Prevented NPCs dying of collision damage when spawning at the same spot as another NPC. - bardak
 + (Optional) Added a stash prefiller mod that randomizes a stash's spawn container. - Decane
++ (Optional) Added an alternative wet surfaces effect shader. - Decane
 ~ Optimized and fine-tuned the DX10/10.1 wet surfaces shader: (i) slightly reduced its glossiness; (ii) restored the efficacy of the r3_dynamic_wet_surfaces_* console vars on the distance at which the shader's effects are visible (regressed in SRP v1.0.4); (iii) reduced water splash size to be more realistic. - Decane
 ~ Made each attribute bar length in the "Faction War" tab of the PDA reflect the sum of the levels of that attribute for the two opposing factions displayed, instead of the highest level of the attribute among all factions. - Decane
 ~ The name of the target location is now indicated in the 'Hold the point until help arrives' and 'Repel the enemy counterattack' phase titles of 'capture' tasks. - Decane
@@ -253,7 +254,7 @@ v1.0.4
 + Fixed the issue where several varieties of weapon would not be properly identified as such when the player's inventory is checked for dialog availability purposes. - Decane
 + Fixed the issue where Sidorovich would answer only one question per game session after the player returns him his case. - Decane
 + Fixed the issue where a squad NPC would not always be assigned the role of a guide when the relevant squad enters a camp for which a guide is suitable. - Decane
-+ Fixed the issue where the 'Lost Party's PDA' in Yantar would not be transferred to Sakharov upon talking to him following completion of the task to retrieve it. - Decane
++ Fixed a script typo preventing the Lost Party's PDA from being transferred to Sakharov upon talking to him following completion of the task to retrieve it. - Decane
 + Fixed several issues in the Cordon if the player circumvents the military machine gun nest before talking to Sidorovich by returning to the Swamp and entering the Cordon through the northern level-changer. - Decane
 + Fixed the duplicate supply box spawn at the Trailhead in the Swamp. - angrydog
 + Fixed and optimized all buggy Cordon, Garbage, Yantar, Army Warehouses, and Limansk dialog trees. - Decane
@@ -263,7 +264,7 @@ v1.0.4
 + Fixed the issue where the Freedom (/Duty) base megaphone would continue to play Freedom's (/Duty's) propaganda even after the base is no longer captured by Freedom (/Duty). - Decane
 + Made the Freedom base megaphone play Yar and Ashot's conversations only when the player is in the vicinity of the Freedom base. - Decane
 + Fixed the issue where the VSS "Vintorez" received as a reward from Forester could not be upgraded. - Decane
-+ Added the missing 'doesn't use shot' text to the threaded barrel upgrade tooltip for the Mossberg 88. - Decane
++ Added the missing 'doesn't use shot' attribute text to the "Barrel modification" upgrade tooltip for the Mossberg 88. - Decane
 + Fixed the CS-1 suit and CS-3a suit having their names reversed in the English localization of the game. - Decane per Charcharo
 + Fixed a few dialog typos. - Decane per RK Roadkill
 + Added a localized text string for the Agroprom Underground, which fixes the issue where the level name would be displayed as 'agroprom_underground' in the save/load menus. - Decane
@@ -396,7 +397,7 @@ v1.0.2
 + Fixed the issue in the Cordon where the player could pay the stalker squad on the hill for their assistance in dealing with the vehicle station military squad even after the military squad has already been liquidated. - Decane
 + Fixed the issue where Hound would break his 'hostage stance' when the player comes within speaking distance of him; he is supposed to remain braced until the player gives him a weapon, not to get up and command the player to holster his. - Decane
 + Fixed the issue where Father Valerian's audio transmission inviting Scar to join the stalkers would play on top of Sidorovich's 'thank you' audio upon returning him the case with the loot. - Decane
-+ Fixed a mistake in the AKS-74U barrel modification upgrade scheme which could randomly add 15kg to the weapon's weight. - SetaKat
++ Added the missing '+15%' handling attribute quantifier text to the "Barrel modification" upgrade tooltip for the AKS-74U. - SetaKat
 + Standardized and tweaked some UI texts to make clicking easier. - Decane
 + Re-aligned the ironsights of all the game's primary weapons; they should now be perfectly aligned. - b1ub4k, Anonymous, Control volume, Decane
 + Fixed all potential 'missing texture' errors related to different controller variants. - Decane
