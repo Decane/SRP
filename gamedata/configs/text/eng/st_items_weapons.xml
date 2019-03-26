@@ -105,15 +105,6 @@
 	<string id="ammo-9x39-ap_s">
 		<text>9x39 SP-6</text>
 	</string>
-	<string id="ammo-7.62x54-7h1">
-		<text>7.62x54 mm 7N1 rounds</text>
-	</string>
-	<string id="ammo-7.62x54-7h1_s">
-		<text>7.62x54 7N1</text>
-	</string>
-	<string id="ammo-7.62x54-7h1_descr">
-		<text>A standard 7.62-caliber sniper round for the SVDm 2 and SVUmk2 sniper rifles.</text>
-	</string>
 	<string id="ammo-7.62x54-7h14">
 		<text>7.62x54 mm 7N14 rounds</text>
 	</string>
@@ -124,13 +115,13 @@
 		<text>A 7.62-caliber high precision armor-piercing sniper round. Used with the SVDm 2 and SVUmk2 sniper rifles.</text>
 	</string>
 	<string id="ammo-7.62x54-ap">
-		<text>7.62x54 mm PP rounds</text>
+		<text>7.62x54 mm AP rounds</text>
 	</string>
 	<string id="ammo-7.62x54-ap_s">
-		<text>7.62x54 PP</text>
+		<text>7.62x54 AP</text>
 	</string>
 	<string id="ammo-7.62x54-ap_descr">
-		<text>A cheap 7.62-caliber machine gun round. Its design makes it unfit for use in sniper rifles, so it is used only with the RP-74 machine gun.</text>
+		<text>A 7.62-caliber armor-piercing sniper round. Used with the SVDm 2 and SVUmk2 sniper rifles.</text>
 	</string>
 	<string id="ammo-12x70-buck">
 		<text>12x70 shot rounds</text>

@@ -51,6 +51,25 @@
 
 	<!-- Equipment -->
 
+	<string id="ammo-7.62x54-7h1">
+		<text>Патроны 7,62x54 мм 7H1</text>
+	</string>
+	<string id="ammo-7.62x54-7h1_s">
+		<text>7,62x54 7H1</text>
+	</string>
+	<string id="ammo-7.62x54-7h1_descr">
+		<text>Стандартный снайперский патрон калибра 7,62 мм. Используется в снайперских винтовках СВД и СВУ-АС.</text>
+	</string>
+	<string id="ammo-pkm">
+		<text>Патроны 7,62x54 мм ПП</text>
+	</string>
+	<string id="ammo-pkm_s">
+		<text>7,62x54 ПП</text>
+	</string>
+	<string id="ammo-pkm_descr">
+		<text>Дешёвый в изготовлении пулемётный патрон калибра 7,62 мм. В силу конструктивных особенностей не подходит для снайперских винтовок, используется только в пулемёте ПКМ.</text>
+	</string>
+
 	<string id="st_mar_quest_wpn_pm_1_name">
 		<text>Модифицированный ПМ</text>
 	</string>

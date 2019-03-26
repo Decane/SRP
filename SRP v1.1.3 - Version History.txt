@@ -50,6 +50,8 @@ v1.1.3
 + Restored a few unused parting phrases for Sidorovich and one unused greeting phrase for Forester. - Decane
 + Fixed the game crashing if the player deletes the bottom-most savegame in a list of more than one savegame in the save menu and then attempts to delete the savegame without first selecting another item from the list. - Decane
 + Replaced the generic masked face of the player's unarmored character model with Scar's face, as in the leather jacket armored character model (new game required for effect). - Decane
++ Fixed a regression that caused the in-game name and description of 7.62x54 mmR 7N1 rounds on localizations other than English to be replaced with their XML string IDs. - Decane
++ Added a unique name and description for 7.62x54 mmR armor-piercing sniper rounds to distinguish them from those boxed for the PKM and corrected their weapon applicability. - Decane
 + (ZRP import) Fixed the player's character model reverting back to the default rookie jacket model upon loading a savegame / changing maps. - NatVac
 + (ZRP import) Fixed the use_object callback for doors and buttons being reset on scheme switch. - NatVac
 + (ZRP import) Fixed NPCs sharing a common global variable in state_mgr.evaluator_state_mgr_idle_alife:evaluate() to determine their individual behavior. - NatVac per Alundaio
@@ -163,7 +165,7 @@ v1.0.5
 + Fixed a rare crash upon reloading a savegame: sim_combat.script:968: attempt to index field 'actor' (a nil value). - Decane
 + Fixed the issue where the dogs that spawn to attack Vasyan might fail to do so due to nearby NPC interference, hindering storyline progress. - Decane
 + Fixed faction reward tooltips failing to update to reflect new rewards after resuming progress from a savegame in which the player already has an outstanding reward from the relevant faction. - Decane
-+ Fixed the mechanic specialization tooltip displaying 'none' for some mechanics who do not lack a specialization, e.g. Yar and Major Zvyagintsev. - Decane
++ Fixed the mechanic specialization tooltip displaying 'none' for Aydar, Yar, and Major Zvyagintsev, despite all of them having a specialization. - Decane
 + Fixed the issue where the Dark Valley entrance hold-up could occur prematurely if the player enters the Dark Valley before being tasked with chasing Fang there. - Decane
 + Fixed the issue where the stalker squad headed toward the Devilish Encampment in the Red Forest could, in rare circumstances, spawn right in front of the player. - Decane
 + Fixed the issue where the Witch Circle squad in the Red Forest would not necessarily turn hostile if the player kills the ambush squad traitor while he is still yelling for help. - Decane
@@ -186,7 +188,7 @@ v1.0.4
 + Fixed the issue where NPCs would sometimes perceive an enemy as a threat even after the enemy has been killed. - Decane
 + Added the possibility to continue playing in freeplay mode after the main storyline. - DEXXX, with Decane tweaks
 + Fixed the broken artifact respawn timer. Consequently, artifacts now respawn as they are supposed to. - Decane
-+ Fixed the broken final squad spawner in Limansk which could cause crashing and savegame corruption if the player did not swiftly exit Limansk after disabling the electricity supply to the fence. - Decane
++ Fixed the broken final squad spawner in Limansk which could, due to an SRP v1.0.2 regression, cause crashing and savegame corruption if the player did not swiftly exit Limansk after disabling the electricity supply to the fence. - Decane
 + Fixed an occasional crash upon the game evaluating whether to assign the player a 'help' task: sim_combat.script:614: attempt to index local 'attack_squad_obj' (a nil value). - Decane
 + Fixed a rare waypoint crash in the Cordon: [error]Description : patrol path[esc_smart_terrain_3_7_walker_1_walk], point on path [name05],object [sim_default_stalker_228836]. - Decane
 + Fixed several potential crashes caused by the game attempting to alter the attitude of a non-existing squad. - Decane
@@ -381,9 +383,9 @@ v1.0.2
 + Fixed the issue in Limansk where the Clear Sky bridge squad logic would break for the interval between killing the military machine gun nest and purging the building of its last inhabitant. - Decane
 + Fixed the issue in Limansk where one of the Clear Sky electric fence squad soldiers would get stuck in perpetual combat mode after Lebedev orders the squad to move to the abandoned hospital. - Decane
 + Fixed a range of other minor issues with Limansk NPC logic. - Decane
-+ Fixed the Limansk "Find the generator" task failing to complete when the player deactivates the generator if the player rushes to the apartment building and climbs onto the roof before the squad leader has finished the dialog which assigns the task. - Decane
-+ Fixed the Limansk "Return to the group commander" task failing to cancel when the player deactivates the generator if the player has not by then returned to speak with the squad commander. - Decane
-+ Fixed the Limansk "Return to the group commander" task becoming available multiple times if the player moves outside of the squad commander's immediate proximity while he is speaking. - Decane
++ Fixed Clear Sky's "Find the generator" task not completing when the player deactivates the generator in Limansk if the task is still active then, e.g. if the player took an alternative route to the lever that disables the generator or rushed to the roof of the apartment building before the squad leader finished the dialog which assigns the task. - Decane
++ Fixed Clear Sky's "Return to the group commander" task not cancelling when the player deactivates the generator in Limansk if the task is still active then. - Decane
++ Fixed Clear Sky's "Return to the group commander" task becoming available multiple times if the player moves outside of the squad commander's immediate proximity while he is speaking. - Decane
 + Fixed the storyline temporarily breaking if the player suppresses the Limansk military machine gun nest during the interval between receiving and completing the task to speak to the Clear Sky squad commander. - Decane
 + Fixed the storyline breaking if the player does not respond to the SOS signal in the Red Forest before speaking with Forester. - Decane
 + Fixed a range of errors in the Red Forest bridge ambush squad logic. The stalker who tries to lure the player into an ambush, for example, will no longer shout "That's him! Take him down!" if his pals are already dead. - Decane

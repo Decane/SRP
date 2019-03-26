@@ -51,6 +51,25 @@
 
 	<!-- Equipment -->
 
+	<string id="ammo-7.62x54-7h1">
+		<text>7.62x54 mmR 7N1 rounds</text>
+	</string>
+	<string id="ammo-7.62x54-7h1_s">
+		<text>7.62x54 7N1</text>
+	</string>
+	<string id="ammo-7.62x54-7h1_descr">
+		<text>A standard 7.62-caliber sniper round for the SVD and SVU sniper rifles.</text>
+	</string>
+	<string id="ammo-pkm">
+		<text>7.62x54 mmR PP rounds</text>
+	</string>
+	<string id="ammo-pkm_s">
+		<text>7.62x54 PP</text>
+	</string>
+	<string id="ammo-pkm_descr">
+		<text>A cheap 7.62-caliber machine gun round. Its design makes it unfit for use in sniper rifles, so it is used only with the PKM machine gun.</text>
+	</string>
+
 	<string id="st_mar_quest_wpn_pm_1_name">
 		<text>Modified PM</text>
 	</string>
