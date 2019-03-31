@@ -57,7 +57,6 @@ v1.1.3
 + (ZRP import) Fixed NPCs sharing a common global variable in state_mgr.evaluator_state_mgr_idle_alife:evaluate() to determine their individual behavior. - NatVac per Alundaio
 + (ZRP import) Prevented NPCs dying of collision damage when spawning at the same spot as another NPC. - bardak
 + (Optional) Added a stash prefiller mod that randomizes a stash's spawn container. - Decane
-+ (Optional) Added an alternative wet surfaces effect shader. - Decane
 ~ Optimized and fine-tuned the DX10/10.1 wet surfaces shader: (i) slightly reduced its glossiness; (ii) restored the efficacy of the r3_dynamic_wet_surfaces_* console vars on the distance at which the shader's effects are visible (regressed in SRP v1.0.4); (iii) reduced water splash size to be more realistic. - Decane
 ~ Made each attribute bar length in the "Faction War" tab of the PDA reflect the sum of the levels of that attribute for the two opposing factions displayed, instead of the highest level of the attribute among all factions. - Decane
 ~ The name of the target location is now indicated in the 'Hold the point until help arrives' and 'Repel the enemy counterattack' phase titles of 'capture' tasks. - Decane
@@ -165,7 +164,7 @@ v1.0.5
 + Fixed a rare crash upon reloading a savegame: sim_combat.script:968: attempt to index field 'actor' (a nil value). - Decane
 + Fixed the issue where the dogs that spawn to attack Vasyan might fail to do so due to nearby NPC interference, hindering storyline progress. - Decane
 + Fixed faction reward tooltips failing to update to reflect new rewards after resuming progress from a savegame in which the player already has an outstanding reward from the relevant faction. - Decane
-+ Fixed the mechanic specialization tooltip displaying 'none' for Aydar, Yar, and Major Zvyagintsev, despite all of them having a specialization. - Decane
++ Fixed the mechanic specialization tooltip displaying 'none' for Aydar, Yar, and Thunderov, despite all of them having a specialization. - Decane
 + Fixed the issue where the Dark Valley entrance hold-up could occur prematurely if the player enters the Dark Valley before being tasked with chasing Fang there. - Decane
 + Fixed the issue where the stalker squad headed toward the Devilish Encampment in the Red Forest could, in rare circumstances, spawn right in front of the player. - Decane
 + Fixed the issue where the Witch Circle squad in the Red Forest would not necessarily turn hostile if the player kills the ambush squad traitor while he is still yelling for help. - Decane
@@ -383,14 +382,14 @@ v1.0.2
 + Fixed the issue in Limansk where the Clear Sky bridge squad logic would break for the interval between killing the military machine gun nest and purging the building of its last inhabitant. - Decane
 + Fixed the issue in Limansk where one of the Clear Sky electric fence squad soldiers would get stuck in perpetual combat mode after Lebedev orders the squad to move to the abandoned hospital. - Decane
 + Fixed a range of other minor issues with Limansk NPC logic. - Decane
-+ Fixed Clear Sky's "Find the generator" task not completing when the player deactivates the generator in Limansk if the task is still active then, e.g. if the player took an alternative route to the lever that disables the generator or rushed to the roof of the apartment building before the squad leader finished the dialog which assigns the task. - Decane
++ Fixed Clear Sky's "Find the generator" task not completing when the player deactivates the generator in Limansk if the task is still active then, e.g. if the player took an alternative route to the lever that disables the generator or rushed to the roof of the apartment building before the squad leader finished the dialog that assigns the task. - Decane
 + Fixed Clear Sky's "Return to the group commander" task not cancelling when the player deactivates the generator in Limansk if the task is still active then. - Decane
 + Fixed Clear Sky's "Return to the group commander" task becoming available multiple times if the player moves outside of the squad commander's immediate proximity while he is speaking. - Decane
 + Fixed the storyline temporarily breaking if the player suppresses the Limansk military machine gun nest during the interval between receiving and completing the task to speak to the Clear Sky squad commander. - Decane
 + Fixed the storyline breaking if the player does not respond to the SOS signal in the Red Forest before speaking with Forester. - Decane
 + Fixed a range of errors in the Red Forest bridge ambush squad logic. The stalker who tries to lure the player into an ambush, for example, will no longer shout "That's him! Take him down!" if his pals are already dead. - Decane
 + Fixed the exploit with the Forester 'Compass' artifact submission dialog where the player could repeatedly break the dialog before being told the space anomaly coordinates and then re-enter it to receive the reward (a VSS "Vintorez") again and again an endless amount of times. - Decane
-+ Enabled stash coordinate purchases from the two bar stalkers in Agroprom who lacked them due to a missing dialog option. - SetaKat
++ Enabled stash coordinate purchases from the two bar stalkers in Agroprom who lacked them due to a missing dialog option. This oversight had made it impossible to acquire all six Agroprom bar stalker stashes. - SetaKat
 + Fixed Yoga's logic getting broken if the player takes the task to kill Stringov, accepts Stringov's bribe, doesn't kill him and then runs to the south-east of the bus stop such that Yoga goes offline before the task is finished. - Decane
 + Fixed a crash indirectly caused by the above where the game would try to repopulate an already-populated stash whenever the player exits and re-enters the Garbage while Stringov is still alive: ! [LUA][ERROR] ERROR: Unable to give treasure [gar_treasure_quest_smuggler_weapons] because inventory box is already in use by treasure [gar_treasure_quest_smuggler_weapons]. - Decane
 + Fixed several other possible scenarios where Yoga's logic would get broken. - Decane
