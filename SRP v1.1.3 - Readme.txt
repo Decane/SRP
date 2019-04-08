@@ -197,6 +197,7 @@ Gameplay fixes:
 + Fixed the mechanic specialization tooltip displaying 'none' for Aydar, Yar, and Thunderov, despite all of them having a specialization.
 + Fixed the issue where squad info tooltips would fail to update properly and would, consequently, sometimes display the wrong target location.
 + Fixed several bugs pertaining to the displaying of squad map spots, including the issue where its color would react sluggishly to relationship changes to the player.
++ Fixed PSI emission hit and effector intensity doubling on save/reload.
 + Fixed the issue where crows could get stuck floating in the air upon being shot.
 + Fixed the "Life support system" upgrade for the Freedom Exoskeleton making the player bleed out faster rather than slower as intended.
 + Fixed a few instances of a mechanic not being able to upgrade a pre-upgraded variant of a weapon even if they could upgrade the base weapon.
@@ -246,6 +247,7 @@ Graphical fixes:
 + Partly fixed the broken wet surfaces effect.
 + Fixed bullet tracers not being displayed in DX10/10.1 mode.
 + Made camo nets and fences visible on ATI/AMD based graphics cards.
++ Fixed corpse map spots haphazardly failing to appear on the minimap.
 + Replaced the inventory icon of the PM, PB, RPG-7, AKS-74U, and the exoskeleton to match their in-game appearance.
 + The correct HUD arm texture is now displayed for the Sunrise Suit, SEVA Suit, and the Bandit Jacket.
 + Fixed the issue where a squad commander icon would sometimes overlap with a guide icon, trader icon, or important character icon on the map.
@@ -420,7 +422,6 @@ Bugs still in the game:
 • Volumetric smoke may not appear properly or at all on some DX10-capable hardware.
 • Skyboxes are visible through terrain when there is sufficient fog between the player and the terrain. The effect increases in prominence with fog density and the player's distance from the terrain.
 • Hugging the wall next to Forester from the other side triggers his greeting audio due to an imprecisely aligned space restrictor.
-• Corpse dots frequently fail to appear on the minimap.
 • Some NPCs may occasionally utter two overlapping dialogs at once.
 • Attempting to exit the game while an NPC's death animation is in progress crashes the game:
 

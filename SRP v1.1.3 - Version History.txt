@@ -49,6 +49,7 @@ v1.1.3
 + Fixed the issue where stationary squad commanders would claim hostiles are nearby when greeting the player even if only neutral/friendly factions occupy neighboring smart terrains. - Decane
 + Restored a few unused parting phrases for Sidorovich and one unused greeting phrase for Forester. - Decane
 + Fixed the game crashing if the player deletes the bottom-most savegame in a list of more than one savegame in the save menu and then attempts to delete the savegame without first selecting another item from the list. - Decane
++ Fixed corpse map spots haphazardly failing to appear on the minimap. - Shoker, Decane
 + Replaced the generic masked face of the player's unarmored character model with Scar's face, as in the leather jacket armored character model (new game required for effect). - Decane
 + Fixed a regression that caused the in-game name and description of 7.62x54 mmR 7N1 rounds on localizations other than English to be replaced with their XML string IDs. - Decane
 + Added a unique name and description for 7.62x54 mmR armor-piercing sniper rounds to distinguish them from those boxed for the PKM and corrected their weapon applicability. - Decane
@@ -133,7 +134,7 @@ v1.0.7
 + Fixed the issue where a bandit squad at or near the Depot could be prevented from advancing due to their squad leader being assigned the role of one of the crowkiller minigame commentators. - Decane
 + Fixed the issue where the player's weapon would be indiscriminately auto-holstered in some areas of the Freedom base (new game required for effect). - Decane
 + Fixed the issue where the Clear Sky squad at the bridge in Limansk would keep firing at the house on the hill until the player speaks to the squad commander even if the house has already been cleared. - Decane
-+ Fixed the issue where new faction equipment chest supplies would spawn every time the game is loaded on each smart terrain whose occupying squad is online. Supplies are supposed to spawn only when a squad first enters the relevant smart terrain, not on each game reload whereupon the relevant squad happens to be online. - Decane
++ Fixed the issue where new faction equipment chest supplies would spawn on smart terrains occupied by an online squad every time the game is loaded. (Supplies are supposed to spawn only when an online squad first enters a smart terrain, not on each game reload whereupon the relevant squad happens to be online.) - Decane
 + Fixed the issue where Hound would awkwardly tip-toe to his patrol path upon receiving a weapon from the player. Also made it possible to interact with him with a weapon drawn even if the player is not friendly with the stalkers. - Decane
 + Fixed the issue where zombified stalkers would sometimes shout battle slogans as if they were ordinary stalkers. - Decane
 + Fixed the issue where combat music would not stop playing at the CNPP upon entering freeplay mode with dynamic music enabled. - Decane
@@ -189,7 +190,7 @@ v1.0.4
 + Fixed the broken artifact respawn timer. Consequently, artifacts now respawn as they are supposed to. - Decane
 + Fixed the broken final squad spawner in Limansk which could, due to an SRP v1.0.2 regression, cause crashing and savegame corruption if the player did not swiftly exit Limansk after disabling the electricity supply to the fence. - Decane
 + Fixed an occasional crash upon the game evaluating whether to assign the player a 'help' task: sim_combat.script:614: attempt to index local 'attack_squad_obj' (a nil value). - Decane
-+ Fixed a rare waypoint crash in the Cordon: [error]Description : patrol path[esc_smart_terrain_3_7_walker_1_walk], point on path [name05],object [sim_default_stalker_228836]. - Decane
++ Fixed a potential waypoint crash when an NPC patrols the 'Bonfire in forest' at the Cordon: [error]Description : patrol path[esc_smart_terrain_3_7_walker_1_walk], point on path [name05],object [sim_default_stalker_228836]. - Decane
 + Fixed several potential crashes caused by the game attempting to alter the attitude of a non-existing squad. - Decane
 + Fixed a crash in the Red Forest if the trader in the mine strays from his spot at the desk: [error]Description : any vertex in patrol path [red_smart_terrain_3_2_patrol_1_walk] is inaccessible for object [sim_default_duty_221783]. - Decane
 + Fixed a rare crash caused by a missing mesh: [error]Arguments : Can't find model file 'dynamics\equipments\item_rukzak.ogf'. - Decane
@@ -218,7 +219,7 @@ v1.0.4
 + Fixed the Yantar "Follow the stalker onto the hangar roof" task being completed rather than cancelled if the player does not get into position before the cooling device has been repaired. - Decane
 + Fixed the issue where the Limansk bridge Clear Sky squad would keep firing at the house on the hill after the player speaks to the squad commander even after the military presence therein has been wiped out. - Decane
 + Fixed the Limansk "Destroy the machine gun nest" task being assigned to the player even if it has already been destroyed by the time the task would be contemporary. - Decane
-+ Fixed the issue where the dogs spawned for Wolf's "Help the stalker" task would not attack Drifter if the player picks up Sidorovich's loot before taking the task. - Decane
++ Fixed the issue where the dogs spawned for Wolf's "Help the stalker" task might never attack Drifter if the player picks up Sidorovich's loot before taking the task. - Decane
 + Fixed the issue where 'capture' tasks would sometimes not register as complete when they should. - Decane
 + Fixed the issue where 'return item' tasks would sometimes be unavailable to the player when they should be available. - Decane
 + Fixed the issue where 'clear the road' tasks would get cancelled when they should register as completed. - Decane
@@ -283,9 +284,9 @@ v1.0.4
 + Spawned a wooden box below the levitating inventory box in the Old Church in the Great Swamp in order to prevent it from seeming to float in mid-air. Also aligned its mesh with its texture. - Decane
 + Relocated the eastern Cordon-to-Garbage level changer in order to make the player less likely to accidentally walk into it. - Decane
 + Fixed the alignment of the off-center 'Game Over' text and accompanying flashing prompt in widescreen mode. - Decane
-+ Stopped PSI emission hit intensity doubling on save/reload. - Decane
++ Stopped PSI emission hit intensity doubling on save/reload (new game required). - Decane
 + Added a squad state indicator to squad info tooltips on the world map. - Decane
-+ (ZRP import) Stopped PSI emission audio and visual effector intensity doubling on save/reload. - NatVac
++ (ZRP import) Stopped PSI emission audio and visual effector intensity doubling on save/reload (new game required). - NatVac
 + (ZRP import) Added missing 'self' reference to xr_remark.script in order to "better look at target of speaker". - NatVac per castl
 + (ZRP import) Added isWeapon() support for the RG-6; makes NPCs behave as they should when the player approaches them with the RG-6 drawn. - castl
 + (ZRP import) Implemented level-specific autosaves. - NatVac, with Decane tweaks
@@ -388,14 +389,14 @@ v1.0.2
 + Fixed the storyline temporarily breaking if the player suppresses the Limansk military machine gun nest during the interval between receiving and completing the task to speak to the Clear Sky squad commander. - Decane
 + Fixed the storyline breaking if the player does not respond to the SOS signal in the Red Forest before speaking with Forester. - Decane
 + Fixed a range of errors in the Red Forest bridge ambush squad logic. The stalker who tries to lure the player into an ambush, for example, will no longer shout "That's him! Take him down!" if his pals are already dead. - Decane
-+ Fixed the exploit with the Forester 'Compass' artifact submission dialog where the player could repeatedly break the dialog before being told the space anomaly coordinates and then re-enter it to receive the reward (a VSS "Vintorez") again and again an endless amount of times. - Decane
++ Fixed the exploit where the player could repeatedly break the Compass artifact submission dialog and re-enter it to receive the reward (a VSS "Vintorez") again and again an endless amount of times. - Decane
 + Enabled stash coordinate purchases from the two bar stalkers in Agroprom who lacked them due to a missing dialog option. This oversight had made it impossible to acquire all six Agroprom bar stalker stashes. - SetaKat
 + Fixed Yoga's logic getting broken if the player takes the task to kill Stringov, accepts Stringov's bribe, doesn't kill him and then runs to the south-east of the bus stop such that Yoga goes offline before the task is finished. - Decane
 + Fixed a crash indirectly caused by the above where the game would try to repopulate an already-populated stash whenever the player exits and re-enters the Garbage while Stringov is still alive: ! [LUA][ERROR] ERROR: Unable to give treasure [gar_treasure_quest_smuggler_weapons] because inventory box is already in use by treasure [gar_treasure_quest_smuggler_weapons]. - Decane
 + Fixed several other possible scenarios where Yoga's logic would get broken. - Decane
 + Fixed the issue where the player could simultaneously do tasks for Yoga and Wild Napr by first completing Yoga's task to kill Stringov and then buying the medkit from Wild Napr and continuing the digger storyline from there whilst still having active Yoga's task to kill the smuggler. - Decane
 + Fixed the issue where the bandit base gate would get closed and locked when the base is assaulted even if it is not captured by bandits. - Decane
-+ Fixed the issue in the Cordon where the player could pay the stalker squad on the hill for their assistance in dealing with the vehicle station military squad even after the military squad has already been liquidated. - Decane
++ Fixed the issue where the player could pay the stalker squad on the hill overlooking the Cordon vehicle station for their assistance in dealing with the vehicle station military squad even after the military squad has already been liquidated. - Decane
 + Fixed the issue where Hound would break his 'hostage stance' when the player comes within speaking distance of him; he is supposed to remain braced until the player gives him a weapon, not to get up and command the player to holster his. - Decane
 + Fixed the issue where Father Valerian's audio transmission inviting Scar to join the stalkers would play on top of Sidorovich's 'thank you' audio upon returning him the case with the loot. - Decane
 + Added the missing '+15%' handling attribute quantifier text to the "Barrel modification" upgrade tooltip for the AKS-74U. - SetaKat
@@ -466,7 +467,7 @@ v0.8.2 BETA
 v0.8.1 BETA
 
 + Fixed the Freedom "Respond to the SOS signal" task where, if the player initially fails the task, they will keep receiving and failing the task each time thereafter, whenever they go near the dead squad. - Decane
-+ Fixed the issue in the Cordon where the player could pay the stalker squad on the hill multiple times for their assistance in dealing with the vehicle station military squad. - Decane
++ Fixed the issue where the dialog concerning the military presence at the Cordon vehicle station could be repeated endlessly with the stalker squad on the hill overlooking it, potentially leading to the player paying the stalker squad multiple times for their assistance in dealing with the military. - Decane
 + Fixed the issue where Yoga and Flayer of the bandit faction could get gunned down prematurely, in most circumstances by Duty. - Red7204
 + Made Sergeant Cheersov temporarily invulnerable during the snork attack in Agroprom to prevent his premature demise. - Red7204
 + Fixed the issue where Yoga would not disappear when he is supposed to during a raid on the bandit base (new game required for effect). - Red7204
@@ -485,7 +486,7 @@ v0.8.0 BETA
 + Fixed Freedom's "Eliminate the potential threat at the gas station" task being cancelled when the player completes its objective. - Decane
 + Fixed the Army Warehouses 'return item' task where multiple Flame artifacts would be taken from the player for completion of the task if the player was in possession of more than one Flame artifact upon returning to the task-giver. - Decane
 + Fixed a typo in the all.spawn file (new game required for effect). - PhoenixHeart
-+ Fixed a possible all.spawn Army Warehouses waypoint CTD when mutants attack the military base (new game required for effect). - smoq2
++ Fixed a possible all.spawn Army Warehouses waypoint crash when mutants attack the military base: ! [LUA][ERROR] ERROR: Path between [mil_smart_terrain_7_11] and [mil_smart_terrain_7_10] doesnt exist for [mil_dogs_lair_6] (new game required for effect). - smoq2
 + Began correcting global dialog and message texts. - Decane
 + Fixed the issue with a missing SPAS-12 reload sound. - Decane
 

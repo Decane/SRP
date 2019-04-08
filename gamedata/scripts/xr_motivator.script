@@ -254,6 +254,13 @@ function motivator_binder:death_callback(victim, culprit)
 
 	stalker_generic.remove_level_spot(victim, st)
 
+	-- DC20190408: Hack per Shoker to add a corpse map spot in case the engine fails to.
+	-- The spot needs to be added twice to guarantee that the engine's interference will
+	-- not prevent it from being rendered on the minimap.
+--	dbglog("Killed %s has %d spots on death", victim:name(), level.map_has_object_spot(id, "deadbody_location"))
+	level.map_add_object_spot_ser(id, "deadbody_location", "")
+	level.map_add_object_spot_ser(id, "deadbody_location", "")
+
 	if culprit:id() == 0 then -- 0 = actor ID
 		xr_statistic.addKillCount(victim)
 		xr_statistic.inc_killed_stalkers_counter()
@@ -346,6 +353,11 @@ function motivator_binder:update(delta)
 			local se_npc = sim:object(id)
 			if se_npc and se_npc.death_droped ~= true then
 				death_manager.drop_manager(npc):create_release_item(se_npc, id) -- create drop items for perma-corpses if haven't already; they don't get a death_callback() call
+--				if level.map_has_object_spot(id, "deadbody_location") < 2 then
+					level.map_add_object_spot_ser(id, "deadbody_location", "") -- see DC20190408
+					level.map_add_object_spot_ser(id, "deadbody_location", "")
+--					dbglog("Loaded %s has %d spots after additions", npc:name(), level.map_has_object_spot(id, "deadbody_location"))
+--				end
 			end
 		end
 		if self.is_strelok then
