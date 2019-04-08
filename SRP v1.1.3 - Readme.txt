@@ -123,6 +123,7 @@ Quest fixes:
 + Fixed the Dark Valley task to "Talk to the outpost commander" being received and immediately completed upon the player entering the Dark Valley if the player has already spoken to the outpost commander before receiving the task to find Fang.
 + Fixed the issue where the player could delay reception of the Agroprom "Talk to the outpost commander" task (and cancellation of the "Find the stalker group’s stash" task) by bypassing its space restrictor.
 + Fixed the Limansk "Find the generator" task failing to complete when the player deactivates the generator if the player rushes to the apartment building and climbs onto the roof before the squad leader has finished the dialog which assigns the task.
++ Fixed the Limansk "Find the generator" task being received and immediately completed if the player initially bypasses its assigning space restrictor in the institute building but returns to it after deactivating the generator.
 + Fixed the Limansk "Return to the group commander" task failing to cancel when the player deactivates the generator if the player has not by then returned to speak with the squad commander.
 + Fixed the Limansk "Return to the group commander" task becoming available multiple times if the player moves outside of the squad commander's immediate proximity while he is speaking.
 + Fixed the Limansk "Destroy the machine gun nest" task being assigned to the player even if it has already been destroyed by the time the task would be contemporary.

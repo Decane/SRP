@@ -31,11 +31,11 @@ on_info = {=actor_in_zone(lim_construction_passed_restr)} sr_idle@cs_soldier_cov
 on_info = {+lim_recon_squad_order_1} sr_idle@find_transformer %=give_inited_task(storyline:lim_electro_fence_cs_soldier_cover:csky)%
 
 [sr_idle@find_transformer]
-on_info = {+lim_shut_transformer_task +lim_final_actor_find_transformer} sr_idle@nil %=give_inited_task(storyline:lim_electro_fence:csky)%
+on_info = {+lim_shut_transformer_task +lim_final_actor_find_transformer} sr_idle@nil %=give_inited_task(storyline:lim_electro_fence:csky)%, {+lim_electro_fence_off} sr_idle@nil
 on_info2 = {+lim_shut_transformer_task -lim_final_actor_find_transformer} sr_idle@shutdown_transformer %=give_inited_task(storyline:lim_electro_fence_find_transformator:csky)%
 on_info3 = {-lim_final_actor_find_transformer =actor_in_zone(lim_final_find_transformer)} %+lim_final_actor_find_transformer%
 
 [sr_idle@shutdown_transformer]
-on_info = {=actor_in_zone(lim_final_find_transformer)} sr_idle@nil %+lim_final_actor_find_transformer =give_inited_task(storyline:lim_electro_fence:csky)%
+on_info = {=actor_in_zone(lim_final_find_transformer)} sr_idle@nil %+lim_final_actor_find_transformer =give_inited_task(storyline:lim_electro_fence:csky)%, {+lim_electro_fence_off} sr_idle@nil
 
 [sr_idle@nil]
