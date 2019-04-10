@@ -1,2 +1,2 @@
 # SRP
-I am bad at coding.
+I am bad at pull requests.
