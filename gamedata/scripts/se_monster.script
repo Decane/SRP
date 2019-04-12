@@ -100,7 +100,7 @@ function se_monster:STATE_Write(packet)
 
 	cse_alife_monster_base.STATE_Write (self, packet)
 
-	packet:w_bool(self.sim_forced_online)
+	packet:w_u8(2) -- always 2 in vanilla; not used (but unsafe to delete)
 --[[
 	if self.job_online == true then
 		packet:w_u8(0)
@@ -113,11 +113,9 @@ function se_monster:STATE_Write(packet)
 		packet:w_stringZ(self.job_online_condlist)
 	end
 ]]
-	if self.squad_id == nil then
-		packet:w_stringZ("nil")
-	else
-		packet:w_stringZ(tostring(self.squad_id))
-	end
+	packet:w_stringZ(self.squad_id or "nil")
+
+	packet:w_bool(self.sim_forced_online)
 end
 
 --------------------
@@ -126,9 +124,7 @@ function se_monster:STATE_Read(packet, size)
 
 	cse_alife_monster_base.STATE_Read (self, packet, size)
 
-	if self.script_version >= 8 then
-		self.sim_forced_online = packet:r_bool()
-	end
+	packet:r_u8() -- always 2 in vanilla; not used (but unsafe to delete)
 --[[
 	local t = packet:r_u8()
 
@@ -143,14 +139,16 @@ function se_monster:STATE_Read(packet, size)
 		self.job_online = xr_logic.parse_condlist(nil, "se_monster:STATE_Read", "job_online", self.job_online_condlist)
 	end
 ]]
-	if self.script_version >= 7 then
+--	if self.script_version >= 7 then -- defined as 8 via 'current_server_entity_version' in system.ltx
 		self.squad_id = packet:r_stringZ()
-		if self.squad_id == "nil" or tostring(self.squad_id) == "0" then
+		if self.squad_id == "nil" then -- or tostring(self.squad_id) == "0" then
 			self.squad_id = nil
 		end
-	end
+--	end
 
---	dbglog("Mutant: %u (%s)", packet:r_elapsed(), self:name())
+--	if self.script_version >= 8 then
+		self.sim_forced_online = packet:r_bool()
+--	end
 
 --	local pos = self.position
 end

@@ -320,9 +320,9 @@ function motivator_binder:use_callback(used_npc, user)
 		end
 	else
 		local se_npc = sim:object(used_npc:id())
-		if se_npc ~= nil and se_npc.treasure_processed ~= true then
+		if se_npc ~= nil and se_npc.treasure_processed ~= 1 then
 			treasure_manager.use(used_npc)
-			se_npc.treasure_processed = true
+			se_npc.treasure_processed = 1
 		end
 	end
 end
