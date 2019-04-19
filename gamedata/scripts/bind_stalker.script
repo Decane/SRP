@@ -19,18 +19,20 @@ local game_difficulty_by_num =
 	[3] = "gd_master"
 }
 
-local clsid_wpn_ammo = clsid.wpn_ammo
-local object_binder_update = object_binder.update
-local tm = nil
-local actor = nil
-local weather_manager = nil
-local last_level_name = nil
-local next_update_time = nil
-local first_update_done = false
-local weapon_needs_hiding = false
-local weapon_hidden = false
+local clsid_wpn_ammo            = clsid.wpn_ammo
+local object_binder_update      = object_binder.update
+local xr_sound_update           = xr_sound.update
+local dyn_music_update          = xrs_dyn_music.on_actor_update
+local dunin_ammo_on_update      = nil
+local tm                        = nil
+local actor                     = nil
+local weather_manager           = nil
+local last_level_name           = nil
+local next_update_time          = nil
+local first_update_done         = false
+local weapon_needs_hiding       = false
+local weapon_hidden             = false
 local zones_needing_weapon_hide = 0
-
 ----------------------------------------------------------------------------------------------------------------------
 class "actor_binder" (object_binder)
 ----------------------------------------------------------------------------------------------------------------------
@@ -74,6 +76,8 @@ function actor_binder:net_spawn(data)
 	end
 
 	db.add_actor(actor)
+
+	dunin_ammo_on_update = dunin_ammo.on_update -- SRP
 
 	if self.st.disable_input_time == nil then
 		level.enable_input()
@@ -333,7 +337,7 @@ function actor_binder:update(delta)
 
 	game_stats.update(delta, actor)
 ]]
-	xr_sound.update(0) -- actor ID is hard-coded to 0 in-engine
+	xr_sound_update(0) -- actor ID is hard-coded to 0 in-engine
 --[[
 	if self.st.sleep_relocate_time ~= nil then
 		if game.get_game_time():diffSec(self.st.sleep_relocate_time) >= self.st.sleep_relocate_idle then
@@ -356,7 +360,7 @@ function actor_binder:update(delta)
 		end
 	end
 
-	dunin_ammo.on_update()
+	dunin_ammo_on_update()
 
 	local time = time_global()
 
@@ -409,6 +413,7 @@ function actor_binder:update(delta)
 			end
 
 			local hide_phase = xr_surge_hide.phase
+
 			if diff_sec >= time_before_lag_noosphere and hide_phase == 1 then
 				xr_surge_hide.activate_surge()
 			elseif diff_sec >= time_before_give_task and hide_phase == 2 then
@@ -476,6 +481,7 @@ function actor_binder:update(delta)
 	end
 --[[
 	local play_combat = xrs_dyn_music.play_combat
+
 	if play_combat == 0 then
 		xrs_dyn_music.interactive_music(0)
 	elseif play_combat == 1 then
@@ -483,8 +489,10 @@ function actor_binder:update(delta)
 	elseif play_combat == 2 then
 		xrs_dyn_music.interactive_music(10)
 	end
-]]
+
 	xr_s.on_actor_update(delta)
+]]
+	dyn_music_update()
 
 	if guiders.teleported_to_another_level then
 		if not guiders.level_changed then

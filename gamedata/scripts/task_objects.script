@@ -2691,7 +2691,7 @@ function CHideFromSurgeTask:check_task(tm)
 			xr_surge_hide.start_surge = false
 			local sr = db.storage[self.target]
 			if not(sr and sr.object:inside(act_pos)) then
-				xr_effects.disable_ui(nil, nil)
+				xr_effects.disable_ui(act)
 				level.add_pp_effector("mar_surge.ppe", 200211, false)
 			end
 			self:kill_unhided_npc()
@@ -2706,12 +2706,12 @@ function CHideFromSurgeTask:check_task(tm)
 					xr_sound.stop_sound_looped(0) -- 0 = actor ID
 					end_surge("reversed")
 				else
-					xr_effects.kill_actor()
+					act:kill(act)
 					end_surge("fail")
 				end
 			end
 		elseif(_delta>=35000) then
-			xr_effects.enable_ui(nil, nil)
+			xr_effects.enable_ui()
 			level.remove_pp_effector(200208)
 			xr_sound.stop_sound_looped(0) -- 0 = actor ID
 			end_surge("complete")

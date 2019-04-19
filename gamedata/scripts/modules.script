@@ -1,76 +1,100 @@
-stype_stalker	 = 0
-stype_mobile	 = 1
-stype_item	 = 2
-stype_heli	 = 3
+stype_stalker    = 0
+stype_mobile     = 1
+stype_item       = 2
+stype_heli       = 3
 stype_restrictor = 4
-stype_trader	 = 5
+stype_trader     = 5
 
-load_scheme("xr_danger",	"danger",		stype_stalker)
-load_scheme("xr_abuse",		"abuse",		stype_stalker)
-load_scheme("xr_walker",	"walker",		stype_stalker)
-load_scheme("xr_remark",	"remark",		stype_stalker)
-load_scheme("xr_cover",		"cover",		stype_stalker)
-load_scheme("xr_sleeper",	"sleeper",		stype_stalker)
-load_scheme("xr_kamp",		"kamp",			stype_stalker)
-load_scheme("xr_camper",	"camper",		stype_stalker)
-load_scheme("xr_meet",		"meet",			stype_stalker)
-load_scheme("xr_combat",	"combat",		stype_stalker)
-load_scheme("xr_death",		"death",		stype_stalker)
--- load_scheme("xr_use",	"use",			stype_stalker) -- Krylov (only) has on_use reference in logic, but it's superfluous
-load_scheme("xr_hit",		"hit",			stype_stalker)
-load_scheme("xr_wounded",	"wounded",		stype_stalker)
--- load_scheme("xr_meet",	"actor_dialogs",	stype_stalker) -- unused
-load_scheme("xr_combat_ignore",	"combat_ignore",	stype_stalker)
-load_scheme("xr_patrol",	"patrol",		stype_stalker)
-load_scheme("xr_smartcover",	"smartcover",		stype_stalker)
-load_scheme("xr_surge_hide",	"surge_hide",		stype_stalker)
+	------------------------------------------------------------
+	-- stype_stalker:
+	------------------------------------------------------------
 
-load_scheme("mob_remark",	"mob_remark",		stype_mobile)
-load_scheme("mob_walker",	"mob_walker",		stype_mobile)
-load_scheme("mob_combat",	"mob_combat",		stype_mobile)
-load_scheme("mob_death",	"mob_death",		stype_mobile)
-load_scheme("mob_jump",		"mob_jump",		stype_mobile)
-load_scheme("mob_home",		"mob_home",		stype_mobile)
--- load_scheme("mob_trade",	"mob_trade",		stype_mobile) -- obsolete SoC module but Sid and Forester have on_trade references in vanilla logic
+	load_scheme("xr_danger",        "danger")
+	load_scheme("xr_abuse",         "abuse")
+	load_scheme("xr_walker",        "walker")
+	load_scheme("xr_remark",        "remark")
+	load_scheme("xr_cover",         "cover")
+	load_scheme("xr_sleeper",       "sleeper")
+	load_scheme("xr_kamp",          "kamp")
+	load_scheme("xr_camper",        "camper")
+	load_scheme("xr_meet",          "meet")
+	load_scheme("xr_combat",        "combat")
+	load_scheme("xr_death",         "death")
+--	load_scheme("xr_use",           "use")             -- Krylov (only) has on_use reference in logic, but it's superfluous
+	load_scheme("xr_hit",           "hit")
+	load_scheme("xr_wounded",       "wounded")
+--	load_scheme("xr_meet",          "actor_dialogs")   -- unused
+	load_scheme("xr_combat_ignore", "combat_ignore")
+	load_scheme("xr_patrol",        "patrol")
+	load_scheme("xr_smartcover",    "smartcover")
+	load_scheme("xr_surge_hide",    "surge_hide")
 
-load_scheme("mob_trader",	"mob_trader",		stype_trader)
+	------------------------------------------------------------
+	-- stype_mobile:
+	------------------------------------------------------------
 
-load_scheme("ph_door",		"ph_door",		stype_item)
-load_scheme("ph_idle",		"ph_idle",		stype_item)
--- load_scheme("ph_hit",	"ph_hit",		stype_item) -- test disable
-load_scheme("ph_on_hit",	"ph_on_hit",		stype_item)
-load_scheme("ph_button",	"ph_button",		stype_item)
--- load_scheme("ph_code",	"ph_code",		stype_item) -- code-pad scheme; unused in CS
--- load_scheme("ph_sound",	"ph_sound",		stype_item) -- test disable
--- load_scheme("ph_death",	"ph_on_death", 		stype_item) -- test disable
-load_scheme("ph_oscillate",	"ph_oscillate",		stype_item)
-load_scheme("ph_minigun",	"ph_minigun",		stype_item)
--- load_scheme("fx_sound",	"fx_sound",		stype_item) -- unused
-load_scheme("ph_target",	"ph_target",		stype_item)
+	load_scheme("mob_remark",       "mob_remark")
+	load_scheme("mob_walker",       "mob_walker")
+	load_scheme("mob_combat",       "mob_combat")
+	load_scheme("mob_death",        "mob_death")
+	load_scheme("mob_jump",         "mob_jump")
+	load_scheme("mob_home",         "mob_home")
+--	load_scheme("mob_trade",        "mob_trade")       -- obsolete SoC module but Sid and Forester have on_trade references in vanilla logic
 
-load_scheme("heli_move",	"heli_move",		stype_heli)
+	------------------------------------------------------------
+	-- stype_trader:
+	------------------------------------------------------------
 
-load_scheme("sr_no_weapon",	"sr_no_weapon",		stype_restrictor)
--- load_scheme("sr_tip",	"sr_tip",		stype_restrictor) -- test disable
-load_scheme("sr_teleport",	"sr_teleport",		stype_restrictor)
--- load_scheme("sr_sound",	"sr_sound",		stype_restrictor) -- test disable
-load_scheme("sr_idle",		"sr_idle",		stype_restrictor)
--- load_scheme("sr_territory",	"sr_territory",		stype_restrictor) -- test disable
-load_scheme("sr_light",		"sr_light",		stype_restrictor)
-load_scheme("sr_particle",	"sr_particle",		stype_restrictor)
--- load_scheme("sr_mapspot",	"sr_mapspot",		stype_restrictor) -- test disable
--- load_scheme("sr_sound2d",	"sr_sound_act",		stype_restrictor) -- test disable
-load_scheme("sr_timer",		"sr_timer",		stype_restrictor)
-load_scheme("sr_psy_antenna",	"sr_psy_antenna",	stype_restrictor)
--- load_scheme("sr_postprocess","sr_postprocess",	stype_restrictor) -- test disable
--- load_scheme("sr_aes_deadzone","sr_aes_deadzone",	stype_restrictor) -- test disable
--- load_scheme("sr_sleep",	"sr_sleep",		stype_restrictor) -- test disable
-load_scheme("sr_cutscene",	"sr_cutscene",		stype_restrictor)
-load_scheme("sr_bloodsucker",	"sr_bloodsucker",	stype_restrictor)
-load_scheme("sr_monster",	"sr_monster",		stype_restrictor)
-load_scheme("sr_robbery",	"sr_robbery",		stype_restrictor)
--- load_scheme("sr_survival",	"sr_survival",		stype_restrictor) -- arena scheme; unused in CS
-load_scheme("sr_crowkiller",	"sr_crowkiller",	stype_restrictor)
-load_scheme("sr_shooting",	"sr_shooting",		stype_restrictor)
--- load_scheme("sr_recoveritem","sr_recoveritem",	stype_restrictor) -- test disable
-load_scheme("sr_silence",	"sr_silence",		stype_restrictor) --' Distemper 03.2008
+	load_scheme("mob_trader",       "mob_trader")
+
+	------------------------------------------------------------
+	-- stype_item:
+	------------------------------------------------------------
+
+	load_scheme("ph_door",          "ph_door")
+	load_scheme("ph_idle",          "ph_idle")
+--	load_scheme("ph_hit",           "ph_hit")          -- test disable
+	load_scheme("ph_on_hit",        "ph_on_hit")
+	load_scheme("ph_button",        "ph_button")
+--	load_scheme("ph_code",          "ph_code")         -- code-pad scheme; unused in CS
+--	load_scheme("ph_sound",         "ph_sound")        -- test disable
+--	load_scheme("ph_death",         "ph_on_death")     -- test disable
+	load_scheme("ph_oscillate",     "ph_oscillate")
+	load_scheme("ph_minigun",       "ph_minigun")
+--	load_scheme("fx_sound",         "fx_sound")        -- unused
+	load_scheme("ph_target",        "ph_target")
+
+	------------------------------------------------------------
+	-- stype_heli:
+	------------------------------------------------------------
+
+	load_scheme("heli_move",        "heli_move")
+
+	------------------------------------------------------------
+	-- stype_restrictor:
+	------------------------------------------------------------
+
+	load_scheme("sr_no_weapon",     "sr_no_weapon")
+--	load_scheme("sr_tip",           "sr_tip")          -- test disable
+	load_scheme("sr_teleport",      "sr_teleport")
+--	load_scheme("sr_sound",         "sr_sound")        -- test disable
+	load_scheme("sr_idle",          "sr_idle")
+--	load_scheme("sr_territory",     "sr_territory")    -- test disable
+	load_scheme("sr_light",         "sr_light")
+	load_scheme("sr_particle",      "sr_particle")
+--	load_scheme("sr_mapspot",       "sr_mapspot")      -- test disable
+--	load_scheme("sr_sound2d",       "sr_sound_act")    -- test disable
+	load_scheme("sr_timer",         "sr_timer")
+	load_scheme("sr_psy_antenna",   "sr_psy_antenna")
+--	load_scheme("sr_postprocess",   "sr_postprocess")  -- test disable
+--	load_scheme("sr_aes_deadzone",  "sr_aes_deadzone") -- test disable
+--	load_scheme("sr_sleep",         "sr_sleep")        -- test disable
+	load_scheme("sr_cutscene",      "sr_cutscene")
+	load_scheme("sr_bloodsucker",   "sr_bloodsucker")
+	load_scheme("sr_monster",       "sr_monster")
+	load_scheme("sr_robbery",       "sr_robbery")
+--	load_scheme("sr_survival",      "sr_survival")     -- arena scheme; unused in CS
+	load_scheme("sr_crowkiller",    "sr_crowkiller")
+	load_scheme("sr_shooting",      "sr_shooting")
+--	load_scheme("sr_recoveritem",   "sr_recoveritem")  -- test disable
+	load_scheme("sr_silence",       "sr_silence")      --' Distemper 03.2008

@@ -57,6 +57,9 @@ function se_monster:can_switch_online()
 		return xr_logic.pick_section_from_condlist(db.actor_proxy, self, self.job_online) == true
 	end
 ]]
+	-- self.spawner is always nil for mutants, so at this point this func would always:
+	return cse_alife_monster_base.can_switch_online(self)
+--[[
 	if self.ini == nil or self.spawner == nil then
 		return cse_alife_monster_base.can_switch_online(self)
 	end
@@ -69,13 +72,8 @@ function se_monster:can_switch_online()
 		return xr_logic.pick_section_from_condlist(db.actor, self, self.spawner) ~= nil and cse_alife_monster_base.can_switch_online(self)
 	else
 		return xr_logic.pick_section_from_condlist(db.actor, self, self.spawner) ~= nil
---[[
-		if xr_logic.pick_section_from_condlist(db.actor, self, self.spawner) ~= nil then
-			return true
-		end
-		return false
-]]
 	end
+]]
 end
 
 function se_monster:switch_online()

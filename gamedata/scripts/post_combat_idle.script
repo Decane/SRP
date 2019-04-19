@@ -48,7 +48,7 @@ end
 function action_post_combat_wait:initialize()
 	action_base.initialize(self)
 	local last_best_enemy_name = self.st.last_best_enemy_name
-	self.marsh_creature_detected = last_best_enemy_name ~= nil and string_find(last_best_enemy_name, "bloodsucker_jumper") ~= nil
+	self.marsh_creature_detected = last_best_enemy_name ~= nil and string_find(last_best_enemy_name, "bloodsucker_jumper", 1, true) ~= nil
 	if self.marsh_creature_detected then
 		state_mgr.set_state(self.object, "bloodsucker_search")
 	else

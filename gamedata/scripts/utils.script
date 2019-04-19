@@ -5,7 +5,6 @@ local math_abs = math.abs
 local string_find = string.find
 local string_gfind = string.gfind
 local string_sub = string.sub
-local string_gsub = string.gsub
 
 --------------------------------------------------------------------------------
 
@@ -233,16 +232,16 @@ function path_parse_waypoints_from_arglist(pathname, num_points, ...)
 
 	return rslt
 end
-
-function get_scheme_by_section(section)
-	local scheme = string_gsub(section, "%d", "") -- section might be e.g. '[walker1@way_name]'
+--[[
+function get_scheme_by_section(section) -- now inlined wherever previously called
+	local scheme = string.gsub(section, "%d", "")
 	local at = string_find(scheme, "@", 1, true)
 	if at then
 		scheme = string_sub(scheme, 1, at - 1)
 	end
 	return scheme
 end
-
+]]
 function parse_params(params)
 	local rslt = {}
 	local n = 1

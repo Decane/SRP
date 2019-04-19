@@ -50,8 +50,8 @@ function init_guiders_dialog(dialog)
 
 	-- point_name
 
-	for k, v in pairs (guiders_table.teleport_points) do
-		phrase = dialog:AddPhrase("NO TEXT", k, "2", -10000)
+	for point_name in pairs (guiders_table.teleport_points) do
+		phrase = dialog:AddPhrase("NO TEXT", point_name, "2", -10000)
 		script = phrase:GetPhraseScript()
 		script:AddPrecondition("guiders.precondition_teleport_to_point_available")
 		script:SetScriptText("guiders.set_phrase_text")
@@ -59,7 +59,7 @@ function init_guiders_dialog(dialog)
 
 		-- ready?
 
-		phrase = dialog:AddPhrase("st_tm_guide_21", "21", k, -10000)
+		phrase = dialog:AddPhrase("st_tm_guide_21", "21", point_name, -10000)
 	end
 
 	-- yes
@@ -95,7 +95,7 @@ function init_guiders_dialog(dialog)
 	script:AddPrecondition("guiders.precondition_emission_happening")
 end
 
-function action_fill_temp_teleport_points(fs, npc, dn, pi)
+function action_fill_temp_teleport_points(actor, npc) --, dn, pi)
 
 	local was_dialog = true
 	local npc_id = npc:id()
@@ -110,21 +110,20 @@ function action_fill_temp_teleport_points(fs, npc, dn, pi)
 	local smarts = board.smarts_by_names
 	local points_counter = 0
 
-	local act = db.actor
 	local marsh_base_zone = db.zone_by_name["mar_space_restrictor_csky_base_noweapon"]
 	local npc_smart_id = _G.sim:object(npc_id).m_smart_terrain_id
-	local act_pos = act:position()
-	local act_money = act:money()
-	local act_community = act:character_community()
+	local act_pos = actor:position()
+	local act_money = actor:money()
+	local act_community = actor:character_community()
 	local npc_community = npc:character_community()
 	local npc_story_id = npc:story_id()
 	local floor = math.floor
 	local level_name = level.name()
 
-	for k, v in pairs (guiders_table.teleport_points) do
-		local smart = smarts[k]
-		local condlist = xr_logic.parse_condlist(nil, nil, nil, v.condlist)
-		local cond = xr_logic.pick_section_from_condlist(act, act, condlist)
+	for point_name, point_data in pairs (guiders_table.teleport_points) do
+		local smart = smarts[point_name]
+		local condlist = xr_logic.parse_condlist(nil, nil, nil, point_data.condlist)
+		local cond = xr_logic.pick_section_from_condlist(actor, npc, condlist)
 		if smart and cond == "true" then
 --			local npc_smart_id = alife():object(npc_id).m_smart_terrain_id
 			if (npc_smart_id ~= 65535 and npc_smart_id ~= smart.id) or (npc_story_id ~= 4294967296) then
@@ -133,7 +132,7 @@ function action_fill_temp_teleport_points(fs, npc, dn, pi)
 --				local marsh_base_zone = db.zone_by_name["mar_space_restrictor_csky_base_noweapon"]
 				if marsh_base_zone and marsh_base_zone:inside(act_pos) then
 					path = board:find_conductor_path(smarts["mar_smart_terrain_5_12"].id, smart.id, npc)
-				elseif k == "mar_smart_terrain_csky_base" then
+				elseif point_name == "mar_smart_terrain_csky_base" then
 					path = board:find_conductor_path(npc_smart_id, smarts["mar_smart_terrain_5_12"].id, npc)
 				else
 					path = board:find_conductor_path(npc_smart_id, smart.id, npc)
@@ -141,7 +140,7 @@ function action_fill_temp_teleport_points(fs, npc, dn, pi)
 
 				if #path ~= 0 then
 					cost = path[#path].value
-					if v.level == level_name then
+					if point_data.level == level_name then
 						cost = floor(cost / 10)
 					end
 					if actor_in_faction() == npc_community then
@@ -151,9 +150,9 @@ function action_fill_temp_teleport_points(fs, npc, dn, pi)
 						cost = 0
 					end
 					if cost <= act_money then
-						if temp_points_table[k] == nil or not was_dialog then
-							temp_points_table[k] = v
-							temp_points_table[k].cost = cost
+						if temp_points_table[point_name] == nil or not was_dialog then
+							temp_points_table[point_name] = point_data
+							temp_points_table[point_name].cost = cost
 							points_counter = points_counter + 1
 						end
 					end

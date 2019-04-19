@@ -3,7 +3,7 @@ xStream 02.2008
 ]]
 
 function init()
-	xr_s.register_callback("update", on_actor_update, nil)
+--	xr_s.register_callback("update", on_actor_update, nil)
 	xr_s.register_callback("actor_destroy", restore_ambient_on_end, nil)
 	xr_s.register_callback("main_menu_on", main_menu_on, nil)
 	xr_s.register_callback("main_menu_off", main_menu_off, nil)
@@ -50,9 +50,9 @@ local fade_out_check_time = nil
 -------------------------------------------------------------------------------
 
 function add_object(obj)
-	if obj:alive() then
+--	if obj:alive() then
 		npc_table[obj:id()] = obj
-	end
+--	end
 end
 
 function remove_object(obj_id)
@@ -476,12 +476,12 @@ function play_local_combat(actor, npc_obj, actor_pos, npc_id)
 	end
 end
 
-local function i_am_is_enemy(obj, enemy, st)
+local function i_am_is_enemy(obj, actor, st)
 	local overrides = st.overrides
 	if overrides and overrides.combat_ignore then
-		if xr_logic.pick_section_from_condlist(enemy, obj, overrides.combat_ignore.condlist) ~= nil then
+		if xr_logic.pick_section_from_condlist(actor, obj, overrides.combat_ignore.condlist) ~= nil then
 			--printf("pl:Disabling_memory_object[10] obj [%s]", obj:name())
-			--obj:enable_memory_object(enemy, false)
+			--obj:enable_memory_object(actor, false)
 			return false
 		end
 	end

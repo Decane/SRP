@@ -445,7 +445,7 @@ function CCombat_manager:update_squad(id, data)
 			for npc_id in pairs (squad.squad_npc) do
 				local npc_storage = st[npc_id]
 				if npc_storage ~= nil then
-					if xr_logic.check_action(npc_storage.object, npc_storage[npc_storage.active_scheme], "position_riched") == false then
+					if xr_logic.check_action(npc_storage[npc_storage.active_scheme], "position_riched") == false then
 						return false
 					end
 				end

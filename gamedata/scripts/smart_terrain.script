@@ -148,7 +148,7 @@ function se_smart_terrain:on_register()
 
 	self:register_delayed_npc()
 
-	self.check_time = time_global()
+	self.check_time = -10000 -- time_global()
 end
 
 function se_smart_terrain:on_unregister()
@@ -517,22 +517,22 @@ function se_smart_terrain:update_jobs(object)
 	end
 end
 
-function se_smart_terrain:setup_logic(obj)
+function se_smart_terrain:setup_logic(npc)
 
-	local npc_data = self.npc_info[obj:id()]
+	local npc_data = self.npc_info[npc:id()]
 	local job = self.job_data[npc_data.job_id]
 	local ltx = job.ini_file or self.ltx
 	local ltx_name = job.ini_path or self.ltx_name
 
-	xr_logic.configure_schemes(obj, ltx, ltx_name, npc_data.stype, job.section, job.prefix_name or self:name())
+	xr_logic.configure_schemes(npc, ltx, ltx_name, npc_data.stype, job.section, job.prefix_name or self:name())
 
-	local sect = xr_logic.determine_section_to_activate(obj, ltx, job.section, db.actor)
+	local sect = xr_logic.determine_section_to_activate(npc, ltx, job.section) -- never returns nil
 
-	if utils.get_scheme_by_section(job.section) == "nil" then
-		abort("[smart_terrain.se_smart_terrain:setup_logic]: [smart_terrain %s] section = %s, don't use section 'nil'!", self:name(), sect)
+	if sect == "nil" then -- utils.get_scheme_by_section(job.section)
+		abort("[smart_terrain.se_smart_terrain:setup_logic]: Attempted to switch to section 'nil' in section '%s' of NPC '%s' on smart terrain '%s'. Don't use section 'nil' in NPC logic!", job.section, npc:name(), self:name())
 	end
 
-	xr_logic.activate_by_section(obj, ltx, sect, false)
+	xr_logic.activate_by_section(npc, ltx, sect, false)
 end
 
 function se_smart_terrain:getJob(obj_id)
@@ -865,11 +865,13 @@ function se_smart_terrain:update()
 	self.combat_manager:update()
 
 	local current_time = time_global()
-	if self.check_time ~= nil and current_time < self.check_time then
+
+	if current_time < self.check_time then
 		return
 	end
 
 	local actor = db.actor
+
 	if actor ~= nil then
 		local distance = actor:position():distance_to_sqr(self.position)
 		local idle_time = math_max(60, 0.003 * distance)
@@ -878,40 +880,42 @@ function se_smart_terrain:update()
 		self.check_time = current_time + 10
 	end
 
-	current_time = game.get_game_time()
+	current_time = nil
 
 	local self_dead_time = self.dead_time
 
-	for k, v in pairs (self_dead_time) do
-		if current_time:diffSec(v) >= DEATH_IDLE_TIME then
-			self_dead_time[k] = nil
+	for job_id, death_time in pairs (self_dead_time) do
+		current_time = current_time or game.get_game_time()
+		if current_time:diffSec(death_time) >= DEATH_IDLE_TIME then
+			self_dead_time[job_id] = nil
 		end
 	end
 
 	self:update_jobs()
 end
 
-function setup_gulag_and_logic_on_spawn(obj, st, se_obj, stype, loaded)
-	local strn_id = se_obj.m_smart_terrain_id
-	if strn_id ~= nil and strn_id ~= 65535 then
-		local strn = _G.sim:object(strn_id)
-		local need_setup_logic = (not loaded) and (strn.npc_info[obj:id()].begin_job == true)
-		if need_setup_logic then
-			strn:setup_logic(obj)
-			return
+function setup_gulag_and_logic_on_spawn(npc, npc_st, se_npc, stype, loaded)
+	if not loaded then
+		local strn_id = se_npc.m_smart_terrain_id
+		if strn_id ~= nil and strn_id ~= 65535 then
+			local strn = _G.sim:object(strn_id)
+			if strn.npc_info[npc:id()].begin_job == true then
+				strn:setup_logic(npc)
+				return
+			end
 		end
 	end
-	xr_logic.initialize_obj(obj, st, loaded, db.actor, stype)
+	xr_logic.initialize_obj(npc, npc_st, loaded, stype)
 end
 
-function on_death(se_obj)
+function on_death(se_npc)
 	local sim = _G.sim
 	if sim then
---		local se_obj = sim:object(se_obj.id) -- se_obj is already a server object
---		if se_obj == nil then return end -- not possible here
-		local strn_id = se_obj:smart_terrain_id()
+--		local se_npc = sim:object(se_npc.id) -- se_npc is already a server object
+--		if se_npc == nil then return end -- not possible here
+		local strn_id = se_npc:smart_terrain_id()
 		if strn_id ~= 65535 then
-			sim:object(strn_id):clear_dead(se_obj)
+			sim:object(strn_id):clear_dead(se_npc)
 		end
 	end
 end

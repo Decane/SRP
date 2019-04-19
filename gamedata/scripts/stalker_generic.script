@@ -224,11 +224,11 @@ function reset_invulnerability(npc, ini, section)
 		npc:invulnerable(invulnerability)
 	end
 end
-
-function disable_invulnerability(npc)
+--[[
+function disable_invulnerability(npc) -- now inlined in xr_logic.disable_generic_schemes()
 	npc:invulnerable(false)
 end
-
+]]
 --'--------------------------------------------------------------------------------------------------------------------
 --' TEAM SQUAD GROUP
 --'--------------------------------------------------------------------------------------------------------------------

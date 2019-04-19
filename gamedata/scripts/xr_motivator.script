@@ -11,7 +11,7 @@ bloodsucker_zone_enter = {}
 
 class "motivator_binder" (object_binder)
 
-function motivator_binder:__init(obj) super(obj)
+function motivator_binder:__init(npc) super(npc)
 	self.loaded = false
 	self.update_time = 1000
 	self.first_update_done = false
@@ -19,34 +19,30 @@ function motivator_binder:__init(obj) super(obj)
 --	self.now_in_combat = false
 --	self.strelok_particles_added = false
 	self.death_recorded = false
-	self.is_strelok = obj:profile_name() == "stc_strelok"
+	self.is_strelok = npc:profile_name() == "stc_strelok"
 end
 
 function motivator_binder:extrapolate_callback(cur_pt)
 	local npc = self.object
 	local npc_st = self.st
 	if npc_st.active_section then
-		xr_logic.issue_event(npc, npc_st[npc_st.active_scheme], "extrapolate_callback")
+		xr_logic.issue_event(nil, npc_st[npc_st.active_scheme], "extrapolate_callback")
 		npc_st.move_mgr:extrapolate_callback(npc)
 	end
---[[
-	if patrol(npc:patrol()):flags(cur_pt):get() == 0 then
-		return true
-	end
-	return false
-]]
 	return patrol(npc:patrol()):flags(cur_pt):get() == 0
 end
 
 function motivator_binder:reinit()
 	object_binder.reinit(self)
-	local t = {followers = {}}
+	local t = {} -- {followers = {}}
 	local npc = self.object
 	db.storage[npc:id()] = t
 	self.st = t
-	t.state_mgr = state_mgr.bind_manager(npc)
-	t.move_mgr = move_mgr.move_mgr(npc)
-	t.move_mgr:initialize()
+	if npc:alive() then
+		t.state_mgr = state_mgr.bind_manager(npc)
+		t.move_mgr = move_mgr.move_mgr(npc)
+		t.move_mgr:initialize()
+	end
 end
 
 ----------------------------------------------------------------------------------------------------------------------
@@ -65,23 +61,8 @@ function motivator_binder:net_spawn(sobject)
 	end
 
 	local npc = self.object
-	local id = npc:id()
 
---	xrs_dyn_music.npc_table[id] = npc
-	xrs_dyn_music.add_object(npc)
-
-	local npc_st = db.storage[id]
-	local se_npc = sim:object(id)
-
-	npc_st.squad_obj = sim_board.get_sim_board().squads[se_npc.squad_id]
-
-	db.add_obj(npc)
-
-	npc:set_patrol_extrapolate_callback(motivator_binder.extrapolate_callback, self)
-	npc:set_callback(callback_hit, motivator_binder.hit_callback, self)
-	npc:set_callback(callback_death, motivator_binder.death_callback, self)
 	npc:set_callback(callback_use_object, motivator_binder.use_callback, self)
-	npc:apply_loophole_direction_distance(1)
 
 	if not npc:alive() then
 		if self.loaded == false then
@@ -97,17 +78,30 @@ function motivator_binder:net_spawn(sobject)
 				char_ini = spawn_ini
 			end
 			if char_ini and char_ini:section_exist("known_info") then
-				local n = char_ini:line_count("known_info")
-				local found, info = false, ""
-				for i = 0, n - 1 do
-					found, info = char_ini:r_line("known_info", i, "", "")
+				for i = 0, char_ini:line_count("known_info") - 1 do
+					local found, info = char_ini:r_line("known_info", i, "", "")
 					npc:give_info_portion(info)
 				end
---				dbglog("Dead NPC with ID "..id.." has known info.")
+--				dbglog("Dead NPC with ID "..npc:id().." has known info.")
 			end
 		end
 		return true
 	end
+
+	xrs_dyn_music.add_object(npc)
+
+	local id = npc:id()
+	local se_npc = sim:object(id)
+	local npc_st = self.st
+
+	npc_st.squad_obj = sim_board.get_sim_board().squads[se_npc.squad_id]
+
+	db.add_obj(npc)
+
+	npc:set_patrol_extrapolate_callback(motivator_binder.extrapolate_callback, self)
+	npc:set_callback(callback_hit, motivator_binder.hit_callback, self)
+	npc:set_callback(callback_death, motivator_binder.death_callback, self)
+	npc:apply_loophole_direction_distance(1)
 
 	local relation = db.goodwill.relations and db.goodwill.relations[id]
 	if relation ~= nil then
@@ -135,14 +129,12 @@ function motivator_binder:net_spawn(sobject)
 
 	xr_smartcover.init_global_evaluators(npc)
 
-	smart_terrain.setup_gulag_and_logic_on_spawn(npc, self.st, se_npc, modules.stype_stalker, self.loaded)
+	smart_terrain.setup_gulag_and_logic_on_spawn(npc, npc_st, se_npc, modules.stype_stalker, self.loaded)
 
 	local char_ini = npc_st.ini
 	if char_ini:section_exist("known_info") then
-		local n = char_ini:line_count("known_info")
-		local found, info = false, ""
-		for i = 0, n - 1 do
-			found, info = char_ini:r_line("known_info", i, "", "")
+		for i = 0, char_ini:line_count("known_info") - 1 do
+			local found, info = char_ini:r_line("known_info", i, "", "")
 			npc:give_info_portion(info)
 		end
 		se_npc.has_known_info = true
@@ -176,9 +168,9 @@ function motivator_binder:net_destroy()
 	xrs_dyn_music.remove_object(id)
 	xr_sound.stop_sounds_by_id(id)
 
-	local st = db.storage[id]
-	if st.active_scheme then
-		xr_logic.issue_event(npc, st[st.active_scheme], "net_destroy", npc)
+	local npc_st = self.st
+	if npc_st.active_scheme then
+		xr_logic.issue_event(nil, npc_st[npc_st.active_scheme], "net_destroy", npc)
 	end
 
 --	db.del_obj(npc) -- done below
@@ -215,27 +207,27 @@ function motivator_binder:hit_callback(victim, amount, local_direction, hitter, 
 	local npc_st = self.st
 
 	if npc_st.active_section then
-		xr_logic.issue_event(victim, npc_st[npc_st.active_scheme], "hit_callback", victim, amount, local_direction, hitter, bone_index)
+		xr_logic.issue_event(nil, npc_st[npc_st.active_scheme], "hit_callback", victim, amount, local_direction, hitter, bone_index)
 	end
 
 	local temp_var = npc_st.combat_ignore
 	if temp_var then
-		xr_logic.issue_event(victim, temp_var, "hit_callback", victim, amount, local_direction, hitter, bone_index)
+		xr_logic.issue_event(nil, temp_var, "hit_callback", victim, amount, local_direction, hitter, bone_index)
 	end
 
 	temp_var = npc_st.combat
 	if temp_var then
-		xr_logic.issue_event(victim, temp_var, "hit_callback", victim, amount, local_direction, hitter, bone_index)
+		xr_logic.issue_event(nil, temp_var, "hit_callback", victim, amount, local_direction, hitter, bone_index)
 	end
 
 	temp_var = npc_st.hit
 	if temp_var then
-		xr_logic.issue_event(victim, temp_var, "hit_callback", victim, amount, local_direction, hitter, bone_index)
+		xr_logic.issue_event(nil, temp_var, "hit_callback", victim, amount, local_direction, hitter, bone_index)
 	end
 
 	if amount > 0 then
 		local victim_id = victim:id()
---		sr_territory.issue_event(victim, "hit_callback", victim, amount, local_direction, hitter, bone_index)
+--		sr_territory.issue_event(nil, "hit_callback", victim, amount, local_direction, hitter, bone_index)
 		xr_wounded.hit_callback(victim_id)
 		if hitter:id() == 0 then -- 0 = actor ID
 			sim_combat.hit_callback(victim_id)
@@ -250,9 +242,9 @@ function motivator_binder:death_callback(victim, culprit)
 --	xrs_dyn_music.stop_combat(id)	--' Distemper 03.2008
 	xrs_dyn_music.remove_object(id)
 
-	local st = db.storage[id]
+	local npc_st = self.st
 
-	stalker_generic.remove_level_spot(victim, st)
+	stalker_generic.remove_level_spot(victim, npc_st)
 
 	-- DC20190408: Hack per Shoker to add a corpse map spot in case the engine fails to.
 	-- The spot needs to be added twice to guarantee that the engine's interference will
@@ -266,22 +258,20 @@ function motivator_binder:death_callback(victim, culprit)
 		xr_statistic.inc_killed_stalkers_counter()
 	end
 --[[
-	local st_ini = st.ini
-	local known_info = utils.cfg_get_string(st_ini, st.section_logic, "known_info", victim, false, "", nil)
+	local st_ini = npc_st.ini
+	local known_info = utils.cfg_get_string(st_ini, npc_st.section_logic, "known_info", victim, false, "", nil)
 	xr_info.loadInfo(victim, st_ini, known_info)
 ]]
-	local npc_st = self.st
-
 	local npc_st_death = npc_st.death
 	if npc_st_death then
-		xr_logic.issue_event(victim, npc_st_death, "death_callback", victim, culprit)
+		xr_logic.issue_event(nil, npc_st_death, "death_callback", victim, culprit)
 	end
 
 	if npc_st.active_section then
-		xr_logic.issue_event(victim, npc_st[npc_st.active_scheme], "death_callback", victim, culprit)
+		xr_logic.issue_event(nil, npc_st[npc_st.active_scheme], "death_callback", victim, culprit)
 	end
 
---	sr_territory.issue_event(victim, "death_callback", victim, culprit)
+--	sr_territory.issue_event(nil, "death_callback", victim, culprit)
 
 	sr_light.check_light(victim)
 
@@ -316,7 +306,7 @@ function motivator_binder:use_callback(used_npc, user)
 		xr_use.notify_on_use(used_npc, user)
 		local npc_st = self.st
 		if npc_st.active_section then
-			xr_logic.issue_event(used_npc, npc_st[npc_st.active_scheme], "use_callback", used_npc, user)
+			xr_logic.issue_event(nil, npc_st[npc_st.active_scheme], "use_callback", used_npc, user)
 		end
 	else
 		local se_npc = sim:object(used_npc:id())
@@ -349,6 +339,7 @@ function motivator_binder:update(delta)
 		if npc_alive == true then
 			trade_manager.update(npc) -- update the NPC on first update to prevent e.g. his walkie-talkie (Suslov) or pistol (flea market night trader) vanishing from his hands if the first time the NPC is "used" after loading is with the item equipped
 		else
+--			dbglog("Loaded %s has %d spots on load", npc:name(), level.map_has_object_spot(id, "deadbody_location"))
 --			local sim = alife()
 			local se_npc = sim:object(id)
 			if se_npc and se_npc.death_droped ~= true then
@@ -447,9 +438,8 @@ function motivator_binder:update(delta)
 			end
 		end
 	else
-		if npc_st.state_mgr then
-			npc_st.state_mgr = nil
-		end
+		npc_st.state_mgr = nil
+		npc_st.move_mgr = nil -- SRP
 		npc:set_tip_text_default()
 		self.death_recorded = true
 	end
