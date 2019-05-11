@@ -38,6 +38,7 @@ v1.1.3
 + Worked around the death of a squad poltergeist failing to be processed correctly if the death callback from its object binder triggers before that of its server entity equivalent, se_monster:on_death(). As a side-effect, poltergeists now leave behind a corpse when killed. - Decane
 + Fixed Sakharov and Lingov not being marked as important characters on the map. - Decane
 + Fixed the issue where a squad commander icon could overlap with a trader icon on the map. - Decane
++ Fixed an SRP v1.0.4 regression that caused the digger captives at the Garbage concentration camp to appear to hold an invisible artifact detector during their artifact search animations. - Decane
 + Made the task to rescue Hound become available only upon the player having completed the task to rescue Drifter, as likely intended, rather than merely upon having initiated it. - Decane
 + Made a couple of drop-boxes in the Abandoned Hospital destructible that mistakenly were not so in the unmodded game. - Decane
 + Fixed the all.spawn typos preventing a few drop-boxes in Limansk from spawning loot when broken. - Decane
