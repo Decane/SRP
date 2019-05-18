@@ -1737,7 +1737,7 @@ function stc_change_tsg(actor, npc, p)
 end
 
 function stc_boom(actor, npc, p)
-	local p1 = p[1]
+	local p1 = p and p[1]
 	if p1 then
 		xr_sound.set_sound_play(0, p1) -- 0 = actor ID
 	else
