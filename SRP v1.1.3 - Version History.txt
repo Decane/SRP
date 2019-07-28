@@ -54,6 +54,7 @@ v1.1.3
 + Fixed corpse map spots haphazardly failing to appear on the minimap. - Shoker, Decane
 + Replaced the generic masked face of the player's unarmored character model with Scar's face, as in the leather jacket armored character model (new game required for effect). - Decane
 + Fixed a regression that caused the in-game name and description of 7.62x54 mmR 7N1 rounds on localizations other than English to be replaced with their XML string IDs. - Decane
++ Fixed medicaments becoming more expensive at the Flea Market after liberating the concentration camp. - Decane
 + Added a unique name and description for 7.62x54 mmR armor-piercing sniper rounds to distinguish them from those boxed for the PKM and corrected their weapon applicability. - Decane
 + (ZRP import) Fixed the player's character model reverting back to the default rookie jacket model upon loading a savegame / changing maps. - NatVac
 + (ZRP import) Fixed the use_object callback for doors and buttons being reset on scheme switch. - NatVac

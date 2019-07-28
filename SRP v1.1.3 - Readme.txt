@@ -205,6 +205,7 @@ Gameplay fixes:
 + Added the missing 'doesn't use shot' text to the threaded barrel upgrade tooltip for the Mossberg 88.
 + Fixed the "Relief backpack" upgrade for various armors wrongly incrementing the carry weight tooltip value by only 5kg instead of the 15kg actually unlocked by the upgrade.
 + Corrected the behavior of shot megaphones.
++ Fixed medicaments becoming more expensive at the Flea Market after liberating the concentration camp.
 + Replaced the generic masked face of the player's unarmored character model with Scar's face, as in the leather jacket armored character model.
 + Fixed the player's character model reverting back to the default rookie jacket model upon loading a savegame / changing maps.
 + Corrected the mesh, name, icon, and description of the several varieties of 7.62x54 mmR ammunition.
