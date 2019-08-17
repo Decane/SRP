@@ -47,6 +47,7 @@ v1.1.3
 + Fixed a typo in Sakharov's trade config that prevented the right multiplier being applied to the sell-price of shotgun ammo. - warcatt00
 + Improved error diagnostics on _g.abort() invocation - a Lua stack traceback is now printed by default. - Decane
 + Russian translation. - olegj5, SurDno
++ Fixed the "Electronic stabilizer" upgrade for the SPAS-12 and Mossberg 88 wrongly decrementing their ammo capacity by 2. - AR2R
 + Fixed the "Relief backpack" upgrade for various armors wrongly incrementing the carry weight tooltip value by only 5kg instead of the 15kg actually unlocked by the upgrade. - vlad54rus
 + Fixed the issue where stationary squad commanders would claim hostiles are nearby when greeting the player even if only neutral/friendly factions occupy neighboring smart terrains. - Decane
 + Restored a few unused parting phrases for Sidorovich and one unused greeting phrase for Forester. - Decane

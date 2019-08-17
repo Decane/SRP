@@ -203,6 +203,7 @@ Gameplay fixes:
 + Fixed the "Life support system" upgrade for the Freedom Exoskeleton making the player bleed out faster rather than slower as intended.
 + Fixed a few instances of a mechanic not being able to upgrade a pre-upgraded variant of a weapon even if they could upgrade the base weapon.
 + Added the missing 'doesn't use shot' text to the threaded barrel upgrade tooltip for the Mossberg 88.
++ Fixed the "Electronic stabilizer" upgrade for the SPAS-12 and Mossberg 88 wrongly decrementing their ammo capacity by 2.
 + Fixed the "Relief backpack" upgrade for various armors wrongly incrementing the carry weight tooltip value by only 5kg instead of the 15kg actually unlocked by the upgrade.
 + Corrected the behavior of shot megaphones.
 + Fixed medicaments becoming more expensive at the Flea Market after liberating the concentration camp.
