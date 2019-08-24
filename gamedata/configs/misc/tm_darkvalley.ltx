@@ -21,7 +21,7 @@ val_capture_smart_1_1
 val_check_blockpost
 val_find_pda
 val_bandit_spy
-val_bandit_spy_kill
+;val_bandit_spy_kill
 val_bandit_spy_return
 val_night_bloodsucker
 val_night_bloodsucker_reward
@@ -100,8 +100,8 @@ target_cond = {-val_kill_flesh_done =target_smart_name(val_smart_terrain_6_4)} t
 prior = 12
 name = val_kill_flesh_name
 text = val_kill_flesh_text
-on_complete = %+val_kill_flesh_done%
-on_reversed = %+val_kill_flesh_done%
+on_complete = %+val_kill_flesh_done +val_unlock_6_4%
+on_reversed = %+val_kill_flesh_done +val_unlock_6_4%
 reward_money = 500
 target_story_ids = 1109
 play_regard = nil
@@ -304,19 +304,19 @@ prior = 11
 name = val_bandit_spy_name
 text = val_bandit_spy_text
 condlist_0 = {+val_bandit_spy_die} complete
-condlist_1 = {+val_bandit_spy_found} reversed
+;condlist_1 = {+val_bandit_spy_found} reversed
 target_story_ids = 1121
 
-[val_bandit_spy_kill]
-type = storyline
-task_type = additional
+;[val_bandit_spy_kill]
+;type = storyline
+;task_type = additional
 ;icon = ui_mt_image_attack_tower
-target_cond = true
-condlist_0 = {+val_bandit_spy_die} complete
-prior = 11
-name = st_val_bandit_spy_kill_name
-text = st_val_bandit_spy_kill_text
-target_story_ids = 1121
+;target_cond = true
+;condlist_0 = {+val_bandit_spy_die} complete
+;prior = 11
+;name = st_val_bandit_spy_kill_name
+;text = st_val_bandit_spy_kill_text
+;target_story_ids = 1121
 
 [val_bandit_spy_return]
 type = storyline

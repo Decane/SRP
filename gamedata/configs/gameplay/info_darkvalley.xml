@@ -127,6 +127,7 @@
 	<info_portion id="val_strike_antenna_two_ready"/>
 	<info_portion id="val_strike_antenna_two_captured"/>
 	<info_portion id="val_killer_on_position_2"/>
+<!--
 	<info_portion id="val_unlock_1_3"/>
 	<info_portion id="val_unlock_1_1"/>
 	<info_portion id="val_unlock_1_2"/>
@@ -135,19 +136,26 @@
 	<info_portion id="val_unlock_2_1"/>
 	<info_portion id="val_unlock_2_2"/>
 	<info_portion id="val_unlock_1_0"/>
+-->
 	<info_portion id="val_unlock_6_4"/>
 	<info_portion id="val_unlock_9_2"/>
 	<info_portion id="val_unlock_9_4"/>
+<!--
 	<info_portion id="val_unlock_10_9"/>
 	<info_portion id="val_unlock_10_10"/>
 	<info_portion id="val_unlock_7_0"/>
+-->
 	<info_portion id="val_be_info_bandit_spy"/>
 	<info_portion id="val_bandit_spy_die"/>
+<!--
 	<info_portion id="val_bandit_spy_found"/>
+-->
 	<info_portion id="val_pda_bandit_spy_onboard"/>
 	<info_portion id="val_bandit_pda_reward"/>
 	<info_portion id="val_bandit_spy_done"/>
+<!--
 	<info_portion id="val_bandit_spy_complete"/>
+-->
 	<info_portion id="val_night_bloodsucker_not_first_talk"/>
 	<info_portion id="val_night_bloodsucker_dialog_is_day"/>
 	<info_portion id="val_night_bloodsucker_started"/>
