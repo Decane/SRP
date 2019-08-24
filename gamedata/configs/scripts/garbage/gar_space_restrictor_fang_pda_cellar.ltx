@@ -10,7 +10,7 @@
 active = sr_idle@ko
 
 [sr_idle@ko]
-on_actor_inside = {+gar_story_came_to_ambush_door} sr_idle@unconscious_start_time_1 %=disable_ui =run_postprocess(gar_ambush_hit)%
+on_actor_inside = {+gar_story_came_to_ambush_door} sr_idle@unconscious_start_time_1 %=disable_ui =play_fake_explosion%
 on_info = {+gar_story_need_to_go_to_cache} sr_idle@end_section
 
 [sr_idle@unconscious_start_time_1]

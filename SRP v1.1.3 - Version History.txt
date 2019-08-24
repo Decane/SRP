@@ -8,7 +8,7 @@ This file provides a comprehensive changelog / version history for the SRP.
 v1.1.3
 
 + Script optimizations. - Decane, NatVac
-+ Fixed the issue where the game would occasionally corrupt during the Fang basement mugging scene at the Flea Market in the Garbage. - Decane
++ Fixed the issue where the game would occasionally corrupt during the Fang basement mugging scene at the Flea Market in the Garbage (new game recommended). - Decane
 + Fixed a rare crash upon reloading a savegame: sim_combat.script:419: attempt to index field 'actor' (a nil value). - Decane
 + Fixed a rare crash upon a smart terrain being captured: sim_squad_generic.script:456: attempt to index field 'current_action' (a nil value). - Decane
 + Fixed a rare crash: xr_kamp.script:433: bad argument #1 to 'random' (interval is empty). - Decane
@@ -29,6 +29,7 @@ v1.1.3
 + Fixed the issue where submitting the item requested in a 'return item' task would not complete the task if the player possesses multiple units of the item when submitting it. (Previous fixes will already have prevented this situation in the SRP. This fix is listed for completeness only.) - Decane
 + Fixed the issue where returning to the Swamps for the first time would not unlock the level changers to the Cordon if Clear Sky has regressed from total victory against the renegades, leaving the player locked into the Swamps without explanation until Clear Sky advances back to its final faction war tier. - Decane
 + Fixed Clear Sky's "Find the generator" task being received and immediately completed if the player initially bypasses its assigning space restrictor in the institute building but returns to it after deactivating the generator. - Decane
++ Fixed the issue where the player could bypass the space restrictor that completes Clear Sky's "Find the generator" task by entering the institute building through its eastern entrance (new game required for effect). - Decane
 + Fixed a typo in gulag_general.script that prevented mutants from behaving aggressively on patrol paths linking them to attack-targets. This caused them to move sluggishly to camps that the player had been tasked to defend, unless aggravated by an external force (e.g. the player). - Decane
 + Fixed four invalid waypoint name indices in all.spawn to make two waypoints at the 'Boat park' and two at the 'Village ruins' available to NPCs. - Decane
 + Fixed the bridge to Limansk in the Red Forest not aligning properly when lowered, which in rare cases would cause NPCs to never reach the other side. - PYP
