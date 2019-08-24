@@ -542,10 +542,8 @@ function sim_squad_generic:update()
 	self:get_next_action()
 	self:refresh()
 
-	if not self.items_spawned then
-		if self.smart_id ~= nil then
-			self:spawn_box_items(self.smart_id)
-		end
+	if not self.items_spawned and self.smart_id ~= nil then
+		self:spawn_box_items(self.smart_id)
 	end
 end
 
@@ -674,32 +672,29 @@ function sim_squad_generic:get_next_action()
 		end
 	end
 
-	-- If we have been assigned a target smart, 'target_smart' = our target. (Lower priority.)
+	-- If we have been assigned a target smart, 'target_smart_id' is initially set to it.
+	-- But if we are the squad joining the player in an active 'capture' task received via
+	-- dialog, 'target_smart_id' is set to the task target instead.
 
-	local target_smart = nil
-
-	if self.assigned_target_smart_id ~= nil then
-		target_smart = board.smarts[self.assigned_target_smart_id].smrt
-	end
-
-	-- If we are the squad joining the player in an active 'capture' task received via dialog, 'target_smart' = task target. (Higher priority.)
+	local target_smart_id = self.assigned_target_smart_id -- may be nil
 
 	for k, task in pairs (tm.task_info) do
 		if task.src_obj == self.squad_id then
-			target_smart = board.smarts[task.target].smrt
+			target_smart_id = task.target
 			break
 		end
 	end
 
-	-- If we have neither a faction target nor task target, stay.
+	-- If we have neither a faction target nor dialog capture target, stay.
+	-- If our faction target or dialog capture target is our current smart, stay.
 
-	if target_smart == nil then
+	if target_smart_id == nil or target_smart_id == smart_id then
 		self.current_action = sim_stay_point(self)
 		self.current_action:make()
 		return
 	end
 
-	local clear_path = board:find_path(smart_id, target_smart.id, self)
+	local clear_path = board:find_path(smart_id, target_smart_id, self)
 	local next_point = clear_path[#clear_path]
 
 	self.attacking_by_quest = nil
@@ -709,73 +704,55 @@ function sim_squad_generic:get_next_action()
 
 	if task ~= nil then
 		if task.support_attack == true and task.community == self.player_id then
-			if task.target == next_point.id then
+--			if task.target == next_point.id then -- guaranteed
 				self.attacking_by_quest = task.entity_id
 				attack_threshold = 999
-			end
+--			end
 		end
 	end
 
-	if next_point.value == 0 then
+	if next_point.value == 0 then -- should never happen with the SRP
 
 		self.current_action = sim_stay_point(self)
 
 	elseif next_point.value < attack_threshold then
 
-		local exist_task_type = nil
-		local exist_task_community = nil
-
---		task = tm:get_tasks_by_smart(next_point.id)
-
-		if task ~= nil then
-			exist_task_type = task.type
-			exist_task_community = task.community
-		end
+		local exist_task_type = task and task.type
 
 		if exist_task_type == "defend_smart_delay" then
 			self.current_action = sim_stay_point(self)
-		elseif exist_task_type == "capture_smart" and exist_task_community ~= squad_faction then
+		elseif exist_task_type == "capture_smart" and task.community ~= squad_faction then
 			self.current_action = sim_stay_point(self)
 		else
-			local player = board.players[squad_faction]
-			local next_smart = board.smarts[next_point.id].smrt
-			local next_smart_owner = next_smart.player_name
-			local squad_and_next_smart_owner_are_enemies = game_relations.is_factions_enemies(squad_faction, next_smart_owner)
+			local faction = board.players[squad_faction]
+			local next_smart_owner = board.smarts[next_point.id].smrt.player_name
 
---			if player.brain.use_delay_attack == true and next_smart_owner ~= "none" and next_smart_owner ~= squad_faction and exist_task_type == nil then
-			if player.brain.use_delay_attack == true and squad_and_next_smart_owner_are_enemies and exist_task_type == nil then
+			if faction.brain.use_delay_attack == true and next_smart_owner ~= "none" and next_smart_owner ~= squad_faction and exist_task_type == nil then
 
-				local has_suitable_target = false
-				for kk, vv in pairs (board.smarts[next_smart.id].squads) do
+				local delay_attack_defender = nil
+
+				for kk, vv in pairs (board.smarts[next_point.id].squads) do
 					if vv.squad_online == true then
-						if not game_relations.is_squad_enemy_to_actor(vv.squad_id) then
-							has_suitable_target = true
+--						if not game_relations.is_squad_enemy_to_actor(vv.squad_id) then
+						if not game_relations.check_all_squad_members(vv.squad_id, "enemy") then
+							delay_attack_defender = vv.player_id
 							break
 						end
 					end
 				end
 
-				if has_suitable_target then
+				if delay_attack_defender then
 					self.current_action = sim_stay_point(self)
 					self.current_action.delay_attack_id = next_point.id
+					self.current_action.delay_attack_defender = delay_attack_defender
 					self.current_action.next_point_id = next_point.id
 				else
-					self.current_action = sim_attack_point(self, next_point.id, self.attacking_by_quest ~= nil)
+					self.current_action = sim_attack_point(self, next_point.id, false) --, self.attacking_by_quest ~= nil) -- self.attacking_by_quest is always nil here
 --					self.current_action.target_power_value = next_point.value
 				end
 			else
-				local friendly_squad_quan
-				if next_smart_owner == "none" or squad_and_next_smart_owner_are_enemies then
-					friendly_squad_quan = board:get_smart_squad_quantity(next_smart, board.players[squad_faction])
-				elseif next_smart_owner == squad_faction then
-					friendly_squad_quan = board:get_smart_squad_quantity(next_smart, board.players[squad_faction]) + board:get_smart_population(next_smart)
-				end
-				if friendly_squad_quan ~= nil and friendly_squad_quan < next_smart.squad_capacity then
-					self.current_action = sim_attack_point(self, next_point.id, self.attacking_by_quest ~= nil)
---					self.current_action.target_power_value = next_point.value
-				else
-					self.current_action = sim_stay_point(self)
-				end
+				self.current_action = sim_attack_point(self, next_point.id, self.attacking_by_quest ~= nil)
+--				self.current_action.target_power_value = next_point.value
 			end
 		end
 	else
@@ -1926,49 +1903,24 @@ function sim_stay_point:init_defend_smart_delay(attack_squad)
 	if self.delay_attack_id == nil then
 		return
 	end
-	if self.board.players[attack_squad.player_id].brain.use_delay_attack ~= true then
-		return
-	end
 	if attack_squad.delayed_attack_task ~= nil then -- if squad is already attacking
 		return
 	end
-	local target_smart = self.board.smarts[self.delay_attack_id]
-	local target_smart_obj = target_smart.smrt
+	local target_smart_obj = self.board.smarts[self.delay_attack_id].smrt
 	if target_smart_obj.combat_manager:point_under_attack() then
 		return
 	end
---	dbgmsg("Trying to assign a delayed defend task...")
---	dbgmsg("Checking tasks already in progress...")
-	local tm = task_manager.get_task_manager()
-	if tm:get_tasks_by_smart(self.delay_attack_id) ~= nil then
---		dbgmsg("Failed to give delayed defend task because defend task already in progress!")
-		return
-	end
-	local script_target = attack_squad:get_script_target()
-	if script_target and script_target ~= self.delay_attack_id then
---		dbgmsg("Failed to give delayed defend task because attack squad candidate has script target differing from smart to defend!")
-		return
-	end
+	-- No existing tasks for this smart, guaranteed by get_next_action():
+--	local tm = task_manager.get_task_manager()
+--	if tm:get_tasks_by_smart(self.delay_attack_id) ~= nil then
+--		return
+--	end
 	if db.actor:position():distance_to_sqr(target_smart_obj.position) <= PLAYER_HELP_MAX_RADIUS then
-		for k, defense_squad in pairs (target_smart.squads) do
-			if defense_squad.squad_online == true then
-				local defender_action = defense_squad.current_action
-				if defender_action == nil or defender_action.name == "stay_point" then
-					if game_relations.check_all_squad_members(defense_squad.squad_id, "enemy") == false then
-						if attack_squad.squad_power < defense_squad.squad_power then
-							return
-						end
-						local task = tm:select_task("defend_smart_delay", target_smart_obj, defense_squad.player_id)
-						if task.status ~= "selected" then
-							attack_squad.delayed_attack_task = task.entity_id
-							task.src_squad_id = attack_squad.squad_id
-							task:give_task(defense_squad.player_id)
---							dbgmsg("Gave delayed defend task to "..trans(defense_squad.player_id).." squad with ID "..tostring(defense_squad.squad_id))
-						end
-						return
-					end
-				end
-			end
+		local task = task_manager.get_task_manager():select_task("defend_smart_delay", target_smart_obj, self.delay_attack_defender)
+		if task.status ~= "selected" then
+			attack_squad.delayed_attack_task = task.entity_id
+			task.src_squad_id = attack_squad.squad_id
+			task:give_task(self.delay_attack_defender)
 		end
 	end
 end

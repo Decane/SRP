@@ -11,11 +11,11 @@ function CRandomTask:__init()
 	self.id_generator = object_collection.object_collection()
 
 	local ini = self.task_ini
+
 	if not ini:section_exist("list") then
-		abort("There is no section [list] in task_manager.ltx")
+		abort("[CRandomTask:__init]: There is no section [list] in misc\\task_manager.ltx or any of its includes.")
 	end
 
-	local n = ini:line_count("list")
 --	local category = ""
 
 	self.task_info = {}
@@ -32,15 +32,15 @@ function CRandomTask:__init()
 --	self.eliminate_squad_tasks = {}
 	self.inited_find_upgrade_tasks = {}
 
-	for i = 0, n - 1 do
+	for i = 0, ini:line_count("list") - 1 do
 
 		local result, id = ini:r_line("list", i, "", "")
 
 		if not ini:section_exist(id) then
-			abort("There is no section [%s] in task_manager.ltx", id)
+			abort("[CRandomTask:__init]: There is no section [%s] in misc\\task_manager.ltx or any of its includes, despite being listed under section [list].", id)
 		end
 
-		local type = utils.cfg_get_string(ini, id, "type", nil, false, "", "general")
+		local type = utils.cfg_get_string(ini, id, "type", nil, true, "")
 
 		if type == "storyline" then
 			self.general_tasks[id] = task_objects.CStorylineTask(ini, id, "storyline")
@@ -64,6 +64,8 @@ function CRandomTask:__init()
 			self.hide_from_surge[id] = task_objects.CHideFromSurgeTask(ini, id, "hide_from_surge")
 --		elseif type == "eliminate_squad" then
 --			self.eliminate_squad_tasks[id] = task_objects.CEliminateSquadTask(ini, id, "eliminate_squad")
+		else
+			abort("[CRandomTask:__init]: Invalid task type '%s' in section [%s] in misc\\task_manager.ltx or one of its includes.", type, id)
 		end
 	end
 

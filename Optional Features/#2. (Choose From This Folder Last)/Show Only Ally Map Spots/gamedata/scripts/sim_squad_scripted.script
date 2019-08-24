@@ -171,12 +171,12 @@ end
 
 function sim_squad_scripted:check_squad_come_to_point()
 
-	if self.parsed_targets == nil then
-		return true
-	end
+--	if self.parsed_targets == nil then -- impossible
+--		return true
+--	end
 
-	local next_target = self.next_target or 0
 	if self.assigned_target_smart_id ~= nil and self.smart_id == self.assigned_target_smart_id then
+		local next_target = self.next_target or 0
 		if self.parsed_targets[next_target + 1] ~= nil then
 			self.next_target = next_target + 1
 			return true

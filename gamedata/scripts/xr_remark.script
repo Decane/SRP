@@ -203,7 +203,7 @@ end
 local function parse_target(target)
 	local pos = string.find(target, ",", 1, true)
 	if pos then
-		string_sub = string.sub
+		local string_sub = string.sub
 		return string_sub(target, 1, pos - 1), string_sub(target, pos + 1)
 	else
 		return target, nil

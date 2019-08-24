@@ -758,7 +758,7 @@ function CCaptureSmartTask:check_target(smart, faction) -- called 1st (not on lo
 end
 
 function CCaptureSmartTask:get_inited_task(smart, faction, entity_id) -- called 2nd (not on load)
-	local task = CCaptureSmartTask(self.task_ini, self.base_id , self.type) -- calls CGeneralTask:__init() and CCaptureSmartTask:__init()
+	local task = CCaptureSmartTask(self.task_ini, self.base_id, self.type) -- calls CGeneralTask:__init() and CCaptureSmartTask:__init()
 	task:init_task(smart, faction)
 	task.entity_id = entity_id
 	return task
