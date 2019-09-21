@@ -211,7 +211,7 @@ Gameplay fixes:
 + Fixed the player's character model reverting back to the default rookie jacket model upon loading a savegame / changing maps.
 + Corrected the mesh, name, icon, and description of the several varieties of 7.62x54 mmR ammunition.
 + Extended GSC's implementation of rank-dependent NPC money from just Duty, Freedom, and the bandits, to all the game's factions.
-+ Removed the out-of-place AK-74 from Scar's starting inventory which was introduced there by patch v1.5.10.
++ Removed the out-of-place AK-74 from Scar's starting inventory which was introduced there by patch v1.5.09.
 + Deleted the duplicate supply box spawn at the Trailhead in the Swamp.
 + Moved the eastern Cordon-to-Garbage level changer in order to make the player less likely to accidentally walk into it.
 + Made both the inventory box in the Old Church at the Great Swamp and the downward-facing safe at the Yantar factory less tedious to access. Also spawned a wooden box underneath the former in order to prevent it from seeming to levitate.
@@ -219,7 +219,7 @@ Gameplay fixes:
 + Made a few additional way-points available to NPCs that were not so due to bugs.
 + Made it possible to refuse payment to Garbage bandit robber squads via dialog.
 + Improved support for playing the game in a non-linear fashion.
-+ Fixed the Abandoned Hospital not having a map in the PDA.
++ Fixed the Abandoned Hospital not having a high-resolution map in the PDA.
 + Fixed a multitude of info portion and texture related console errors.
 + Fixed armor descriptions pertaining to artifact containers and upgrade possibilities.
 + Assigned unique names to some quest weapons and armors that were missing them.

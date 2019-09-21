@@ -302,7 +302,7 @@ v1.0.4
 ~ Tweaked NPC bullet immunities, rebalanced shotguns to be less devastating with buckshot and more lethal with darts and slugs, and re-enabled the hit probability system for NPCs (but not for the player) - all and only when using the optional 'Alternative Ballistics' feature. - Decane
 ~ Replaced the optional 'Inject FXAA' and 'Inject SMAA' features with SweetFX. (By default, only SMAA is enabled if SweetFX is used.) - CeeJay.dk
 ~ Integrated the previously optional 'Faction War Tweaks' feature into the core patch.
-- Removed the AK-74 introduced into Scar's starting inventory with patch v1.5.10 because its presence there constitutes a continuity error.
+- Removed the AK-74 introduced into Scar's starting inventory with patch v1.5.09 because its presence there constitutes a continuity error (new game required for effect).
 - Removed Hermit's invulnerability, a legacy feature of Vandal's Immortality Fix.
 - Removed the "Weapon Reload DOF Changes" documentation from the archive.
 
@@ -319,7 +319,7 @@ v1.0.3
 
 + Fixed some misaligned UI elements in the options menu. - Decane
 + Fixed bullet tracers not being displayed in DX10/10.1 mode. - Gosuke
-+ Fixed the Abandoned Hospital not having a map in the PDA. - Decane
++ Fixed the Abandoned Hospital not having a high-resolution map in the PDA. - Decane
 + Fixed the branching of some Duty member dialogs in Agroprom. - Decane
 + Fixed the issue where the player could ask Major Zvyagintsev about Mitay even before learning of Mitay. - Decane
 + Fixed the game crashing due to a task identifier data overflow: ! [LUA][ERROR] ERROR: You are saving too much. - IG2007
@@ -508,7 +508,7 @@ v0.7.3 BETA
 v0.7.2 BETA
 
 + Included an experimental invulnerability fix for the stalker trader at Agroprom who would sometimes get killed by bandits. - Decane
-+ Corrected the Stalker Suit arm texture. - Kill_the_Strelok
++ Fixed the Sunrise Suit using the Leather Jacket HUD model instead of its own. - Kill_the_Strelok
 + Fixed a multitude of errors and inconsistencies in the weapon upgrade system. - DerHeiligeApfel
 + Fixed the coloring of the RPG-7 icon to coincide with that of the in-game model. - BobBQ
 
