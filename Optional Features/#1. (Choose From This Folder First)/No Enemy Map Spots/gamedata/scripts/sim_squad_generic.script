@@ -130,7 +130,7 @@ function sim_squad_generic:spawn_box_items(smart_id)
 	local smart = self.board.smarts[smart_id].smrt
 
 	if smart.smart_level ~= get_level_name() then
-		self.items_spawned = true
+--		self.items_spawned = true
 		return
 	end
 
