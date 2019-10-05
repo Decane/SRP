@@ -1900,7 +1900,14 @@ function sim_stay_point:init_defend_smart_delay(attack_squad)
 --		return
 --	end
 	if db.actor:position():distance_to_sqr(target_smart_obj.position) <= PLAYER_HELP_MAX_RADIUS then
-		local task = task_manager.get_task_manager():select_task("defend_smart_delay", target_smart_obj, self.delay_attack_defender)
+		local tm = task_manager.get_task_manager()
+		for k, task in pairs (tm.task_info) do
+			local task_type = task.type
+			if task_type == "defend_smart" or task_type == "defend_smart_delay" then
+				return
+			end
+		end
+		local task = tm:select_task("defend_smart_delay", target_smart_obj, self.delay_attack_defender)
 		if task.status ~= "selected" then
 			attack_squad.delayed_attack_task = task.entity_id
 			task.src_squad_id = attack_squad.squad_id
