@@ -113,7 +113,15 @@ No Enemy Map Spots (*)
 
 Removes the red enemy indicator icons from the world map. Applies to both human NPCs and mutants. Recommended for greater suspense and a more challenging game.
 
-Note that mini-map spots on the HUD are not affected and behave as in the unmodded game.
+Note that HUD mini-map spots are not affected and behave as in the unmodded game. To also remove enemy map spots from the mini-map, use the 'No Enemy Minimap Spots' feature.
+
+
+====================================================
+No Enemy Minimap Spots
+====================================================
+
+
+Removes the red enemy indicator icons from the HUD mini-map.
 
 
 ====================================================

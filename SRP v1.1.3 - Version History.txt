@@ -23,12 +23,14 @@ v1.1.3
 + Fixed the issue where 'capture' tasks would sometimes be offered by NPCs even for smart terrains unreachable to them. - Decane
 + Fixed the issue where 'find upgrade' tasks would not cancel when the mechanic who gave them dies or becomes hostile after loading a savegame. - Decane
 + Fixed the issue where the skirmish between the loners and military at the Cordon bus stop could begin prematurely, preventing the player from receiving the task to defend the loner patrol. - Decane
-+ Fixed the issue where non-scripted squads loaded from a savegame, as opposed to spawning into the Zone in the current game session, would not spawn inventory box items. - Decane
++ Fixed an SRP v1.0.7 regression that prevented new faction equipment chest supplies from spawning on a smart terrain upon its occupying squad switching online if the squad captured it while offline. - Decane
++ Fixed the issue where non-scripted squads loaded from a savegame (as opposed to spawning into the Zone in the current game session) would not spawn inventory box items. - Decane
++ Fixed the wrong location-based multiplier being used to spawn faction equipment chest supplies for scripted squads loaded from a savegame (as opposed to spawning into the Zone in the current game session). - Decane
 + Fixed the issue where squads could prioritize secondary faction war targets over primary targets, potentially leading to absurd behavior such as Freedom preferring to send squads towards a loner-captured Barrier rather than sending them to capture the Duty base. - Decane
 + Fixed the issue where squads would readily abandon forward targets during the faction war upon loss of an earlier target even if squads at less important smart terrains are available to resecure the earlier target. - Decane
 + Fixed the issue where submitting the item requested in a 'return item' task would not complete the task if the player possesses multiple units of the item when submitting it. (Previous fixes will already have prevented this situation in the SRP. This fix is listed for completeness only.) - Decane
 + Fixed the issue where returning to the Swamps for the first time would not unlock the level changers to the Cordon if Clear Sky has regressed from total victory against the renegades, leaving the player locked into the Swamps without explanation until Clear Sky advances back to its final faction war tier. - Decane
-+ Fixed Clear Sky's "Find the generator" task being received and immediately completed if the player initially bypasses its assigning space restrictor in the institute building but returns to it after deactivating the generator. - Decane
++ Fixed Clear Sky's "Find the generator" task being received and immediately completed if the player initially bypasses its assigning space restrictor in the institute building but returns to it after deactivating the generator. (The fix below renders this obsolete. This fix is listed for completeness only.) - Decane
 + Fixed the issue where the player could bypass the space restrictor that completes Clear Sky's "Find the generator" task by entering the institute building through its eastern entrance (new game required for effect). - Decane
 + Fixed a typo in gulag_general.script that prevented mutants from behaving aggressively on patrol paths linking them to attack-targets. This caused them to move sluggishly to camps that the player had been tasked to defend, unless aggravated by an external force (e.g. the player). - Decane
 + Fixed four invalid waypoint name indices in all.spawn to make two waypoints at the 'Boat park' and two at the 'Village ruins' available to NPCs. - Decane
@@ -42,7 +44,7 @@ v1.1.3
 + Fixed an SRP v1.0.4 regression that caused the digger captives at the Garbage concentration camp to appear to hold an invisible artifact detector during their artifact search animations. - Decane
 + Made the task to rescue Hound become available only upon the player having completed the task to rescue Drifter, as likely intended, rather than merely upon having initiated it. - Decane
 + Made a couple of drop-boxes in the Abandoned Hospital destructible that mistakenly were not so in the unmodded game. - Decane
-+ Fixed the all.spawn typos preventing a few drop-boxes in Limansk from spawning loot when broken. - Decane
++ Fixed the all.spawn typos preventing a few drop-boxes in Limansk from spawning loot when broken (new game required for effect). - Decane
 + Fixed a few instances of a mechanic not being able to upgrade a pre-upgraded variant of a weapon even if they could upgrade the base weapon. - Decane
 + Fixed the incorrect parsing of hyphenated item names appearing as dependees for ammo in section 'item_dependence' in death_generic.ltx. - Decane
 + Fixed a typo in Sakharov's trade config that prevented the right multiplier being applied to the sell-price of shotgun ammo. - warcatt00
@@ -56,14 +58,14 @@ v1.1.3
 + Fixed corpse map spots haphazardly failing to appear on the minimap. - Shoker, Decane
 + Replaced the generic masked face of the player's unarmored character model with Scar's face, as in the leather jacket armored character model (new game required for effect). - Decane
 + Fixed a regression that caused the in-game name and description of 7.62x54 mmR 7N1 rounds on localizations other than English to be replaced with their XML string IDs. - Decane
-+ Fixed an SRP v1.0.7 regression that prevented new faction equipment chest supplies from spawning on a smart terrain upon its occupying squad switching online if the squad captured it while offline. - Decane
-+ Fixed medicaments becoming more expensive at the Flea Market after liberating the concentration camp. - Decane
++ Fixed medicaments becoming more rather than less expensive at the Flea Market after liberating the concentration camp. - Decane
 + Added a unique name and description for 7.62x54 mmR armor-piercing sniper rounds to distinguish them from those boxed for the PKM and corrected their weapon applicability. - Decane
 + (ZRP import) Fixed the player's character model reverting back to the default rookie jacket model upon loading a savegame / changing maps. - NatVac
 + (ZRP import) Fixed the use_object callback for doors and buttons being reset on scheme switch. - NatVac
 + (ZRP import) Fixed NPCs sharing a common global variable in state_mgr.evaluator_state_mgr_idle_alife:evaluate() to determine their individual behavior. - NatVac per Alundaio
 + (ZRP import) Prevented NPCs dying of collision damage when spawning at the same spot as another NPC. - bardak
 + (Optional) Added a stash prefiller mod that randomizes a stash's spawn container. - Decane
++ (Optional) Added a feature to disable enemy map spots on the mini-map, too, instead of only on the world map as done by the 'No Enemy Map Spots' and 'Show Only Ally Map Spots' features. - Decane
 ~ Optimized and fine-tuned the DX10/10.1 wet surfaces shader: (i) slightly reduced its glossiness; (ii) restored the efficacy of the r3_dynamic_wet_surfaces_* console vars on the distance at which the shader's effects are visible (regressed in SRP v1.0.4); (iii) reduced water splash size to be more realistic. - Decane
 ~ Made each attribute bar length in the "Faction War" tab of the PDA reflect the sum of the levels of that attribute for the two opposing factions displayed, instead of the highest level of the attribute among all factions. - Decane
 ~ The name of the target location is now indicated in the 'Hold the point until help arrives' and 'Repel the enemy counterattack' phase titles of 'capture' tasks. - Decane
@@ -323,7 +325,7 @@ v1.0.3
 + Fixed the Abandoned Hospital not having a high-resolution map in the PDA. - Decane
 + Fixed the branching of some Duty member dialogs in Agroprom. - Decane
 + Fixed the issue where the player could ask Major Zvyagintsev about Mitay even before learning of Mitay. - Decane
-+ Fixed the game crashing due to a task identifier data overflow: ! [LUA][ERROR] ERROR: You are saving too much. - IG2007
++ Fixed the game crashing due to an unsafely large amount of data being written to the net_packet: ! [LUA][ERROR] ERROR: You are saving too much. - Decane
 + Fixed a crash in Agroprom if Orest is displaced from his designated space restrictor: [error]Description : any vertex in patrol path [agr_stalker_leader_walk] is inaccessible for object [agr_stalker_base_leader]. - Decane
 + Fixed a crash in the Garbage if the player receives a task with Wild Napr as its target while a squad registered to the Flea Market is in a combat/defense state: ! [LUA][ERROR] ERROR: wrong target for storyline quest: logic@work5,gar_smart_terrain_6_3. - Decane
 + Fixed Lebedev's audio transmission being initiated mid-sentence upon the player's first arrival in the Red Forest. - Decane
