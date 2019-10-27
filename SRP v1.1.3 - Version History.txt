@@ -8,7 +8,7 @@ This file provides a comprehensive changelog / version history for the SRP.
 v1.1.3
 
 + Script optimizations. - Decane, NatVac
-+ Fixed the issue where the game would occasionally corrupt during the Fang basement mugging scene at the Flea Market in the Garbage (new game recommended). - Decane
++ Fixed the game sometimes becoming corrupted during the Flea Market basement mugging scene in the Garbage (new game recommended). - Decane
 + Fixed a rare crash upon reloading a savegame: sim_combat.script:419: attempt to index field 'actor' (a nil value). - Decane
 + Fixed a rare crash upon a smart terrain being captured: sim_squad_generic.script:456: attempt to index field 'current_action' (a nil value). - Decane
 + Fixed a rare crash: xr_kamp.script:433: bad argument #1 to 'random' (interval is empty). - Decane
@@ -23,6 +23,7 @@ v1.1.3
 + Fixed the issue where 'capture' tasks would sometimes be offered by NPCs even for smart terrains unreachable to them. - Decane
 + Fixed the issue where 'find upgrade' tasks would not cancel when the mechanic who gave them dies or becomes hostile after loading a savegame. - Decane
 + Fixed the issue where the skirmish between the loners and military at the Cordon bus stop could begin prematurely, preventing the player from receiving the task to defend the loner patrol. - Decane
++ Fixed the "Help the stalkers" task in Agroprom being cancelled immediately after being received if the loner faction is hostile to the player. - Decane
 + Fixed an SRP v1.0.7 regression that prevented new faction equipment chest supplies from spawning on a smart terrain upon its occupying squad switching online if the squad captured it while offline. - Decane
 + Fixed the issue where non-scripted squads loaded from a savegame (as opposed to spawning into the Zone in the current game session) would not spawn inventory box items. - Decane
 + Fixed the wrong location-based multiplier being used to spawn faction equipment chest supplies for scripted squads loaded from a savegame (as opposed to spawning into the Zone in the current game session). - Decane
@@ -493,7 +494,7 @@ v0.8.0 BETA
 + Fixed armor descriptions pertaining to artifact containers and upgrade possibilities. - Decane
 + Fixed Freedom's "Eliminate the potential threat at the gas station" task being cancelled when the player completes its objective. - Decane
 + Fixed the Army Warehouses 'return item' task where multiple Flame artifacts would be taken from the player for completion of the task if the player was in possession of more than one Flame artifact upon returning to the task-giver. - Decane
-+ Fixed a typo in the all.spawn file (new game required for effect). - PhoenixHeart
++ Fixed a typo in the all.spawn file. - PhoenixHeart
 + Fixed a possible all.spawn Army Warehouses waypoint crash when mutants attack the military base: ! [LUA][ERROR] ERROR: Path between [mil_smart_terrain_7_11] and [mil_smart_terrain_7_10] doesnt exist for [mil_dogs_lair_6] (new game required for effect). - smoq2
 + Began correcting global dialog and message texts. - Decane
 + Fixed the issue with a missing SPAS-12 reload sound. - Decane
