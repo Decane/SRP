@@ -1414,11 +1414,6 @@ end
 --	SRP functions:
 ----------------------------------------------------------------------------------------------
 
-function npc_is_squad_leader(actor, se_npc) -- use only in "suitable" field of NPC logic
-	local squad = sim_board.get_sim_board().squads[se_npc.squad_id]
-	return squad and squad.commander_id == se_npc.id
-end
-
 function npc_is_in_attacking_squad(actor, se_npc) -- use only in "suitable" field of NPC logic
 	local squad = sim_board.get_sim_board().squads[se_npc.squad_id]
 	return squad and squad.current_action and squad.current_action.name == "attack_point"

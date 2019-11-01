@@ -275,6 +275,7 @@
 		<supplies>
 			[spawn] \n
 			device_torch \n
+			detector_simple \n
 		</supplies>
 
 #include "gameplay\character_criticals_1.xml"

@@ -138,7 +138,7 @@ function send_sound(npc, faction, point, str, str2)
 		return
 	end
 
-	-- xr_sound.set_sound_play(db.actor:id(), "pda_tips")
+	-- xr_sound.set_sound_play(0, "pda_tips") -- 0 = actor ID
 
 	local texture = "ui_iconsTotal_grouping"
 
@@ -197,7 +197,7 @@ end
 function send_treasure(name)
 	local news_caption = trans("st_found_new_treasure")
 	local news_text = trans(name)
---	xr_sound.set_sound_play(db.actor:id(), "pda_news") -- uncomment this line to get 'stash found' sound
+--	xr_sound.set_sound_play(0, "pda_news") -- 0 = actor ID; uncomment this line to get 'stash found' sound
 	db.actor:give_game_news(news_caption, news_text, "ui_iconsTotal_found_thing", 0, 3000)
 end
 

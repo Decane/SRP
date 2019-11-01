@@ -34,7 +34,7 @@ function faction_brain_human:calculate_current_expansion(no_sound)
 
 	for i = 0, cur_exp - 1 do
 		local expansion = exp_table[i]
-		local power_valid = relative_power >= expansion.precondition_power
+		local power_valid = relative_power >= expansion.precondition_power - 0.05
 		local advance_valid = self:check_sim_targets_advance(expansion)
 		local cond_valid = xr_logic.pick_section_from_condlist(actor, self, expansion.precondition_cond) == "true"
 		local actor_valid = expansion.precondition_actor_in_faction ~= true or faction.community_player == true

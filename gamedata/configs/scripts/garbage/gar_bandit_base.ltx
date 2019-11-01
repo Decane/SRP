@@ -1,9 +1,10 @@
 ; DC300516: Made it so a squad leader cannot be a crowkiller minigame commentator.
+; DC250819: Instead made it so the member of a squad in 'attack' mode cannot be a crowkiller minigame commentator.
 ;           This should prevent situations where the commentator's buddies end up having to wait for him forever and stalling the faction war.
 
 [logic@commentator_1]
 active = walker@main_commentator_1
-suitable = {-gar_bandit_base_minigame_dead !is_smart_in_combat(gar_smart_terrain_3_5) !npc_is_squad_leader =npc_community(bandit)}	; DC300516
+suitable = {-gar_bandit_base_minigame_dead !is_smart_in_combat(gar_smart_terrain_3_5) !npc_is_in_attacking_squad =npc_community(bandit)} ; DC250819
 prior = 110
 
 [walker@main_commentator_1]
@@ -27,7 +28,7 @@ on_info3 = {=check_crowkiller_state(breaked)} walker@main_commentator_1
 
 [logic@commentator_2]
 active = walker@main_commentator_2
-suitable = {-gar_bandit_base_minigame_dead !is_smart_in_combat(gar_smart_terrain_3_5) !npc_is_squad_leader =npc_community(bandit)}	; DC300516
+suitable = {-gar_bandit_base_minigame_dead !is_smart_in_combat(gar_smart_terrain_3_5) !npc_is_in_attacking_squad =npc_community(bandit)} ; DC250819
 prior = 110
 
 [walker@main_commentator_2]

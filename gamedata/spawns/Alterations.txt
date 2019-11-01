@@ -302,6 +302,12 @@ object_flags = 0xffffffbf
 
 ------------------------------------
 
+[2617] <deleted>
+
+• This is the trip-wire in the basement of the Flea Market: 'gar_zone_mine_field_no_damage'. In vanilla, it is deleted (by its story ID, 700) in section '[sr_idle@unconscious_talk_4_time]' of gar_space_restrictor_fang_pda_cellar.ltx after it has served its purpose. This sometimes corrupts the game. In the SRP, the explosion is simulated with effectors to avoid the need to delete the trip-wire, or indeed to spawn it.
+
+------------------------------------
+
 [2758]
 
 sim_avail = {=actor_in_stalker =is_stalker_at_expansion_4_or_higher} true, {-gar_story_searched_digger_body} false, {+gar_quest_get_old_pda_started -gar_quest_bring_old_pda_started} false, true
@@ -1510,14 +1516,6 @@ object_flags = 0xffffff3b
 
 ------------------------------------
 
-[9852]
-
-;att_restr = mil_space_restrictors_3_5_sr_attack
-
-• No such restrictor exists.
-
-------------------------------------
-
 [9847]
 
 targets = mil_smart_terrain_2_3, red_smart_terrain_3_1
@@ -1526,17 +1524,17 @@ targets = mil_smart_terrain_2_3, red_smart_terrain_3_1
 
 ------------------------------------
 
-[9871]
+[9852]
 
-targets = mil_smart_terrain_7_7, mil_smart_terrain_7_11
+;att_restr = mil_space_restrictors_3_5_sr_attack
 
-• Added 'mil_smart_terrain_7_11' as a target to prevent a crash when pseudodogs attack the military base.
+• No such restrictor exists.
 
 ------------------------------------
 
-[9873]
+[9866]
 
-targets = mil_smart_terrain_7_7, mil_smart_terrain_7_10
+targets = mil_smart_terrain_7_8, mil_smart_terrain_7_9, mil_smart_terrain_7_10, mil_smart_terrain_7_11
 
 • Added 'mil_smart_terrain_7_10' as a target to prevent a crash when pseudodogs attack the military base.
 
@@ -1896,6 +1894,14 @@ object_flags = 0xffffff3b
 [10983] <deleted>
 
 • Superfluous space restrictor: 'lim_final_transformer_restr'. Not referenced anywhere in the game code.
+
+------------------------------------
+
+[10984]
+
+position = 88.6999969482422,7.34419202804565,245.654907226563
+
+• This is the space restrictor that the player must enter to complete the 'Find the generator' task: 'lim_final_find_transformer'. Its x-coordinate has been changed from 74.7809219360352 to 88.6999969482422 to ensure the player is 'caught' in it even if entering the Limansk institute building from the eastern entrance.
 
 ------------------------------------
 

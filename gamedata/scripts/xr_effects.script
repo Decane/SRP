@@ -1737,7 +1737,7 @@ function stc_change_tsg(actor, npc, p)
 end
 
 function stc_boom(actor, npc, p)
-	local p1 = p[1]
+	local p1 = p and p[1]
 	if p1 then
 		xr_sound.set_sound_play(0, p1) -- 0 = actor ID
 	else
@@ -1952,6 +1952,18 @@ function release_npc_item(actor, npc, p)
 --		local sim = alife()
 		sim:release(sim:object(item:id()), true)
 	end
+end
+
+function play_fake_explosion(actor)
+	local actor_pos = vector():set(0,0,0)
+	local mine_click_snd = sound_object("weapons\\mine_on")
+	local explosion_snd = sound_object("weapons\\f1_explode")
+	mine_click_snd:play_at_pos(actor, actor_pos, 0, sound_object.s2d)
+	explosion_snd:play_at_pos(actor, actor_pos, 0, sound_object.s2d)
+	level.add_cam_effector("camera_effects\\shell_shock.anm", 25, false, "")
+	level.add_cam_effector("camera_effects\\head_shot.anm", 26, false, "")
+--	level.add_cam_effector("camera_effects\\fusker.anm", 27, false, "")
+	level.add_pp_effector("gar_ambush_hit.ppe", 500, false)
 end
 
 function freeplay()

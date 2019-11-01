@@ -77,14 +77,8 @@ local function calc_point(point, prev_point, squad, src_smart, tgt_smart_id, arh
 					end
 				end
 ]]
-				local friendly_squad_quan = board:get_smart_squad_quantity(point, board.players[squad_faction])
-				if friendly_squad_quan >= point.squad_capacity then
+				if not board:is_empty_or_enemy_smart_avail(point, squad_faction) then
 					point_value = point_value + 1000
-				else
-					local neutral_squad_quan = board:get_neutral_attackers_quantity(point, squad_faction)
-					if neutral_squad_quan ~= 0 then
-						point_value = point_value + 1000
-					end
 				end
 			elseif point_faction == squad_faction then
 				local friendly_squad_quan = board:get_smart_squad_quantity(point, board.players[squad_faction]) + board:get_smart_population(point)
@@ -95,22 +89,14 @@ local function calc_point(point, prev_point, squad, src_smart, tgt_smart_id, arh
 				end
 			else
 				if game_relations.is_factions_enemies(squad_faction, point_faction) then
-					local enemy_power = 0
-					for k, v in pairs (board.smarts[point_id].squads) do
-						enemy_power = enemy_power + v.squad_power
+					for k, point_squad in pairs (board.smarts[point_id].squads) do
+						point_value = point_value + point_squad.squad_power
 					end
-					point_value = point_value + enemy_power
 					if point.combat_manager:point_under_attack() then
 						point_value = point_value + 100
 					end
-					local friendly_squad_quan = board:get_smart_squad_quantity(point, board.players[squad_faction])
-					if friendly_squad_quan >= point.squad_capacity then
+					if not board:is_empty_or_enemy_smart_avail(point, squad_faction) then
 						point_value = point_value + 1000
-					else
-						local neutral_squad_quan = board:get_neutral_attackers_quantity(point, squad_faction)
-						if neutral_squad_quan ~= 0 then
-							point_value = point_value + 1000
-						end
 					end
 				else
 					point_value = point_value + 1000
@@ -133,7 +119,17 @@ local function calc_point(point, prev_point, squad, src_smart, tgt_smart_id, arh
 	for i = 2, #front do -- front[1] = prev_point != point (prev_point's neighbor)
 		local front_point = front[i]
 		if front_point.id == point_id then
-			if front_point.value > point_value then -- impossible; prev_point.value >= arhive[prev_point.prev].value and point_value exceeds prev_point.value by the same amount by which it exceeds arhive[prev_point.prev].value
+			if front_point.value > point_value then -- impossible, as explained below
+--[[
+				This point is unreachable because prev_point.value >= all arhive point
+				values and point_value exceeds prev_point.value by the same amount by
+				which front_point.value exceeds the arhive point value against which it
+				was calculated when it was originally added into front. Let 'x' denote
+				that reference arhive point value (arhive[prev_point.prev].value). Then:
+				(a) prev_point.value >= x
+				(b) point_value - prev_point.value = front_point.value - x
+				=> point_value >= front_point.value
+]]
 				abort("[sim_board.calc_point]: This should never happen...") -- TODO
 --				front_point.value = point_value
 --				front_point.prev = prev_point.id
@@ -152,14 +148,11 @@ local function iterate_point(squad, src_smart, tgt_smart_id, arhive, front) -- i
 	local front_point = front[1]
 
 	if front_point == nil then
-		local sim = _G.sim
-		local src_smart_name, tgt_smart_name = src_smart:name(), sim:object(tgt_smart_id):name()
+		local src_smart_name, tgt_smart_name = src_smart:name(), _G.sim:object(tgt_smart_id):name()
 		abort("[sim_board.iterate_point]: Path between '%s' and '%s' does not exist for squad with ID '%s'.", tostring(src_smart_name), tostring(tgt_smart_name), tostring(squad.squad_id))
 	end
 
-	local nearest_points = board:get_nearest_smarts(front_point)
-
-	for k, nearest_point in pairs (nearest_points) do
+	for k, nearest_point in pairs (board:get_nearest_smarts(front_point)) do
 		if calc_point(nearest_point, front_point, squad, src_smart, tgt_smart_id, arhive, front) == true then
 --			arhive[front_point.id] = front_point -- front[1] -- moved to calc_point()
 			return true
@@ -204,7 +197,17 @@ local function calc_conductor_point(point, prev_point, npc_community, tgt_smart_
 	for i = 2, #front do -- front[1] = prev_point != point
 		local front_point = front[i]
 		if front_point.id == point_id then
-			if front_point.value > point_value then -- impossible; prev_point.value >= arhive[prev_point.prev].value and point_value exceeds prev_point.value by the same amount by which it exceeds arhive[prev_point.prev].value
+			if front_point.value > point_value then -- impossible, as explained below
+--[[
+				This point is unreachable because prev_point.value >= all arhive point
+				values and point_value exceeds prev_point.value by the same amount by
+				which front_point.value exceeds the arhive point value against which it
+				was calculated when it was originally added into front. Let 'x' denote
+				that reference arhive point value (arhive[prev_point.prev].value). Then:
+				(a) prev_point.value >= x
+				(b) point_value - prev_point.value = front_point.value - x
+				=> point_value >= front_point.value
+]]
 				abort("[sim_board.calc_conductor_point]: This should never happen...") -- TODO
 --				front_point.value = point_value
 --				front_point.prev = prev_point.id
@@ -226,9 +229,7 @@ local function iterate_conductor_point(npc_community, tgt_smart_id, arhive, fron
 		return false
 	end
 
-	local nearest_points = board:get_nearest_smarts(front_point)
-
-	for k, nearest_point in pairs (nearest_points) do
+	for k, nearest_point in pairs (board:get_nearest_smarts(front_point)) do
 		if calc_conductor_point(nearest_point, front_point, npc_community, tgt_smart_id, arhive, front) == true then
 --			arhive[front_point.id] = front_point -- front[1] -- moved to calc_conductor_point()
 			return true
@@ -400,11 +401,7 @@ function sim_board:get_spawn_smart(faction)
 						population_okay = true
 					end
 				elseif smart_faction == "none" then
-					if self:get_smart_squad_quantity(smart, faction) < smart.squad_capacity then -- can't respawn on empty smart if too many of our squads moving to it!
-						if self:get_neutral_attackers_quantity(smart, faction_name) == 0 then -- can't respawn on empty smart if neutrals moving to it!
-							population_okay = true
-						end
-					end
+					population_okay = board:is_empty_or_enemy_smart_avail(smart, faction_name)
 				end
 				if population_okay == true then
 					level_name = level_name or level.name()
@@ -788,25 +785,31 @@ function sim_board:get_smart_squad_quantity(smart, faction) -- returns how many 
 	return faction.current_attack_quantity[smart.id] or 0
 end
 
-function sim_board:get_neutral_attackers_quantity(smart, our_name) -- returns how many neutral squads are currently attacking the smart
-	local quantity = 0
+function sim_board:is_empty_or_enemy_smart_avail(smart, our_name)
+	local our_movers = self.players[our_name].current_attack_quantity[smart.id] or 0
+	if our_movers >= smart.squad_capacity then
+		return false
+	end
 	for faction_name, faction in pairs (self.players) do
 		if faction_name ~= our_name then
 			if not game_relations.is_factions_enemies(our_name, faction_name) then
-				quantity = quantity + (faction.current_attack_quantity[smart.id] or 0)
+				local neutral_movers = faction.current_attack_quantity[smart.id] or 0
+				if neutral_movers ~= 0 then
+					return false
+				end
 			end
 		end
 	end
---	dbglog(quantity.." : "..our_name)
-	return quantity
+	return true
 end
 
 function sim_board:find_path(src_smart_id, tgt_smart_id, squad)
-
+--[[
+	-- This scenario now handled by sim_squad_generic:get_next_action():
 	if src_smart_id == tgt_smart_id then
 		return {{id = src_smart_id, value = 0}}
 	end
-
+]]
 	local front = {{id = src_smart_id, value = 0, prev = true}}
 	local arhive = {}
 

@@ -129,6 +129,7 @@ Quest fixes:
 + Fixed the Limansk "Destroy the machine gun nest" task being assigned to the player even if it has already been destroyed by the time the task would be contemporary.
 + Fixed an onslaught of tasks being suddenly received and completed in the Abandoned Hospital if the player kills the sniper earlier than intended.
 + Fixed the issue where the player could break the storyline at Agroprom by killing the Duty outpost commander while he is speaking or by leaving the map before he has finished.
++ Fixed the "Help the stalkers" task in Agroprom being cancelled immediately after being received if the loner faction is hostile to the player.
 + Fixed the storyline breaking if the player kills every stalker in the Cordon stalker base before extracting the location of Sidorovich's loot from Khaletskiy, even after paying Sidorovich to set things right with the stalkers.
 + Fixed the storyline temporarily breaking if the player suppresses the Limansk military machine gun nest during the interval between receiving and completing the task to speak to the Clear Sky squad commander.
 + Fixed the storyline breaking if the player speaks to Forester before responding to the SOS signal in the Red Forest.
@@ -191,6 +192,7 @@ Gameplay fixes:
 + Fixed the issue where several varieties of weapon would not be properly identified as such when the player's inventory is checked for dialog availability purposes.
 + Fixed the issue where ammunition would not aggregate into full boxes in the inventory, making its transference to a container tedious and providing a profitable exploit for 'bring ammo' tasks.
 + Fixed the issue where non-scripted squads loaded from a savegame (as opposed to spawning into the Zone in the current game session) would not spawn inventory box items.
++ Fixed the wrong location-based multiplier being used to spawn faction equipment chest supplies for scripted squads loaded from a savegame (as opposed to spawning into the Zone in the current game session).
 + Fixed the issue where supply boxes on smart terrains controlled by online squads would generate more supplies with every game reload.
 + Fixed the issue where NPCs would drop the wrong type of ammo for some weapons.
 + Fixed mutants not behaving aggressively on patrol paths linking them to attack-targets unless aggravated by an external force (e.g. the player).
@@ -203,13 +205,15 @@ Gameplay fixes:
 + Fixed the "Life support system" upgrade for the Freedom Exoskeleton making the player bleed out faster rather than slower as intended.
 + Fixed a few instances of a mechanic not being able to upgrade a pre-upgraded variant of a weapon even if they could upgrade the base weapon.
 + Added the missing 'doesn't use shot' text to the threaded barrel upgrade tooltip for the Mossberg 88.
++ Fixed the "Electronic stabilizer" upgrade for the SPAS-12 and Mossberg 88 wrongly decrementing their ammo capacity by 2.
 + Fixed the "Relief backpack" upgrade for various armors wrongly incrementing the carry weight tooltip value by only 5kg instead of the 15kg actually unlocked by the upgrade.
 + Corrected the behavior of shot megaphones.
++ Fixed medicaments becoming more rather than less expensive at the Flea Market after liberating the concentration camp.
 + Replaced the generic masked face of the player's unarmored character model with Scar's face, as in the leather jacket armored character model.
 + Fixed the player's character model reverting back to the default rookie jacket model upon loading a savegame / changing maps.
 + Corrected the mesh, name, icon, and description of the several varieties of 7.62x54 mmR ammunition.
 + Extended GSC's implementation of rank-dependent NPC money from just Duty, Freedom, and the bandits, to all the game's factions.
-+ Removed the out-of-place AK-74 from Scar's starting inventory which was introduced there by patch v1.5.10.
++ Removed the out-of-place AK-74 from Scar's starting inventory which was introduced there by patch v1.5.09.
 + Deleted the duplicate supply box spawn at the Trailhead in the Swamp.
 + Moved the eastern Cordon-to-Garbage level changer in order to make the player less likely to accidentally walk into it.
 + Made both the inventory box in the Old Church at the Great Swamp and the downward-facing safe at the Yantar factory less tedious to access. Also spawned a wooden box underneath the former in order to prevent it from seeming to levitate.
@@ -217,7 +221,7 @@ Gameplay fixes:
 + Made a few additional way-points available to NPCs that were not so due to bugs.
 + Made it possible to refuse payment to Garbage bandit robber squads via dialog.
 + Improved support for playing the game in a non-linear fashion.
-+ Fixed the Abandoned Hospital not having a map in the PDA.
++ Fixed the Abandoned Hospital not having a high-resolution map in the PDA.
 + Fixed a multitude of info portion and texture related console errors.
 + Fixed armor descriptions pertaining to artifact containers and upgrade possibilities.
 + Assigned unique names to some quest weapons and armors that were missing them.

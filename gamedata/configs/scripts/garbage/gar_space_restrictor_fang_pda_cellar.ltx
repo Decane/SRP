@@ -10,15 +10,17 @@
 active = sr_idle@ko
 
 [sr_idle@ko]
-on_actor_inside = {+gar_story_came_to_ambush_door} sr_idle@unconscious_start_time_1 %=disable_ui =run_postprocess(gar_ambush_hit)%
+on_actor_inside = {+gar_story_came_to_ambush_door} sr_idle@unconscious_start_time_1 %=disable_ui =play_fake_explosion%
 on_info = {+gar_story_need_to_go_to_cache} sr_idle@end_section
 
 [sr_idle@unconscious_start_time_1]
-on_timer = 2000 | sr_idle@unconscious_talk_4 %+gar_story_spawn_ambush_bandits =run_cam_effector_global(scenario_cam\garbage\cam_garbage_basement)%
+on_timer = 1600 | sr_idle@unconscious_start_time_2 %=run_postprocess(peace_fade)%
+
+[sr_idle@unconscious_start_time_2]
+on_timer = 400 | sr_idle@unconscious_talk_4 %+gar_story_spawn_ambush_bandits =run_cam_effector_global(scenario_cam\garbage\cam_garbage_basement)%
 
 [sr_idle@unconscious_talk_4]
-on_info = {+gar_story_ambush_talk_4_played} sr_idle@unconscious_talk_4_time %=run_postprocess(gar_ambush_wake)%
-on_timer = 20000 | {-gar_story_ambush_talk_4_played} sr_idle@unconscious_talk_4_time %=run_postprocess(gar_ambush_wake)%
+on_timer = 22000 | {+gar_story_ambush_talk_4_played} sr_idle@unconscious_talk_4_time %=run_postprocess(gar_ambush_wake)%
 
 [sr_idle@unconscious_talk_4_time]
 on_timer = 3000 | sr_idle@unconscious_stop_1 %=take_money(all) =relocate_actor_inventory_to_box(727) +gar_story_ambush_remove =teleport_actor(gar_bandit_ambush_teleport_walk:gar_bandit_ambush_teleport_look)%
