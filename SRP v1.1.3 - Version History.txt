@@ -25,6 +25,7 @@ v1.1.3
 + Fixed the issue where the skirmish between the loners and military at the Cordon bus stop could begin prematurely, preventing the player from receiving the task to defend the loner patrol. - Decane
 + Fixed the "Help the stalkers" task in Agroprom being cancelled immediately after being received if the loner faction is hostile to the player. - Decane
 + Fixed an SRP v1.0.7 regression that prevented new faction equipment chest supplies from spawning on a smart terrain upon its occupying squad switching online if the squad captured it while offline. - Decane
++ Fixed an SRP v1.1.1 regression that under some circumstances prevented the pseudodogs that spawn beside the military base from immediately attacking it. - Decane
 + Fixed the issue where non-scripted squads loaded from a savegame (as opposed to spawning into the Zone in the current game session) would not spawn inventory box items. - Decane
 + Fixed the wrong location-based multiplier being used to spawn faction equipment chest supplies for scripted squads loaded from a savegame (as opposed to spawning into the Zone in the current game session). - Decane
 + Fixed the issue where squads could prioritize secondary faction war targets over primary targets, potentially leading to absurd behavior such as Freedom preferring to send squads towards a loner-captured Barrier rather than sending them to capture the Duty base. - Decane
@@ -234,7 +235,7 @@ v1.0.4
 + Fixed the issue where 'clear the road' tasks would get cancelled when they should register as completed. - Decane
 + Fixed the issue where 'find upgrade' tasks would not cancel when the player joins a faction hostile to the task-giver. - Decane
 + Fixed the issue where the "Receive the reward from Krylov" task in agroprom would not cancel if the player joins the bandits or Freedom. - Decane
-+ Fixed the issue where any active 'defend' tasks would be cancelled upon loading a savegame. - Decane
++ Fixed the issue where any active 'defend' tasks would be cancelled upon loading a savegame (new game required). - Decane
 + Fixed the issue where the Freedom base gate would open upon completion of the "Deliver ammo to the outpost" task instead of only after the player has found the active PDA on the dead blockpost commander's corpse, enabling the player to speak to Chekhov prematurely and break the storyline. - Decane
 + Fixed the issue where the player would in some circumstances fail to properly receive credit for killing the boars during the tutorial mission in the Swamp. - Decane
 + Fixed the issue where the player's 'stashes found' statistic would rise even when emptying a stash box of items placed inside it by the player. - Decane
@@ -267,7 +268,7 @@ v1.0.4
 + Fixed the issue where a squad NPC would not always be assigned the role of a guide when the relevant squad enters a camp for which a guide is suitable. - Decane
 + Fixed a script typo preventing the Lost Party's PDA from being transferred to Sakharov upon talking to him following completion of the task to retrieve it. - Decane
 + Fixed several issues in the Cordon if the player circumvents the military machine gun nest before talking to Sidorovich by returning to the Swamp and entering the Cordon through the northern level-changer. - Decane
-+ Fixed the duplicate supply box spawn at the Trailhead in the Swamp. - angrydog
++ Fixed the duplicate supply box spawn at the Trailhead in the Swamp (new game required for effect). - angrydog
 + Fixed and optimized all buggy Cordon, Garbage, Yantar, Army Warehouses, and Limansk dialog trees. - Decane
 + Fixed the issue where the player could ask Sakharov about Lefty even before learning of him. - Decane
 + Fixed the programming mistakes that prevented several stashes from ever becoming available to the player. - Decane
