@@ -257,7 +257,7 @@ local function reset_generic_schemes_on_scheme_switch(npc, scheme, section, npc_
 	elseif stype == stype_item then
 
 		-- nv170324, nv170508:
-		if npc_st.ph_door == nil and npc_st.ph_button == nil then
+		if npc_st.ph_door == nil and npc_st.ph_button == nil and npc_st.ph_idle == nil then
 			npc:set_callback(callback.use_object, nil)
 		end
 		npc:set_nonscript_usable(true)
