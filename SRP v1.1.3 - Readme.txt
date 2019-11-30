@@ -175,6 +175,7 @@ Gameplay fixes:
 + Fixed the issue where Senka would occasionally rush out of the bandit base and get killed by enemies.
 + Fixed the script bugs causing the sudden unexplained deaths of Drifter and Hound.
 + Made some important characters invulnerable to prevent their accidental demise.
++ Fixed some groups of zombified stalkers using cover as if they were ordinary stalkers.
 + Fixed the bridge to Limansk in the Red Forest not aligning properly when lowered, which in rare cases would cause NPCs to never reach the other side.
 + Fixed the issue where the stalker squad overlooking the Vehicle Station in the Cordon would be blocked from raiding it with the player in exchange for payment until Valerian has tasked the player with assaulting it.
 + Fixed the Dark Valley mercenary base tunnel detonating (i) prematurely if the player wanders behind the deserted factory before receiving the task to purge the base; (ii) after it should have already gone out of commission if the player enters the relevant space restrictor for the first time only after the reward dialog with Chekhov.
@@ -416,7 +417,6 @@ Bugs still in the game:
 • A squad NPC will issue squad audio prompts even if he is the sole member of the squad.
 • Grenades sometimes become non-equippable. To work around this, drop one and pick it up again.
 • Scar's avatar in the inventory screen may occasionally turn a red hue for no obvious reason. Restart the game to fix this.
-• Zombified stalkers sometimes use smartcovers like ordinary stalkers.
 • Forester's animation transitions are sometimes jerky.
 • The trader in the Red Forest mine often levitates in the air beside his stool in a sitting position rather than being positioned on the stool itself. This is an SRP v1.0.4 regression.
 • Upon entering the Dark Valley to find Fang and receiving the task to speak to the outpost commander, the mission marker on the map will always point to the north-western entrance of the Dark Valley, even if the player entered through the south-west and should therefore speak to the south-western commander.
