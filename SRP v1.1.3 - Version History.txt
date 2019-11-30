@@ -45,6 +45,7 @@ v1.1.3
 + Fixed the issue where a squad commander icon could overlap with a trader icon on the map. - Decane
 + Fixed an SRP v1.0.4 regression that caused the digger captives at the Garbage concentration camp to appear to hold an invisible artifact detector during their artifact search animations. - Decane
 + Made the task to rescue Hound become available only upon the player having completed the task to rescue Drifter, as likely intended, rather than merely upon having initiated it. - Decane
++ Made Yar's 'Bring the component to the technician' task fail on daybreak to be consistent with the task briefing, which implies it needs to be completed by sunrise. - SurDno
 + Made a couple of drop-boxes in the Abandoned Hospital destructible that mistakenly were not so in the unmodded game. - Decane
 + Fixed the all.spawn typos preventing a few drop-boxes in Limansk from spawning loot when broken (new game required for effect). - Decane
 + Fixed a few instances of a mechanic not being able to upgrade a pre-upgraded variant of a weapon even if they could upgrade the base weapon. - Decane
@@ -62,6 +63,8 @@ v1.1.3
 + Fixed a regression that caused the in-game name and description of 7.62x54 mmR 7N1 rounds on localizations other than English to be replaced with their XML string IDs. - Decane
 + Fixed medicaments becoming more rather than less expensive at the Flea Market after liberating the concentration camp. - Decane
 + Added a unique name and description for 7.62x54 mmR armor-piercing sniper rounds to distinguish them from those boxed for the PKM and corrected their weapon applicability. - Decane
++ Improved the randomization of generic NPC dialogs by preventing a dialog of a given type from being repeated until all suitable dialogs of that type have been uttered once. - Decane
++ Unlocked several previously unused greeting phrases for stationary squad NPCs. - Decane
 + (ZRP import) Fixed the player's character model reverting back to the default rookie jacket model upon loading a savegame / changing maps. - NatVac
 + (ZRP import) Fixed the use_object callback for doors and buttons being reset on scheme switch. - NatVac
 + (ZRP import) Fixed NPCs sharing a common global variable in state_mgr.evaluator_state_mgr_idle_alife:evaluate() to determine their individual behavior. - NatVac per Alundaio

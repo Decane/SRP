@@ -121,6 +121,7 @@ Quest fixes:
 + Fixed the issue where the player could bypass Freedom's "Respond to the SOS signal" task by leaving the Dark Valley before the Freedom outpost commander has finished speaking.
 + Fixed the Dark Valley task to "Find Freedom’s base" being received and immediately completed if the player has already found Freedom's base before the task becomes contemporary in the storyline.
 + Fixed the Dark Valley task to "Talk to the outpost commander" being received and immediately completed upon the player entering the Dark Valley if the player has already spoken to the outpost commander before receiving the task to find Fang.
++ Fixed Yar's 'Bring the component to the technician' task lacking a deadline despite the task briefing implying it needs to be completed before sunrise.
 + Fixed the issue where the player could delay reception of the Agroprom "Talk to the outpost commander" task (and cancellation of the "Find the stalker group’s stash" task) by bypassing its space restrictor.
 + Fixed the Limansk "Find the generator" task failing to complete when the player deactivates the generator if the player rushes to the apartment building and climbs onto the roof before the squad leader has finished the dialog which assigns the task.
 + Fixed the Limansk "Find the generator" task being received and immediately completed if the player initially bypasses its assigning space restrictor in the institute building but returns to it after deactivating the generator.
@@ -491,11 +492,10 @@ barin, BobBQ, burger, Canzah, castl, CeeJay.dk, Control volume, Danila_STALKER,
 dDefinder, Decane, DerHeiligeApfel, DEXXX, Fangion, Gosuke, GSC Game World, IG2007,
 InnerGround, jjwalker (Cameron Sneed), Kill_the_Strelok, Lobstris, MacroN, Marked_2,
 MrSeyker, notanumber (nandersen), NatVac, OGSM Team, olegj5, pavlov, PhoenixHeart, PYP,
-Red7204, RoboMook, SetaKat (fluffy22), smoq2, smrtphoneusr, Tariq, Vandal, vlad54rus,
-Xetrill
+Red7204, RoboMook, SetaKat (fluffy22), smoq2, smrtphoneusr, SurDno, Tariq, Vandal,
+vlad54rus, Xetrill
 
  • Useful feedback and testing:
 
 100RadsBar, AR2R, Ceano, Charcharo, Compizfox, Crew 900, EliteHunter39, Firon, lowenz,
-Marius Petran, motiv-8, Paul Jaye, RK Roadkill, Stryker7, SurDno, Talrivian, TKGP,
-VicRattlehead
+Marius Petran, motiv-8, Paul Jaye, RK Roadkill, Stryker7, Talrivian, TKGP, VicRattlehead
