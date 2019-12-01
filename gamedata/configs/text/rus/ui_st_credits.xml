@@ -2,9 +2,9 @@
 <string_table>
 	<string id="st_stuff">
 		<text>Создатели игры</text>
-    </string>
-    <string id="st_game_world">
-        <text>GSC GAME WORLD</text>
+	</string>
+	<string id="st_game_world">
+		<text>GSC GAME WORLD</text>
 	</string>
 	<string id="st_producer">
 		<text>Продюсер</text>
@@ -199,7 +199,7 @@
 		<text>MoozE</text>
 	</string>
 	<string id="st_omelchuk">
-		<text>Алексей Омельчук </text>
+		<text>Алексей Омельчук</text>
 	</string>
 	<string id="st_additional_music">
 		<text>Дополнительная музыка</text>
@@ -210,30 +210,30 @@
 	<string id="st_addaraya">
 		<text>...</text>
 	</string>
-   <string id="st_actors">
-        <text>Актёры озвучки</text>
-    </string>
-    <string id="st_vilkov">
-        <text>Александр Вилков</text>
-    </string>
-    <string id="st_bogush">
-        <text>Анатолий Богуш</text>
-    </string>
-    <string id="st_tereshchyk">
-        <text>Владимир Тересчук</text>
-    </string>
-    <string id="st_german">
-        <text>Григорий Герман</text>
-    </string>
-    <string id="st_stalchuk">
-        <text>Олег Стальчук</text>
-    </string>
-    <string id="st_malukha">
-        <text>Евгений Малуха</text>
-    </string>
-    <string id="st_rozin">
-        <text>Иван Розин</text>
-    </string>
+	<string id="st_actors">
+		<text>Актёры озвучки</text>
+	</string>
+	<string id="st_vilkov">
+		<text>Александр Вилков</text>
+	</string>
+	<string id="st_bogush">
+		<text>Анатолий Богуш</text>
+	</string>
+	<string id="st_tereshchyk">
+		<text>Владимир Тересчук</text>
+	</string>
+	<string id="st_german">
+		<text>Григорий Герман</text>
+	</string>
+	<string id="st_stalchuk">
+		<text>Олег Стальчук</text>
+	</string>
+	<string id="st_malukha">
+		<text>Евгений Малуха</text>
+	</string>
+	<string id="st_rozin">
+		<text>Иван Розин</text>
+	</string>
 	<string id="st_localization">
 		<text>Локализация</text>
 	</string>
@@ -257,189 +257,189 @@
 	</string>
 	<string id="st_litvinenko">
 		<text>Владимир Литвиненко</text>
-   </string>
-    <string id="st_eng_localization">
-        <text>Английская локализация</text>
-    </string>
-    <string id="st_kisin_language_services">
-        <text>Kisin Language Services</text>
-    </string>
-    <string id="st_pr_and_translator">
-        <text>Руководитель проекта и переводчик</text>
-    </string>
-    <string id="st_kisin">
-        <text>Константин Кисин</text>
-    </string>
-    <string id="st_eng_translator">
-        <text>Переводчик</text>
-    </string>
-    <string id="st_kropotov">
-        <text>Михаил Кропотов</text>
-    </string>
-    <string id="st_eng_editor">
-        <text>Редактор</text>
-    </string>
-    <string id="st_berelekhis">
-        <text>Марк Берелехис</text>
-    </string>
-    <string id="st_eng_recordings">
-        <text>Запись</text>
-    </string>
-    <string id="st_voiceworks">
-        <text>VoiceWorks Productions, Inc.</text>
-    </string>
-    <string id="st_casting_direction">
-        <text>Дикторство и кастинг актёров озвучки</text>
-    </string>
-    <string id="st_carrigan">
-        <text>Дуглас Керриган</text>
-    </string>
-    <string id="st_eng_engineer">
-        <text>Звукорежиссёр</text>
-    </string>
-    <string id="st_johnson">
-        <text>Мика Джонсон</text>
-    </string>
-    <string id="st_editor_design">
-        <text>Редактура и звуковой дизайн</text>
-    </string>
-    <string id="st_siedow">
-        <text>Джейми Сидоу</text>
-    </string>
-    <string id="st_eng_cast">
-        <text>Актёры озвучки</text>
-    </string>
-    <string id="st_kaplan">
-        <text>Нил Каплан</text>
-    </string>
-    <string id="st_blum">
-        <text>Стив Блум</text>
-    </string>
-    <string id="st_ward">
-        <text>Джим Уорд</text>
-    </string>
-    <string id="st_pulcini">
-        <text>Энтони Пульчини</text>
-    </string>
-    <string id="st_horan">
-        <text>Джеймс Хоран</text>
-    </string>
-    <string id="st_agranov">
-        <text>Дэвид Агранов</text>
-    </string>
-    <string id="st_atkin">
-        <text>Робин Аткин</text>
-    </string>
-    <string id="st_downes">
-        <text>Даунс</text>
-    </string>
-    <string id="st_proctort">
-        <text>Филип Проктор</text>
-    </string>
-    <string id="st_stanton">
-        <text>Стефен Стэнтон</text>
-    </string>
-    <string id="st_albrech">
-        <text>Грант Альбрехт</text>
-    </string>
-    <string id="st_szarabajka">
-        <text>Кит Шарабайка</text>
-    </string>
-    <string id="st_lowenthal">
-        <text>Юрий Ловенталь</text>
-    </string>
-    <string id="st_hale">
-        <text>Дженнифер Хейл</text>
-    </string>
-    <string id="st_ger_localization">
-        <text>Немецкая локализация</text>
-    </string>
-    <string id="st_umlau">
-        <text>Studio Umlaut</text>
-    </string>
-    <string id="st_ger_studio">
-        <text>Записывающая студия</text>
-    </string>
-    <string id="st_msm_gmbh">
-        <text>MSM GmbH</text>
-    </string>
-    <string id="st_ger_voice_actors">
-        <text>Актёры озвучки</text>
-    </string>
-    <string id="st_barrenstein">
-        <text>Ахим Барренштейн</text>
-    </string>
-    <string id="st_benjamin">
-        <text>Ник Бенджамин</text>
-    </string>
-    <string id="st_betz">
-        <text>Михаэль Бец</text>
-    </string>
-    <string id="st_bornern">
-        <text>Эрик Борнер</text>
-    </string>
-    <string id="st_evertz">
-        <text>Стефан Эвертц</text>
-    </string>
-    <string id="st_grober">
-        <text>Андреас Гробер</text>
-    </string>
-    <string id="st_hauf">
-        <text>Сюзанна Гауф</text>
-    </string>	
-    <string id="st_heynold">
-        <text>Хельге Хэйнольд</text>
-    </string>
-    <string id="st_karadeniz">
-        <text>Озгюр Карадениз</text>
-    </string>
-    <string id="st_lindenau">
-        <text>Вольф фон Линденау</text>
-    </string>
-    <string id="st_schafer">
-        <text>Мартин Шафер</text>
-    </string>
-    <string id="st_wachholz">
-        <text>Геро Ваххольц</text>
-    </string>
-    <string id="st_fra_localization">
-        <text>Французская локализация</text>
-    </string>
-    <string id="st_fra_coordination">
-        <text>Координация проекта</text>
-    </string>
-    <string id="st_fra_deiller">
-        <text>Клэр Дейле</text>
-    </string>
-    <string id="st_fra_recordings">
-        <text>Запись</text>
-    </string>
-    <string id="st_fra_productions">
-        <text>Hifi-Genie Productions</text>
-    </string>
-    <string id="st_fra_translation">
-        <text>Перевод</text>
-    </string>
-    <string id="st_fra_bonin">
-        <text>Дэвид Бонин</text>
-    </string>
-    <string id="st_spa_localization">
-        <text>Испанская и итальянская локализации</text>
-    </string>
-    <string id="st_spa_translations">
-        <text>Vertigo Translations srl</text>
-    </string>
-    <string id="st_spa_recordings">
-        <text>Запись</text>
-    </string>
-    <string id="st_spa_synthesis">
-        <text>Synthesis US llc</text>
-    </string>
-    <string id="st_spa_manager">
-        <text>Менеджер проекта</text>
-    </string>
-    <string id="st_spa_solbiati">
-        <text>Давид Солбиати</text>
+	</string>
+	<string id="st_eng_localization">
+		<text>Английская локализация</text>
+	</string>
+	<string id="st_kisin_language_services">
+		<text>Kisin Language Services</text>
+	</string>
+	<string id="st_pr_and_translator">
+		<text>Руководитель проекта и переводчик</text>
+	</string>
+	<string id="st_kisin">
+		<text>Константин Кисин</text>
+	</string>
+	<string id="st_eng_translator">
+		<text>Переводчик</text>
+	</string>
+	<string id="st_kropotov">
+		<text>Михаил Кропотов</text>
+	</string>
+	<string id="st_eng_editor">
+		<text>Редактор</text>
+	</string>
+	<string id="st_berelekhis">
+		<text>Марк Берелехис</text>
+	</string>
+	<string id="st_eng_recordings">
+		<text>Запись</text>
+	</string>
+	<string id="st_voiceworks">
+		<text>VoiceWorks Productions, Inc.</text>
+	</string>
+	<string id="st_casting_direction">
+		<text>Дикторство и кастинг актёров озвучки</text>
+	</string>
+	<string id="st_carrigan">
+		<text>Дуглас Керриган</text>
+	</string>
+	<string id="st_eng_engineer">
+		<text>Звукорежиссёр</text>
+	</string>
+	<string id="st_johnson">
+		<text>Мика Джонсон</text>
+	</string>
+	<string id="st_editor_design">
+		<text>Редактура и звуковой дизайн</text>
+	</string>
+	<string id="st_siedow">
+		<text>Джейми Сидоу</text>
+	</string>
+	<string id="st_eng_cast">
+		<text>Актёры озвучки</text>
+	</string>
+	<string id="st_kaplan">
+		<text>Нил Каплан</text>
+	</string>
+	<string id="st_blum">
+		<text>Стив Блум</text>
+	</string>
+	<string id="st_ward">
+		<text>Джим Уорд</text>
+	</string>
+	<string id="st_pulcini">
+		<text>Энтони Пульчини</text>
+	</string>
+	<string id="st_horan">
+		<text>Джеймс Хоран</text>
+	</string>
+	<string id="st_agranov">
+		<text>Дэвид Агранов</text>
+	</string>
+	<string id="st_atkin">
+		<text>Робин Аткин</text>
+	</string>
+	<string id="st_downes">
+		<text>Даунс</text>
+	</string>
+	<string id="st_proctort">
+		<text>Филип Проктор</text>
+	</string>
+	<string id="st_stanton">
+		<text>Стефен Стэнтон</text>
+	</string>
+	<string id="st_albrech">
+		<text>Грант Альбрехт</text>
+	</string>
+	<string id="st_szarabajka">
+		<text>Кит Шарабайка</text>
+	</string>
+	<string id="st_lowenthal">
+		<text>Юрий Ловенталь</text>
+	</string>
+	<string id="st_hale">
+		<text>Дженнифер Хейл</text>
+	</string>
+	<string id="st_ger_localization">
+		<text>Немецкая локализация</text>
+	</string>
+	<string id="st_umlau">
+		<text>Studio Umlaut</text>
+	</string>
+	<string id="st_ger_studio">
+		<text>Записывающая студия</text>
+	</string>
+	<string id="st_msm_gmbh">
+		<text>MSM GmbH</text>
+	</string>
+	<string id="st_ger_voice_actors">
+		<text>Актёры озвучки</text>
+	</string>
+	<string id="st_barrenstein">
+		<text>Ахим Барренштейн</text>
+	</string>
+	<string id="st_benjamin">
+		<text>Ник Бенджамин</text>
+	</string>
+	<string id="st_betz">
+		<text>Михаэль Бец</text>
+	</string>
+	<string id="st_bornern">
+		<text>Эрик Борнер</text>
+	</string>
+	<string id="st_evertz">
+		<text>Стефан Эвертц</text>
+	</string>
+	<string id="st_grober">
+		<text>Андреас Гробер</text>
+	</string>
+	<string id="st_hauf">
+		<text>Сюзанна Гауф</text>
+	</string>
+	<string id="st_heynold">
+		<text>Хельге Хэйнольд</text>
+	</string>
+	<string id="st_karadeniz">
+		<text>Озгюр Карадениз</text>
+	</string>
+	<string id="st_lindenau">
+		<text>Вольф фон Линденау</text>
+	</string>
+	<string id="st_schafer">
+		<text>Мартин Шафер</text>
+	</string>
+	<string id="st_wachholz">
+		<text>Геро Ваххольц</text>
+	</string>
+	<string id="st_fra_localization">
+		<text>Французская локализация</text>
+	</string>
+	<string id="st_fra_coordination">
+		<text>Координация проекта</text>
+	</string>
+	<string id="st_fra_deiller">
+		<text>Клэр Дейле</text>
+	</string>
+	<string id="st_fra_recordings">
+		<text>Запись</text>
+	</string>
+	<string id="st_fra_productions">
+		<text>Hifi-Genie Productions</text>
+	</string>
+	<string id="st_fra_translation">
+		<text>Перевод</text>
+	</string>
+	<string id="st_fra_bonin">
+		<text>Дэвид Бонин</text>
+	</string>
+	<string id="st_spa_localization">
+		<text>Испанская и итальянская локализации</text>
+	</string>
+	<string id="st_spa_translations">
+		<text>Vertigo Translations srl</text>
+	</string>
+	<string id="st_spa_recordings">
+		<text>Запись</text>
+	</string>
+	<string id="st_spa_synthesis">
+		<text>Synthesis US llc</text>
+	</string>
+	<string id="st_spa_manager">
+		<text>Менеджер проекта</text>
+	</string>
+	<string id="st_spa_solbiati">
+		<text>Давид Солбиати</text>
 	</string>
 	<string id="st_lead_qa_department">
 		<text>Лид-тестеры</text>
@@ -509,7 +509,7 @@
 	</string>
 	<string id="st_polozov">
 		<text>Николай "vortigaunt" Полозов</text>
-	</string>	
+	</string>
 	<string id="st_pr_department">
 		<text>PR отдел</text>
 	</string>
@@ -574,7 +574,7 @@
 		<text>Всем, кто организовывал и принимал активнейшее участие в ролевой страйкбольной игре S.T.A.L.K.E.R.: Reality, а особенно:</text>
 	</string>
 	<string id="st_thanks_fanbase3">
-		<text>Дмитрий "Comandor" Иванов </text>
+		<text>Дмитрий "Comandor" Иванов</text>
 	</string>
 	<string id="st_thanks_fanbase4">
 		<text>Евгений "Mulder" Халецкий</text>
@@ -608,91 +608,91 @@
 	</string>
 	<string id="st_thanks_all">
 		<text>От всей команды ОГРОМНОЕ СПАСИБО всем поклонникам и фанатам проекта S.T.A.L.K.E.R.</text>
-   </string>
-    <string id="st_publisher">
-        <text>Издатель</text>
-    </string>
-    <string id="st_koch_media">
-        <text>DEEP SILVER</text>
-    </string>
-    <string id="st_publisher_head">
-        <text>Начальник производства</text>
-    </string>
-    <string id="st_publisher_moriz">
-        <text>Кристиан Мориц</text>
-    </string>
-    <string id="st_publisher_management">
-        <text>Управление производством</text>
-    </string>
-    <string id="st_publisher_stettner">
-        <text>Майк Штеттнер</text>
-    </string>
-    <string id="st_publisher_production">
-        <text>Постпроизводство и контроль качества</text>
-    </string>
-    <string id="st_publisher_schmidt">
-        <text>Михаэль К. Шмидт</text>
-    </string>
-    <string id="st_publisher_langer">
-        <text>Даниэль Лангер</text>
 	</string>
-    <string id="st_publisher_gaitzsch">
-        <text>Даниэль Гаитсч</text>
-    </string>
-    <string id="st_publisher_int_marketing">
-        <text>Интернациональный маркетинг</text>
-    </string>
-    <string id="st_publisher_larch">
-        <text>Георг Ларч</text>
-    </string>
-    <string id="st_publisher_marketing">
-        <text>Менеджер маркетинга — Германия, Австрия, Швейцария</text>
-    </string>
-    <string id="st_publisher_gerhold">
-        <text>Марио Герольд</text>
-    </string>
-    <string id="st_publisher_beck">
-        <text>Оливер Бек</text>
-    </string>
-    <string id="st_publisher_press">
-        <text>Интернациональная пресса</text>
-    </string>
-    <string id="st_publisher_metzler">
-        <text>Мартин Мецлер</text>
-    </string>
-    <string id="st_publisher_pr">
-        <text>PR-менеджер — Германия, Австрия, Швейцария</text>
-    </string>
-    <string id="st_publisher_wein">
-        <text>Мартин Уэйн</text>
-    </string>
-    <string id="st_publisher_design">
-        <text>Графика и дизайн</text>
-    </string>
-    <string id="st_publisher_stein">
-        <text>Александр Стайн</text>
-    </string>
-    <string id="st_publisher_community">
-        <text>Комьюнити-менеджмент</text>
-    </string>
-    <string id="st_publisher_oberlerchner">
-        <text>Даниэль "Оберле" Оберлехнер</text>
-    </string>
-    <string id="st_publisher_testing">
-        <text>Лингвистическое тестирование</text>
-    </string>
-    <string id="st_publisher_grobhennig">
-        <text>Линда Гроссхенниг</text>
-    </string>
-    <string id="st_publisher_parakhen">
-        <text>Прачья Айзек Паракхен</text>
-    </string>
-    <string id="st_publisher_cuinet">
-        <text>Микаэль Кюине</text>
-    </string>
-    <string id="st_publisher_randall_mage">
-        <text>LocalSoft - Рэнделл Маж</text>
-    </string>
+	<string id="st_publisher">
+		<text>Издатель</text>
+	</string>
+	<string id="st_koch_media">
+		<text>DEEP SILVER</text>
+	</string>
+	<string id="st_publisher_head">
+		<text>Начальник производства</text>
+	</string>
+	<string id="st_publisher_moriz">
+		<text>Кристиан Мориц</text>
+	</string>
+	<string id="st_publisher_management">
+		<text>Управление производством</text>
+	</string>
+	<string id="st_publisher_stettner">
+		<text>Майк Штеттнер</text>
+	</string>
+	<string id="st_publisher_production">
+		<text>Постпроизводство и контроль качества</text>
+	</string>
+	<string id="st_publisher_schmidt">
+		<text>Михаэль К. Шмидт</text>
+	</string>
+	<string id="st_publisher_langer">
+		<text>Даниэль Лангер</text>
+	</string>
+	<string id="st_publisher_gaitzsch">
+		<text>Даниэль Гаитсч</text>
+	</string>
+	<string id="st_publisher_int_marketing">
+		<text>Интернациональный маркетинг</text>
+	</string>
+	<string id="st_publisher_larch">
+		<text>Георг Ларч</text>
+	</string>
+	<string id="st_publisher_marketing">
+		<text>Менеджер маркетинга — Германия, Австрия, Швейцария</text>
+	</string>
+	<string id="st_publisher_gerhold">
+		<text>Марио Герольд</text>
+	</string>
+	<string id="st_publisher_beck">
+		<text>Оливер Бек</text>
+	</string>
+	<string id="st_publisher_press">
+		<text>Интернациональная пресса</text>
+	</string>
+	<string id="st_publisher_metzler">
+		<text>Мартин Мецлер</text>
+	</string>
+	<string id="st_publisher_pr">
+		<text>PR-менеджер — Германия, Австрия, Швейцария</text>
+	</string>
+	<string id="st_publisher_wein">
+		<text>Мартин Уэйн</text>
+	</string>
+	<string id="st_publisher_design">
+		<text>Графика и дизайн</text>
+	</string>
+	<string id="st_publisher_stein">
+		<text>Александр Стайн</text>
+	</string>
+	<string id="st_publisher_community">
+		<text>Комьюнити-менеджмент</text>
+	</string>
+	<string id="st_publisher_oberlerchner">
+		<text>Даниэль "Оберле" Оберлехнер</text>
+	</string>
+	<string id="st_publisher_testing">
+		<text>Лингвистическое тестирование</text>
+	</string>
+	<string id="st_publisher_grobhennig">
+		<text>Линда Гроссхенниг</text>
+	</string>
+	<string id="st_publisher_parakhen">
+		<text>Прачья Айзек Паракхен</text>
+	</string>
+	<string id="st_publisher_cuinet">
+		<text>Микаэль Кюине</text>
+	</string>
+	<string id="st_publisher_randall_mage">
+		<text>LocalSoft - Рэнделл Маж</text>
+	</string>
 	<string id="st_thanks_litconc">
 		<text>Победителям второго литконкурса по мотивам игры "*S.T.A.L.K.E.R.*"</text>
 	</string>

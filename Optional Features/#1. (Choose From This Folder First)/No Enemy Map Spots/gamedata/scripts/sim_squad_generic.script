@@ -69,9 +69,9 @@ function sim_squad_generic:__init(sim_board, player_id, squad_id)
 	self.items_spawned = false
 end
 
-function sim_squad_generic:init_squad() -- smart)
+-- function sim_squad_generic:init_squad() -- smart)
 --	self.box_items = self:init_box_items(smart)
-end
+-- end
 
 function sim_squad_generic:init_box_items(smart)
 	local spawn_items = death_manager.item_by_community[self.player_id]
@@ -143,10 +143,8 @@ function sim_squad_generic:spawn_box_items(smart_id)
 		return
 	end
 
-	if self.current_action ~= nil then
-		if self.current_action.name ~= "stay_point" then
-			return
-		end
+	if self.current_action ~= nil and self.current_action.name ~= "stay_point" then
+		return
 	end
 
 	local box_id = box.id
@@ -275,45 +273,11 @@ function sim_squad_generic:create_npc(spawn_smart)
 end
 
 function sim_squad_generic:set_squad_sympathy(sympathy)
-	local symp = sympathy or self.sympathy
-	if symp ~= nil then
-		symp = game_relations.default_sympathy
-		local st = db.storage
-		for k in pairs (self.squad_npc) do
-			local npc = st[k]
-			npc = npc and npc.object
-			if npc then
-				game_relations.set_npc_sympathy(npc, symp)
-			else
-				local db_goodwill = db.goodwill
-				if db_goodwill.sympathy == nil then
-					db_goodwill.sympathy = {}
-				end
-				db_goodwill.sympathy[k] = symp
-			end
-		end
-	end
+	game_relations.set_squad_sympathy(self.squad_id, sympathy or self.sympathy)
 end
 
 function sim_squad_generic:set_squad_relation(relation)
-	local rel = relation or self.relationship
-	if rel ~= nil then
-		local act = db.actor
-		local st = db.storage
-		for k in pairs (self.squad_npc) do
-			local npc = st[k]
-			npc = npc and npc.object
-			if npc then
-				game_relations.set_npcs_relation(npc, act, rel)
-			else
-				local db_goodwill = db.goodwill
-				if db_goodwill.relations == nil then
-					db_goodwill.relations = {}
-				end
-				db_goodwill.relations[k] = rel
-			end
-		end
-	end
+	game_relations.set_squad_goodwill(self.squad_id, relation or self.relationship)
 end
 
 function sim_squad_generic:clear_npc()
@@ -502,18 +466,13 @@ local faction_activity =
 				[18] = 01, [19] = 01, [20] = 01, [21] = 01, [22] = 01, [23] = 01}
 }
 
-function sim_squad_generic:calculate_attack_power(set_val)
-	if set_val ~= nil then
-		self.squad_attack_power = set_val
-		return
-	end
-	local player = self.board.players[self.player_id]
-	local player_time_activity = faction_activity[player.player_name]
-	if player_time_activity == nil then
-		abort("[sim_squad_generic.calculate_attack_power]: Player time activity does not exist for faction '%s'.", tostring(player.player_name))
+function sim_squad_generic:calculate_attack_power()
+	local faction_time_activity = faction_activity[self.player_id]
+	if faction_time_activity == nil then
+		abort("[sim_squad_generic.calculate_attack_power]: Faction time activity does not exist for faction '%s'.", tostring(self.player_id))
 	end
 	local game_time = get_game_time()
-	local additional_power = player_time_activity[get_time_hours()] * game_time:diffSec(self.last_action_timer) / 3600
+	local additional_power = faction_time_activity[get_time_hours()] * game_time:diffSec(self.last_action_timer) / 3600
 	self.squad_attack_power = self.squad_attack_power + additional_power
 	if self.squad_attack_power > 100 then
 		self.squad_attack_power = 100
@@ -527,7 +486,7 @@ function sim_squad_generic:update()
 
 	if self.current_action ~= nil then
 		if not self.current_action:is_finished() then
-			self:adaptive_refresh()
+			self:refresh()
 			return
 		end
 		if self.current_action ~= nil then
@@ -538,7 +497,7 @@ function sim_squad_generic:update()
 
 	self:find_target()
 	self:get_next_action()
-	self:refresh()
+--	self:refresh() -- already called by make() called by get_next_action()
 
 	if not self.items_spawned and self.smart_id ~= nil then
 		self:spawn_box_items(self.smart_id)
@@ -791,7 +750,6 @@ end
 function sim_squad_generic:init_squad_task()
 
 	local board = self.board
-	local level_cluster = sim_board.sim_level_cluster
 	local tm = task_manager.get_task_manager()
 	local squad_faction_name = self.player_id
 	local random_tasks = self.random_tasks
@@ -806,6 +764,7 @@ function sim_squad_generic:init_squad_task()
 
 	if board:get_smart_population(squad_smart) > 1 or (board_factions[squad_faction_name].precondition_targets[squad_smart_id] == nil and smart_under_attack(squad_faction_name, board_factions, squad_smart_id) == false) then
 		if self:get_script_target() == nil then
+			local level_cluster = sim_board.sim_level_cluster
 			local squad_smart_cluster = level_cluster[squad_smart.smart_level]
 			for neighbor_smart_id, neighbor_smart in pairs (board:get_nearest_smarts(squad_smart)) do
 				if level_cluster[neighbor_smart.smart_level] == squad_smart_cluster then
@@ -1248,11 +1207,8 @@ function sim_squad_generic:switch_online(is_online, npc_id)
 		end
 	else
 		if self.online_object[npc_id] ~= nil then
+--[[
 			if npc_id == self.commander_id then
-				local db_goodwill = db.goodwill
-				if not db_goodwill.relations then
-					db_goodwill.relations = {}
-				end
 				local st_npc = db.storage[npc_id]
 				if st_npc == nil then
 					abort("[sim_squad_generic.switch_online]: db.storage[npc_id] = nil but vanilla code presupposes the opposite.")
@@ -1263,15 +1219,16 @@ function sim_squad_generic:switch_online(is_online, npc_id)
 					if act then
 						local relation = obj:general_goodwill(act)
 						if relation <= -1000 then
-							db_goodwill.relations[npc_id] = "enemy"
+							db.goodwill.relations[npc_id] = -3000
 						elseif relation >= 1000 then
-							db_goodwill.relations[npc_id] = "friend"
+							db.goodwill.relations[npc_id] = 9000
 						else
-							db_goodwill.relations[npc_id] = "neutral"
+							db.goodwill.relations[npc_id] = 0
 						end
 					end
 				end
 			end
+]]
 			self.online_object[npc_id] = nil
 			self.online_counter = self.online_counter - 1
 		end
@@ -1288,126 +1245,12 @@ function sim_squad_generic:switch_online(is_online, npc_id)
 	end
 end
 
-function sim_squad_generic:adaptive_refresh()
-
-	local orig_spot = self.spot_section
-	if orig_spot == nil then
-		return
-	end
+function sim_squad_generic:refresh()
 
 	local commander_id = self.commander_id
+
 	if commander_id == nil
 	or self.show_disabled
-	or self.current_action == nil
-	or map_has_object_spot(commander_id, "ui_pda2_trader_location") ~= 0
-	or map_has_object_spot(commander_id, "ui_pda2_scout_location") ~= 0
-	or map_has_object_spot(commander_id, "ui_pda2_quest_npc_location") ~= 0 then
-		self:hide()
-		return
-	end
-
-	local spot = orig_spot
-
-	if self.player_id == "monster" then
-		self:hide()
-		return
-	else
-		local act = db.actor
-		local relation
---[[
-		if act then
-			local commander = db.storage[commander_id]
-			commander = commander and commander.object
-			if commander then
-				relation = commander:general_goodwill(act)
-			else
-				local relationship = self.relationship
-				if relationship == "enemy" then
-					relation = -1000
-				elseif relationship == "friend" then
-					relation = 1000
-				elseif relationship == "neutral" then
-					relation = 0
-				else
-					local squad_faction = self.player_id
-					relation = act:community_goodwill(squad_faction) + relation_registry.community_relation(squad_faction, act:character_community())
-				end
-			end
-		else
-			return
-		end
-]]
-		if act then
-			local relationship = self.relationship
-			if relationship == "enemy" then
-				relation = -1000
-			elseif relationship == "friend" then
-				relation = 1000
-			elseif relationship == "neutral" then
-				relation = 0
-			else
-				local commander = db.storage[commander_id]
-				commander = commander and commander.object
-				if commander then
-					relation = commander:general_goodwill(act)
-				else
-					local squad_faction = self.player_id
-					relation = act:community_goodwill(squad_faction) + relation_registry.community_relation(squad_faction, act:character_community())
-				end
-			end
-		else
-			return
-		end
-
-		if relation >= 1000 then
-			spot = self.current_action.name == "stay_point" and "alife_presentation_squad_friend" or "alife_presentation_friend_squad_attack_point"
-		elseif relation <= -1000 then
-			self:hide()
-			return
-		else
-			spot = self.current_action.name == "stay_point" and "alife_presentation_squad_neutral" or "alife_presentation_neutral_squad_attack_point"
-		end
-	end
-
-	if orig_spot == spot then
-		if has_alife_info("ui_pda") then
-			self.info_string = self:get_squad_props()
-			map_change_spot_hint(self.current_spot_id, orig_spot, self.info_string) -- update info string iff PDA is open
-		end
-		return
-	elseif orig_spot ~= nil then
---		if has_alife_info("ui_pda") then
-			self.info_string = self:get_squad_props()
---		end
-		local orig_spot_id = self.current_spot_id
-		map_remove_object_spot(orig_spot_id, orig_spot)
-		map_add_object_spot(orig_spot_id, spot, self.info_string)
-	end
-
-	self.spot_section = spot
-end
-
-function sim_squad_generic:refresh()
-	if self.commander_id == nil then
-		self:hide()
-		return
-	end
-	self:show()
-end
-
-function sim_squad_generic:hide()
-	if self.current_spot_id == nil or self.spot_section == nil then
-		return
-	end
-	map_remove_object_spot(self.current_spot_id, self.spot_section)
-	self.current_spot_id = nil
-	self.spot_section = nil
-end
-
-function sim_squad_generic:show()
-
-	local commander_id = self.commander_id
-	if self.show_disabled
 	or map_has_object_spot(commander_id, "ui_pda2_trader_location") ~= 0
 	or map_has_object_spot(commander_id, "ui_pda2_scout_location") ~= 0
 	or map_has_object_spot(commander_id, "ui_pda2_quest_npc_location") ~= 0 then
@@ -1418,103 +1261,76 @@ function sim_squad_generic:show()
 	if self.current_spot_id ~= commander_id then
 		self:hide()
 		self.current_spot_id = commander_id
---		self:show()
---		return
 	end
 
-	local orig_spot = self.spot_section
-	local spot = orig_spot
+	local new_spot
 
 	if self.player_id == "monster" then
 		self:hide()
 		return
 	else
---[[
+		local relation
+		local actor = db.actor
 		local commander = db.storage[commander_id]
 		commander = commander and commander.object
-		local act = db.actor
-		local relation
-		if commander and act then
-			relation = commander:general_goodwill(act)
+
+		if commander and actor then
+			relation = commander:general_goodwill(actor)
 		else
 			local relationship = self.relationship
 			if relationship == "enemy" then
 				relation = -1000
 			elseif relationship == "friend" then
 				relation = 1000
-			elseif relationship == "neutral" then
-				relation = 0
-			else
-				if act then
-					local squad_faction = self.player_id
---					relation = act:community_goodwill(squad_faction) + game_relations.get_factions_community(squad_faction, alife():actor():community())
-					relation = act:community_goodwill(squad_faction) + relation_registry.community_relation(squad_faction, act:character_community())
-				else
---					relation = game_relations.get_factions_community(self.player_id, alife():actor():community())
-					local squad_faction = self.player_id
-					local actor_community = alife():actor():community()
-					relation = relation_registry.community_goodwill(squad_faction, actor_community) + relation_registry.community_relation(squad_faction, actor_community)
-				end
-			end
-		end
-]]
-		local relation
-		local relationship = self.relationship
-		if relationship == "enemy" then
-			relation = -1000
-		elseif relationship == "friend" then
-			relation = 1000
-		elseif relationship == "neutral" then
-			relation = 0
-		else
-			local act = db.actor
-			if act then
-				local commander = db.storage[commander_id]
-				commander = commander and commander.object
-				if commander then
-					relation = commander:general_goodwill(act)
-				else
-					local squad_faction = self.player_id
-					relation = act:community_goodwill(squad_faction) + relation_registry.community_relation(squad_faction, act:character_community())
-				end
+--			elseif relationship == "neutral" then
+--				relation = 0 -- needs to be calculated
 			else
 				local squad_faction = self.player_id
-				local actor_community = sim:actor():community()
-				relation = relation_registry.community_goodwill(squad_faction, actor_community) + relation_registry.community_relation(squad_faction, actor_community)
+				local actor_faction = actor and actor:character_community() or sim:actor():community()
+				relation = relation_registry.community_goodwill(squad_faction, actor_faction) + relation_registry.community_relation(squad_faction, actor_faction)
 			end
 		end
+
 		if relation >= 1000 then
-			spot = "alife_presentation_squad_friend"
+			new_spot = "alife_presentation_squad_friend"
 		elseif relation <= -1000 then
 			self:hide()
 			return
 		else
-			spot = "alife_presentation_squad_neutral"
+			new_spot = "alife_presentation_squad_neutral"
 		end
 	end
+
 	if self.current_action and self.current_action.name == "attack_point" then
-		if spot == "alife_presentation_squad_friend" then
-			spot = "alife_presentation_friend_squad_attack_point"
-		elseif spot == "alife_presentation_squad_neutral" then
-			spot = "alife_presentation_neutral_squad_attack_point"
+		if new_spot == "alife_presentation_squad_friend" then
+			new_spot = "alife_presentation_friend_squad_attack_point"
+		else
+			new_spot = "alife_presentation_neutral_squad_attack_point"
 		end
 	end
-	if orig_spot == spot then
+
+	local orig_spot = self.spot_section
+
+	if orig_spot == new_spot then
 		if has_alife_info("ui_pda") then
-			self.info_string = self:get_squad_props()
-			map_change_spot_hint(self.current_spot_id, orig_spot, self.info_string) -- update info string iff PDA is open
+			map_change_spot_hint(commander_id, orig_spot, self:get_squad_props()) -- update info string iff PDA is open
 		end
-		return
-	elseif orig_spot ~= nil then
-		self.info_string = self:get_squad_props()
-		local orig_spot_id = self.current_spot_id
-		map_remove_object_spot(orig_spot_id, orig_spot)
-		map_add_object_spot(orig_spot_id, spot, self.info_string)
 	else
-		self.info_string = self:get_squad_props()
-		map_add_object_spot(self.current_spot_id, spot, self.info_string)
+		if orig_spot ~= nil then
+			map_remove_object_spot(commander_id, orig_spot)
+		end
+		map_add_object_spot(commander_id, new_spot, self:get_squad_props())
+		self.spot_section = new_spot
 	end
-	self.spot_section = spot
+end
+
+function sim_squad_generic:hide()
+	if self.current_spot_id == nil or self.spot_section == nil then
+		return
+	end
+	map_remove_object_spot(self.current_spot_id, self.spot_section)
+	self.current_spot_id = nil
+	self.spot_section = nil
 end
 
 local stage_name_table = {
@@ -1696,7 +1512,7 @@ function sim_attack_point:is_finished()
 
 --	dbgmsg(trans(squad_faction).." squad entered "..smart_names.get_smart_terrain_name(dest_smart)..".")
 
-	squad:refresh() -- refresh squad props
+--	squad:refresh() -- done at call point
 
 	return true
 end
@@ -1748,7 +1564,7 @@ function sim_attack_point:make()
 	end
 
 	squad.last_action_timer = get_game_time()
-	squad:calculate_attack_power(0)
+	squad.squad_attack_power = 0
 	squad:refresh()
 
 --	board.players[squad_faction_name]:refresh()

@@ -205,7 +205,7 @@ end
 function reset_invulnerability(npc, ini, section)
 	local invulnerability = utils.cfg_get_bool(ini, section, "invulnerable", npc, false, false)
 --[[
-	Uncomment the if-statement below and self.invulnerability in sim_squad_scripted:init_squad() to enable
+	Uncomment the if-statement below and self.invulnerability in sim_squad_scripted:__init() to enable
 	invulnerability for any NPC whose squad's 'invulnerability' param has condlist value evaluating to 'true'. Note: Per
 	the (broken) code in sim_squad_scripted:check_invulnerability(), GSC seems to have intended for the squad-specific
 	'invulnerability' param to be overridden by the NPC section logic -specific 'invulnerable' param if the latter is

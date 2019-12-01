@@ -13,22 +13,17 @@ end
 class "sim_squad_scripted" (sim_squad_generic.sim_squad_generic)
 
 function sim_squad_scripted:__init(sim_board, player_id, squad_id, settings_id) super (sim_board, player_id, squad_id)
-	self.name = "sim_squad_scripted"
-	self.settings_id = settings_id or squad_id
-end
 
-function sim_squad_scripted:init_squad() -- smart)
-
---	sim_squad_generic.sim_squad_generic.init_squad(self, smart)
-
-	local squad_ltx        = sim_board.squad_ltx
-	local settings_id      = self.settings_id
+	local squad_ltx        = _G.sim_board.squad_ltx
+	local settings_id      = settings_id or squad_id
 	local parse_condlist   = xr_logic.parse_condlist
 
 	if not squad_ltx:section_exist(settings_id) then
-		abort("[sim_squad_scripted:init_squad]: Squad section '%s' does not exist in misc\\squad_descr.ltx or any of its includes.", settings_id)
+		abort("[sim_squad_scripted:__init]: Squad section '%s' does not exist in misc\\squad_descr.ltx or any of its includes.", settings_id)
 	end
 
+	self.name              = "sim_squad_scripted"
+	self.settings_id       = settings_id
 	self.action_condlist   = parse_condlist(nil, nil, nil, get_string_field(squad_ltx, settings_id, "target_smart", ""))
 	self.death_condlist    = parse_condlist(nil, nil, nil, get_string_field(squad_ltx, settings_id, "on_death", ""))
 	self.attack_power      = parse_condlist(nil, nil, nil, get_string_field(squad_ltx, settings_id, "attack_power", ""))
@@ -42,6 +37,10 @@ function sim_squad_scripted:init_squad() -- smart)
 		self.show_disabled = xr_logic.pick_section_from_condlist(db.actor, self, self.show_spot) == "false"
 	end
 end
+
+-- function sim_squad_scripted:init_squad() -- smart)
+--	sim_squad_generic.sim_squad_generic.init_squad(self, smart)
+-- end
 
 function sim_squad_scripted:create_npc(spawn_smart)
 
@@ -277,16 +276,14 @@ function sim_squad_scripted:update()
 			self.current_action:finalize()
 			self.current_action = nil
 		end
-		self:get_next_action()
+		self:get_next_action() -- calls self.current_action:make() calls self:refresh()
+	else
+		self:refresh()
 	end
 
 	if not self.items_spawned and self.smart_id ~= nil then
 		self:spawn_box_items(self.smart_id)
 	end
-
---	if self.player_id ~= "monster" then -- our relationship with mutants won't change, but their squad status might
-		self:adaptive_refresh()
---	end
 end
 
 function sim_squad_scripted:save(packet)
@@ -332,8 +329,6 @@ function sim_squad_scripted:load(packet)
 	local smart_info = smart_id and self.board.smarts[smart_id]
 	self:init_squad(smart_info and smart_info.smrt)
 ]]
-	self:init_squad()
-
 	self.next_target = packet:r_u8()
 	if self.next_target == 255 then
 		self.next_target = nil

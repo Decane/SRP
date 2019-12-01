@@ -103,19 +103,17 @@ function motivator_binder:net_spawn(sobject)
 	npc:set_callback(callback_death, motivator_binder.death_callback, self)
 	npc:apply_loophole_direction_distance(1)
 
-	local relation = db.goodwill.relations and db.goodwill.relations[id]
-	if relation ~= nil then
-		if db.actor then
-			game_relations.set_npcs_relation(npc, db.actor, relation)
-		end
+	local goodwill = db.goodwill.relations[id]
+	if goodwill and db.actor then
+		npc:set_goodwill(goodwill, db.actor)
 	end
 
-	local sympathy = db.goodwill.sympathy and db.goodwill.sympathy[id]
-	if sympathy ~= nil then
-		game_relations.set_npc_sympathy(npc, sympathy)
+	local sympathy = db.goodwill.sympathy[id]
+	if sympathy then
+		npc:set_sympathy(sympathy)
 	end
 
-	game_relations.set_level_faction_community(npc)
+--	game_relations.set_level_faction_community(npc)
 
 	db.add_enemy(npc)
 

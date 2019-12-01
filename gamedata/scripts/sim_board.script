@@ -427,7 +427,7 @@ function sim_board:create_squad(faction_id, squad_class, spawn_smart, sq_id, set
 
 	local squad = squad_class(self, faction_id, squad_id, settings_id)
 
-	squad:init_squad()
+--	squad:init_squad()
 
 	self_squads[squad_id] = squad
 

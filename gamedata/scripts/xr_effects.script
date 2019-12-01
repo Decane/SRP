@@ -1425,7 +1425,7 @@ function set_faction_community_to_actor(actor, npc, p) -- sets faction *goodwill
 --	end
 end
 
-function set_level_faction_community(actor, npc, p) -- sets *goodwill* to player of all faction members on a particular level
+function set_level_faction_community(actor, npc, p) -- sets community_goodwill and personal_goodwill towards player of all faction members on a particular level
 
 	local faction, map, relation = p[1], p[2], p[3]
 	if faction == nil or map == nil or relation == nil then
@@ -1439,34 +1439,16 @@ function set_level_faction_community(actor, npc, p) -- sets *goodwill* to player
 		goodwill = 9000 -- vanilla: 1000
 	end
 
+	relation_registry.set_community_goodwill(faction, 0, goodwill) -- 0 = actor ID
+
 --	local sim = alife()
 	local GG = game_graph()
 
 	for k, squad in pairs (sim_board.get_sim_board().players[faction].squads) do
-		if squad.relationship ~= nil then
-			squad.relationship = relation
-		end
 		local squad_commander = sim:object(squad.commander_id)
 		local squad_level = squad_commander and sim:level_name(GG:vertex(squad_commander.m_game_vertex_id):level_id())
 		if squad_level == map then
-			for npc_id in pairs (squad.squad_npc) do
-				local tbl = game_relations.temp_goodwill_table
-				if tbl.communities == nil then
-					tbl.communities = {}
-				end
-				if tbl.communities[faction] == nil then
-					tbl.communities[faction] = {}
-				end
---				local npc = sim:object(npc_id)
-				tbl.communities[faction][npc_id] = goodwill
-				local snpc = db.storage[npc_id]
-				local snpc_obj = snpc and snpc.object
---				if snpc ~= nil then
-				if snpc_obj ~= nil then
-					game_relations.set_level_faction_community(snpc_obj)
-				end
-			end
-			squad:refresh() -- update map icons
+			game_relations.set_squad_goodwill(squad.squad_id, relation)
 		end
 	end
 end
