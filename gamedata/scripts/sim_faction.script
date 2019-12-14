@@ -481,6 +481,7 @@ function se_sim_faction:calculate_squad_tasks()
 			if self.target_smart_value[script_target] ~= nil then -- if script target is a registered target smart then
 				self.target_smart_value[script_target].num = self.target_smart_value[script_target].num + 1 -- increase number of squads going to that target smart by 1
 			end
+--			dbglog("Assigned "..self.player_name.." squad with ID "..tostring(squad.squad_id).." to scripted target ["..game.translate_string("st_name_"..board_smarts[script_target].smrt:name()).."].")
 		else
 			if squad.smart_id == nil then
 				abort("[sim_faction.calculate_squad_tasks]: Squad with ID '%s' has no registered source smart.", tostring(squad.squad_id))
@@ -520,39 +521,44 @@ function se_sim_faction:calculate_squad_tasks()
 
 	for target_smart_id, target_smart in pairs (self.target_smart_value) do -- for all registered target smarts:
 
-		local squads = {}
-		local suitable_squads = 0
-		local target_smart_obj = target_smart.smart
-		local target_smart_gpoint
+		if target_smart.num < target_smart.cap then -- if smart isn't already saturated (by scripted squads):
 
-		for squad_id, squad_data in pairs (squad_need_task) do -- for all squads in need of task (i.e. any squad not assigned to a script target):
+			local squads = {}
+			local suitable_squads = 0
+			local target_smart_obj = target_smart.smart
+			local target_smart_gpoint
 
-			if level_cluster[squad_data.dest_smart.smart_level] == level_cluster[target_smart_obj.smart_level] then -- if registered target smart is in the same level cluster as 'dest_smart' then
+			for squad_id, squad_data in pairs (squad_need_task) do -- for all squads in need of task (i.e. any squad not assigned to a script target):
 
-				target_smart_gpoint = target_smart_gpoint or GG:vertex(target_smart_obj.m_game_vertex_id):game_point()
-				local gr_dist
+				if level_cluster[squad_data.dest_smart.smart_level] == level_cluster[target_smart_obj.smart_level] then -- if registered target smart is in the same level cluster as 'dest_smart' then
 
-				if squad_data.is_stay then
-					gr_dist = squad_data.graph_point:distance_to(target_smart_gpoint)
-				else
-					if squad_data.dest_smart.id == target_smart_id then
-						gr_dist = squad_data.graph_point:distance_to(target_smart_gpoint) * 0.001
+					target_smart_gpoint = target_smart_gpoint or GG:vertex(target_smart_obj.m_game_vertex_id):game_point()
+					local gr_dist
+
+					if squad_data.is_stay then
+						gr_dist = squad_data.graph_point:distance_to(target_smart_gpoint)
 					else
-						gr_dist = squad_data.graph_point_dest:distance_to(target_smart_gpoint) + 1
+						if squad_data.dest_smart.id == target_smart_id then
+							gr_dist = squad_data.graph_point:distance_to(target_smart_gpoint) * 0.001
+						else
+							gr_dist = squad_data.graph_point_dest:distance_to(target_smart_gpoint) + 1
+						end
 					end
+
+--					dbglog("Graph distance of "..self.player_name.." squad with ID "..tostring(squad_id).." to smart ["..game.translate_string("st_name_"..target_smart_obj:name()).."] is ["..gr_dist.."].")
+
+					suitable_squads = suitable_squads + 1
+					squads[suitable_squads] = {squad_id = squad_id, dist = gr_dist} -- add squad info to table 'squads'
 				end
-
---				dbglog("Graph distance of "..self.player_name.." squad with ID "..tostring(squad_id).." to smart ["..game.translate_string("st_name_"..target_smart_obj:name()).."] is ["..gr_dist.."].")
-
-				suitable_squads = suitable_squads + 1
-				squads[suitable_squads] = {squad_id = squad_id, dist = gr_dist} -- add squad info to table 'squads'
 			end
-		end
 
-		if suitable_squads > 0 then -- if at least one squad is in the same level cluster as registered target smart then
-			table_sort(squads, _sort_by_dist_asc) -- sort 'squads' by squad distance to registered target smart in ascending order
-			c = c + 1
-			distance_table[c] = {target_smart = target_smart, squads = squads, value = target_smart.value} -- and add {target_smart, squad infos from 'squads', target_smart value} to distance_table
+			if suitable_squads > 0 then -- if at least one squad is in the same level cluster as registered target smart then
+				table_sort(squads, _sort_by_dist_asc) -- sort 'squads' by squad distance to registered target smart in ascending order
+				c = c + 1
+				distance_table[c] = {target_smart = target_smart, squads = squads, value = target_smart.value} -- and add {target_smart, squad infos from 'squads', target_smart value} to distance_table
+			end
+--		else
+--			dbglog("Capacity ("..tostring(target_smart.cap)..") of ["..game.translate_string("st_name_"..target_smart.smart:name()).."] is saturated ("..tostring(target_smart.num)..") by scripted "..self.player_name.." squads, so making it unassignable to further squads.")
 		end
 	end
 
@@ -562,7 +568,8 @@ function se_sim_faction:calculate_squad_tasks()
 --[[
 		dbglog("Printing distance_table before squad-to-smart assignment:")
 		for i = 1, #distance_table do
-			dbglog("[%u] target_smart = [%s], value = [%u], squads =", i, game.translate_string("st_name_"..distance_table[i].target_smart.smart:name()), distance_table[i].value)
+			local smart = distance_table[i].target_smart
+			dbglog("[%u] target_smart = [%s], value = [%u], pop = [%u/%u], squads =", i, game.translate_string("st_name_"..smart.smart:name()), distance_table[i].value, smart.num, smart.cap)
 			for j = 1, #distance_table[i].squads do
 				dbglog("  [%u] squad_id = [%s], dist = [%s]", j, distance_table[i].squads[j].squad_id, distance_table[i].squads[j].dist)
 			end
