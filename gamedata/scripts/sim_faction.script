@@ -544,7 +544,7 @@ function se_sim_faction:calculate_squad_tasks()
 						end
 					else
 						if squad_data.dest_smart.id == target_smart_id then
-							gr_dist = squad_data.graph_point:distance_to(target_smart_gpoint) * 0.001
+							gr_dist = squad_data.graph_point:distance_to(target_smart_gpoint) * 0.001 + 0.1 -- increment ensures 0-dist stayer always preferred to 0-dist mover
 						else
 							gr_dist = squad_data.graph_point_dest:distance_to(target_smart_gpoint) + 1
 						end
