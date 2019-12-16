@@ -478,13 +478,13 @@ function se_sim_faction:calculate_squad_tasks()
 
 		if script_target ~= nil then
 			self.squad_target_cache[squad.squad_id] = script_target -- if squad has script target then assign squad to that target
-			if self.target_smart_value[script_target] ~= nil then -- if script target is a registered target smart then
+			if self.target_smart_value[script_target] ~= nil then -- if script target is a registered target smart:
 				self.target_smart_value[script_target].num = self.target_smart_value[script_target].num + 1 -- increase number of squads going to that target smart by 1
 			end
---			dbglog("Assigned "..self.player_name.." squad with ID "..tostring(squad.squad_id).." to scripted target ["..game.translate_string("st_name_"..board_smarts[script_target].smrt:name()).."].")
+--			dbglog("Assigned "..self.player_name.." squad with ID ["..squad.squad_id.."] to scripted target ["..game.translate_string("st_name_"..board_smarts[script_target].smrt:name()).."].")
 		else
 			if squad.smart_id == nil then
-				abort("[sim_faction.calculate_squad_tasks]: Squad with ID '%s' has no registered source smart.", tostring(squad.squad_id))
+				abort("[sim_faction.calculate_squad_tasks]: Squad with ID '%s' has no registered source smart.", squad.squad_id)
 				return
 			end
 
@@ -493,7 +493,7 @@ function se_sim_faction:calculate_squad_tasks()
 			local is_stay = false
 			local dest_smart, graph_point, graph_point_dest
 
-			if squad.current_action == nil or squad.current_action.name == "stay_point" then -- if squad is idling around then:
+			if squad.current_action == nil or squad.current_action.name == "stay_point" then -- if squad is idling around:
 				is_stay = true
 				dest_smart = board_smarts[squad.smart_id].smrt -- 'dest_smart' = squad's current smart
 				graph_point = GG:vertex(dest_smart.m_game_vertex_id):game_point()
@@ -505,13 +505,14 @@ function se_sim_faction:calculate_squad_tasks()
 
 			squad_need_task[squad.squad_id] =
 			{
+				squad = squad,
 				dest_smart = dest_smart,
 				is_stay = is_stay,
 				graph_point = graph_point,
 				graph_point_dest = graph_point_dest
 			}
 
---			dbglog("Inserted "..self.player_name.." squad with ID "..tostring(squad.squad_id).." and dest smart ["..game.translate_string("st_name_"..dest_smart:name()).."] to squad_need_task.")
+--			dbglog("Inserted "..self.player_name.." squad with ID ["..squad.squad_id.."] and dest smart ["..game.translate_string("st_name_"..dest_smart:name()).."] to squad_need_task.")
 		end
 	end
 
@@ -530,13 +531,17 @@ function se_sim_faction:calculate_squad_tasks()
 
 			for squad_id, squad_data in pairs (squad_need_task) do -- for all squads in need of task (i.e. any squad not assigned to a script target):
 
-				if level_cluster[squad_data.dest_smart.smart_level] == level_cluster[target_smart_obj.smart_level] then -- if registered target smart is in the same level cluster as 'dest_smart' then
+				if level_cluster[squad_data.dest_smart.smart_level] == level_cluster[target_smart_obj.smart_level] then -- if registered target smart is in the same level cluster as 'dest_smart':
 
 					target_smart_gpoint = target_smart_gpoint or GG:vertex(target_smart_obj.m_game_vertex_id):game_point()
 					local gr_dist
 
 					if squad_data.is_stay then
-						gr_dist = squad_data.graph_point:distance_to(target_smart_gpoint)
+						if squad_data.squad.failed_assignments[target_smart_id] then -- if failed previous attempt to move to this target smart from same origin smart:
+							gr_dist = squad_data.graph_point:distance_to(target_smart_gpoint) + 10000
+						else
+							gr_dist = squad_data.graph_point:distance_to(target_smart_gpoint)
+						end
 					else
 						if squad_data.dest_smart.id == target_smart_id then
 							gr_dist = squad_data.graph_point:distance_to(target_smart_gpoint) * 0.001
@@ -545,14 +550,14 @@ function se_sim_faction:calculate_squad_tasks()
 						end
 					end
 
---					dbglog("Graph distance of "..self.player_name.." squad with ID "..tostring(squad_id).." to smart ["..game.translate_string("st_name_"..target_smart_obj:name()).."] is ["..gr_dist.."].")
+--					dbglog("Graph distance of "..self.player_name.." squad with ID ["..squad_id.."] to smart ["..game.translate_string("st_name_"..target_smart_obj:name()).."] is ["..gr_dist.."].")
 
 					suitable_squads = suitable_squads + 1
 					squads[suitable_squads] = {squad_id = squad_id, dist = gr_dist} -- add squad info to table 'squads'
 				end
 			end
 
-			if suitable_squads > 0 then -- if at least one squad is in the same level cluster as registered target smart then
+			if suitable_squads > 0 then -- if at least one squad is in the same level cluster as registered target smart:
 				table_sort(squads, _sort_by_dist_asc) -- sort 'squads' by squad distance to registered target smart in ascending order
 				c = c + 1
 				distance_table[c] = {target_smart = target_smart, squads = squads, value = target_smart.value} -- and add {target_smart, squad infos from 'squads', target_smart value} to distance_table
@@ -582,11 +587,11 @@ function se_sim_faction:calculate_squad_tasks()
 
 		self.squad_target_cache[tmp_squad_id] = tmp_smart.smart_id -- assign nearest squad to smart in first element of distance_table
 
---		dbglog("Assigned "..self.player_name.." squad with ID "..tostring(tmp_squad_id).." to ["..game.translate_string("st_name_"..tmp_smart.smart:name()).."].")
+--		dbglog("Assigned "..self.player_name.." squad with ID ["..tmp_squad_id.."] to ["..game.translate_string("st_name_"..tmp_smart.smart:name()).."].")
 
 		tmp_smart.num = tmp_smart.num + 1 -- increase number of squads assigned to it by 1
 
-		if tmp_smart.num >= tmp_smart.cap then -- if number of squads assigned to it now meets or exceeds its capacity,
+		if tmp_smart.num >= tmp_smart.cap then -- if number of squads assigned to it now meets or exceeds its capacity:
 --			dbglog("Removed ["..game.translate_string("st_name_"..tmp_smart.smart:name()).."] from distance_table since its capacity ("..tostring(tmp_smart.cap)..") is saturated ("..tostring(tmp_smart.num)..").")
 			table_remove(distance_table, 1) -- remove it from distance_table
 		end
@@ -596,7 +601,7 @@ function se_sim_faction:calculate_squad_tasks()
 			for j = #smart_data.squads, 1, -1 do
 				if smart_data.squads[j].squad_id == tmp_squad_id then
 --					local smart_name = game.translate_string("st_name_"..smart_data.target_smart.smart:name())
---					dbglog("Made "..self.player_name.." squad with ID "..tostring(tmp_squad_id).." unassignable to ["..smart_name.."].")
+--					dbglog("Made "..self.player_name.." squad with ID ["..tmp_squad_id.."] unassignable to ["..smart_name.."].")
 					if #smart_data.squads == 1 then
 --						dbglog("Removed ["..smart_name.."] from distance_table since no "..self.player_name.." squad is assignable to it.")
 						table_remove(distance_table, i) -- remove any smarts from distance_table to which no squad is assignable

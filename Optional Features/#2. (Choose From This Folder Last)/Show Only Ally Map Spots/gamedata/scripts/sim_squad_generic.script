@@ -69,6 +69,7 @@ function sim_squad_generic:__init(sim_board, player_id, squad_id)
 	self.show_disabled = false
 	self.box_items = nil
 	self.items_spawned = false
+	self.failed_assignments = {}
 end
 
 -- function sim_squad_generic:init_squad() -- smart)
@@ -708,13 +709,20 @@ function sim_squad_generic:get_next_action()
 				else
 					self.current_action = sim_attack_point(self, next_point.id, false) --, self.attacking_by_quest ~= nil) -- self.attacking_by_quest is always nil here
 --					self.current_action.target_power_value = next_point.value
+					for k, squad in pairs (faction.squads) do
+						squad.failed_assignments[target_smart_id] = nil
+					end
 				end
 			else
 				self.current_action = sim_attack_point(self, next_point.id, self.attacking_by_quest ~= nil)
 --				self.current_action.target_power_value = next_point.value
+				for k, squad in pairs (faction.squads) do
+					squad.failed_assignments[target_smart_id] = nil
+				end
 			end
 		end
 	else
+		self.failed_assignments[target_smart_id] = true
 		self.current_action = sim_stay_point(self)
 		self.current_action.next_point_id = next_point.id
 		self:calculate_attack_power()
@@ -1538,6 +1546,7 @@ function sim_attack_point:make()
 
 	cur_attack_quantity[dest_smrt_id] = cur_attack_quantity[dest_smrt_id] + 1
 
+	squad.failed_assignments = {}
 	squad.spoted_shouted = false
 
 	local board_smarts = board.smarts
