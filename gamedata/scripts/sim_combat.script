@@ -1,5 +1,7 @@
 -- DC170501: Fixed a rare crash on reload (systematic if objects_per_update in alife.ltx is set high enough) when db.actor:position() is called in update_actor() and db.actor is nil.
 -- DC180329: Lowered SQUAD_IN_ACTOR_ATTACK_TIME from 500 to 50 to prevent prematurely registering player's help in 'defend' tasks if player was spotted by enemy long before task was assigned.
+-- DC191218: Enabled offline squads to engage enemy 'idle' stage squads in addition to enemy 'combat' stage squads to prevent perpetual inaction when one squad is 'idle'.
+-- DC191219: Fixed combatting offline squads sometimes dealing zero damage to each other perpetually due to an incorrect use of math.random().
 
 local math_max = math.max
 local math_random = math.random
@@ -648,15 +650,17 @@ function CCombat_manager:update_squad(id, data)
 			local sim = _G.sim
 			local squad_faction = squad.player_id
 			for kk, kdata in pairs (self.squads) do
-				if kdata._stage == "combat" then
+				if kdata._stage == "combat" or kdata._stage == "idle" then -- DC191218
 					local enemy_squad = board_squads[kk]
 					if enemy_squad.player_id ~= squad_faction then
 						GG = GG or game_graph()
 						my_squad_level_id = my_squad_level_id or GG:vertex(sim:object(squad.commander_id).m_game_vertex_id):level_id()
 						if my_squad_level_id == GG:vertex(sim:object(enemy_squad.commander_id).m_game_vertex_id):level_id() then
 							my_squad_pow = my_squad_pow or data._squad_power
-							casualities = casualities or math_random(my_squad_pow / 5, my_squad_pow / 3)
+--							casualities = casualities or math_random(my_squad_pow / 5, my_squad_pow / 3) -- math_random() doesn't work like this!
+							casualities = casualities or my_squad_pow * (0.19 + 0.01 * math_random(14)) -- DC191219: achieves roughly as intended above
 							kdata._squad_power = math_max(0, kdata._squad_power - casualities)
+							kdata._stage = "combat" -- in case was idle
 							if enemy_squad.squad_power > kdata._squad_power then
 --								if not enemy_squad.squad_online then
 									for npc_id in pairs (enemy_squad.squad_npc) do
