@@ -1,5 +1,6 @@
 -- DC141130: Optimizations. Fixed (i) squads sometimes moving to their targets sluggishly and (ii) the excessively low guide job priority.
 -- DC170601: Fixed both instances of "agressive" to "aggressive". Deleted the superfluous (but harmless) second argument (":3") from the single call to is_obj_on_job(). Further optimizations.
+-- DC191228: Worked around online squads sometimes failing to capture smart terrains at non-terminal way-points by re-attempting the capture at terminal way-points as a fallback.
 
 local function _precond_func_exclusive(se_obj, smart, precond_params)
 	return xr_logic.pick_section_from_condlist(db.actor, se_obj, precond_params.condlist) ~= nil
@@ -787,6 +788,7 @@ function load_job(smart)
 				"formation = around\n"..
 				"def_state_moving = {=attacking_smart_captured} raid, rush\n"..
 				"on_signal = arrive_to_wait|%=request_current_squad_stage(prepare)%\n"..
+				"on_signal2 = path_end|%=request_current_squad_stage(prepare)%\n".. -- DC191228
 				"on_info = {=current_squad_stage(combat)} cover@"..sect_name.."_attack\n"..
 				"path_walk = to_"..target_smart.."_patrol_"..it.."_walk\n"..
 				danger_ltx
@@ -797,7 +799,7 @@ function load_job(smart)
 				ltx[ltx_num + 4] = sect_name
 				ltx[ltx_num + 5] = "\n[patrol@"
 				ltx[ltx_num + 6] = sect_name
-				ltx[ltx_num + 7] = "]\nmeet=meet@attack\nformation=around\ndef_state_moving={=attacking_smart_captured}raid,rush\non_signal=arrive_to_wait|%=request_current_squad_stage(prepare)%\non_info={=current_squad_stage(combat)}cover@"
+				ltx[ltx_num + 7] = "]\nmeet=meet@attack\nformation=around\ndef_state_moving={=attacking_smart_captured}raid,rush\non_signal=arrive_to_wait|%=request_current_squad_stage(prepare)%\non_signal2=path_end|%=request_current_squad_stage(prepare)%\non_info={=current_squad_stage(combat)}cover@" -- DC191228
 				ltx[ltx_num + 8] = sect_name
 				ltx[ltx_num + 9] = "_attack\npath_walk=to_"
 				ltx[ltx_num + 10] = target_smart

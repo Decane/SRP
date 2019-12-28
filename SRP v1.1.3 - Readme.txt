@@ -154,6 +154,7 @@ Gameplay fixes:
 + Fixed a range of issues with the faction wars.
 + Fixed the buggy updating of NPC trade supplies.
 + Fixed a cover scheme bug that could make NPCs unresponsive.
++ Fixed the issue where squads would sometimes fail to capture a camp upon reaching it.
 + Fixed the issue where squad NPCs could sometimes vanish right in front of the player.
 + Prevented NPCs dying of collision damage when spawning at the same spot as another NPC.
 + Fixed the issue where NPCs would sometimes perceive an enemy as a threat even after the enemy has been killed.
