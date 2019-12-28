@@ -1416,6 +1416,14 @@ position = -3.6932909488678,5,0.331966996192932
 
 • No such restrictors exist.
 
+------------------------------------
+
+[8684]
+
+no_mutant = true
+
+• Prevented the 'Pipe exit' from becoming a power target for mutants to prevent a crash due to there being no path to it from any other smart terrain in the game.
+
 
 ====================================
 alife_l08_military.ltx:
@@ -1537,6 +1545,14 @@ targets = mil_smart_terrain_2_3, red_smart_terrain_3_1
 targets = mil_smart_terrain_7_8, mil_smart_terrain_7_9, mil_smart_terrain_7_10, mil_smart_terrain_7_11
 
 • Added 'mil_smart_terrain_7_10' as a target to prevent a crash when pseudodogs attack the military base.
+
+------------------------------------
+
+[9868]
+
+no_mutant = true
+
+• Prevented the 'Hideout in dry woods' from becoming a power target for mutants to prevent a crash due to there being no path to it from any other smart terrain in the game.
 
 ------------------------------------
 
