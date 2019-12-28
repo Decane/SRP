@@ -4,7 +4,24 @@ local math_random = math.random
 
 local cse_alife_smart_zone_update = cse_alife_smart_zone.update
 
-local _sort_by_value_desc_then_squad_dist_asc = function(a, b) return a.value > b.value or (a.value == b.value and a.squads[1].dist < b.squads[1].dist) end
+local function _sort_by_value_desc_pop_asc_dist_asc(a, b)
+	if a.value > b.value then
+		return true
+	end
+	if a.value == b.value then
+		if a.target_smart.num < b.target_smart.num then
+			return true
+		end
+		if a.target_smart.num == b.target_smart.num then
+			if a.squads[1].dist < b.squads[1].dist then
+				return true
+			end
+		end
+	end
+	return false
+end
+
+-- local _sort_by_value_desc_squad_dist_asc = function(a, b) return a.value > b.value or a.value == b.value and a.squads[1].dist < b.squads[1].dist end
 local _sort_by_dist_asc = function(a, b) return a.dist < b.dist end
 local _sort_by_target_dist_asc = function(a, b) return a.dist_to_target < b.dist_to_target end
 
@@ -518,6 +535,7 @@ function se_sim_faction:calculate_squad_tasks()
 
 	local distance_table = {}
 	local level_cluster = sim_board.sim_level_cluster
+--	local is_player_in_faction = self.community_player
 	local c = 0
 
 	for target_smart_id, target_smart in pairs (self.target_smart_value) do -- for all registered target smarts:
@@ -537,7 +555,8 @@ function se_sim_faction:calculate_squad_tasks()
 					local gr_dist
 
 					if squad_data.is_stay then
-						if squad_data.squad.failed_assignments[target_smart_id] then -- if failed previous attempt to move to this target smart from same origin smart:
+--						if is_player_in_faction and target_smart.value >= 2 and squad_data.squad.failed_assignments[target_smart_id] then
+						if squad_data.squad.failed_assignments[target_smart_id] then -- if failed previous attempt to move to smart from same origin smart:
 							gr_dist = squad_data.graph_point:distance_to(target_smart_gpoint) + 10000
 						else
 							gr_dist = squad_data.graph_point:distance_to(target_smart_gpoint)
@@ -568,8 +587,12 @@ function se_sim_faction:calculate_squad_tasks()
 	end
 
 	while #distance_table > 0 do -- while there are target smarts with available squads unassigned to them:
-
-		table_sort(distance_table, _sort_by_value_desc_then_squad_dist_asc) -- sort distance_table in descending order of smart value and ascending order of distance between smart and closest squad for smarts of equal value
+--[[
+		Sort smarts in distance_table in descending order of value; sort smarts of equal
+		value in ascending order of number of squads assigned; sort smarts with an equal
+		number of squads assigned in ascending order of distance to closest squad.
+]]
+		table_sort(distance_table, _sort_by_value_desc_pop_asc_dist_asc)
 --[[
 		dbglog("Printing distance_table before squad-to-smart assignment:")
 		for i = 1, #distance_table do
