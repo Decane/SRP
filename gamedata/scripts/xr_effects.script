@@ -1393,7 +1393,11 @@ function set_factions_community(actor, npc, p)
 end
 
 function set_squad_goodwill(actor, npc, p)
-	game_relations.set_squad_goodwill(p[1], p[2])
+	local squad = sim_board.get_sim_board().squads[p[1]]
+	if squad then
+		game_relations.set_squad_goodwill(squad, p[2])
+		squad:refresh() -- update map icon
+	end
 end
 
 function set_squad_goodwill_to_npc(actor, npc, p)
@@ -1448,7 +1452,8 @@ function set_level_faction_community(actor, npc, p) -- sets community_goodwill a
 		local squad_commander = sim:object(squad.commander_id)
 		local squad_level = squad_commander and sim:level_name(GG:vertex(squad_commander.m_game_vertex_id):level_id())
 		if squad_level == map then
-			game_relations.set_squad_goodwill(squad.squad_id, relation)
+			game_relations.set_squad_goodwill(squad, relation)
+			squad:refresh() -- update map icon
 		end
 	end
 end

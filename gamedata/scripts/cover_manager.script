@@ -1,9 +1,9 @@
 class "CCover_manager"
 
-function CCover_manager:__init(smart)
+function CCover_manager:__init(smart, board)
 	self.squads = {}
 	self.cover_table = {}
-	self.board = sim_board.get_sim_board()
+	self.board = board
 	self.is_invalid = true
 end
 
@@ -94,11 +94,10 @@ function CCover_manager:load(packet)
 	set_save_marker(packet, "load", true, "CCover_manager")
 end
 
-function has_smart_cover(se_obj, smrttrn)
+function has_smart_cover(se_npc, smrttrn)
 
-	local cmanager = smrttrn.combat_manager.cover_manager
-	local npc_id = se_obj.id
-	local cover = cmanager.cover_table[npc_id]
+	local npc_id = se_npc.id
+	local cover = smrttrn.combat_manager.cover_manager.cover_table[npc_id]
 
 	if cover == nil then
 		return false
@@ -112,8 +111,7 @@ function has_smart_cover(se_obj, smrttrn)
 			return false
 		end
 
-		local level_id = game_graph():vertex(smrttrn.m_game_vertex_id):level_id()
-		local smrt_cover = se_smart_cover.registered_smartcovers_by_lv_id[level_id][cover.cover_vertex_id]
+		local smrt_cover = se_smart_cover.registered_smartcovers_by_lv_id[smrttrn.level_id][cover.cover_vertex_id]
 		if smrt_cover == nil then
 			return false
 		end
@@ -127,11 +125,10 @@ function has_smart_cover(se_obj, smrttrn)
 	return false
 end
 
-function has_cover(se_obj, smrttrn) -- in vanilla, 'npc_id' is undefined in this function, making it return true whenever cover.is_smart_cover == true
+function has_cover(se_npc, smrttrn) -- in vanilla, 'npc_id' is undefined in this function, making it return true whenever cover.is_smart_cover == true
 
-	local cmanager = smrttrn.combat_manager.cover_manager
-	local npc_id = se_obj.id
-	local cover = cmanager.cover_table[npc_id]
+	local npc_id = se_npc.id
+	local cover = smrttrn.combat_manager.cover_manager.cover_table[npc_id]
 
 	if cover == nil then
 		return false
@@ -145,8 +142,7 @@ function has_cover(se_obj, smrttrn) -- in vanilla, 'npc_id' is undefined in this
 			return true
 		end
 
-		local level_id = game_graph():vertex(smrttrn.m_game_vertex_id):level_id()
-		local smrt_cover = se_smart_cover.registered_smartcovers_by_lv_id[level_id][cover.cover_vertex_id]
+		local smrt_cover = se_smart_cover.registered_smartcovers_by_lv_id[smrttrn.level_id][cover.cover_vertex_id]
 		if smrt_cover == nil then
 			return true
 		end
@@ -160,7 +156,6 @@ function has_cover(se_obj, smrttrn) -- in vanilla, 'npc_id' is undefined in this
 	return true
 end
 
-function get_cover(obj, smrttrn)
-	local cmanager = smrttrn.combat_manager.cover_manager
-	return cmanager.cover_table[obj:id()]
+function get_cover(npc, smrttrn)
+	return smrttrn.combat_manager.cover_manager.cover_table[npc:id()]
 end

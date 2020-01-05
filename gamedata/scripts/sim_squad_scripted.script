@@ -107,7 +107,7 @@ function sim_squad_scripted:create_npc(spawn_smart)
 
 --	self.smart_id = spawn_smart.id -- done in sim_board:assign_squad_to_smart() after this func called
 
-	self:refresh()
+--	self:refresh() -- done after sim_board:create_squad() after this func called
 end
 
 function sim_squad_scripted:get_script_target()
@@ -341,19 +341,19 @@ function sim_squad_scripted:load(packet)
 		self.relationship = nil
 	elseif s == 1 then
 		self.relationship = "friend"
-		self:set_squad_relation(self.relationship)
+		game_relations.set_squad_goodwill(self, "friend")
 	elseif s == 2 then
 		self.relationship = "enemy"
-		self:set_squad_relation(self.relationship)
+		game_relations.set_squad_goodwill(self, "enemy")
 	elseif s == 3 then
 		self.relationship = "neutral"
-		self:set_squad_relation(self.relationship)
+		game_relations.set_squad_goodwill(self, "neutral")
 	end
 
 	local n = packet:r_u8()
 	if n ~= 255 then
 		self.sympathy = n
-		self:set_squad_sympathy(n)
+		game_relations.set_squad_sympathy(self, n)
 	end
 
 	set_save_marker(packet, "load", true, "sim_squad_scripted")

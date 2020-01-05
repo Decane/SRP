@@ -39,44 +39,48 @@ function is_factions_enemies(faction, target_faction) -- returns whether communi
 	return relation_registry.community_relation(faction, target_faction) <= -1000
 end
 
-function set_squad_sympathy(squad_id, new_sympathy)
+function set_squad_sympathy(squad, new_sympathy)
 
-	local squad = sim_board.get_sim_board().squads[squad_id]
-	if squad == nil or new_sympathy == nil then
---		abort("[game_relations.set_squad_sympathy]: Parameter(s) missing or invalid: '%s', '%s'.", type(squad_id), type(new_sympathy))
+	if squad == nil then
+		abort("[game_relations.set_squad_sympathy]: Parameter 'squad' is nil.")
+	end
+
+	if new_sympathy == nil then
 		return
 	end
 
-	local sympathy = new_sympathy
 	if new_sympathy < 0 then
-		sympathy = 0
+		new_sympathy = 0
 	elseif new_sympathy > 1 then
-		sympathy = 1
+		new_sympathy = 1
 	end
 
-	sympathy = DEFAULT_SYMPATHY -- vanilla override
+	new_sympathy = DEFAULT_SYMPATHY -- vanilla override
 	local st = db.storage
 
 	for npc_id in pairs (squad.squad_npc) do
 		local obj = st[npc_id]
 		obj = obj and obj.object
 		if obj then
-			obj:set_sympathy(sympathy)
+			obj:set_sympathy(new_sympathy)
 		else
-			db.goodwill.sympathy[npc_id] = sympathy -- becomes NPC's sympathy on net_spawn()
+			db.goodwill.sympathy[npc_id] = new_sympathy -- becomes NPC's sympathy on net_spawn()
 		end
 	end
 end
 
-function set_squad_goodwill(squad_id, new_goodwill) -- sets squad NPCs' personal_goodwill and squad's relationship towards player
+function set_squad_goodwill(squad, new_goodwill) -- sets squad NPCs' personal_goodwill and squad's relationship towards player
 
-	local squad = sim_board.get_sim_board().squads[squad_id]
-	if squad == nil or new_goodwill == nil then
---		abort("[game_relations.set_squad_goodwill] Parameter(s) missing or invalid: '%s', '%s'.", type(squad_id), type(new_goodwill))
+	if squad == nil then
+		abort("[game_relations.set_squad_goodwill]: Parameter 'squad' is nil.")
+	end
+
+	if new_goodwill == nil then
 		return
 	end
 
 	local goodwill = 0
+
 	if new_goodwill == "enemy" then
 		goodwill = -3000
 	elseif new_goodwill == "friend" then
@@ -101,15 +105,13 @@ function set_squad_goodwill(squad_id, new_goodwill) -- sets squad NPCs' personal
 	if squad.relationship ~= nil then
 		squad.relationship = new_goodwill
 	end
-
-	squad:refresh() -- update map icon
 end
 
 function set_squad_goodwill_to_npc(npc, squad_id, new_goodwill) -- sets squad NPCs' personal_goodwill towards NPC
 
 	local squad = sim_board.get_sim_board().squads[squad_id]
 	if npc == nil or squad == nil or new_goodwill == nil then
---		abort("[game_relations.set_squad_goodwill_to_npc] Parameter(s) missing or invalid: '%s', '%s', '%s'.", type(npc), type(squad_id), type(new_goodwill))
+--		abort("[game_relations.set_squad_goodwill_to_npc]: Parameter(s) missing or invalid: '%s', '%s', '%s'.", type(npc), type(squad_id), type(new_goodwill))
 		return
 	end
 
@@ -135,7 +137,7 @@ function set_squad_community_goodwill(squad_id, community, new_goodwill) -- sets
 
 	local squad = sim_board.get_sim_board().squads[squad_id]
 	if squad == nil or community == nil or new_goodwill == nil then
---		abort("[game_relations.set_squad_community_goodwill] Parameter(s) missing or invalid: '%s', '%s', '%s'.", type(squad_id), type(community), type(new_goodwill))
+--		abort("[game_relations.set_squad_community_goodwill]: Parameter(s) missing or invalid: '%s', '%s', '%s'.", type(squad_id), type(community), type(new_goodwill))
 		return
 	end
 
@@ -275,7 +277,7 @@ function get_squad_goodwill_to_actor(squad_name) -- returns squad's relationship
 
 	local squad = sim_board.get_sim_board().squads[squad_name]
 	if squad == nil then
-		abort("[game_relations.get_squad_goodwill_to_actor] Missing squad with name '%s'.", tostring(squad_name))
+		abort("[game_relations.get_squad_goodwill_to_actor]: Missing squad with name '%s'.", tostring(squad_name))
 	end
 
 	if squad.relationship ~= nil then

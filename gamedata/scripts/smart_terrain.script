@@ -116,7 +116,9 @@ function se_smart_terrain:on_before_register()
 	local board = sim_board.get_sim_board()
 	self.board = board
 	board:register_smart(self)
-	self.smart_level = _G.sim:level_name(game_graph():vertex(self.m_game_vertex_id):level_id())
+	local level_id = game_graph():vertex(self.m_game_vertex_id):level_id()
+	self.level_id = level_id
+	self.smart_level = _G.sim:level_name(level_id)
 end
 
 function se_smart_terrain:on_register()
@@ -219,7 +221,7 @@ function se_smart_terrain:read_params()
 	end
 end
 
-function se_smart_terrain:fill_npc_info(obj)
+local function fill_npc_info(obj)
 
 	local npc_info = {}
 	local is_stalker = IsStalker(obj)
@@ -248,7 +250,7 @@ function se_smart_terrain:register_npc(obj)
 		return
 	end
 
-	self.npc_info[obj.id] = self:fill_npc_info(obj)
+	self.npc_info[obj.id] = fill_npc_info(obj)
 
 	obj.m_smart_terrain_id = self.id
 
@@ -419,6 +421,28 @@ function se_smart_terrain:load_jobs()
 	end
 end
 
+local function distance_to_job_location(obj, job)
+
+	local storage = db.storage[obj.id]
+	local GG = game_graph()
+	local obj_gv, obj_pos
+
+	if storage == nil then
+		obj_gv, obj_pos = GG:vertex(obj.m_game_vertex_id), obj.position
+	else
+		local obj = storage.object
+		obj_gv, obj_pos = GG:vertex(obj:game_vertex_id()), obj:position()
+	end
+
+	local job_gv = GG:vertex(job.game_vertex_id)
+
+	if obj_gv:level_id() == job_gv:level_id() then
+		return obj_pos:distance_to(job.position)
+	else
+		return 10000
+	end
+end
+
 function se_smart_terrain:update_jobs(object)
 
 	if object ~= nil then
@@ -456,7 +480,7 @@ function se_smart_terrain:update_jobs(object)
 
 		if npc_info.begin_job ~= true then
 			local job_data = self.job_data[npc_info.job_id]
-			if self:distance_to_job_location(npc_info.se_obj, job_data) < JOB_POSITION_THRESHOLD then
+			if distance_to_job_location(npc_info.se_obj, job_data) < JOB_POSITION_THRESHOLD then
 				npc_info.begin_job = true
 				if npc_info.stype == modules.stype_mobile then
 					npc_info.se_obj:smart_terrain_task_activate()
@@ -501,7 +525,7 @@ function se_smart_terrain:update_jobs(object)
 		if v.begin_job ~= true then
 
 			local job_data = self.job_data[v.job_id]
-			if self:distance_to_job_location(v.se_obj, job_data) < JOB_POSITION_THRESHOLD then
+			if distance_to_job_location(v.se_obj, job_data) < JOB_POSITION_THRESHOLD then
 
 				v.begin_job = true
 				if v.stype == modules.stype_mobile then
@@ -537,29 +561,6 @@ end
 
 function se_smart_terrain:getJob(obj_id)
 	return self.job_data[self.npc_info[obj_id].job_id]
-end
-
-function se_smart_terrain:distance_to_job_location(obj, job)
-
-	local obj_gv, obj_pos
-
-	local storage = db.storage[obj.id]
-	local GG = game_graph()
-
-	if storage == nil then
-		obj_gv, obj_pos = GG:vertex(obj.m_game_vertex_id), obj.position
-	else
-		local obj = storage.object
-		obj_gv, obj_pos = GG:vertex(obj:game_vertex_id()), obj:position()
-	end
-
-	local job_gv = GG:vertex(job.game_vertex_id)
-
-	if obj_gv:level_id() == job_gv:level_id() then
-		return obj_pos:distance_to(job.position)
-	else
-		return 10000
-	end
 end
 
 function se_smart_terrain:idNPCOnJob(job_name)
@@ -751,7 +752,7 @@ function se_smart_terrain:init_npc_after_load()
 	for k, v in pairs (self_npc_info) do
 		local npc_obj = sim:object(k)
 		if npc_obj ~= nil then
-			local npc_info = self:fill_npc_info(npc_obj)
+			local npc_info = fill_npc_info(npc_obj)
 			npc_info.job_prior = v.job_prior
 			npc_info.job_id = v.job_id
 			npc_info.begin_job = v.begin_job

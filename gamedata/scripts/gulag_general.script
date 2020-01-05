@@ -898,14 +898,14 @@ function load_job(smart)
 				job_ltx = job_ltx ..
 
 				"[cover@"..sect_name.."_attack]\n"..
-				"use_attack_direction = false\n"..
+--				"use_attack_direction = false\n"..
 				"on_info = {!current_squad_stage(combat)} cover@"..sect_name.."_after_attack\n"..
 				"smart = "..target_smart.."\n"..
 				danger_ltx
 ]]
 				ltx[ltx_num + 1] = "[cover@"
 				ltx[ltx_num + 2] = sect_name
-				ltx[ltx_num + 3] = "_attack]\nuse_attack_direction=false\non_info={!current_squad_stage(combat)}cover@"
+				ltx[ltx_num + 3] = "_attack]\non_info={!current_squad_stage(combat)}cover@"
 				ltx[ltx_num + 4] = sect_name
 				ltx[ltx_num + 5] = "_after_attack\nsmart="
 				ltx[ltx_num + 6] = target_smart
@@ -920,13 +920,13 @@ function load_job(smart)
 				job_ltx = job_ltx ..
 
 				"[cover@"..sect_name.."_after_attack]\n"..
-				"use_attack_direction = false\n"..
+--				"use_attack_direction = false\n"..
 				"smart = "..target_smart.."\n"..
 				danger_ltx
 ]]
 				ltx[ltx_num + 1] = "[cover@"
 				ltx[ltx_num + 2] = sect_name
-				ltx[ltx_num + 3] = "_after_attack]\nuse_attack_direction=false\nsmart="
+				ltx[ltx_num + 3] = "_after_attack]\nsmart="
 				ltx[ltx_num + 4] = target_smart
 				ltx_num = ltx_num + 5
 				ltx[ltx_num] = "\n"
@@ -1044,13 +1044,13 @@ function load_job(smart)
 
 				"[cover@"..sect_name.."_attack]\n"..
 				"meet = no_meet\n"..
-				"use_attack_direction = false\n"..
+--				"use_attack_direction = false\n"..
 				"smart = "..target_smart.."\n"..
 				danger_ltx
 ]]
 				ltx[ltx_num + 1] = "[cover@"
 				ltx[ltx_num + 2] = sect_name
-				ltx[ltx_num + 3] = "_attack]\nmeet=no_meet\nuse_attack_direction=false\nsmart="
+				ltx[ltx_num + 3] = "_attack]\nmeet=no_meet\nsmart="
 				ltx[ltx_num + 4] = target_smart
 				ltx_num = ltx_num + 5
 				ltx[ltx_num] = "\n"
@@ -1319,7 +1319,7 @@ function load_job(smart)
 		"anim = {=cover_attack} hide_fire, hide\n"..
 		"smart = "..gname.."\n"..
 		"sound_idle = post_combat_wait_long\n"..
-		"use_attack_direction = false\n"..
+--		"use_attack_direction = false\n"..
 		"use_precalc_cover = true\n"..
 		danger_ltx
 ]]
@@ -1342,7 +1342,7 @@ function load_job(smart)
 		ltx[ltx_num + 17] = "_task\nmeet=no_meet\nanim={=cover_attack}hide_fire,hide\nsmart="
 		ltx[ltx_num + 18] = gname
 		ltx_num = ltx_num + 19
-		ltx[ltx_num] = "\nsound_idle=post_combat_wait_long\nuse_attack_direction=false\nuse_precalc_cover=true\n"
+		ltx[ltx_num] = "\nsound_idle=post_combat_wait_long\nuse_precalc_cover=true\n"
 
 		if smart_def_restr then
 			ltx[ltx_num + 1] = smart_def_string_no_newline

@@ -3,9 +3,6 @@
 -- DC191218: Enabled offline squads to engage enemy 'idle' stage squads in addition to enemy 'combat' stage squads to prevent perpetual inaction when one squad is 'idle'.
 -- DC191219: Fixed combatting offline squads sometimes dealing zero damage to each other perpetually due to an incorrect use of math.random().
 
-local math_max = math.max
-local math_random = math.random
-
 local ACTOR_COME_DEFENCE_DIST = 30*30
 local ACTOR_COME_ATTACK_DIST = 30*30
 local SQUAD_COME_ATTACK_OFFLINE_DIST = 5*5
@@ -25,7 +22,7 @@ function CCombat_manager:__init(smart, board)
 	self.force_online = false
 	self.force_online_squads = {}
 	self.actor_combat = false
-	self.cover_manager = cover_manager.CCover_manager(smart)
+	self.cover_manager = cover_manager.CCover_manager(smart, board)
 end
 
 function CCombat_manager:register_squad(squad)
@@ -168,9 +165,8 @@ function CCombat_manager:hit_callback(victim_squad, is_attack)
 end
 
 function CCombat_manager:enemy_callback(my_squad, enemy_squad)
-	local my_squad_id = my_squad.squad_id
 	local self_squads = self.squads
-	local my_squad_data = self_squads[my_squad_id]
+	local my_squad_data = self_squads[my_squad.squad_id]
 	if my_squad_data == nil then
 		return
 	end
@@ -197,7 +193,7 @@ function CCombat_manager:enemy_callback(my_squad, enemy_squad)
 			end
 			self.cover_manager:calculate_covers(_G.sim:object(enemy_squad.commander_id).position)
 --		else
---			dbgmsg("Squad "..my_squad_id.." is not on combat smart.")
+--			dbgmsg("Squad "..my_squad.squad_id.." is not on combat smart.")
 		end
 	elseif my_stage == "defence" then
 		if self.combat_quest == "capture" then
@@ -389,8 +385,7 @@ function CCombat_manager:update_squad(id, data)
 			if not squad.squad_online then
 				local comander = _G.sim:object(squad.commander_id)
 				if comander.attack_position ~= nil then
-					local GG = game_graph()
-					if GG:vertex(self.smart.m_game_vertex_id):level_id() == GG:vertex(comander.m_game_vertex_id):level_id() then
+					if self.smart.level_id == game_graph():vertex(comander.m_game_vertex_id):level_id() then
 						if comander.position:distance_to_sqr(comander.attack_position) < SQUAD_COME_ATTACK_OFFLINE_DIST then
 							data._stage = "prepare"
 						end
@@ -418,25 +413,23 @@ function CCombat_manager:update_squad(id, data)
 						add_wait_attack(self, id)
 						return false
 					else
-						local defender_exist = false
 						local attacker_exist = false
-						local player = self.board.players[squad.player_id]
-						if player.brain.use_prepare_phase then
+						if self.board.players[squad.player_id].brain.use_prepare_phase then
 							if game_relations.is_squad_enemy_to_actor(id) then
 								attacker_exist = true
 							end
 						end
-						for kk, kdata in pairs (self.squads) do
-							if kdata._attack_squad == false then
-								local ksquad = board_squads[kk]
-								if not game_relations.is_squad_enemy_to_actor(ksquad.squad_id) then
-									defender_exist = true
-									break
+						if attacker_exist then
+							local defender_exist = false
+							for kk, kdata in pairs (self.squads) do
+								if kdata._attack_squad == false then
+									if not game_relations.is_squad_enemy_to_actor(kk) then
+										defender_exist = true
+										break
+									end
 								end
 							end
-						end
-						if defender_exist then
-							if attacker_exist then
+							if defender_exist then
 								self.combat_quest = "defend"
 							end
 						end
@@ -460,25 +453,23 @@ function CCombat_manager:update_squad(id, data)
 					add_wait_attack(self, id)
 					return false
 				else
-					local defender_exist = false
 					local attacker_exist = false
-					local player = self.board.players[squad.player_id]
-					if player.brain.use_prepare_phase then
+					if self.board.players[squad.player_id].brain.use_prepare_phase then
 						if game_relations.is_squad_enemy_to_actor(id) then
 							attacker_exist = true
 						end
 					end
-					for kk, kdata in pairs (self.squads) do
-						if kdata._attack_squad == false then
-							local ksquad = board_squads[kk]
-							if not game_relations.is_squad_enemy_to_actor(ksquad.squad_id) then
-								defender_exist = true
-								break
+					if attacker_exist then
+						local defender_exist = false
+						for kk, kdata in pairs (self.squads) do
+							if kdata._attack_squad == false then
+								if not game_relations.is_squad_enemy_to_actor(kk) then
+									defender_exist = true
+									break
+								end
 							end
 						end
-					end
-					if defender_exist then
-						if attacker_exist then
+						if defender_exist then
 							self.combat_quest = "defend"
 						end
 					end
@@ -559,8 +550,7 @@ function CCombat_manager:update_squad(id, data)
 		if squad.squad_online then
 			if self.combat_quest == "defend" then
 				if self.task == nil then
-					local game_time = GAME_TIME or game.get_game_time()
-					if game_time:diffSec(data._inited_defend_time) > 120 then
+					if game.get_game_time():diffSec(data._inited_defend_time) > 120 then
 						local attack_squad = nil
 						for kk, kdata in pairs (self.squads) do
 							local stage = kdata._stage
@@ -633,19 +623,17 @@ function CCombat_manager:update_squad(id, data)
 			end
 		else
 			local game_time = GAME_TIME or game.get_game_time()
-			local start_attack_wait = data._start_attack_wait
-			if start_attack_wait == nil then
-				start_attack_wait = game_time
-				data._start_attack_wait = start_attack_wait
+			if data._start_attack_wait == nil then
+				data._start_attack_wait = game_time
+				return false
 			end
-			if game_time:diffSec(start_attack_wait) < SQUAD_WAIT_ATTACK_OFFLINE then
+			if game_time:diffSec(data._start_attack_wait) < SQUAD_WAIT_ATTACK_OFFLINE then
 				return false
 			else
 				data._start_attack_wait = game_time
 			end
 			local GG
 			local my_squad_level_id
-			local my_squad_pow
 			local casualities
 			local sim = _G.sim
 			local squad_faction = squad.player_id
@@ -656,10 +644,10 @@ function CCombat_manager:update_squad(id, data)
 						GG = GG or game_graph()
 						my_squad_level_id = my_squad_level_id or GG:vertex(sim:object(squad.commander_id).m_game_vertex_id):level_id()
 						if my_squad_level_id == GG:vertex(sim:object(enemy_squad.commander_id).m_game_vertex_id):level_id() then
-							my_squad_pow = my_squad_pow or data._squad_power
---							casualities = casualities or math_random(my_squad_pow / 5, my_squad_pow / 3) -- math_random() doesn't work like this!
-							casualities = casualities or my_squad_pow * (0.19 + 0.01 * math_random(14)) -- DC191219: achieves roughly as intended above
-							kdata._squad_power = math_max(0, kdata._squad_power - casualities)
+--							casualities = casualities or math.random(data._squad_power / 5, data._squad_power / 3) -- math.random() doesn't work like this!
+							casualities = casualities or data._squad_power * (0.19 + 0.01 * math.random(14)) -- DC191219: achieves roughly as intended above
+							local new_enemy_power = kdata._squad_power - casualities
+							kdata._squad_power = new_enemy_power > 0 and new_enemy_power or 0
 							kdata._stage = "combat" -- in case was idle
 							if enemy_squad.squad_power > kdata._squad_power then
 --								if not enemy_squad.squad_online then
@@ -897,8 +885,7 @@ function actor_come_to_point(smart)
 			return true
 		end
 	else
-		local zone_by_name = db.zone_by_name
-		local zone = zone_by_name and zone_by_name[def_restr]
+		local zone = db.zone_by_name[def_restr]
 		return zone and zone:inside(act:position())
 --[[
 		if zone then

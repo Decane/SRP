@@ -410,7 +410,7 @@ end
 function precondition_sim_action_attack_point_none(npc)
 	local squad = db.storage[npc:id()].squad_obj
 	if squad.current_action.name == "attack_point" then
-		local smart = sim_board.get_sim_board().smarts[squad.current_action.dest_smrt_id].smrt
+		local smart = squad.board.smarts[squad.current_action.dest_smrt_id].smrt
 		return smart.player_name == "none"
 	end
 	return false
@@ -419,7 +419,7 @@ end
 function precondition_sim_action_attack_point_friend(npc)
 	local squad = db.storage[npc:id()].squad_obj
 	if squad.current_action.name == "attack_point" then
-		local smart = sim_board.get_sim_board().smarts[squad.current_action.dest_smrt_id].smrt
+		local smart = squad.board.smarts[squad.current_action.dest_smrt_id].smrt
 		return smart.player_name == squad.player_id
 --		return smart.player_name ~= "none" and not game_relations.is_factions_enemies(squad.player_id, smart.player_name)
 	end
@@ -429,7 +429,7 @@ end
 function precondition_sim_action_attack_point_enemy(npc)
 	local squad = db.storage[npc:id()].squad_obj
 	if squad.current_action.name == "attack_point" then
-		local smart = sim_board.get_sim_board().smarts[squad.current_action.dest_smrt_id].smrt
+		local smart = squad.board.smarts[squad.current_action.dest_smrt_id].smrt
 		local smart_faction = smart.player_name
 		return smart_faction ~= "none" and smart_faction ~= squad.player_id
 --		return game_relations.is_factions_enemies(squad.player_id, smart.player_name)
@@ -440,7 +440,7 @@ end
 function precondition_sim_action_stay_point_none_near(npc)
 	local squad = db.storage[npc:id()].squad_obj
 	if squad.current_action.name ~= "attack_point" then
-		local smart = sim_board.get_sim_board().smarts[squad.current_action.src_smrt_id]
+		local smart = squad.board.smarts[squad.smart_id]
 		for k, neighbor_smart in pairs (smart.targets) do
 --			if neighbor_smart.player_name ~= "none" then
 			if game_relations.is_factions_enemies(squad.player_id, neighbor_smart.player_name) then
@@ -455,7 +455,7 @@ end
 function precondition_sim_action_stay_point_enemy_near(npc)
 	local squad = db.storage[npc:id()].squad_obj
 	if squad.current_action.name ~= "attack_point" then
-		local smart = sim_board.get_sim_board().smarts[squad.current_action.src_smrt_id]
+		local smart = squad.board.smarts[squad.smart_id]
 		for k, neighbor_smart in pairs (smart.targets) do
 --			if neighbor_smart.player_name ~= "none" then
 			if game_relations.is_factions_enemies(squad.player_id, neighbor_smart.player_name) then

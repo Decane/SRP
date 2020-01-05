@@ -941,9 +941,8 @@ function npc_to_smart_dist(actor, obj, p) -- if p[1]/p[2] == nil, crash the game
 
 	local smart = sim_board.get_sim_board():get_smart_by_name(smart_name)
 --	local dist = tonumber(dist) -- already coerced to number by xr_logic.parse_func_params()
-	local GG = game_graph()
 
-	return GG:vertex(obj:game_vertex_id()):level_id() == GG:vertex(smart.m_game_vertex_id):level_id() and obj:position():distance_to_sqr(smart.position) <= dist * dist
+	return game_graph():vertex(obj:game_vertex_id()):level_id() == smart.level_id and obj:position():distance_to_sqr(smart.position) <= dist * dist
 end
 
 function current_squad_stage(actor, obj, p) -- if p[1] == nil, crash the game

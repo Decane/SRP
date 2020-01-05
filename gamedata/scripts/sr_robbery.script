@@ -44,7 +44,7 @@ end
 function action_robbery:enable_squad_reaction(sobj, sobj_id)
 	db.storage[sobj_id].robbery_manager = robbery_manager(sobj, self)
 	for k, squad in pairs (self.gulag_info.squads) do
-		squad:set_squad_sympathy(0)
+		game_relations.set_squad_sympathy(squad, 0)
 	end
 end
 
@@ -57,7 +57,7 @@ function action_robbery:disable_reaction_final(sobj_id, rm)
 	end
 	db.storage[sobj_id].robbery_manager = nil
 	for k, squad in pairs (self.gulag_info.squads) do
-		squad:set_squad_sympathy()
+		game_relations.set_squad_sympathy(squad, squad.sympathy)
 	end
 	self:reset_scheme()
 end

@@ -36,19 +36,20 @@ function action_cover:activate_scheme()
 	local sobj = self.object
 
 	self.enemy_random_position = self_random_position
-	if self_st.use_attack_direction then
+--[[
+	if self_st.use_attack_direction then -- never true in vanilla
 		local squad = db.storage[sobj:id()].squad_obj
 		if squad ~= nil then
-			local combat = board.smarts[squad.sim_combat_id].smrt.combat_manager
-			local combat_smart_id = combat.smart.id
+			local combat_smart_id = squad.sim_combat_id
+			local combat = board.smarts[combat_smart_id].smrt.combat_manager
 			for k in pairs (combat.squads) do
 				local squad = board.squads[k]
-				local squad_smart = squad.smart
-				if squad_smart == nil or squad_smart.id ~= combat_smart_id then
-					local sim = _G.sim
-					for kk in pairs (squad.squad_npc) do
-						local obj = sim:object(kk)
-						self.enemy_random_position = obj.position
+--				local squad_smart = squad.smart -- always nil
+--				if squad_smart == nil or squad_smart.id ~= combat_smart_id then
+				if squad.smart_id ~= combat_smart_id then
+					for npc_id in pairs (squad.squad_npc) do
+						local se_npc = _G.sim:object(npc_id)
+						self.enemy_random_position = se_npc.position
 						break
 					end
 					break
@@ -56,7 +57,7 @@ function action_cover:activate_scheme()
 			end
 		end
 	end
-
+]]
 	local cover = nil
 	local tcover = nil
 
@@ -188,7 +189,7 @@ function set_scheme(npc, ini, scheme, section) --, gulag_name)
 		abort("[xr_cover.set_scheme]: There is no 'smart' field in xr_cover.")
 	end
 
-	st.use_attack_direction = get_bool(ini, section, "use_attack_direction", npc, false, true)
+--	st.use_attack_direction = get_bool(ini, section, "use_attack_direction", npc, false, true) -- always false in vanilla
 	st.use_precalc_cover    = get_bool(ini, section, "use_precalc_cover", npc, false, false)
 	st.radius_min           = get_number(ini, section, "radius_min", npc, false, 3)
 	st.radius_max           = get_number(ini, section, "radius_max", npc, false, 5)

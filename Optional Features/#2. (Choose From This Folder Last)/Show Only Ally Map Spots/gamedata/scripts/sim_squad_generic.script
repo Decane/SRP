@@ -268,19 +268,11 @@ function sim_squad_generic:create_npc(spawn_smart)
 
 --	self.smart_id = spawn_smart.id -- done in sim_board:assign_squad_to_smart() after this func called
 
-	self:refresh()
+--	self:refresh() -- done after sim_board:create_squad() after this func called
 
 	if self.squad_power > 25 then
 		abort("[sim_squad_generic.create_npc]: Squad power ('%s') cannot exceed 25!", tostring(self.squad_power))
 	end
-end
-
-function sim_squad_generic:set_squad_sympathy(sympathy)
-	game_relations.set_squad_sympathy(self.squad_id, sympathy or self.sympathy)
-end
-
-function sim_squad_generic:set_squad_relation(relation)
-	game_relations.set_squad_goodwill(self.squad_id, relation or self.relationship)
 end
 
 function sim_squad_generic:clear_npc()
@@ -391,82 +383,82 @@ end
 
 local faction_activity =
 {
-	csky		= {
+	csky = {
 
-				[00] = 00, [01] = 00, [02] = 00, [03] = 00, [04] = 00, [05] = 00,
-				[06] = 00, [07] = 00, [08] = 00, [09] = 01, [10] = 01, [11] = 01,
-				[12] = 01, [13] = 01, [14] = 01, [15] = 01, [16] = 01, [17] = 01,
-				[18] = 01, [19] = 01, [20] = 00, [21] = 00, [22] = 00, [23] = 00},
+		[00] = 00, [01] = 00, [02] = 00, [03] = 00, [04] = 00, [05] = 00,
+		[06] = 00, [07] = 00, [08] = 00, [09] = 01, [10] = 01, [11] = 01,
+		[12] = 01, [13] = 01, [14] = 01, [15] = 01, [16] = 01, [17] = 01,
+		[18] = 01, [19] = 01, [20] = 00, [21] = 00, [22] = 00, [23] = 00},
 
-	dolg		= {
+	dolg = {
 
-				[00] = 00, [01] = 00, [02] = 00, [03] = 00, [04] = 01, [05] = 01,
-				[06] = 01, [07] = 01, [08] = 01, [09] = 01, [10] = 01, [11] = 01,
-				[12] = 01, [13] = 01, [14] = 01, [15] = 01, [16] = 01, [17] = 01,
-				[18] = 01, [19] = 01, [20] = 01, [21] = 01, [22] = 00, [23] = 00},
+		[00] = 00, [01] = 00, [02] = 00, [03] = 00, [04] = 01, [05] = 01,
+		[06] = 01, [07] = 01, [08] = 01, [09] = 01, [10] = 01, [11] = 01,
+		[12] = 01, [13] = 01, [14] = 01, [15] = 01, [16] = 01, [17] = 01,
+		[18] = 01, [19] = 01, [20] = 01, [21] = 01, [22] = 00, [23] = 00},
 
-	freedom		= {
+	freedom = {
 
-				[00] = 00, [01] = 00, [02] = 00, [03] = 00, [04] = 01, [05] = 01,
-				[06] = 01, [07] = 01, [08] = 01, [09] = 01, [10] = 01, [11] = 01,
-				[12] = 01, [13] = 01, [14] = 01, [15] = 01, [16] = 01, [17] = 01,
-				[18] = 01, [19] = 01, [20] = 01, [21] = 01, [22] = 00, [23] = 00},
+		[00] = 00, [01] = 00, [02] = 00, [03] = 00, [04] = 01, [05] = 01,
+		[06] = 01, [07] = 01, [08] = 01, [09] = 01, [10] = 01, [11] = 01,
+		[12] = 01, [13] = 01, [14] = 01, [15] = 01, [16] = 01, [17] = 01,
+		[18] = 01, [19] = 01, [20] = 01, [21] = 01, [22] = 00, [23] = 00},
 
-	stalker		= {
+	stalker = {
 
-				[00] = 00, [01] = 00, [02] = 00, [03] = 00, [04] = 01, [05] = 01,
-				[06] = 01, [07] = 01, [08] = 01, [09] = 01, [10] = 01, [11] = 01,
-				[12] = 01, [13] = 01, [14] = 01, [15] = 01, [16] = 01, [17] = 01,
-				[18] = 01, [19] = 01, [20] = 01, [21] = 01, [22] = 00, [23] = 00},
+		[00] = 00, [01] = 00, [02] = 00, [03] = 00, [04] = 01, [05] = 01,
+		[06] = 01, [07] = 01, [08] = 01, [09] = 01, [10] = 01, [11] = 01,
+		[12] = 01, [13] = 01, [14] = 01, [15] = 01, [16] = 01, [17] = 01,
+		[18] = 01, [19] = 01, [20] = 01, [21] = 01, [22] = 00, [23] = 00},
 
-	bandit		= {
+	bandit = {
 
-				[00] = 00, [01] = 00, [02] = 00, [03] = 00, [04] = 00, [05] = 00,
-				[06] = 00, [07] = 00, [08] = 00, [09] = 00, [10] = 01, [11] = 00,
-				[12] = 01, [13] = 01, [14] = 01, [15] = 01, [16] = 01, [17] = 01,
-				[18] = 01, [19] = 01, [20] = 01, [21] = 01, [22] = 00, [23] = 00},
+		[00] = 00, [01] = 00, [02] = 00, [03] = 00, [04] = 00, [05] = 00,
+		[06] = 00, [07] = 00, [08] = 00, [09] = 00, [10] = 01, [11] = 00,
+		[12] = 01, [13] = 01, [14] = 01, [15] = 01, [16] = 01, [17] = 01,
+		[18] = 01, [19] = 01, [20] = 01, [21] = 01, [22] = 00, [23] = 00},
 
-	renegade	= {
+	renegade = {
 
-				[00] = 00, [01] = 00, [02] = 00, [03] = 00, [04] = 00, [05] = 00,
-				[06] = 00, [07] = 00, [08] = 00, [09] = 00, [10] = 01, [11] = 01,
-				[12] = 01, [13] = 01, [14] = 01, [15] = 01, [16] = 01, [17] = 01,
-				[18] = 01, [19] = 01, [20] = 00, [21] = 00, [22] = 00, [23] = 00},
+		[00] = 00, [01] = 00, [02] = 00, [03] = 00, [04] = 00, [05] = 00,
+		[06] = 00, [07] = 00, [08] = 00, [09] = 00, [10] = 01, [11] = 01,
+		[12] = 01, [13] = 01, [14] = 01, [15] = 01, [16] = 01, [17] = 01,
+		[18] = 01, [19] = 01, [20] = 00, [21] = 00, [22] = 00, [23] = 00},
 
-	army		= {
+	army = {
 
-				[00] = 00, [01] = 00, [02] = 00, [03] = 00, [04] = 00, [05] = 00,
-				[06] = 00, [07] = 00, [08] = 00, [09] = 00, [10] = 00, [11] = 00,
-				[12] = 00, [13] = 00, [14] = 00, [15] = 00, [16] = 00, [17] = 00,
-				[18] = 00, [19] = 00, [20] = 00, [21] = 00, [22] = 00, [23] = 00},
+		[00] = 00, [01] = 00, [02] = 00, [03] = 00, [04] = 00, [05] = 00,
+		[06] = 00, [07] = 00, [08] = 00, [09] = 00, [10] = 00, [11] = 00,
+		[12] = 00, [13] = 00, [14] = 00, [15] = 00, [16] = 00, [17] = 00,
+		[18] = 00, [19] = 00, [20] = 00, [21] = 00, [22] = 00, [23] = 00},
 
-	killer		= {
+	killer = {
 
-				[00] = 00, [01] = 00, [02] = 00, [03] = 00, [04] = 00, [05] = 00,
-				[06] = 00, [07] = 00, [08] = 00, [09] = 00, [10] = 00, [11] = 00,
-				[12] = 00, [13] = 00, [14] = 00, [15] = 00, [16] = 00, [17] = 00,
-				[18] = 00, [19] = 00, [20] = 00, [21] = 00, [22] = 00, [23] = 00},
+		[00] = 00, [01] = 00, [02] = 00, [03] = 00, [04] = 00, [05] = 00,
+		[06] = 00, [07] = 00, [08] = 00, [09] = 00, [10] = 00, [11] = 00,
+		[12] = 00, [13] = 00, [14] = 00, [15] = 00, [16] = 00, [17] = 00,
+		[18] = 00, [19] = 00, [20] = 00, [21] = 00, [22] = 00, [23] = 00},
 
-	monolith	= {
+	monolith = {
 
-				[00] = 00, [01] = 00, [02] = 00, [03] = 00, [04] = 00, [05] = 00,
-				[06] = 00, [07] = 00, [08] = 00, [09] = 00, [10] = 00, [11] = 00,
-				[12] = 00, [13] = 00, [14] = 00, [15] = 00, [16] = 00, [17] = 00,
-				[18] = 00, [19] = 00, [20] = 00, [21] = 00, [22] = 00, [23] = 00},
+		[00] = 00, [01] = 00, [02] = 00, [03] = 00, [04] = 00, [05] = 00,
+		[06] = 00, [07] = 00, [08] = 00, [09] = 00, [10] = 00, [11] = 00,
+		[12] = 00, [13] = 00, [14] = 00, [15] = 00, [16] = 00, [17] = 00,
+		[18] = 00, [19] = 00, [20] = 00, [21] = 00, [22] = 00, [23] = 00},
 
-	zombied		= {
+	zombied = {
 
-				[00] = 00, [01] = 00, [02] = 00, [03] = 00, [04] = 00, [05] = 00,
-				[06] = 00, [07] = 00, [08] = 00, [09] = 00, [10] = 00, [11] = 00,
-				[12] = 00, [13] = 00, [14] = 00, [15] = 00, [16] = 00, [17] = 00,
-				[18] = 00, [19] = 00, [20] = 00, [21] = 00, [22] = 00, [23] = 00},
+		[00] = 00, [01] = 00, [02] = 00, [03] = 00, [04] = 00, [05] = 00,
+		[06] = 00, [07] = 00, [08] = 00, [09] = 00, [10] = 00, [11] = 00,
+		[12] = 00, [13] = 00, [14] = 00, [15] = 00, [16] = 00, [17] = 00,
+		[18] = 00, [19] = 00, [20] = 00, [21] = 00, [22] = 00, [23] = 00},
 
-	monster		= {
+	monster = {
 
-				[00] = 01, [01] = 01, [02] = 01, [03] = 01, [04] = 01, [05] = 01,
-				[06] = 01, [07] = 01, [08] = 01, [09] = 01, [10] = 01, [11] = 01,
-				[12] = 01, [13] = 01, [14] = 01, [15] = 01, [16] = 01, [17] = 01,
-				[18] = 01, [19] = 01, [20] = 01, [21] = 01, [22] = 01, [23] = 01}
+		[00] = 01, [01] = 01, [02] = 01, [03] = 01, [04] = 01, [05] = 01,
+		[06] = 01, [07] = 01, [08] = 01, [09] = 01, [10] = 01, [11] = 01,
+		[12] = 01, [13] = 01, [14] = 01, [15] = 01, [16] = 01, [17] = 01,
+		[18] = 01, [19] = 01, [20] = 01, [21] = 01, [22] = 01, [23] = 01}
 }
 
 function sim_squad_generic:calculate_attack_power()
@@ -840,20 +832,19 @@ function sim_squad_generic:cover_attack()
 	end
 
 	local board = self.board
-	local player = board.players[self.player_id]
-	if player.brain.use_cover_attack ~= true then
+
+	if board.players[self.player_id].brain.use_cover_attack ~= true then
 		return false
 	end
 
 	local sim_combat = board.smarts[self.sim_combat_id].smrt.combat_manager
-
 	local my_enemy = sim_combat:get_squad_enemy(self)
+
 	if my_enemy == nil then
 		return false
 	end
 
-	local enemy_faction = board.players[my_enemy.player_id]
-	if enemy_faction.brain.use_cover_attack ~= true then
+	if board.players[my_enemy.player_id].brain.use_cover_attack ~= true then
 		return false
 	end
 
@@ -911,15 +902,10 @@ function sim_squad_generic:issue_order(order)
 	end
 
 	if order == "attack" then
-
 		xr_sound.set_sound_play(commander_id, "alife_start_attack")
-
 	elseif order == "battlecry" then
-
 		xr_sound.set_sound_play(commander_id, "alife_battlecry")
-
 	elseif order == "prepare" then
-
 		if self.attacking_by_quest ~= nil then
 			self.sound_manager:set_storyteller(commander_id)
 			self.sound_manager:set_story("squad_prepare_attack")
@@ -928,13 +914,9 @@ function sim_squad_generic:issue_order(order)
 			self.sound_manager:set_story("squad_prepare_attack_self")
 			return false
 		end
-
 	elseif order == "wait_again_signal" then
-
 		xr_sound.set_sound_play(commander_id, "alife_wait_actor_signal", self.player_id, self.current_action.dest_smrt_id)
-
 	elseif order == "alife_we_spoted" then
-
 		if self.spoted_shouted == false then
 			local target_id = self.current_action.dest_smrt_id
 			local dist_to_target = utils.graph_distance(sim:object(target_id).m_game_vertex_id, com_pos)
@@ -944,65 +926,35 @@ function sim_squad_generic:issue_order(order)
 			end
 			self.spoted_shouted = true
 		end
-
 	elseif order == "counter_attack_spotted" then
-
 		xr_sound.set_sound_play(commander_id, "alife_see_counter", self.player_id, self.smart_id)
-
 	elseif order == "defend_sos_monster" then
-
 		xr_sound.set_sound_play(commander_id, "alife_defence_vs_mutant", self.player_id, self.smart_id)
-
 	elseif order == "defend_sos_bandit" then
-
 		xr_sound.set_sound_play(commander_id, "alife_defence_vs_bandit", self.player_id, self.smart_id)
-
 	elseif order == "defend_sos_army" then
-
 		xr_sound.set_sound_play(commander_id, "alife_defence_vs_army", self.player_id, self.smart_id)
-
 --	elseif order == "defend_sos_monolith" then
-
 --		xr_sound.set_sound_play(commander_id, "alife_defence_vs_zombied", self.player_id, self.smart_id)
-
 	elseif order == "defend_sos_zombied" then
-
 		xr_sound.set_sound_play(commander_id, "alife_defence_vs_zombied", self.player_id, self.smart_id)
-
 	elseif order == "defend_sos_renegade" then
-
 		xr_sound.set_sound_play(commander_id, "alife_defence_vs_bandit", self.player_id, self.smart_id)
-
 	elseif order == "defend_sos_stalker" then
-
 		xr_sound.set_sound_play(commander_id, "alife_defence_vs_stalker", self.player_id, self.smart_id)
-
 	elseif order == "defend_sos_dolg" then
-
 		xr_sound.set_sound_play(commander_id, "alife_defence_vs_dolg", self.player_id, self.smart_id)
-
 	elseif order == "defend_sos_freedom" then
-
 		xr_sound.set_sound_play(commander_id, "alife_defence_vs_freedom", self.player_id, self.smart_id)
-
 	elseif order == "defend_wait" then
-
 		xr_sound.set_sound_play(commander_id, "alife_defence_wait_help", self.player_id, self.smart_id)
-
 	elseif order == "defend_actor_come" then
-
 		xr_sound.set_sound_play(commander_id, "alife_defence_actor_come", self.player_id, self.smart_id)
-
 --	elseif order == "defend_actor_ignore" then
-
 --		xr_sound.set_sound_play(commander_id, "alife_defence_actor_ignore", self.player_id, self.smart_id)
-
 	elseif order == "defend_actor_help" then
-
 		xr_sound.set_sound_play(commander_id, "alife_defence_actor_help", self.player_id, self.smart_id)
-
 	elseif order == "combat_done" then
-
 		local squad_action = self.current_action
 		if squad_action ~= nil and squad_action.name == "attack_point" then
 			if utils.graph_distance(sim:object(squad_action.dest_smrt_id).m_game_vertex_id, com_pos) < 40 then
@@ -1413,18 +1365,14 @@ function sim_squad_generic:get_squad_props()
 	-----------------
 --[[
 	local board_smarts = board.smarts
-
 	local squad_smart_id = self.smart_id
-	str = str.."\\nFrom: "..(squad_smart_id ~= nil and smart_names.get_smart_terrain_name(board_smarts[squad_smart_id].smrt) or "")
-
-	str = str.."\\nPath: "..((current_action and current_action.name == "attack_point") and smart_names.get_smart_terrain_name(board_smarts[current_action.dest_smrt_id].smrt) or "")
-
-	str = str.."\\nNext: "..((current_action and current_action.next_point_id ~= nil) and smart_names.get_smart_terrain_name(board_smarts[current_action.next_point_id].smrt) or "")
-
 	local cache_target = board.players[self.player_id].squad_target_cache[self.squad_id]
-	str = str.."\\nCache: "..(cache_target ~= nil and smart_names.get_smart_terrain_name(board_smarts[cache_target].smrt) or "")
-
 	local assigned_target_id = self.assigned_target_smart_id
+
+	str = str.."\\nFrom: "..(squad_smart_id ~= nil and smart_names.get_smart_terrain_name(board_smarts[squad_smart_id].smrt) or "")
+	str = str.."\\nPath: "..((current_action and current_action.name == "attack_point") and smart_names.get_smart_terrain_name(board_smarts[current_action.dest_smrt_id].smrt) or "")
+	str = str.."\\nNext: "..((current_action and current_action.next_point_id ~= nil) and smart_names.get_smart_terrain_name(board_smarts[current_action.next_point_id].smrt) or "")
+	str = str.."\\nCache: "..(cache_target ~= nil and smart_names.get_smart_terrain_name(board_smarts[cache_target].smrt) or "")
 	str = str.."\\nTo: "..(assigned_target_id ~= nil and smart_names.get_smart_terrain_name(board_smarts[assigned_target_id].smrt) or "")
 ]]
 	-----------------
@@ -1447,7 +1395,7 @@ function sim_attack_point:__init(squad, dest_smrt_id, major)
 	self.board = squad.board
 --	self.player_id = squad.player_id
 --	self.squad_id = squad.squad_id
-	self.src_smrt_id = squad.smart_id
+--	self.src_smrt_id = squad.smart_id
 	self.dest_smrt_id = dest_smrt_id
 	self.major = major
 end
@@ -1487,10 +1435,9 @@ function sim_attack_point:is_finished()
 		return false
 	end
 
-	local GG = game_graph()
 	local commander = sim:object(squad.commander_id)
 
-	if GG:vertex(commander.m_game_vertex_id):level_id() ~= GG:vertex(dest_smart.m_game_vertex_id):level_id() then
+	if game_graph():vertex(commander.m_game_vertex_id):level_id() ~= dest_smart.level_id then
 		return false
 	end
 
@@ -1501,8 +1448,9 @@ function sim_attack_point:is_finished()
 			return false
 		end
 --	else
---		if utils.graph_distance(dest_smart.m_game_vertex_id, commander.m_game_vertex_id) > 84 then
---			dbgmsg("Offline "..trans(squad.player_id).." squad is "..utils.graph_distance(dest_smart.m_game_vertex_id, commander.m_game_vertex_id).."m away from "..smart_names.get_smart_terrain_name(dest_smart)..".")
+--		local dist = utils.graph_distance(dest_smart.m_game_vertex_id, commander.m_game_vertex_id)
+--		if dist > 84 then
+--			dbgmsg("Offline "..trans(squad.player_id).." squad is "..dist.."m away from "..smart_names.get_smart_terrain_name(dest_smart)..".")
 --			return false
 --		end
 	end
@@ -1559,7 +1507,7 @@ function sim_attack_point:make()
 		squad.sound_manager:set_story("squad_begin_attack")
 	end
 
-	local src_smart = board_smarts[self.src_smrt_id].smrt
+	local src_smart = board_smarts[squad.smart_id].smrt
 
 	if squad.sim_combat_id ~= nil then
 		src_smart.combat_manager:unregister_squad(squad)
@@ -1605,7 +1553,7 @@ function sim_stay_point:__init(squad, stay_defended)
 	self.board = squad.board
 --	self.player_id = squad.player_id
 --	self.squad_id = squad.squad_id
-	self.src_smrt_id = squad.smart_id
+--	self.src_smrt_id = squad.smart_id
 	self.stay_defended = stay_defended or false
 end
 
@@ -1673,7 +1621,7 @@ function sim_stay_point:is_finished()
 		return false
 	end
 
-	local src_smart = self.board.smarts[self.src_smrt_id].smrt
+	local src_smart = self.board.smarts[squad.smart_id].smrt
 
 	if src_smart.combat_manager:get_squad_stage(squad) ~= "idle" then
 		return false
@@ -1694,8 +1642,7 @@ function sim_stay_point:is_finished()
 	end
 
 	if squad.sim_combat_id ~= nil then
-		local sim_combat = src_smart.combat_manager
-		sim_combat:unregister_squad(squad)
+		src_smart.combat_manager:unregister_squad(squad)
 	end
 
 	self.begin_time = nil
@@ -1707,7 +1654,7 @@ function sim_stay_point:make()
 	local squad = self.squad
 --	if squad ~= nil then
 --		squad.current_action = self -- superfluous
-		local src_smart = self.board.smarts[self.src_smrt_id].smrt
+		local src_smart = self.board.smarts[squad.smart_id].smrt
 		src_smart.combat_manager:register_squad(squad)
 		self.begin_time = get_game_time()
 		self:init_defend_smart_delay(squad)

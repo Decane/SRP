@@ -382,7 +382,7 @@ function sim_board:register_spawn_smart(smart)
 end
 
 -- function sim_board:register_mutant_lair(smart)
---	self.mutant_lair[smart.id] = game_graph():vertex(smart.m_game_vertex_id):level_id()
+--	self.mutant_lair[smart.id] = smart.level_id
 -- end
 
 function sim_board:get_spawn_smart(faction)
@@ -433,8 +433,8 @@ function sim_board:create_squad(faction_id, squad_class, spawn_smart, sq_id, set
 
 	squad:create_npc(spawn_smart)
 
-	squad:set_squad_sympathy()
-	squad:set_squad_relation()
+	game_relations.set_squad_sympathy(squad, squad.sympathy)
+	game_relations.set_squad_goodwill(squad, squad.relationship)
 
 	self:assign_squad_to_smart(squad, spawn_smart.id)
 
@@ -575,10 +575,11 @@ end
 
 Summary of operations:
 
-(1) smart_info.stayed_squad_quan = smart_info.stayed_squad_quan - 1
-(2) smart_info.squads[squad.squad_id] = nil
-(3) squad_faction.resource_level decremented if appropriate
-(4) smart.player_name = "none" if appropriate
+(1) squad.entered_smart = nil
+(2) smart_info.stayed_squad_quan = smart_info.stayed_squad_quan - 1
+(3) smart_info.squads[squad.squad_id] = nil
+(4) squad_faction.resource_level decremented if appropriate
+(5) smart.player_name = "none" if appropriate
 
 ]]
 
