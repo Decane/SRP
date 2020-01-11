@@ -702,42 +702,20 @@ function sim_board:enter_smart(squad, smart_id, after_load)
 	end
 end
 
-function sim_board:setup_squad_and_group(se_obj)
+function sim_board:setup_squad_and_group(se_npc)
 
-	local group = 0
-	local level_id = squad_by_level[level.name()]
+	change_team_sqaud_group(se_npc, se_npc.team, se_npc.squad, squad_by_level[level.name()] or 0)
 
-	if level_id ~= nil then
-		group = level_id
-	end
-
---	local se_obj = _G.sim:object(se_obj.id)
-	local se_obj_team = se_obj.team
-
-	change_team_sqaud_group(se_obj, se_obj_team, se_obj.squad, group)
-
-	local squad = self.squads[se_obj.squad_id]
+	local squad = self.squads[se_npc.squad_id]
 
 	if squad == nil then
-		change_team_sqaud_group(se_obj, se_obj_team, 0, se_obj.group)
+		change_team_sqaud_group(se_npc, se_npc.team, 0, se_npc.group)
 		return
 	end
 
-	local squad_action = squad.current_action
-	local smart
+	local smart_id = squad.current_action and squad.current_action.dest_smrt_id or squad.smart_id
 
-	if squad_action ~= nil and squad_action.name == "attack_point" then
-		smart = self.smarts[squad_action.dest_smrt_id].smrt
-	else
-		smart = self.smarts[squad.smart_id].smrt
-	end
-
-	if smart == nil then
-		change_team_sqaud_group(se_obj, se_obj_team, 0, se_obj.group)
-		return
-	end
-
-	change_team_sqaud_group(se_obj, se_obj_team, smart.squad_id, se_obj.group)
+	change_team_sqaud_group(se_npc, se_npc.team, smart_id, se_npc.group)
 end
 
 function sim_board:build_cross_table(smart)
