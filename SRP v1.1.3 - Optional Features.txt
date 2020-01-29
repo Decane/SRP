@@ -81,7 +81,7 @@ Improved LuaJIT Library
 ====================================================
 
 
-Xetrill's modified LuaJIT library. Improves script engine performance.
+Xetrill's modified LuaJIT library. Improves script engine performance and enables the SRP to print a stack trace to aid debugging if the game aborts.
 
 More information: http://www.gsc-game.com/main.php?t=community&s=forums&s_game_type=xr2&thm_page=1&thm_id=23321&page=1&sec_id=22&lang=en
 

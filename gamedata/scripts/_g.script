@@ -48,7 +48,9 @@ local sim = nil
 
 function abort(fmt, ...)
 	local reason = string.format(fmt, ...)
-	error_log(debug.traceback("Abort(): "..reason.."\n"))
+	local msg = "Abort(): "..reason
+	-- Xetrill's LuaJIT exposes Lua's 'debug' library (it's unavailable in vanilla).
+	error_log(debug == nil and msg or debug.traceback(msg.."\n"))
 	error(reason, 2)
 end
 
