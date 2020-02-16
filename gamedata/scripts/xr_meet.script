@@ -238,7 +238,7 @@ function Cmeet_manager:update()
             end
             if not self.hello then
                 self.hello = true
-                if self.a.sound_start ~= "nil" and self.a.sound_start ~= "meet_general_start" and xr_sound.sound_table[npc_id] == nil then
+                if not self.npc:is_talking() and self.a.sound_start ~= "nil" and self.a.sound_start ~= "meet_general_start" and xr_sound.sound_table[npc_id] == nil then
                     xr_sound.set_sound_play(npc_id, self.a.sound_start)
                 end
             end

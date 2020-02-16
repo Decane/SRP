@@ -154,6 +154,7 @@ Gameplay fixes:
 + Fixed a range of issues with the faction wars.
 + Fixed the buggy updating of NPC trade supplies.
 + Fixed a cover scheme bug that could make NPCs unresponsive.
++ Fixed corpse map spots haphazardly failing to appear on the minimap.
 + Fixed the issue where squads would sometimes fail to capture a camp upon reaching it.
 + Fixed the issue where squad NPCs could sometimes vanish right in front of the player.
 + Prevented NPCs dying of collision damage when spawning at the same spot as another NPC.
@@ -255,7 +256,7 @@ Graphical fixes:
 + Partly fixed the broken wet surfaces effect.
 + Fixed bullet tracers not being displayed in DX10/10.1 mode.
 + Made camo nets and fences visible on ATI/AMD based graphics cards.
-+ Fixed corpse map spots haphazardly failing to appear on the minimap.
++ Fixed the smoothing of the bridge to Limansk.
 + Replaced the inventory icon of the PM, PB, RPG-7, AKS-74U, and the exoskeleton to match their in-game appearance.
 + The correct HUD arm texture is now displayed for the Sunrise Suit, SEVA Suit, and the Bandit Jacket.
 + Fixed the issue where a squad commander icon would sometimes overlap with a guide icon, trader icon, or important character icon on the map.
@@ -285,7 +286,7 @@ Audio fixes:
 + Made the Freedom base megaphone play Yar and Ashot's conversations only when the player is in the vicinity of the Freedom base.
 + Fixed the issue where zombified stalkers would sometimes shout battle slogans as if they were ordinary stalkers.
 + Fixed the overlapping audio transmissions during the initial cutscene in the Abandoned Hospital.
-+ Worked around Professor Beanpolev's overlapping greeting audio.
++ Fixed Professor Beanpolev's overlapping greeting audio.
 + Fixed some NPCs using the wrong voice files.
 + Fixed unlit campfires emitting a burning sound.
 

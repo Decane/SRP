@@ -45,6 +45,7 @@ v1.1.3
 + Fixed a few remaining NPC disposition bugs. - Decane
 + Fixed the audio of an NPC's instrument-playing animation continuing to play even when the animation is interrupted by the NPC getting up intermittently. - Decane
 + Fixed the parting audio of an NPC playing prematurely upon entering the trade or upgrade screen with them. - Decane
++ Fixed the greeting audio of some NPCs (most notably Professor Beanpolev) occasionally playing over their first spoken dialogue when the player opens a dialogue window with them. - Decane
 + Worked around the death of a squad poltergeist failing to be processed correctly if the death callback from its object binder triggers before that of its server entity equivalent, se_monster:on_death(). As a side-effect, poltergeists now leave behind a corpse when killed. - Decane
 + Fixed Sakharov and Lingov not being marked as important characters on the map. - Decane
 + Fixed the issue where a squad commander icon could overlap with a trader icon on the map. - Decane
@@ -57,6 +58,7 @@ v1.1.3
 + Fixed a few instances of a mechanic not being able to upgrade a pre-upgraded variant of a weapon even if they could upgrade the base weapon. - Decane
 + Fixed the incorrect parsing of hyphenated item names appearing as dependees for ammo in section 'item_dependence' in death_generic.ltx. - Decane
 + Fixed a typo in Sakharov's trade config that prevented the right multiplier being applied to the sell-price of shotgun ammo. - warcatt00
++ Fixed the smoothing of the bridge to Limansk mesh, which could cause shadow glitches at some angles and lighting conditions. - PYP
 + Improved error diagnostics on _g.abort() invocation if the optional "Improved LuaJIT Library" is installed - a Lua stack traceback is now printed. - Decane
 + Russian translation. - olegj5, SurDno
 + Fixed the "Electronic stabilizer" upgrade for the SPAS-12 and Mossberg 88 wrongly decrementing their ammo capacity by 2. - AR2R
