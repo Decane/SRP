@@ -75,14 +75,13 @@ local function surprise()
 	}
 	local lvid = db.actor:level_vertex_id()
 	local gvid = db.actor:game_vertex_id()
-	level.add_pp_effector("teleport.ppe", 2006, false)
 	if danger > 100 then                                                         -- actor death
 		if best_enemy == nil then
 			sim_create("bloodsucker_redhunter", db.actor:position(), lvid, gvid) -- spawn default mutant
 		else
 			sim_create(best_enemy:section(), db.actor:position(), lvid, gvid)    -- spawn the nearest enemy
 		end
-		db.actor:kill(db.actor)
+--		db.actor:kill(db.actor)
 		return
 	end
 	if danger * 10 >= math.random(1, 1000) then                                  -- mutants spawn
@@ -137,6 +136,7 @@ end
 
 function sleep_stop()
 	level.show_indicators()
+	level.add_pp_effector("teleport.ppe", 2006, false)
 	surprise()
 	level.set_time_factor(system_ini():r_float("alife", "time_factor"))
 	local weather_manager = level_weathers.get_weather_manager()
