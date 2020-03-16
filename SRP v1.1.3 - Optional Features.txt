@@ -37,22 +37,6 @@ Complete feature list:
 
 
 ====================================================
-DX10 Patch
-====================================================
-
-
-Allegedly prevents crashes related to the DX10/10.1 renderer without necessitating the removal of 'Update for Microsoft Windows (KB2670838)'.
-
-Install only if playing in DX10/10.1 mode makes your game crash.
-
-Notes:
-
- • Installing this will disable SweetFX in DX10/10.1 mode if it has been installed.
-
- • SweetFX must not be installed on top of this. Your game will fail to launch if it is.
-
-
-====================================================
 Feasible Stealth (*)
 ====================================================
 
@@ -269,7 +253,7 @@ Notes:
 
  • On some configurations, SweetFX disables the possibility to use DX10/10.1.
 
- • SweetFX must not be installed on top of the optional DX10 Patch. Your game will fail to launch if it is.
+ • SweetFX must not be installed on top of any conflicting mods. Your game may fail to launch if it is.
 
 More feature information: http://forums.guru3d.com/showthread.php?t=395072
 

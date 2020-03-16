@@ -60,13 +60,11 @@ Uninstallation:
 
 1.) Delete the 'gamedata' folder (and its contents) from your Clear Sky root directory.
 
-2.) If you installed the optional 'Improved LuaJIT Library' and wish to remove it, navigate to the game's 'bin' folder, delete 'shiny.dll', and restore the original 'lua.JIT.1.1.4.dll' file from the 'SRP Original LuaJIT Backup' archive.
+2.) If you installed the optional 'Improved LuaJIT Library' and wish to remove it, navigate to the game's 'bin' folder and restore the original 'lua.JIT.1.1.4.dll' file from the 'SRP Original LuaJIT Backup' archive.
 
 3.) If you installed the optional 'SweetFX v1.5.1' feature and wish to remove it, delete these files from the game's 'bin' folder: 'd3d9.dll', 'dxgi.dll', and 'injector.ini'. Then delete the following from the game's root directory: the 'SweetFX' folder, 'd3d9.fx', 'dxgi.fx', 'log.log', 'shader.fx', 'SweetFX_preset.txt', and 'SweetFX_settings.txt'.
 
-4.) If you installed the optional 'DX10 Patch' and wish to remove it, delete these files from the game's 'bin' folder: 'd3d10.dll', 'd3d10_1.dll', and 'dxgi.dll'.
-
-5.) If you installed the optional 'User Configuration Patch' and wish to restore your pre-SRP user profile, navigate to your %PUBLIC%\Documents\STALKER-STCS\ directory, delete 'user.ltx', and reinstate the 'user.ltx.before_srp' file as your 'user.ltx' file by stripping away its '.before_srp' suffix.
+4.) If you installed the optional 'User Configuration Patch' and wish to restore your pre-SRP user profile, navigate to your %PUBLIC%\Documents\STALKER-STCS\ directory, delete 'user.ltx', and reinstate the 'user.ltx.before_srp' file as your 'user.ltx' file by stripping away its '.before_srp' suffix.
 
 
 ====================================
@@ -372,24 +370,27 @@ Problems running the game? Ensure:
  • Your device drivers are up to date.
  • Your game is patched to version 1.5.10.
  • You have validated your game cache if running the Steam version of the game.
- • You are running the game with administrator privileges. If you are not sure whether this is so, navigate to your Clear Sky root directory, open the 'bin' folder, right-click xrEngine.exe, and select 'Properties'. In the 'Compatibility' tab, check the box next to 'Run this program as an administrator', and then accept the changes.
+ • Your anti-virus software is not blocking the game from running.
+ • You are running the game with administrator privileges. If you are not sure whether this is so, navigate to your Clear Sky root directory, open the 'bin' folder, right-click xrEngine.exe, and select 'Properties'. In the 'Compatibility' tab, check the box next to 'Run this program as an administrator', and then accept the changes. If this is not an option, refer to:
+
+  https://www.gog.com/forum/stalker_series/how_do_you_run_the_game_without_admin_rights/post7
+
  • You have shut down all unnecessary applications before running the game. This includes monitoring utilities / overlays like MSI Afterburner and the Steam overlay.
  • You have installed the SRP correctly and are not running any other modifications --OR-- you are confident that your other modifications are merged correctly with the SRP and that they do not cause instability.
 
-Unable to choose DX10/10.1 mode in the graphics settings menu?
+Unable to select DX10/10.1 mode in the graphics settings menu?
 
  • Uninstall SweetFX if you have it installed — it is known to disable DX10/10.1 support on some configurations.
 
-Trying to run the game in DX10/10.1 mode? Getting random freezes? Try these in sequence:
+Trying to run the game in DX10/10.1 mode? Getting intermittent freezes? Possible solutions:
 
- • Install the optional 'DX10 Patch' included with the SRP.
- • Uninstall 'Update for Microsoft Windows (KB2670838)' if you have it installed — it is known to cause problems with Clear Sky, but should be uninstalled only if the patch above does not work.
- • Disable anti-aliasing in the game's graphics settings.
+ • Disable anti-aliasing in the game's graphics settings. It has been correlated to intermittent freezing in DX10/10.1 mode on Windows 7 64-bit with 'Update for Microsoft Windows (KB2670838)' installed.
  • Switch to DX9 mode.
+ • Uninstall 'Update for Microsoft Windows (KB2670838)' if you have it installed — it is known to cause problems with Clear Sky. But beware that uninstalling it may have undesirable consequences for other applications on your PC. Research first.
 
 Still have trouble?
 
- • Lower your graphical settings to the minimum, either from the main menu or manually via the user.ltx file located in your %PUBLIC%\Documents\STALKER-STCS\ folder. (See http://www.tweakguides.com/ClearSky_7.html for details on the latter method.) If that helps, you can begin raising the settings one-by-one until you pin-point the problematic setting. Then you simply use a value for it that works.
+ • Lower your graphical settings to the minimum, either from the main menu or manually via the user.ltx file located in your %PUBLIC%\Documents\STALKER-STCS\ folder. (See http://www.tweakguides.com/ClearSky_7.html for details on the latter method.) If that helps, you can begin raising the settings one-by-one until you pin-point the problematic setting. Then simply use a value for it that works.
 
 If the steps above do not resolve your issue, make a post on the official GSC forum, here: http://www.gsc-game.com/main.php?t=community&s=forums&s_game_type=xr2&sec_id=19. The forum members are very helpful and knowledgeable and will usually reply within a day or two. You can hasten the process by quoting the last few lines of your crash log if you have one - this will usually be located inside a compressed folder in %AppData%\XRay Engine\reports\ and will be named 'xray_<Yourname>.log'. You can also quote the lines between 'Error Reason:' and 'Registers:' in 'errorlog.log', located in the same folder.
 
@@ -414,7 +415,7 @@ Bugs still in the game:
 • The player's character model reverts back to the default leather jacket model upon picking up another suit.
 • Bullet tracers may be visible through geometry on some hardware in DX10/10.1 mode with in-game anti-aliasing enabled. Disable in-game anti-aliasing and restart the game to work around this.
 • Attempting to quit the game from the main menu can freeze the game on some hardware in DX10/10.1 mode.
-• Controller roars playing before a savegame is loaded persist into that savegame. Restart the game before loading to work around this.
+• Controller psy-aura sounds playing before a savegame is loaded persist into that savegame. Restart the game before loading to work around this.
 • Entries made to the PDA message log persist into a subsequently loaded savegame until overwritten by a new entry. Restart the game before loading to work around this.
 • A squad NPC will issue squad audio prompts even if he is the sole member of the squad.
 • Grenades sometimes become non-equippable. To work around this, drop one and pick it up again.
