@@ -322,7 +322,6 @@ Optional additional features:
 • Improved script engine performance
 • Less frequent / disabled emissions
 • Disabled developer startup videos
-• Alternative SSAO implementation
 • Smaller inventory grids
 • Transparent inventory
 

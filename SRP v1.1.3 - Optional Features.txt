@@ -49,18 +49,6 @@ If you wish to be able to walk right up to the NPC as opposed to having to crouc
 
 
 ====================================================
-Float32 SSAO Performance Patch
-====================================================
-
-
-JJwalker's Float32 for S.T.A.L.K.E.R.: Clear Sky. Allegedly improves SSAO performance and image quality in DX10/10.1 mode but has no effect in DX9 mode.
-
-Note that using this feature and setting SSAO quality to 'High' may cause lag for some users: for optimal performance, set SSAO quality to 'Medium' or 'Low' when using Float32.
-
-The medium setting allegedly delivers graphical quality approximately equivalent to the unmodded 'High' setting but with better performance.
-
-
-====================================================
 Improved LuaJIT Library
 ====================================================
 
