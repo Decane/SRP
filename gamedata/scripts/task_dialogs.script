@@ -9,20 +9,12 @@ function is_squad_leader(actor, npc)
 	return npc_id == squad.commander_id
 end
 
-function init_squad_task(actor, npc) --, p1, p2)
-	local squad = db.storage[npc:id()].squad_obj
-	if squad == nil then
-		abort("[task_dialogs.init_squad_task]: Squad for NPC with ID %s is nil!", npc:id())
-	end
-	squad:init_squad_task()
-end
-
-function squad_has_tasks(npc, actor) --, p1, p2)
+function is_squad_idle(npc)
 
 	local squad = db.storage[npc:id()].squad_obj
 
 	if squad == nil then
-		return false
+		abort("[task_dialogs.is_squad_idle]: Squad for NPC with ID %s is nil!", npc:id())
 	end
 
 	if squad.current_action and squad.current_action.name == "attack_point" then
@@ -31,11 +23,32 @@ function squad_has_tasks(npc, actor) --, p1, p2)
 
 	local combat = squad.board.smarts[squad.sim_combat_id].smrt.combat_manager
 	local combat_stage = combat.squads[squad.squad_id]._stage
-	if combat_stage ~= "idle" then
-		return false
+
+	return combat_stage == "idle"
+end
+
+function isnt_squad_idle(npc)
+	return not is_squad_idle(npc)
+end
+
+function init_squad_task(actor, npc) --, p1, p2)
+	local squad = db.storage[npc:id()].squad_obj
+	if squad == nil then
+		abort("[task_dialogs.init_squad_task]: Squad for NPC with ID %s is nil!", npc:id())
+	end
+	squad:init_squad_task()
+end
+
+function squad_has_tasks(npc) --, actor, p1, p2)
+
+	local squad = db.storage[npc:id()].squad_obj
+
+	if squad == nil then
+		abort("[task_dialogs.squad_has_tasks]: Squad for NPC with ID %s is nil!", npc:id())
 	end
 
 	local tm = task_manager.get_task_manager()
+
 	for k, entity_id in pairs (squad.random_tasks) do
 		if tm:get_task_by_entity_id(entity_id).status ~= "selected" then
 			return true
@@ -45,32 +58,8 @@ function squad_has_tasks(npc, actor) --, p1, p2)
 	return false
 end
 
-function squad_hasnt_tasks(npc, actor) --, p1, p2)
-
-	local squad = db.storage[npc:id()].squad_obj
-
-	if squad == nil then
-		return true
-	end
-
-	if squad.current_action and squad.current_action.name == "attack_point" then
-		return true
-	end
-
-	local combat = squad.board.smarts[squad.sim_combat_id].smrt.combat_manager
-	local combat_stage = combat.squads[squad.squad_id]._stage
-	if combat_stage ~= "idle" then
-		return true
-	end
-
-	local tm = task_manager.get_task_manager()
-	for k, entity_id in pairs (squad.random_tasks) do
-		if tm:get_task_by_entity_id(entity_id).status ~= "selected" then
-			return false
-		end
-	end
-
-	return true
+function squad_hasnt_tasks(npc) --, actor, p1, p2)
+	return not squad_has_tasks(npc)
 end
 
 function show_tasks(npc) --, actor, dialog, phrase)
