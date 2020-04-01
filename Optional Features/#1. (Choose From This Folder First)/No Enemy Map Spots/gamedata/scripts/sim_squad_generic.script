@@ -315,25 +315,24 @@ function sim_squad_generic:on_npc_death(npc, killer_id)
 	npc.squad_id = nil
 
 	local st_npc = db.storage[npc_id]
+
 	if st_npc ~= nil then
 		if killer_id == 0 then -- 0 = actor ID
-			local victim_squad = st_npc.squad_obj
-			local combat_smart_id = nil
-			if victim_squad ~= nil then
-				local victim_action = victim_squad.current_action
+			local task
+			if self.delayed_attack_task then
+				task = task_manager.get_task_manager():get_task_by_entity_id(self.delayed_attack_task)
+			else
+				local combat_smart_id = nil
+				local victim_action = self.current_action
 				if victim_action and victim_action.name == "attack_point" then
 					combat_smart_id = victim_action.dest_smrt_id
 				else
-					combat_smart_id = victim_squad.smart_id
+					combat_smart_id = self.smart_id
 				end
-			else
-				combat_smart_id = self.smart_id
+				task = task_manager.get_task_manager():get_tasks_by_smart(combat_smart_id)
 			end
-			local task = task_manager.get_task_manager():get_tasks_by_smart(combat_smart_id)
-			if task ~= nil then
-				if task.target == combat_smart_id then
-					task:actor_help(self.squad_id)
-				end
+			if task then
+				task:actor_help(self.squad_id)
 			end
 		end
 		st_npc.squad_obj = nil

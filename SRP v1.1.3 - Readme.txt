@@ -139,7 +139,7 @@ Quest fixes:
 + Fixed the issue where 'return item' tasks would sometimes be unavailable to the player when they should be available.
 + Fixed the issue where 'clear the road' tasks would sometimes get haphazardly cancelled or fail to be assigned when intended.
 + Fixed the issue where 'clear the road' tasks would get cancelled when they should register as complete.
-+ Fixed the issue where 'capture' tasks sometimes would not register as complete when they should.
++ Fixed the issue where 'capture' tasks would sometimes not register as complete or failed when they should.
 + Fixed the issue where 'capture' tasks would sometimes be offered by NPCs even for smart terrains that are already under attack or unreachable to them.
 + Fixed the issue where 'find upgrade' tasks would not cancel when they should.
 + Fixed several instances where a generic faction war task would fail when it should instead cancel.

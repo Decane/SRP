@@ -117,12 +117,14 @@ end
 function CCombat_manager:hit_callback(victim_squad, is_attack)
 	self:enemy_actor_callback(victim_squad)
 	local tm = task_manager.get_task_manager()
-	local self_smart_id = self.smart.id
-	local task = tm:get_tasks_by_smart(self_smart_id)
-	if task ~= nil then
-		if task.target == self_smart_id then
-			task:actor_help(victim_squad.squad_id)
-		end
+	local task
+	if victim_squad.delayed_attack_task then
+		task = tm:get_task_by_entity_id(victim_squad.delayed_attack_task)
+	else
+		task = tm:get_tasks_by_smart(self.smart.id)
+	end
+	if task then
+		task:actor_help(victim_squad.squad_id)
 	end
 	if is_attack then
 		if self.combat_quest == "defend" and self.task ~= nil and self.actor_defence_come ~= true then
