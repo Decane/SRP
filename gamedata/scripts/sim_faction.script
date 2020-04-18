@@ -535,7 +535,7 @@ function se_sim_faction:calculate_squad_tasks()
 
 	local distance_table = {}
 	local level_cluster = sim_board.sim_level_cluster
---	local is_player_in_faction = self.community_player
+	local is_player_in_faction = self.community_player
 	local c = 0
 
 	for target_smart_id, target_smart in pairs (self.target_smart_value) do -- for all registered target smarts:
@@ -555,8 +555,7 @@ function se_sim_faction:calculate_squad_tasks()
 					local gr_dist
 
 					if squad_data.is_stay then
---						if is_player_in_faction and target_smart.value >= 2 and squad_data.squad.failed_assignments[target_smart_id] then
-						if squad_data.squad.failed_assignments[target_smart_id] then -- if failed previous attempt to move to smart from same origin smart:
+						if is_player_in_faction and target_smart.value >= 2 and squad_data.squad.failed_assignments[target_smart_id] then -- if failed previous attempt to move to critical smart from same origin smart:
 							gr_dist = squad_data.graph_point:distance_to(target_smart_gpoint) + 10000
 						else
 							gr_dist = squad_data.graph_point:distance_to(target_smart_gpoint)
