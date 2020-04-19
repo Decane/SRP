@@ -59,6 +59,7 @@
 			</phrase>
 			<phrase id="3">
 				<text>esc_stalker_support_attack_atp_3</text>
+				<precondition>dialogs_escape.has_money_for_support</precondition>
 				<give_info>esc_support_squad_attack</give_info>
 				<action>dialogs_escape.give_money_for_support</action>
 				<next>4</next>
