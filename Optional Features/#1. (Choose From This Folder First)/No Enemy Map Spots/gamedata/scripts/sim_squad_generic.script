@@ -332,7 +332,7 @@ function sim_squad_generic:on_npc_death(npc, killer_id)
 				task = task_manager.get_task_manager():get_tasks_by_smart(combat_smart_id)
 			end
 			if task then
-				task:actor_help(self.squad_id)
+				task:actor_hit(self.player_id)
 			end
 		end
 		st_npc.squad_obj = nil

@@ -124,7 +124,7 @@ function CCombat_manager:hit_callback(victim_squad, is_attack)
 		task = tm:get_tasks_by_smart(self.smart.id)
 	end
 	if task then
-		task:actor_help(victim_squad.squad_id)
+		task:actor_hit(victim_squad.player_id)
 	end
 	if is_attack then
 		if self.combat_quest == "defend" and self.task ~= nil and self.actor_defence_come ~= true then

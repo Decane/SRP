@@ -306,21 +306,10 @@ function CGeneralTask:check_task(tm)
 	end
 end
 
-function CGeneralTask:actor_help(squad_id)
-
-	if self.actor_helped == true then
-		return
+function CGeneralTask:actor_hit(faction_name)
+	if faction_name ~= self.community then
+		self.actor_helped = true
 	end
-
-	local src = self.src_obj
-
-	if src ~= nil then
-		if src == squad_id then
-			return
-		end
-	end
-
-	self.actor_helped = true
 end
 
 function CGeneralTask:actor_comed()

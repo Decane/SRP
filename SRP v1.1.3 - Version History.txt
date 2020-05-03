@@ -25,6 +25,7 @@ v1.1.3
 + Fixed a race condition causing factions to sometimes momentarily lose faction war targets only to immediately regain them again. - Decane
 + Prevented the faction war sometimes jamming due to the same squad being assigned to an unreachable target over and over again ad infinitum. - Decane
 + Fixed the issue where the player's assistance could fail to be registered in a random faction war task, causing the task to be cancelled when it should be completed. - Decane
++ Fixed the issue where assaulting even a squad from the tasking faction would register the player's assistance in a random faction war task not received via dialogue. - Decane
 + Fixed the issue where a 'defend' task would get cancelled instead of completed if the player kills the attack squad before it leaves for its target point (i.e. before the timer reaches zero). - Decane
 + Fixed the issue where a 'defend' task could occasionally be received in unwarranted circumstances, most frequently resulting in the task being immediately cancelled. - Decane
 + Fixed the issue where 'capture' tasks would sometimes be offered by NPCs even for smart terrains unreachable to them. - Decane
