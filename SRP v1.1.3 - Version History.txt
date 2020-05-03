@@ -78,6 +78,7 @@ v1.1.3
 + Added a unique name and description for 7.62x54 mmR armor-piercing sniper rounds to distinguish them from those boxed for the PKM and corrected their weapon applicability. - Decane
 + Improved the randomization of generic NPC dialogs by preventing a dialog of a given type from being repeated until all suitable dialogs of that type have been uttered once. - Decane
 + Unlocked several previously unused greeting phrases for stationary squad NPCs. - Decane
++ (CoP import) Fixed the invalid compound vector comparison in shader mark_msaa_edges.ps. - GSC Game World
 + (ZRP import) Fixed the player's character model reverting back to the default rookie jacket model upon loading a savegame / changing maps. - NatVac
 + (ZRP import) Fixed the use_object callback for doors and buttons being reset on scheme switch. - NatVac
 + (ZRP import) Fixed NPCs sharing a common global variable in state_mgr.evaluator_state_mgr_idle_alife:evaluate() to determine their individual behavior. - NatVac per Alundaio
