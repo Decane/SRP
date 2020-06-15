@@ -1,0 +1,31 @@
+#include "trade_template.ltx"
+
+[trader]
+buy_condition = trade_generic_buy
+sell_condition = trade_generic_sell
+buy_supplies = supplies_start
+
+[trade_generic_buy]:trade_nothing
+bread                           = 1, 1
+conserva                        = 1, 1
+energy_drink                    = 1, 1
+kolbasa                         = 1, 1
+vodka                           = 1, 1
+
+[supplies_start]
+antirad                         = 5, 0.3
+
+bread                           = 10, 0.5
+conserva                        = 10, 0.5
+energy_drink                    = 10, 0.8
+kolbasa                         = 10, 0.5
+vodka                           = 10, 0.8
+
+[trade_generic_sell]:trade_nothing
+antirad                         = 1, 3
+
+bread                           = 1, 3
+conserva                        = 1, 3
+energy_drink                    = 1, 3
+kolbasa                         = 1, 3
+vodka                           = 1, 3
