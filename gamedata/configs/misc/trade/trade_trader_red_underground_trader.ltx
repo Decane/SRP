@@ -1,0 +1,116 @@
+#include "trade_template.ltx"
+
+[trader]
+buy_condition = trade_generic_buy
+sell_condition = trade_generic_sell
+buy_supplies = supplies_generic
+
+[trade_generic_buy]:trade_nothing
+af_baloon                       = 0.5, 0.3
+af_blood                        = 0.5, 0.3
+af_cristall                     = 0.5, 0.3
+af_cristall_flower              = 0.5, 0.3
+af_dummy_battery                = 0.5, 0.3
+af_dummy_dummy                  = 0.5, 0.3
+af_dummy_glassbeads             = 0.5, 0.3
+af_electra_flash                = 0.5, 0.3
+af_electra_moonlight            = 0.5, 0.3
+af_electra_sparkler             = 0.5, 0.3
+af_eye                          = 0.5, 0.3
+af_fire                         = 0.5, 0.3
+af_fireball                     = 0.5, 0.3
+af_fuzz_kolobok                 = 0.5, 0.3
+af_glass                        = 0.5, 0.3
+af_gold_fish                    = 0.5, 0.3
+af_gravi                        = 0.5, 0.3
+af_ice                          = 0.5, 0.3
+af_medusa                       = 0.5, 0.3
+af_mincer_meat                  = 0.5, 0.3
+af_night_star                   = 0.5, 0.3
+af_soul                         = 0.5, 0.3
+af_vyvert                       = 0.5, 0.3
+
+ammo_11.43x23_fmj               = 0.5, 0.3
+ammo_11.43x23_hydro             = 0.5, 0.3
+ammo_12x70_buck                 = 0.5, 0.3
+ammo_12x76_dart                 = 0.5, 0.3
+ammo_12x76_zhekan               = 0.5, 0.3
+ammo_5.45x39_ap                 = 0.5, 0.3
+ammo_5.45x39_fmj                = 0.5, 0.3
+ammo_5.56x45_ap                 = 0.5, 0.3
+ammo_5.56x45_ss190              = 0.5, 0.3
+ammo_7.62x54_7h1                = 0.5, 0.3
+ammo_7.62x54_7h14               = 0.5, 0.3
+ammo_7.62x54_ap                 = 0.5, 0.3
+ammo_9x18_fmj                   = 0.5, 0.3
+ammo_9x18_pmm                   = 0.5, 0.3
+ammo_9x19_fmj                   = 0.5, 0.3
+ammo_9x19_pbp                   = 0.5, 0.3
+ammo_9x39_ap                    = 0.5, 0.3
+ammo_9x39_pab9                  = 0.5, 0.3
+ammo_9x39_sp5                   = 0.5, 0.3
+ammo_gauss                      = 0.5, 0.3 ; SRP
+ammo_m209                       = 0.5, 0.3
+ammo_og-7b                      = 0.5, 0.3
+ammo_pkm_100                    = 0.5, 0.3 ; SRP
+ammo_vog-25                     = 0.5, 0.3
+ammo_vog-25p                    = 0.5, 0.3
+grenade_f1                      = 0.5, 0.3
+grenade_rgd5                    = 0.5, 0.3
+
+medkit_scientic                 = 0.5, 0.3
+
+bread                           = 2, 1
+conserva                        = 2, 1
+kolbasa                         = 2, 1
+vodka                           = 2, 1
+
+detector_advanced               = 0.5, 0.3
+detector_elite                  = 0.5, 0.3
+detector_simple                 = 0.5, 0.3
+
+[supplies_generic]:trade_nothing
+af_blood                        = 1, 0.01 ; probability below 0.1 -> never spawns (engine bug)
+af_electra_flash                = 1, 0.01 ; probability below 0.1 -> never spawns (engine bug)
+af_electra_sparkler             = 1, 0.01 ; probability below 0.1 -> never spawns (engine bug)
+af_mincer_meat                  = 1, 0.01 ; probability below 0.1 -> never spawns (engine bug)
+
+ammo_5.45x39_ap                 = 10, 0.8
+ammo_5.56x45_ap                 = 10, 0.8
+ammo_7.62x54_7h14               = 5,  0.5
+ammo_9x39_ap                    = 10, 0.8
+ammo_9x39_pab9                  = 1, 1 ; refuses to sell -> presumably for self-defense
+ammo_pkm_100                    = 5,  0.5
+
+wpn_groza                       = 1, 1 ; refuses to sell -> presumably for self-defense
+
+military_outfit                 = 1, 0.7
+scientific_outfit               = 1, 0.5
+specops_outfit                  = 1, 0.8
+
+antirad                         = 15, 0.8
+bandage                         = 15, 0.5
+medkit_army                     = 15, 0.3
+
+[trade_generic_sell]
+af_blood                        = 1.2, 1.3
+af_electra_flash                = 1.2, 1.3
+af_electra_sparkler             = 1.2, 1.3
+af_mincer_meat                  = 1.2, 1.3
+
+ammo_5.45x39_ap                 = 1, 2
+ammo_5.56x45_ap                 = 1, 2
+ammo_7.62x54_7h14               = 1, 2
+ammo_9x39_ap                    = 1, 2
+ammo_m209                       = 1, 2
+ammo_pkm_100                    = 1, 2
+ammo_vog-25                     = 1, 2
+
+military_outfit                 = 1, 2
+scientific_outfit               = 1, 2
+specops_outfit                  = 1, 2
+
+antirad                         = 1, 1.5
+bandage                         = 1, 1.5
+medkit                          = 1, 1.5 ; refuses to buy -> never stocked
+medkit_army                     = 1, 1.5

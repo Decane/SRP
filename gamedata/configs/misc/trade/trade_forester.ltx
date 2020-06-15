@@ -1,0 +1,61 @@
+#include "trade_template.ltx"
+
+[trader]
+buy_condition = trade_generic_buy
+sell_condition = trade_generic_sell
+buy_supplies = supplies_generic
+
+[trade_generic_buy]:trade_nothing
+ammo_12x70_buck                 = 1.5, 1.5
+ammo_12x76_dart                 = 1.5, 1.5
+ammo_12x76_zhekan               = 1.5, 1.5
+
+wpn_addon_scope                 = 1, 1
+wpn_addon_scope_susat           = 1, 1
+wpn_addon_silencer              = 1, 1
+
+[supplies_generic]
+af_blood                        = 1, 0.01 ; probability below 0.1 -> never spawns (engine bug)
+af_electra_flash                = 1, 0.01 ; probability below 0.1 -> never spawns (engine bug)
+af_electra_sparkler             = 1, 0.01 ; probability below 0.1 -> never spawns (engine bug)
+af_mincer_meat                  = 1, 0.01 ; probability below 0.1 -> never spawns (engine bug)
+
+ammo_5.45x39_ap                 = 10, 0.8
+ammo_5.56x45_ap                 = 10, 0.8
+ammo_7.62x54_7h14               = 5,  0.5
+ammo_9x39_ap                    = 10, 0.8
+;ammo_9x39_pab9                 = 10, 1 ; refuses to sell -> pointless to spawn
+ammo_pkm_100                    = 5,  0.5
+
+;wpn_val                        = 1, 1 ; refuses to sell -> pointless to spawn
+
+military_outfit                 = 1, 0.7
+scientific_outfit               = 1, 0.5
+specops_outfit                  = 1, 0.8
+
+antirad                         = 15, 0.8
+bandage                         = 15, 0.5
+medkit_army                     = 15, 0.3
+
+[trade_generic_sell]:trade_nothing
+af_blood                        = 1.2, 1.3
+af_electra_flash                = 1.2, 1.3
+af_electra_sparkler             = 1.2, 1.3
+af_mincer_meat                  = 1.2, 1.3
+
+ammo_5.45x39_ap                 = 1, 2
+ammo_5.56x45_ap                 = 1, 2
+ammo_7.62x54_7h14               = 1, 2
+ammo_9x39_ap                    = 1, 2
+ammo_m209                       = 1, 2 ; refuses to buy -> never stocked
+ammo_pkm_100                    = 1, 2
+ammo_vog-25                     = 1, 2 ; refuses to buy -> never stocked
+
+military_outfit                 = 1, 2
+scientific_outfit               = 1, 2
+specops_outfit                  = 1, 2
+
+antirad                         = 1, 1.5
+bandage                         = 1, 1.5
+medkit                          = 1, 1.5 ; refuses to buy -> never stocked
+medkit_army                     = 1, 1.5
