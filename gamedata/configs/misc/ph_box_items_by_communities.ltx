@@ -1,0 +1,180 @@
+[def_box]
+af_baloon						= 0 ; SRP
+af_blood						= 0
+af_cristall 					= 0
+af_cristall_flower  		    = 0
+af_dummy_battery        		= 0
+af_dummy_dummy          		= 0
+af_dummy_glassbeads     		= 0
+af_electra_flash        		= 0
+af_electra_moonlight    		= 0
+af_electra_sparkler     		= 0
+af_eye                  		= 0 ; SRP
+af_fire                 		= 0 ; SRP
+af_fireball             		= 0
+af_fuzz_kolobok         		= 0
+af_glass                		= 0 ; SRP
+af_gold_fish		  			= 0
+af_gravi						= 0
+af_ice							= 0 ; SRP
+af_medusa						= 0
+af_mincer_meat					= 0
+af_night_star					= 0
+af_soul							= 0
+af_vyvert						= 0
+
+ammo_11.43x23_fmj				= 0
+ammo_11.43x23_hydro				= 0
+ammo_12x70_buck					= 0
+ammo_12x76_dart					= 0
+ammo_12x76_zhekan				= 0
+ammo_5.45x39_ap					= 0
+ammo_5.45x39_fmj				= 0
+ammo_5.56x45_ap					= 0
+ammo_5.56x45_ss190				= 0
+ammo_7.62x54_7h1				= 0
+ammo_7.62x54_7h14				= 0
+ammo_7.62x54_ap					= 0
+ammo_9x18_fmj					= 0
+ammo_9x18_pmm					= 0
+ammo_9x19_fmj					= 0
+ammo_9x19_pbp					= 0
+ammo_9x39_ap					= 0
+ammo_9x39_pab9					= 0
+ammo_9x39_sp5					= 0
+ammo_gauss						= 0
+ammo_m209						= 0
+ammo_og-7b						= 0
+ammo_pkm_100					= 0 ; SRP
+ammo_vog-25p					= 0
+ammo_vog-25						= 0
+grenade_f1						= 0
+grenade_rgd5					= 0
+
+wpn_abakan						= 0
+wpn_ak74						= 0
+wpn_ak74u						= 0
+wpn_beretta						= 0 ; SRP
+wpn_bm16						= 0
+wpn_colt1911					= 0
+wpn_desert_eagle				= 0
+wpn_fn2000						= 0
+wpn_fort						= 0
+wpn_g36							= 0
+wpn_gauss						= 0 ; SRP
+wpn_groza						= 0
+wpn_hpsa						= 0 ; SRP
+wpn_l85							= 0
+wpn_lr300						= 0
+wpn_mp5							= 0
+wpn_pb 							= 0 ; SRP
+wpn_pkm							= 0 ; SRP
+wpn_pm							= 0 ; SRP
+wpn_rg-6						= 0 ; SRP
+wpn_rpg7						= 0 ; SRP
+wpn_sig220						= 0
+wpn_sig550						= 0
+wpn_spas12						= 0
+wpn_svd							= 0
+wpn_svu							= 0
+wpn_toz34						= 0 ; SRP
+wpn_usp							= 0
+wpn_val							= 0
+wpn_vintorez					= 0
+wpn_walther						= 0
+wpn_wincheaster1300				= 0
+
+wpn_addon_grenade_launcher		= 0 ; SRP
+wpn_addon_grenade_launcher_m203	= 0 ; SRP
+wpn_addon_scope					= 0 ; SRP
+wpn_addon_scope_susat			= 0 ; SRP
+wpn_addon_silencer				= 0 ; SRP
+
+bandit_outfit					= 0
+cs_heavy_outfit					= 0 ; SRP
+cs_light_outfit					= 0 ; SRP
+dolg_heavy_outfit				= 0 ; SRP
+dolg_outfit						= 0
+exo_outfit						= 0 ; SRP
+military_outfit					= 0 ; SRP
+novice_outfit					= 0
+scientific_outfit				= 0 ; SRP
+specops_outfit					= 0
+stalker_outfit					= 0
+svoboda_exo_outfit				= 0 ; SRP
+svoboda_heavy_outfit			= 0
+svoboda_light_outfit			= 0
+
+antirad							= 0
+bandage							= 0
+medkit							= 0
+medkit_army						= 0
+medkit_scientic					= 0
+
+bread							= 0
+kolbasa							= 0
+conserva						= 0
+vodka							= 0
+energy_drink					= 0
+
+[small_box_generic]:def_box ; SRP - removed various unused ammo types (7.62x54 7H14, 7.62x54 AP, 9x39 SP5) as well as several used ammo types (11.43x23 Hydroshock, 9x18 AP, 9x19 AP) since they are excluded from drops on any location.
+ammo_11.43x23_fmj				= 0.1
+ammo_12x70_buck					= 0.3
+ammo_12x76_dart					= 0.05
+ammo_12x76_zhekan				= 0.2
+ammo_5.45x39_ap					= 0.1
+ammo_5.45x39_fmj				= 0.15
+ammo_5.56x45_ap					= 0.05
+ammo_5.56x45_ss190				= 0.15
+ammo_7.62x54_7h1				= 0.05
+ammo_9x18_fmj					= 0.3
+ammo_9x19_fmj					= 0.3
+ammo_9x39_ap					= 0.05
+ammo_9x39_pab9					= 0.05
+ammo_pkm_100					= 0.05 ; SRP - it is listed as possible drop on Red Forest and ongoing locations, but (likely by mistake) not included in any kind of box. Since the ammo is made in USSR, I added it to 'generic' and 'ussr' boxes. 5% percentage is used by most ammo in the list.
+
+antirad							= 0.05
+bandage							= 0.2
+medkit							= 0.1
+
+[small_box_ussr]:small_box_generic ; SRP - removed various unused ammo types (7.62x54 7H14, 7.62x54 AP, 9x39 SP5) as well as several used ammo types (11.43x23 Hydroshock, 9x18 AP, 9x19 AP) since they are excluded from drops on any location.
+ammo_11.43x23_fmj				= 0
+ammo_12x70_buck					= 0
+ammo_12x76_dart					= 0
+ammo_12x76_zhekan				= 0
+ammo_5.56x45_ap					= 0
+ammo_5.56x45_ss190				= 0
+ammo_9x19_fmj					= 0
+
+antirad							= 0.05
+bandage							= 0.1
+medkit							= 0.05
+medkit_army						= 0.05
+
+[small_box_nato]:small_box_generic ; SRP - removed various unused ammo types (7.62x54 7H14, 7.62x54 AP, 9x39 SP5) as well as several used ammo types (11.43x23 Hydroshock, 9x18 AP, 9x19 AP) since they are excluded from drops on any location.
+ammo_12x70_buck					= 0
+ammo_12x76_dart					= 0
+ammo_12x76_zhekan				= 0
+ammo_5.45x39_ap					= 0
+ammo_5.45x39_fmj				= 0
+ammo_7.62x54_7h1				= 0
+ammo_9x18_fmj					= 0
+ammo_9x39_ap					= 0
+ammo_9x39_pab9					= 0
+ammo_pkm_100					= 0 ; SRP - it needs to be excluded from 'nato' boxes just like the rest of soviet ammo.
+
+[small_box_army]:small_box_ussr ; SoC had 'army' boxes as enhanced versions of 'ussr' boxes, giving military medkits instead of regular ones. Since CS has 'ussr' boxes giving both kinds of medkits, 'army' boxes just remove the probability of regular medkits spawning.
+medkit							= 0
+
+[small_box_science]:small_box_ussr 
+antirad							= 0.25
+bandage							= 0.25
+medkit							= 0
+medkit_army						= 0 ; SRP - as evident from SoC, 'science' boxes are supposed to give scientific medkits only, but CS devs added army medkits as possible drop from 'ussr' boxes and forgot to exclude them here. This line corrects it.
+medkit_scientic					= 0.8
+
+[big_box_generic]:def_box ; since no locations allow grenades as possible drops, the box is essentially useless and drops nothing.
+
+[big_box_dungeons]:def_box ; since no locations allow artifacts, grenades and weapons as possible drops, the box is essentially useless and drops nothing.
+
+[big_box_arsenal]:def_box ; since no locations allow grenades and weapons as possible drops, the box is essentially useless and drops nothing.
