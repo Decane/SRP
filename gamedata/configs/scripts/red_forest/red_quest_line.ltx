@@ -37,7 +37,10 @@ on_info = {+red_actor_find_teleport} sr_idle@mil_reach_tower_task %=give_inited_
 on_info = {+mil_start_storyline_info} sr_idle@find_compass_task %=give_inited_task(storyline:mil_blockpost:csky) +mil_start_after_red_forest%
 
 [sr_idle@find_compass_task]
-on_info = {+red_forester_search_compas_task} sr_idle@bring_compass_task %=give_inited_task(storyline:red_find_compass:csky)%
+on_info = {+red_forester_search_compas_task} sr_idle@pick_compass_task
+
+[sr_idle@pick_compass_task]
+on_info = {+red_forester_actor_has_compas} sr_idle@find_transmitter %=give_inited_task(storyline:red_bring_compass:csky)%, sr_idle@bring_compass_task %=give_inited_task(storyline:red_find_compass:csky)%
 
 [sr_idle@bring_compass_task]
 on_info = {+red_forester_actor_has_compas} sr_idle@find_transmitter %=give_inited_task(storyline:red_bring_compass:csky)% 
