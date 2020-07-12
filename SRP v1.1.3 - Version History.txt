@@ -17,6 +17,7 @@ v1.1.3
 + Fixed the issue where speaking to a mechanic with incomplete 'find upgrade' tasks would leak task entity IDs. - Decane
 + Implemented a tail-recursive algorithm to automatically detect and resolve faction war stalemates arising out of a squad being grid-locked into a camp by all surrounding camps being occupied by non-hostiles, thereby preventing the grid-locked squad from leaving the camp. - Decane
 + Fixed the issue where loading a savegame would make the game copy offered but unassigned combat tasks to a Lua table intended only for assigned combat tasks, causing various bugs ranging from stuck faction wars to the robbery scheme ceasing to activate. - Decane
++ Fixed the storyline breaking if Hog is killed or his squad turns hostile when the player's task is to talk to them. - Decane
 + Fixed the issue where asking a squad commander for work after accepting a 'capture' task from him via dialogue would prevent the 'capture' task from failing if the squad perishes, leaving the task incompletable and in progress indefinitely. - Decane
 + Fixed the issue where squads would sometimes fail to capture a camp upon reaching it. - Decane
 + Worked around an SRP v1.0.4 regression where the AI of NPCs approaching the Fishing Hamlet from the Hidden Camp would occasionally break. - Decane

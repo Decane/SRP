@@ -9,13 +9,17 @@ on_info2 = {+mil_start_after_red_forest} sr_idle@spawn %+mil_start_after_red_for
 on_info = sr_idle@bridge %=create_squad(mil_killer_invaders:mil_smart_terrain_4_2) =create_squad(mil_bloodsucker_lair:mil_smart_terrain_4_3)%
 
 [sr_idle@bridge]
-on_info = {+mil_actor_bridge} sr_idle@mil_bloodsucker_task %=give_inited_task(storyline:mil_hires:freedom)%, {+mil_freedom_speaker_death} sr_idle@mil_bloodsucker_task %=give_inited_task(storyline:mil_hires:freedom)%, {=is_squad_enemy_to_actor(mil_smart_terrain_2_2_freedom_squad_1)} sr_idle@mil_bloodsucker_task %=give_inited_task(storyline:mil_hires:freedom)%
+on_info = {+mil_actor_bridge} sr_idle@after_freedom_talk, {+mil_freedom_speaker_death} sr_idle@after_freedom_talk, {=is_squad_enemy_to_actor(mil_smart_terrain_2_2_freedom_squad_1)} sr_idle@after_freedom_talk
 on_info2 = {-mil_bs_dead +mil_merc_talked -mil_actor_inside_wtower} sr_idle@mil_reach_tower_task %=give_inited_task(eliminate_smart:mil_smart_terrain_4_3:killer) =give_inited_task(storyline:mil_reach_tower_task:killer)%, {+mil_bs_dead +mil_merc_talked -mil_actor_inside_wtower} sr_idle@mil_reach_tower_task %=give_inited_task(storyline:mil_reach_tower_task:killer)%
 on_info3 = {+mil_water_tower_radio} sr_idle@mil_talk_2_forester2	; %+mil_reach_merc_done%
 
+[sr_idle@after_freedom_talk]
+on_info = {+mil_hog_death} sr_idle@mil_talk_2_forester2 %=give_inited_task(storyline:mil_reach_tower_task:killer)%, {=is_squad_enemy_to_actor(mil_killer_invaders)} sr_idle@mil_talk_2_forester2 %=give_inited_task(storyline:mil_reach_tower_task:killer)%, sr_idle@mil_bloodsucker_task %=give_inited_task(storyline:mil_hires:freedom)%
+
 [sr_idle@mil_bloodsucker_task]
-on_info = {-mil_bs_dead +mil_merc_talked -mil_actor_inside_wtower} sr_idle@mil_reach_tower_task %=give_inited_task(eliminate_smart:mil_smart_terrain_4_3:killer) =give_inited_task(storyline:mil_reach_tower_task:killer)%, {+mil_bs_dead +mil_merc_talked -mil_actor_inside_wtower} sr_idle@mil_reach_tower_task %=give_inited_task(storyline:mil_reach_tower_task:killer)%
-on_info2 = {+mil_water_tower_radio} sr_idle@mil_talk_2_forester2	; %+mil_reach_merc_done%
+on_info = {+mil_hog_death} sr_idle@mil_talk_2_forester2 %=give_inited_task(storyline:mil_reach_tower_task:killer)%, {=is_squad_enemy_to_actor(mil_killer_invaders)} sr_idle@mil_talk_2_forester2 %=give_inited_task(storyline:mil_reach_tower_task:killer)%
+on_info2 = {-mil_bs_dead +mil_merc_talked -mil_actor_inside_wtower} sr_idle@mil_reach_tower_task %=give_inited_task(eliminate_smart:mil_smart_terrain_4_3:killer) =give_inited_task(storyline:mil_reach_tower_task:killer)%, {+mil_bs_dead +mil_merc_talked -mil_actor_inside_wtower} sr_idle@mil_reach_tower_task %=give_inited_task(storyline:mil_reach_tower_task:killer)%
+on_info3 = {+mil_water_tower_radio} sr_idle@mil_talk_2_forester2	; %+mil_reach_merc_done%
 
 [sr_idle@mil_reach_tower_task]
 on_info = {+mil_free_2_tower} sr_idle@mil_talk_2_forester2
