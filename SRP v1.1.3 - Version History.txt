@@ -33,6 +33,7 @@ v1.1.3
 + Fixed the issue where 'find upgrade' tasks would not cancel when the mechanic who gave them dies or becomes hostile after loading a savegame. - Decane
 + Fixed the issue where the skirmish between the loners and military at the Cordon bus stop could begin prematurely, preventing the player from receiving the task to defend the loner patrol. - Decane
 + Fixed the "Help the stalkers" task in Agroprom being cancelled immediately after being received if the loner faction is hostile to the player. - Decane
++ Fixed some generic faction war tasks not yielding their intended faction-specific reward. - Decane
 + Fixed an SRP v1.0.7 regression that prevented new faction equipment chest supplies from spawning on a smart terrain upon its occupying squad switching online if the squad captured it while offline. - Decane
 + Fixed an SRP v1.1.1 regression that under some circumstances prevented the pseudodogs that spawn beside the military base from immediately attacking it. - Decane
 + Fixed the issue where non-scripted squads loaded from a savegame (as opposed to spawning into the Zone in the current game session) would not spawn inventory box items. - Decane

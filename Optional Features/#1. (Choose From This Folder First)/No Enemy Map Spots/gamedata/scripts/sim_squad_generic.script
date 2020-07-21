@@ -773,7 +773,7 @@ function sim_squad_generic:init_squad_task()
 							if game_relations.is_factions_enemies(squad_faction_name, neighbor_faction_name) then
 								if smart_under_attack(neighbor_faction_name, board_factions, neighbor_smart_id) == false then
 									local neighbor_smart_task = tm:get_tasks_by_smart(neighbor_smart_id)
-									if not neighbor_smart_task or neighbor_smart_task.base_prior == 3 then
+									if not neighbor_smart_task or neighbor_smart_task.base_prior <= 1 then
 										task = tm:select_task("capture_smart", neighbor_smart, squad_faction_name)
 										task.src_obj = self.squad_id
 										if random_tasks[1] == nil then
