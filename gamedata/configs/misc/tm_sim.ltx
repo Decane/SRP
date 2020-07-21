@@ -132,7 +132,7 @@ prior = 3
 [sim_eliminate_smart]
 type = eliminate_smart
 task_type = additional
-target_cond = true
+target_cond = {!target_resource_smart !target_path_smart} true, false
 name = sim_eliminate_smart
 text = sim_eliminate_smart_text
 reward_money = 500
