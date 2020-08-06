@@ -32,7 +32,8 @@ local function try_to_release()
 
 	for i = #rel_table, 1, -1 do																-- for all corpses in the release table:
 		local npc_info = rel_table[i]
-		if sim:object(npc_info.id) ~= nil then													-- if the corpse exists then
+		local se_npc = sim:object(npc_info.id)
+		if se_npc ~= nil and IsStalker(se_npc) and not se_npc:alive() then						-- if the corpse exists and is human and dead then (see https://github.com/Decane/SRP/issues/120 for why we must check these)
 			local time_dead
 			if npc_info.death_time ~= nil then													-- if the corpse was created during this session then
 				time_dead = session_time - npc_info.death_time									-- set its time_dead to the current session time - session death time
@@ -48,7 +49,7 @@ local function try_to_release()
 			end
 		else																					-- elseif the corpse doesn't exist then
 			table_remove(rel_table, i)															-- permanently remove it from the release table (i.e. without adding it to the temp table for later re-insertion)
---			dbglog("Corpse with ID "..npc_info.id.." is not releasable because it does not exist.")
+--			dbglog("Corpse with ID "..npc_info.id.." is not releasable because it does not exist or is not a stalker or is alive.")
 		end
 	end
 
