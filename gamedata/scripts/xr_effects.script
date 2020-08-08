@@ -716,8 +716,10 @@ function game_disconnect()
 end
 
 function game_credits()
-	db.gameover_credits_started = true
+--	db.gameover_credits_started = true
 	game.start_tutorial("credits_seq")
+	ogsm_freeplay.teleport()
+	ogsm_freeplay.awakening()
 end
 
 function after_credits()

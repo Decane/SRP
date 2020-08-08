@@ -97,16 +97,8 @@
 				<sound>characters_voice\scenario\video\outro</sound>
 				<pause_state>on</pause_state>
 				<can_be_stopped>on</can_be_stopped>
-
-				<!-- Simple CS Freeplay Mod -->
-
-				<function_on_start>ogsm_freeplay.teleport</function_on_start>
-				<function_on_stop>ogsm_freeplay.awakening</function_on_stop>
-
-				<!-- Simple CS Freeplay Mod -->
-
 <!--				<function_on_start>xr_effects.game_disconnect</function_on_start>		-->
-<!--				<function_on_stop>xr_effects.game_credits</function_on_stop>			-->
+				<function_on_stop>xr_effects.game_credits</function_on_stop>
 				<video_wnd x="0" y="0" width="1024" height="768" stretch="1">
 					<texture x="0" y="1" width="512" height="286">intro\outro_half</texture>
 				</video_wnd>
