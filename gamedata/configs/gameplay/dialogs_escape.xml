@@ -415,7 +415,7 @@
 		<phrase_list>
 			<phrase id="0">
 				<text>esc_driver_quest_0</text>
-				<action>dialog_manager.action_disable_phrase</action>
+				<action>dialog_manager.action_disable_phrase_temp</action>
 				<next>1</next>
 				<next>11</next>
 			</phrase>
@@ -540,7 +540,7 @@
 				<text>esc_comm_talk_33333</text>
 				<precondition>dialogs.have_actor_any_pistol</precondition>
 				<give_info>esc_help_prisoner</give_info>
-				<action>dialogs_escape.transfer_pistol</action>
+				<action>dialogs.transfer_any_pistol_from_actor</action>
 				<next>333333</next>
 			</phrase>
 			<phrase id="33334">
@@ -590,7 +590,7 @@
 		<phrase_list>
 			<phrase id="0">
 				<text>esc_stalker_trader_quest_0</text>
-				<action>dialog_manager.action_disable_phrase</action>
+				<action>dialog_manager.action_disable_phrase_temp</action>
 				<next>1</next>
 				<next>11</next>
 			</phrase>
@@ -741,7 +741,7 @@
 		<phrase_list>
 			<phrase id="0">
 				<text>esc_wolf_other_works_0</text>
-				<action>dialog_manager.action_disable_phrase</action> <!-- SRP -->
+				<action>dialog_manager.action_disable_phrase_temp</action> <!-- SRP -->
 				<next>1</next>
 				<next>11</next>
 				<next>111</next>
@@ -970,14 +970,14 @@
 				<text>esc_wolf_brother_2</text>
 				<precondition>dialogs.have_actor_any_pistol</precondition>
 				<give_info>esc_wolf_brother_2</give_info>
-				<action>dialogs_escape.transfer_prisoner_pistol</action>
+				<action>dialogs.transfer_any_pistol_from_actor</action>
 				<action>dialogs.break_dialog</action>
 			</phrase>
 			<phrase id="22">
 				<text>esc_wolf_brother_22</text>
 				<precondition>dialogs.have_actor_any_shootgun</precondition>
 				<give_info>esc_wolf_brother_2</give_info>
-				<action>dialogs_escape.transfer_prisoner_shootgun</action>
+				<action>dialogs.transfer_any_shootgun_from_actor</action>
 				<action>dialogs.break_dialog</action>
 			</phrase>
 <!--
@@ -989,7 +989,7 @@
 				<text>esc_wolf_brother_222</text>
 				<precondition>dialogs.have_actor_any_gun</precondition>
 				<give_info>esc_wolf_brother_2</give_info>
-				<action>dialogs_escape.transfer_prisoner_gun</action>
+				<action>dialogs.transfer_any_gun_from_actor</action>
 				<action>dialogs.break_dialog</action>
 			</phrase>
 			<phrase id="2222">
@@ -999,11 +999,13 @@
 		</phrase_list>
 	</dialog>
 	<dialog id="esc_driver_quest_complete">
+		<precondition>dialog_manager.precondition_is_phrase_disabled</precondition>
 		<dont_has_info>esc_driver_friend_3</dont_has_info>
 		<has_info>esc_driver_friend_1</has_info>
 		<phrase_list>
 			<phrase id="0">
 				<text>esc_driver_quest_complete_0</text>
+				<action>dialog_manager.action_disable_phrase_temp</action>
 				<next>1</next>
 			</phrase>
 			<phrase id="1">
@@ -1062,11 +1064,13 @@
 		</phrase_list>
 	</dialog>
 	<dialog id="esc_stalker_trader_quest_complete">
+		<precondition>dialog_manager.precondition_is_phrase_disabled</precondition>
 		<dont_has_info>esc_trader_bandits_3</dont_has_info>
 		<has_info>esc_trader_bandits_1</has_info>
 		<phrase_list>
 			<phrase id="0">
 				<text>esc_stalker_trader_quest_complete_0</text>
+				<action>dialog_manager.action_disable_phrase_temp</action>
 				<next>1</next>
 			</phrase>
 			<phrase id="1">
@@ -1239,13 +1243,15 @@
 		</phrase_list>
 	</dialog>
 	<dialog id="esc_leader_first_join">
-		<precondition>dialog_manager.precondition_is_phrase_disabled</precondition>
+<!--	<precondition>dialog_manager.precondition_is_phrase_disabled</precondition> -->
 		<precondition>dialogs.actor_not_in_stalker</precondition>
 		<dont_has_info>esc_first_join_stalker</dont_has_info>
 		<phrase_list>
 			<phrase id="0">
 				<text>esc_leader_first_join_0</text>
-				<action>dialog_manager.action_disable_phrase</action>
+<!--			<action>dialog_manager.action_disable_phrase</action> -->
+				<give_info>esc_first_join_stalker</give_info>
+				<give_info>esc_join_need_sound</give_info>
 				<next>1</next>
 			</phrase>
 			<phrase id="1">
@@ -1254,8 +1260,6 @@
 			</phrase>
 			<phrase id="11">
 				<text>esc_leader_first_join_11</text>
-				<give_info>esc_first_join_stalker</give_info>
-				<give_info>esc_join_need_sound</give_info>
 <!--			<action>dialogs.break_dialog</action> -->
 			</phrase>
 		</phrase_list>
@@ -1298,7 +1302,7 @@
 				<text>esc_driver_who_are_you_6</text>
 				<precondition>dialogs.have_actor_any_pistol</precondition>
 				<give_info>esc_driver_fight</give_info>
-				<action>dialogs_escape.transfer_pistol_driver</action>
+				<action>dialogs.transfer_any_pistol_from_actor</action>
 				<action>dialogs.break_dialog</action>
 			</phrase>
 			<phrase id="44">
@@ -1306,7 +1310,7 @@
 			</phrase>
 			<phrase id="66">
 				<text>esc_driver_who_are_you_66</text>
-				<action>dialogs.break_dialog</action>
+<!--			<action>dialogs.break_dialog</action> -->
 			</phrase>
 		</phrase_list>
 	</dialog>
@@ -1376,7 +1380,7 @@
 			<phrase id="0">
 				<text>esc_leader_join_stalker_0</text>
 <!--			<precondition>dialogs.actor_not_in_stalker</precondition> -->
-				<action>dialog_manager.action_disable_phrase</action>
+				<action>dialog_manager.action_disable_phrase_temp</action>
 				<next>2</next>
 				<next>3</next>
 				<next>4</next>

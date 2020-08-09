@@ -324,7 +324,7 @@
 		<phrase_list>
 			<phrase id="0">
 				<text>mar_csky_tactic_situation_dialog_0</text>
-				<action>dialog_manager.action_disable_phrase</action>
+				<action>dialog_manager.action_disable_phrase_temp</action>
 				<next>1</next>
 				<next>2</next>
 				<next>3</next>
@@ -391,7 +391,7 @@
 		<phrase_list>
 			<phrase id="0">
 				<text>mar_csky_tactic_task_dialog_0</text>
-				<action>dialog_manager.action_disable_phrase</action>
+				<action>dialog_manager.action_disable_phrase_temp</action>
 				<next>1</next>
 				<next>2</next>
 				<next>3</next>

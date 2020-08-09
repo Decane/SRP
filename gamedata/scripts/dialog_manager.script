@@ -1,5 +1,6 @@
 local said_phrases = {}
-local disabled_phrases = {} -- phrases disabled during a conversation
+local disabled_phrases = {} -- phrases disabled for a game session
+local disabled_phrases_temp = {} -- phrases disabled for a conversation
 local id_counter = 1 -- start from 1 because of adding root phrases
 
 phrase_table   = {hello = {}, information = {}, occupation = {}, place = {}}
@@ -470,64 +471,63 @@ end
 function precondition_is_phrase_disabled(fs, ss, dn, ppi, pi)
 	if pi == "" then
 		pi = dn
-	end
-	local npc = dialogs.who_is_npc(fs, ss)
-	local npc_disabled_phrases = disabled_phrases[npc:id()]
-	return npc_disabled_phrases == nil or npc_disabled_phrases[pi] == nil
-end
-
-function action_disable_phrase(fs, ss, dn, pi)
-	if pi == "0" then
-		pi = dn
+	else
+		pi = dn..pi
 	end
 	local npc = dialogs.who_is_npc(fs, ss)
 	local npc_id = npc:id()
-	local npc_disabled_phrases = disabled_phrases[npc_id]
+	local disabled_npc_phrases = disabled_phrases[npc_id]
+	local disabled_npc_phrases_temp = disabled_phrases_temp[npc_id]
+	return (disabled_npc_phrases == nil or disabled_npc_phrases[pi] == nil)
+	and (disabled_npc_phrases_temp == nil or disabled_npc_phrases_temp[pi] == nil)
+end
+
+local function disable_phrase(fs, ss, dn, pi, t)
+	if pi == "0" then
+		pi = dn
+	else
+		pi = dn..pi -- not safe to disable individual phrase IDs without this
+	end
+	local npc = dialogs.who_is_npc(fs, ss)
+	local npc_id = npc:id()
+	local npc_disabled_phrases = t[npc_id]
 	if npc_disabled_phrases == nil then
 		npc_disabled_phrases = {}
-		disabled_phrases[npc_id] = npc_disabled_phrases
+		t[npc_id] = npc_disabled_phrases
 	end
 	npc_disabled_phrases[pi] = true
 end
 
+function action_disable_phrase(fs, ss, dn, pi)
+	disable_phrase(fs, ss, dn, pi, disabled_phrases)
+end
+
+function action_disable_phrase_temp(fs, ss, dn, pi)
+	disable_phrase(fs, ss, dn, pi, disabled_phrases_temp)
+end
+
 function restore_certain_disabled_phrases(npc)
-	local disabled_npc_phrases = disabled_phrases[npc:id()]
-	if disabled_npc_phrases ~= nil then
-		disabled_npc_phrases["actor_news_dialog"] = nil
-		disabled_npc_phrases["guiders_dialog"] = nil
-		disabled_npc_phrases["tm_random_task"] = nil
-		disabled_npc_phrases["tm_reward_task"] = nil
-		disabled_npc_phrases["treasure_dialog"] = nil
-		disabled_npc_phrases["mar_csky_tactic_situation_dialog"] = nil
-		disabled_npc_phrases["mar_csky_tactic_task_dialog"] = nil
-		disabled_npc_phrases["esc_wolf_other_works"] = nil
-		disabled_npc_phrases["esc_driver_quest"] = nil
-		disabled_npc_phrases["esc_leader_join_stalker"] = nil
-		disabled_npc_phrases["esc_stalker_trader_quest"] = nil
-		disabled_npc_phrases["gar_bandit_leader_join_main"] = nil
-		disabled_npc_phrases["val_freedom_leader_join_main"] = nil
-		disabled_npc_phrases["agr_stalker_secret_trader_quest"] = nil
-	end
+	disabled_phrases_temp[npc:id()] = nil
 end
 
 function restore_disabled_guide_phrase(npc)
-	local disabled_npc_phrases = disabled_phrases[npc:id()]
-	if disabled_npc_phrases ~= nil then
-		disabled_npc_phrases["guiders_dialog"] = nil
+	local disabled_npc_phrases_temp = disabled_phrases_temp[npc:id()]
+	if disabled_npc_phrases_temp ~= nil then
+		disabled_npc_phrases_temp["guiders_dialog"] = nil
 	end
 end
 
 function restore_disabled_task_phrase(npc)
-	local disabled_npc_phrases = disabled_phrases[npc:id()]
-	if disabled_npc_phrases ~= nil then
-		disabled_npc_phrases["tm_random_task"] = nil
+	local disabled_npc_phrases_temp = disabled_phrases_temp[npc:id()]
+	if disabled_npc_phrases_temp ~= nil then
+		disabled_npc_phrases_temp["tm_random_task"] = nil
 	end
 end
 
 function restore_disabled_treasure_phrase(npc)
-	local disabled_npc_phrases = disabled_phrases[npc:id()]
-	if disabled_npc_phrases ~= nil then
-		disabled_npc_phrases["treasure_dialog"] = nil
+	local disabled_npc_phrases_temp = disabled_phrases_temp[npc:id()]
+	if disabled_npc_phrases_temp ~= nil then
+		disabled_npc_phrases_temp["treasure_dialog"] = nil
 	end
 end
 

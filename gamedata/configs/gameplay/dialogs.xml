@@ -250,7 +250,7 @@
 		<precondition>dialog_manager.precondition_is_phrase_disabled</precondition> <!-- SRP -->
 		<phrase_list>
 			<phrase id="0">
-				<action>dialog_manager.action_disable_phrase</action> <!-- SRP -->
+				<action>dialog_manager.action_disable_phrase_temp</action> <!-- SRP -->
 				<text>treasure_dialog_0</text>
 				<next>1</next>
 				<next>2</next>
@@ -658,7 +658,7 @@
 		<phrase_list>
 			<phrase id="0">
 				<script_text>dialog_manager.create_question_phrase</script_text>
-				<action>dialog_manager.action_disable_phrase</action> <!-- SRP -->
+				<action>dialog_manager.action_disable_phrase_temp</action> <!-- SRP -->
 				<next>1</next>
 			</phrase>
 			<phrase id="1">
@@ -693,7 +693,7 @@
 		<phrase_list>
 			<phrase id="0">
 				<text>tm_reward_task_0</text>
-				<action>dialog_manager.action_disable_phrase</action> <!-- SRP -->
+				<action>dialog_manager.action_disable_phrase_temp</action> <!-- SRP -->
 				<next>1</next>
 				<next>2</next>
 			</phrase>
@@ -714,7 +714,7 @@
 		<phrase_list>
 			<phrase id="0">
 				<text>tm_random_task_0</text>
-				<action>dialog_manager.action_disable_phrase</action> <!-- SRP -->
+				<action>dialog_manager.action_disable_phrase_temp</action> <!-- SRP -->
 				<next>1</next>
 				<next>2</next>
 			</phrase>

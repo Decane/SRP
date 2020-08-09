@@ -20,7 +20,7 @@ function init_guiders_dialog(dialog)
 	local phrase = dialog:AddPhrase("st_tm_guide_0", "0", "", -10000)
 	local script = phrase:GetPhraseScript() -- unlocalized in vanilla
 	script:AddAction("guiders.action_fill_temp_teleport_points")
-	script:AddAction("dialog_manager.action_disable_phrase")
+	script:AddAction("dialog_manager.action_disable_phrase_temp")
 
 	-- nowhere
 

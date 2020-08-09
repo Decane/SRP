@@ -667,7 +667,7 @@
 		<phrase_list>
 			<phrase id="2">
 				<text>agr_leader_first_join_2</text>
-				<action>dialogs.break_dialog</action>
+<!--			<action>dialogs.break_dialog</action> -->
 			</phrase>
 			<phrase id="1">
 				<text>agr_leader_first_join_1</text>
@@ -1071,7 +1071,7 @@
 		<phrase_list>
 			<phrase id="0">
 				<text>agr_stalker_secret_trader_quest_0</text>
-				<action>dialog_manager.action_disable_phrase</action>
+				<action>dialog_manager.action_disable_phrase_temp</action>
 				<next>1</next>
 				<next>11</next>
 			</phrase>
@@ -1099,6 +1099,7 @@
 		</phrase_list>
 	</dialog>
 	<dialog id="agr_stalker_secret_trader_quest_complete">
+		<precondition>dialog_manager.precondition_is_phrase_disabled</precondition>
 		<has_info>agr_secret_trader_pda_quest_1</has_info>
 		<dont_has_info>agr_secret_trader_pda_quest_3</dont_has_info>
 		<phrase_list>
@@ -1123,6 +1124,7 @@
 			</phrase>
 			<phrase id="0">
 				<text>agr_stalker_secret_trader_quest_complete_0</text>
+				<action>dialog_manager.action_disable_phrase_temp</action>
 				<next>1</next>
 			</phrase>
 		</phrase_list>

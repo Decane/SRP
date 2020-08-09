@@ -21,21 +21,6 @@
 			</phrase>
 		</phrase_list>
 	</dialog>
-<!--
-	<dialog id="mil_killer_about_last_time">
-		<precondition>dialog_manager.precondition_is_phrase_disabled</precondition>
-		<phrase_list>
-			<phrase id="0">
-				<text>mil_killer_about_last_time_0</text>
-				<action>dialog_manager.action_disable_phrase</action>
-				<next>1</next>
-			</phrase>
-			<phrase id="1">
-				<text>mil_killer_about_last_time_1</text>
-			</phrase>
-		</phrase_list>
-	</dialog>
--->
 	<dialog id="mil_killer_about_what_is_you_doing">
 		<precondition>dialog_manager.precondition_is_phrase_disabled</precondition>
 		<phrase_list>
@@ -54,7 +39,6 @@
 			<phrase id="0">
 				<text/>
 				<next>1</next>
-				<next>4</next>
 				<next>5</next>
 				<next>6</next>
 				<next>7</next>
@@ -62,7 +46,6 @@
 			<phrase id="1">
 				<text/>
 				<dont_has_info>mil_actor_bridge</dont_has_info>
-				<dont_has_info>mil_merc_talked</dont_has_info>
 				<has_info>mil_start_after_red_forest</has_info>
 				<next>11</next>
 			</phrase>
@@ -74,14 +57,10 @@
 				<text>hello_mil_freedom_3</text>
 				<next>333</next>
 			</phrase>
-			<phrase id="4">
-				<text/>
-				<has_info>mil_merc_talked</has_info>
-				<next>77</next>
-			</phrase>
 			<phrase id="5">
 				<text/>
 				<has_info>mil_actor_bridge</has_info>
+<!--			<has_info>mil_start_after_red_forest</has_info> --> <!-- implied -->
 				<next>55</next>
 			</phrase>
 			<phrase id="6">
@@ -107,7 +86,7 @@
 			<phrase id="44">
 				<text>hello_mil_freedom_44</text>
 				<give_info>mil_actor_bridge</give_info>
-				<action>dialogs.break_dialog</action>
+<!--			<action>dialogs.break_dialog</action> -->
 			</phrase>
 			<phrase id="55">
 				<text>hello_mil_freedom_55</text>
@@ -116,10 +95,6 @@
 			<phrase id="66">
 				<text>hello_mil_freedom_66</text>
 				<next>666</next>
-			</phrase>
-			<phrase id="77">
-				<text>hello_mil_freedom_77</text>
-				<next>777</next>
 			</phrase>
 			<phrase id="111">
 				<text>hello_mil_freedom_111</text>
@@ -140,9 +115,6 @@
 				<text>hello_mil_freedom_666</text>
 				<next>6666</next>
 			</phrase>
-			<phrase id="777">
-				<text>hello_mil_freedom_777</text>
-			</phrase>
 			<phrase id="6666">
 				<text>hello_mil_freedom_6666</text>
 				<give_info>mil_f0_t1</give_info>
@@ -155,7 +127,6 @@
 				<text/>
 				<next>1</next>
 				<next>2</next>
-<!--			<next>4</next> -->
 				<next>5</next>
 				<next>6</next>
 				<next>7</next>
@@ -163,7 +134,7 @@
 			<phrase id="1">
 				<text/>
 				<dont_has_info>mil_merc_talked</dont_has_info>
-<!--			<dont_has_info>mil_merc_talked_f1_f2_wt1</dont_has_info> -->
+<!--			<dont_has_info>mil_merc_talked_f1_f2_wt1</dont_has_info> --> <!-- implied -->
 				<next>11</next>
 			</phrase>
 			<phrase id="2">
@@ -171,15 +142,8 @@
 				<dont_has_info>forester_telled_coordinates</dont_has_info>
 				<has_info>mil_merc_talked</has_info>
 				<next>22</next>
+				<next>23</next>
 			</phrase>
-<!--
-			<phrase id="4">
-				<text/>
-				<dont_has_info>forester_telled_coordinates</dont_has_info>
-				<has_info>mil_merc_talked_f1_wt1</has_info>
-				<next>44</next>
-			</phrase>
--->
 			<phrase id="5">
 				<text/>
 				<dont_has_info>mil_merc_talked_f1_f2_wt1</dont_has_info>
@@ -191,19 +155,22 @@
 				<text/>
 				<dont_has_info>mil_merc_talked_f1_f2_wt1_ct1</dont_has_info>
 				<has_info>mil_merc_talked_f1_f2_wt1</has_info>
+<!--			<has_info>forester_telled_coordinates</has_info> --> <!-- implied -->
+<!--			<has_info>mil_merc_talked</has_info> -->             <!-- implied -->
 				<next>66</next>
 			</phrase>
 			<phrase id="7">
 				<text/>
 				<has_info>mil_merc_talked_f1_f2_wt1_ct1</has_info>
+<!--			<has_info>mil_merc_talked_f1_f2_wt1</has_info> -->   <!-- implied -->
+<!--			<has_info>forester_telled_coordinates</has_info> --> <!-- implied -->
+<!--			<has_info>mil_merc_talked</has_info> -->             <!-- implied -->
 				<next>77</next>
 			</phrase>
 			<phrase id="11">
 				<text>hello_mil_killer_11</text>
 				<next>111</next>
 				<next>112</next>
-				<next>113</next>
-				<next>114</next>
 			</phrase>
 			<phrase id="22">
 				<text>hello_mil_killer_22</text>
@@ -211,15 +178,20 @@
 				<next>223</next>
 				<next>1111112</next>
 			</phrase>
-<!--
-			<phrase id="44">
+			<phrase id="23">
 				<text>hello_mil_killer_44</text>
-				<next>444</next>
+				<next>233</next>
+				<next>234</next>
+				<next>1111112</next>
 			</phrase>
--->
 			<phrase id="55">
 				<text>hello_mil_killer_55</text>
+				<has_info>forester_telled_coordinates</has_info> <!-- in case reached from 1111113 -->
 				<next>555</next>
+			</phrase>
+			<phrase id="56">
+				<text/>
+				<dont_has_info>forester_telled_coordinates</dont_has_info>
 			</phrase>
 			<phrase id="66">
 				<text>hello_mil_killer_66</text>
@@ -231,27 +203,13 @@
 			</phrase>
 			<phrase id="111">
 				<text>hello_mil_killer_111</text>
-				<dont_has_info>mil_actor_inside_wtower</dont_has_info>
 				<has_info>mil_actor_bridge</has_info>
 				<next>1111</next>
 			</phrase>
 			<phrase id="112">
 				<text>hello_mil_killer_112</text>
-				<dont_has_info>mil_actor_inside_wtower</dont_has_info>
 				<dont_has_info>mil_actor_bridge</dont_has_info>
 				<next>1111</next>
-			</phrase>
-			<phrase id="113">
-				<text>hello_mil_killer_112</text>
-				<has_info>mil_actor_inside_wtower</has_info>
-				<dont_has_info>mil_actor_bridge</dont_has_info>
-				<next>1111</next>
-			</phrase>
-			<phrase id="114">
-				<text>hello_mil_killer_11111113</text>
-				<has_info>mil_actor_inside_wtower</has_info>
-				<has_info>mil_actor_bridge</has_info>
-				<give_info>mil_merc_talked</give_info>
 			</phrase>
 			<phrase id="222">
 				<text>hello_mil_killer_222</text>
@@ -261,13 +219,18 @@
 				<text>hello_mil_killer_222</text>
 				<dont_has_info>mil_actor_inside_wtower</dont_has_info>
 				<dont_has_info>mil_bs_dead</dont_has_info>
-				<action>dialogs.break_dialog</action>
+<!--			<action>dialogs.break_dialog</action> -->
 			</phrase>
-<!--
-			<phrase id="444">
+			<phrase id="233">
 				<text>hello_mil_killer_444</text>
+				<has_info>mil_actor_inside_wtower</has_info>
 			</phrase>
--->
+			<phrase id="234">
+				<text>hello_mil_killer_444</text>
+				<dont_has_info>mil_actor_inside_wtower</dont_has_info>
+				<dont_has_info>mil_bs_dead</dont_has_info>
+<!--			<action>dialogs.break_dialog</action> -->
+			</phrase>
 			<phrase id="555">
 				<text>hello_mil_killer_555</text>
 				<next>5555</next>
@@ -284,7 +247,6 @@
 			<phrase id="1111">
 				<text>hello_mil_killer_1111</text>
 				<next>11111</next>
-				<next>1111113</next>
 			</phrase>
 			<phrase id="5555">
 				<text>hello_mil_killer_5555</text>
@@ -296,7 +258,6 @@
 			</phrase>
 			<phrase id="11111">
 				<text>hello_mil_killer_11111</text>
-				<dont_has_info>mil_actor_inside_wtower</dont_has_info>
 				<next>111111</next>
 			</phrase>
 			<phrase id="55555">
@@ -316,26 +277,24 @@
 			</phrase>
 			<phrase id="1111111">
 				<text>hello_mil_killer_1111111</text>
-<!--			<dont_has_info>forester_telled_coordinates</dont_has_info> -->
 				<dont_has_info>mil_actor_inside_wtower</dont_has_info>
 				<dont_has_info>mil_bs_dead</dont_has_info>
 				<give_info>mil_merc_talked</give_info>
-				<action>dialogs.break_dialog</action>
+<!--			<action>dialogs.break_dialog</action> -->
 			</phrase>
 			<phrase id="1111112">
 				<text>hello_mil_killer_11111112</text>
-<!--			<dont_has_info>forester_telled_coordinates</dont_has_info> -->
 				<dont_has_info>mil_actor_inside_wtower</dont_has_info>
 				<has_info>mil_bs_dead</has_info>
 				<give_info>mil_merc_talked</give_info>
-				<action>dialogs.break_dialog</action>
+<!--			<action>dialogs.break_dialog</action> -->
 			</phrase>
 			<phrase id="1111113">
 				<text>hello_mil_killer_11111113</text>
-<!--			<has_info>forester_telled_coordinates</has_info> -->
 				<has_info>mil_actor_inside_wtower</has_info>
 				<give_info>mil_merc_talked</give_info>
-<!--			<next>55</next> -->
+				<next>55</next>
+				<next>56</next>
 			</phrase>
 			<phrase id="5555555">
 				<text>hello_mil_killer_5555555</text>
@@ -346,9 +305,9 @@
 			</phrase>
 			<phrase id="5555556">
 				<text>hello_mil_killer_5555556</text>
-				<action>dialogs.break_dialog</action>
 				<give_info>mil_merc_talked_i_hate_freedom</give_info>
 				<give_info>mil_merc_talked_f1_f2_wt1</give_info>
+<!--			<action>dialogs.break_dialog</action> -->
 			</phrase>
 			<phrase id="55555555">
 				<text>hello_mil_killer_55555555</text>
