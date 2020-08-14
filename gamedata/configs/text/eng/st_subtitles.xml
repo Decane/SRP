@@ -64,16 +64,16 @@
 		<text>Soon it’s gonna be too late! Help us!</text>
 	</string>
 	<string id="stalker_alife_counter_attack_check_1">
-		<text>What happened? Come in. Do you read me?</text>
+		<text>… What happened? Come in. Do you read me?</text>
 	</string>
 	<string id="stalker_alife_counter_attack_check_2">
-		<text>Guys, what’s going on there?</text>
+		<text>… Guys, what’s going on there?</text>
 	</string>
 	<string id="stalker_alife_counter_attack_check_3">
-		<text>Anyone alive? Respond!</text>
+		<text>… Anyone alive? Respond!</text>
 	</string>
 	<string id="stalker_alife_counter_attack_check_4">
-		<text>Can you hear me? This is…</text>
+		<text>… Can you hear me? This is…</text>
 	</string>
 	<string id="stalker_alife_counter_attack_counter_attack_begin_1">
 		<text>Our squad ain’t responding. Go to them, they might need help.</text>
@@ -235,16 +235,16 @@
 		<text>No one falls back!</text>
 	</string>
 	<string id="military_alife_counter_attack_check_1">
-		<text>Report! Over…</text>
+		<text>… Report! Over…</text>
 	</string>
 	<string id="military_alife_counter_attack_check_2">
-		<text>Is anyone there? Respond, over!</text>
+		<text>… Is anyone there? Respond, over!</text>
 	</string>
 	<string id="military_alife_counter_attack_check_3">
-		<text>What the… Come in, damn you!</text>
+		<text>… What the… Come in, damn you!</text>
 	</string>
 	<string id="military_alife_counter_attack_check_4">
-		<text>Dammit, have you all gone deaf or what?</text>
+		<text>… Dammit, have you all gone deaf or what?</text>
 	</string>
 	<string id="military_alife_counter_attack_counter_attack_begin_1">
 		<text>Listen up! We’ve lost contact with our squad. We must find out what happened.</text>
@@ -364,16 +364,16 @@
 		<text>You forget about us?! We’re dying here!</text>
 	</string>
 	<string id="freedom_alife_counter_attack_check_1">
-		<text>What the hell? What’s going on there?</text>
+		<text>… What the hell? What’s going on there?</text>
 	</string>
 	<string id="freedom_alife_counter_attack_check_2">
-		<text>This ain’t funny no more… I ain’t kidding…</text>
+		<text>… This ain’t funny no more… I ain’t kidding…</text>
 	</string>
 	<string id="freedom_alife_counter_attack_check_3">
-		<text>Guys, what’s happening?</text>
+		<text>… Guys, what’s happening?</text>
 	</string>
 	<string id="freedom_alife_counter_attack_check_4">
-		<text>Squad, come in… shit!</text>
+		<text>… Squad, come in… Shit!</text>
 	</string>
 	<string id="freedom_alife_counter_attack_counter_attack_begin_1">
 		<text>Our guys ain’t coming in! Comb the area, and stay alert!</text>
@@ -583,16 +583,16 @@
 		<text>We can’t wait for you forever! Get over here!</text>
 	</string>
 	<string id="dolg_alife_counter_attack_check_1">
-		<text>What happened? Report!</text>
+		<text>… What happened? Report!</text>
 	</string>
 	<string id="dolg_alife_counter_attack_check_2">
-		<text>This is base, respond immediately…</text>
+		<text>… This is base, respond immediately…</text>
 	</string>
 	<string id="dolg_alife_counter_attack_check_3">
-		<text>Squad! What’s up with you..?</text>
+		<text>… Squad! What’s up with you..?</text>
 	</string>
 	<string id="dolg_alife_counter_attack_check_4">
-		<text>Hello! You need any help?</text>
+		<text>… Hello! You need any help?</text>
 	</string>
 	<string id="dolg_alife_counter_attack_counter_attack_begin_1">
 		<text>Attention! We can’t reach our squad - it’s up to you to figure out what happened. Go.</text>
@@ -646,7 +646,7 @@
 		<text>Time to answer the call of Duty, eh?</text>
 	</string>
 	<string id="dolg_alife_attack_begin_reply_3">
-		<text>The enemy’s everywhere… they keep coming… and coming… and coming…</text>
+		<text>The enemy’s everywhere… They keep coming… and coming… and coming…</text>
 	</string>
 	<string id="dolg_alife_attack_begin_reply_4">
 		<text>I’m doing this for the greater good of us all… for the greater good…</text>
@@ -802,16 +802,16 @@
 		<text>Damn you! Where on earth are you?</text>
 	</string>
 	<string id="csky_alife_counter_attack_check_1">
-		<text>Attention! This is base… Answer me…</text>
+		<text>… Attention! This is base… Answer me…</text>
 	</string>
 	<string id="csky_alife_counter_attack_check_2">
-		<text>What’s going on over there?</text>
+		<text>… What’s going on over there?</text>
 	</string>
 	<string id="csky_alife_counter_attack_check_3">
-		<text>Damn you! Come in, now!</text>
+		<text>… Damn you! Come in, now!</text>
 	</string>
 	<string id="csky_alife_counter_attack_check_4">
-		<text>Damn it…</text>
+		<text>… Damn it…</text>
 	</string>
 	<string id="csky_alife_counter_attack_counter_attack_begin_1">
 		<text>Get a move on and see what’s happened with our boys. They ain’t responding.</text>
@@ -1021,16 +1021,16 @@
 		<text>Where the hell are you?! We’re getting butchered!</text>
 	</string>
 	<string id="bandit_alife_counter_attack_check_1">
-		<text>Yo, boys, listen up…</text>
+		<text>… Yo, boys, listen up…</text>
 	</string>
 	<string id="bandit_alife_counter_attack_check_2">
-		<text>You ain’t all dead over there, are ya?</text>
+		<text>… You ain’t all dead over there, are ya?</text>
 	</string>
 	<string id="bandit_alife_counter_attack_check_3">
-		<text>C’mon, get on the air already…</text>
+		<text>… C’mon, get on the air already…</text>
 	</string>
 	<string id="bandit_alife_counter_attack_check_4">
-		<text>Hey, brother… We ain’t clear on what’s going on…</text>
+		<text>… Hey, brother… We ain’t clear on what’s going on…</text>
 	</string>
 	<string id="bandit_alife_counter_attack_counter_attack_begin_1">
 		<text>Looks like our guys got lost. We gotta check it out and see what’s up.</text>
@@ -1435,7 +1435,7 @@
 		<text>Lefty, the psy-field emission level is currently at its lowest. Please begin the operation! All our hopes and prayers are with you! Good luck!</text>
 	</string>
 	<string id="characters_voice_scenario_yantar_yan_squad_diary">
-		<text>Aaaaa, my head… my head is killing me, I can’t think straight..! Ivan… attacked us all of a sudden… aaaa… the voices in my head, the damn psy-emission… at least we managed to get the documents… all we need to do is get them to Sakharov… crap, the dogs are on our trail… I don’t want to… noooooooo… oh God!</text>
+		<text>Aaaaa, my head… My head is killing me, I can’t think straight..! Ivan… attacked us all of a sudden… Aaaa… The voices in my head, the damn psy-emission… At least we managed to get the documents… All we need to do is get them to Sakharov… Crap, the dogs are on our trail… I don’t want to… Noooooooo… Oh God!</text>
 	</string>
 	<string id="characters_voice_scenario_yantar_yan_give_orders_1">
 		<text>We’re almost there. I repeat: our objective is to fix the two valves in position and restart the cooling station.</text>
@@ -1609,13 +1609,13 @@
 		<text>But the Zone was supposed to calm down!</text>
 	</string>
 	<string id="characters_voice_scenario_stancia_stc_final_scene_after_kill_strelok_5">
-		<text>Aaahhh… what’s going on… my head’s about to explode… aaahhh…</text>
+		<text>Aaahhh… What’s going on… My head’s about to explode… Aaahhh…</text>
 	</string>
 	<string id="characters_voice_scenario_stancia_stc_final_scene_after_lost_strelok_1">
 		<text>We let Strelok get away! He’s already inside the power plant.</text>
 	</string>
 	<string id="characters_voice_scenario_stancia_stc_final_scene_after_lost_strelok_2">
-		<text>An emission is coming… the readings are going off the scale… everyone, find cover… aaaahhhh!</text>
+		<text>An emission is coming… The readings are going off the scale… Everyone, find cover… Aaaahhhh!</text>
 	</string>
 	<string id="characters_voice_scenario_red_forest_red_pursuit_locate_strelok">
 		<text>Merc, hurry up! You’re very close to Strelok!</text>
@@ -1756,22 +1756,22 @@
 		<text>It’s been a while since I’ve seen someone other than monsters come out of the Forest. Well, come on over, big guy - let’s have a chat.</text>
 	</string>
 	<string id="characters_voice_scenario_military_mil_rnd_radio_1">
-		<text>… help… SOS… can anyone hear us…</text>
+		<text>… Help. SOS… Can anyone hear us…</text>
 	</string>
 	<string id="characters_voice_scenario_military_mil_rnd_radio_2">
-		<text>… we can’t get out of quadrant eighty four… warping… coming back…</text>
+		<text>… We can’t get out of quadrant eighty four… Warping… Coming back…</text>
 	</string>
 	<string id="characters_voice_scenario_military_mil_rnd_radio_3">
-		<text>… base, come in… base… come in…</text>
+		<text>… Base, come in… Base… Come in…</text>
 	</string>
 	<string id="characters_voice_scenario_military_mil_rnd_radio_6">
-		<text>… get us out of here…</text>
+		<text>… Get us out of here…</text>
 	</string>
 	<string id="characters_voice_scenario_military_mil_rnd_radio_7">
-		<text>… survived the emission… lost our bearings…</text>
+		<text>… Survived the emission… Lost our bearings…</text>
 	</string>
 	<string id="characters_voice_scenario_military_mil_rnd_radio_8">
-		<text>… it’s like a maze…</text>
+		<text>… It’s like a maze…</text>
 	</string>
 	<string id="characters_voice_scenario_military_mil_enter_first_1">
 		<text>It’s been a long time since anyone’s come through the Red Forest! Merc, come over here and I’ll fill you in.</text>
@@ -1780,7 +1780,7 @@
 		<text>Wow! I’d never have guessed you’d be able deal with that bloodsucker!</text>
 	</string>
 	<string id="characters_voice_scenario_military_mil_stalker_radio_1">
-		<text>… if you can hear me… we’re stuck in an anomaly… we can’t get out… it’s like space is warped… whichever way we go… can’t move… equipment has gone off the rails… can see the outlines of a town on the horizon… our coordinates… 51… 10… 3… 1… 2… is there anybody out there? …</text>
+		<text>… If you can hear me… We’re stuck in an anomaly… We can’t get out… It’s like space is warped… Whichever way we go… Can’t move… Equipment has gone off the rails… Can see the outlines of a town on the horizon… Our coordinates… 51… 10… 3… 1… 2… Is there anybody out there? …</text>
 	</string>
 	<string id="characters_voice_scenario_military_mil_hog_to_freedom_1">
 		<text>Merc, this is Forester. I’ve made a little diagram explaining how to get out of the Bubble. I’m sending you the coordinates. After the squad gets them, they’ll be able to get out no problem.</text>
@@ -1819,7 +1819,7 @@
 		<text>Great, now the military base is ours! Freedom will set up a base here and close the barrier once and for all! Thanks for your help, merc. Go ahead, the transmitter is all yours.</text>
 	</string>
 	<string id="characters_voice_scenario_military_mil_hires_in_bubble_thanks_1">
-		<text>We’ve received the coordinates and we’re going to try to get out of the Bubble… OK, left here… sixty feet this way… hot dang! We’re free! You hear me? We made it out of the anomaly! We’re heading for Limansk!</text>
+		<text>We’ve received the coordinates and we’re going to try to get out of the Bubble… OK, left here… Sixty feet this way… Hot dang! We’re free! You hear me? We made it out of the anomaly! We’re heading for Limansk!</text>
 	</string>
 	<string id="characters_voice_scenario_military_mil_meet_4n_com_task">
 		<text>Lebedev here. We’re at the bridge, waiting for mercenaries to arrive from the direction of the bandit camp any time soon. Come back to the bridge, we need you here - it’s going to get pretty nasty here before long.</text>
@@ -1987,7 +1987,7 @@
 		<text>Home, sweet, home! Go ahead and take your blindfold off. You’ll find me here when you’re ready to go back to the Swamps.</text>
 	</string>
 	<string id="characters_voice_scenario_marsh_mar_csky_arrive_on_open_marsh_1">
-		<text>Merc, it looks like you’re at the Great Swamps now. Be extremely careful and don’t try to be a hero. Check out your PDA - you should find the location of our squads there. I suggest you get yourself over  to the fishing hamlet - that’s where they are.</text>
+		<text>Merc, it looks like you’re at the Great Swamps now. Be extremely careful and don’t try to be a hero. Check out your PDA - you should find the location of our squads there. I suggest you get yourself over to the fishing hamlet - that’s where they are.</text>
 	</string>
 	<string id="characters_voice_scenario_limansk_lim_cs_limansk_intro">
 		<text>Excellent, merc - you are in Limansk. There’s a real war going on, so be very, very careful. Help the advanced squads find a safe path through the city.</text>
@@ -2308,7 +2308,7 @@
 		<text>Get away from me you friggin’ fleabags.</text>
 	</string>
 	<string id="characters_voice_scenario_garbage_gar_digger_messenger_thanks">
-		<text>Thanks buddy, you saved me right there! My name is Vasyan. Picture this: I’m on my way west trying to catch up with this stalker, minding my own business and all, and these eyeless beasts come out of nowhere! I emptied three clips into the damn things but they just kept on coming and chased me all the way here! There’s no way I’ll catch that stalker now - he’s gotta be in the Dark Valley at this point!</text>
+		<text>Thanks buddy, you saved me right there! My name is Vasyan. Picture this: I’m on my way west trying to catch up with this stalker, minding my own business and all, and these eyeless beasts come out of nowhere! I emptied three clips into the damn things but they just kept on coming and chased me all the way to here! There’s no way I’ll catch that stalker now - he’s gotta be in the Dark Valley at this point!</text>
 	</string>
 	<string id="characters_voice_scenario_garbage_gar_digger_messenger_pda_rec">
 		<text>I got cut off from Fang by a pack of dogs. It looks like he went east to the Dark Valley.</text>
@@ -2422,7 +2422,7 @@
 		<text>The smuggler’s PDA? Send me the latest notes. Aha! We’ve got the weapon cache coordinates. I’ll send my boys there right now! Come see me… We have some business to discuss face to face.</text>
 	</string>
 	<string id="characters_voice_scenario_garbage_gar_digger_captive_leader_reward">
-		<text>Man, I was sure as hell I’d die here like a dog! I… I don’t even know how to thank you… wait! I DO know how to thank you. I’m gonna upload the coordinates of a place me and the boys used to stash our loot before we were captured and sent here. My buddies won’t need it no more where they are now, may they rest in peace, and I’m getting the hell out of the Zone right this moment. I figure anywhere’s better than this place…</text>
+		<text>Man, I was sure as hell I’d die here like a dog! I… I don’t even know how to thank you… Wait! I DO know how to thank you. I’m gonna upload the coordinates of a place me and the boys used to stash our loot before we were captured and sent here. My buddies won’t need it no more where they are now, may they rest in peace, and I’m getting the hell out of the Zone right this moment. I figure anywhere’s better than this place…</text>
 	</string>
 	<string id="characters_voice_scenario_garbage_gar_digger_quester_creature_attack">
 		<text>Merc, something is attacking our boys not far from you. They’re screwed if they don’t get help soon!</text>
@@ -2695,13 +2695,13 @@
 		<text>See what being stubborn gets you? Your friends are dead and you’re still here - no one’s coming to save you. Tell me where you hid the case!</text>
 	</string>
 	<string id="characters_voice_scenario_escape_esc_habar_location_1">
-		<text>OK, I’ll tell you… Bastards… It’s at the old mill, under the roof.</text>
+		<text>… OK, I’ll tell you… bastards. It’s at the old mill, under the roof.</text>
 	</string>
 	<string id="characters_voice_scenario_escape_esc_habar_location_2">
-		<text>OK, I’ll tell you… Bastards… It’s in the tunnel, in the upturned car.</text>
+		<text>… OK, I’ll tell you… bastards. It’s in the tunnel, in the upturned car.</text>
 	</string>
 	<string id="characters_voice_scenario_escape_esc_habar_location_3">
-		<text>OK, I’ll tell you… Bastards… It’s in a house not far from here, in the attic.</text>
+		<text>… OK, I’ll tell you… bastards. It’s in a house not far from here, in the attic.</text>
 	</string>
 	<string id="characters_voice_scenario_escape_esc_habar_founded">
 		<text>Would you look at that? The little shit cracked like an egg! The stash coordinates are in your PDA. Take what you find to Sidorovich - he’s waiting.</text>
@@ -2863,28 +2863,28 @@
 		<text>Need any help, boys? Over.</text>
 	</string>
 	<string id="characters_voice_scenario_darkvalley_val_freedom_false_attack_b_1">
-		<text>Come in, come in! Answer me!</text>
+		<text>… Come in, come in! Answer me!</text>
 	</string>
 	<string id="characters_voice_scenario_darkvalley_val_freedom_false_attack_b_2">
-		<text>Respond, come in!</text>
+		<text>… Respond, come in!</text>
 	</string>
 	<string id="characters_voice_scenario_darkvalley_val_freedom_false_attack_b_3">
-		<text>Why are you not responding? Come in, boys!</text>
+		<text>… Why are you not responding? Come in, boys!</text>
 	</string>
 	<string id="characters_voice_scenario_darkvalley_val_freedom_false_attack_b_4">
-		<text>What the hell is going on over there? Come in!</text>
+		<text>… What the hell is going on over there? Come in!</text>
 	</string>
 	<string id="characters_voice_scenario_darkvalley_val_freedom_false_attack_c_1">
-		<text>Damn, no signal… What happened?</text>
+		<text>… Damn, no signal… What happened?</text>
 	</string>
 	<string id="characters_voice_scenario_darkvalley_val_freedom_false_attack_c_2">
-		<text>They’re not responding. What are we gonna do?</text>
+		<text>… They’re not responding. What are we gonna do?</text>
 	</string>
 	<string id="characters_voice_scenario_darkvalley_val_freedom_false_attack_c_3">
-		<text>Come in, damn you! Come in!</text>
+		<text>… Come in, damn you! Come in!</text>
 	</string>
 	<string id="characters_voice_scenario_darkvalley_val_freedom_false_attack_c_4">
-		<text>Where on earth could they be?</text>
+		<text>… Where on earth could they be?</text>
 	</string>
 	<string id="characters_voice_scenario_darkvalley_val_freedom_false_attack_d_1">
 		<text>Attention all units: we’ve just lost another squad. Keep your eyes open!</text>
@@ -2944,7 +2944,7 @@
 		<text>Merc, this is Lebedev. The correspondence found in the stash explains a lot. We now know that Strelok’s group made it to the center and we also know that they’re planning to go there again. Reckless fools! If they succeed they’ll trigger a second large emission - an emission so powerful that every living creature in the Zone will be incinerated, and the Zone itself will become unstable. We cannot let that happen! Strelok went to Lake Yantar. You are closest to that area - try to intercept him there, and we’ll take care of Fang and Ghost.</text>
 	</string>
 	<string id="characters_voice_scenario_agroprom_agr_blokpost_shout_1">
-		<text>Yo, merc! What the hell are you doing here?! Run like the wind - mutants will be here any minute!</text>
+		<text>Yo, merc! What the hell you doing here?! Run like the wind - mutants will be here any minute!</text>
 	</string>
 	<string id="characters_voice_scenario_agroprom_agr_blokpost_dialog">
 		<text>Would you look at that? Where’s your equipment, boy? This is a dangerous place - you won’t get far without a good suit and a decent weapon. Monsters have gotten pretty nasty lately, so we’ll be grateful for any assistance you can give us in fighting the Zone. If you want to make some cash, drop by the base and see the General. One of our squads is actually heading there right now. Stick with them and save yourself some trouble.</text>
@@ -3016,7 +3016,7 @@
 		<text>That is correct. Make sure he’s got enough ammo.</text>
 	</string>
 	<string id="characters_voice_scenario_agroprom_agr_base_leader_sergant_4">
-		<text>Yes, Sir!</text>
+		<text>Yes, sir!</text>
 	</string>
 	<string id="characters_voice_scenario_agroprom_agr_base_leader_sergant_5">
 		<text>Well… good luck to you. The sergeant will give you the necessary equipment and a few tips of his own. I’ve already sent you the lair’s coordinates.</text>

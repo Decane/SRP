@@ -19,7 +19,6 @@
 	<info_portion id="yan_destroy_zombi7_cut2"/>
 	<info_portion id="yan_destroy_zombi10_cut2"/>
 	<info_portion id="yan_destroy_zombi11_cut2"/>
-	<info_portion id="yan_stalker_squad_sci_base_death"/>
 	<info_portion id="yan_squad_zombi_in_sci_base"/>
 	<info_portion id="yan_squad_zombi_in_sci_base2"/>
 	<info_portion id="yan_squad_zombi_in_sci_base3"/>
@@ -53,8 +52,6 @@
 	<info_portion id="yan_destroy_zombi31_cut5"/>
 	<info_portion id="yan_destroy_zombi32_cut5"/>
 	<info_portion id="yan_space_restrictor_actor_go_cut5"/>
-	<info_portion id="yan_default_stalker_1_death"/>
-	<info_portion id="yan_default_stalker_2_death"/>
 	<info_portion id="yan_levsha_ready_cut6"/>
 	<info_portion id="typoi"/>
 	<info_portion id="yan_actor_ready_cut6_ok"/>
@@ -144,6 +141,9 @@
 	<info_portion id="yan_death_cut6_stalker1"/>
 	<info_portion id="yan_death_cut6_stalker2"/>
 	<info_portion id="yan_death_cut6_stalker5"/>
+	<info_portion id="yan_stalker_squad_sci_base_death"/>
+	<info_portion id="yan_default_stalker_1_death"/>
+	<info_portion id="yan_default_stalker_2_death"/>
 	<info_portion id="yan_go_home_cut6"/>
 	<info_portion id="yan_actor_go_to_stalker"/>
 	<info_portion id="yan_actor_destroy_wave1"/>

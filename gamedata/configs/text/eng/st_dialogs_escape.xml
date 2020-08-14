@@ -72,7 +72,7 @@
 		<text>Of course they’ll save him - the rat bastard owes them a whole bunch of dough! He ran their operations on his own and stashed the cash away somewhere. Listen, I’ve got an idea. The commander’s got only two men he can count on - they served together at the outpost and he cut them in on the deals, so they’ll do whatever they can to get him out. If we dispose of them, the bastard will realize nobody’s coming for him. He’ll crack and we’ll beat out of him the location of the stash with the loot. We split the money, and Sidorovich gets the case. What do you say?</text>
 	</string>
 	<string id="esc_leader_talk_111111">
-		<text>Yeah, I guess we got a little carried away… can’t figure out what to do now. We’re holding the commander hostage, which is a kind of guarantee that the army’s not going to bomb our asses back to the Stone Age with their choppers. We can’t kill him, but we can’t let him go either… The sly son of a bitch knows that we need him alive, and he’s not caving in a damn inch. Trouble is, he’s the only one who knows where the loot is hidden. If we don’t deliver that loot to Sidorovich, he won’t do business with us ever again. If we could only make this army bastard play by our rules, it would be a whole different ball game, believe me.</text>
+		<text>Yeah, I guess we got a little carried away… Can’t figure out what to do now. We’re holding the commander hostage, which is a kind of guarantee that the army’s not going to bomb our asses back to the Stone Age with their choppers. We can’t kill him, but we can’t let him go either… The sly son of a bitch knows that we need him alive, and he’s not caving in a damn inch. Trouble is, he’s the only one who knows where the loot is hidden. If we don’t deliver that loot to Sidorovich, he won’t do business with us ever again. If we could only make this army bastard play by our rules, it would be a whole different ball game, believe me.</text>
 	</string>
 	<string id="esc_leader_talk_222222">
 		<text>I have this feeling we won’t have to look for them. Khaletskiy’s buddies are wandering around here somewhere, planning to attack us. A small squad has been spotted at the elevator. Help us destroy them.</text>
@@ -302,7 +302,7 @@
 		<text>Tell me about the Zone.</text>
 	</string>
 	<string id="esc_leader_about_zone_1">
-		<text>You’re asking me that? Why don’t you ask an egghead - they’re the ones putting it through microscopes and X-rays. Me, I don’t know much about the Zone… to me it’s just a place to make some money. All I want is to make enough so that a few years from now I can chill out in my own little villa by the sea somewhere.</text>
+		<text>You’re asking me that? Why don’t you ask an egghead - they’re the ones putting it through microscopes and X-rays. Me, I don’t know much about the Zone… To me it’s just a place to make some money. All I want is to make enough so that a few years from now I can chill out in my own little villa by the sea somewhere.</text>
 	</string>
 	<string id="esc_leader_first_join_0">
 		<text>How can I join your clan?</text>
@@ -313,6 +313,7 @@
 	<string id="esc_leader_first_join_11">
 		<text>I see.</text>
 	</string>
+<!--
 	<string id="esc_leader_good_job_0">
 		<text>How else can I help the stalkers?</text>
 	</string>
@@ -334,6 +335,7 @@
 	<string id="esc_leader_good_job_4">
 		<text>Thank you!</text>
 	</string>
+-->
 	<string id="esc_leader_join_stalker_0">
 		<text>Can I join your clan? Have I done enough to be considered one of you?</text>
 	</string>
@@ -553,7 +555,7 @@
 		<text>Tell me about the Zone.</text>
 	</string>
 	<string id="esc_trader_about_questions_333">
-		<text>It’s not calm in the Zone at the moment. A couple of days ago an emission shook the whole Zone. I’ve only seen an emission that powerful once before - when the Zone appeared. Back then, the army put together a large force and moved into the center of the Zone to nuke the whole place to kingdom come. As soon as they got close to the center they got hit by an emission that made tanks sail through the air like kids’ toys. Most of them died during the blast, and those who survived were just abandoned in the center of the Zone. They kept calling for help over the radio… but the generals didn’t have the balls to send another group. The survivors died pretty quick, what with all those anomalies and without any protection.\n \nI have no idea why there was another emission like that. Maybe the Zone is pissed at someone? Can’t have been the army, ’cause after that last time they don’t even leave the Cordon. The only ones roaming all over the place are stalkers, and the Zone never seemed to care much about them… But here we are: emission after emission, each one stronger than the last. I have a bad feeling about this whole thing…</text>
+		<text>It’s not calm in the Zone at the moment. A couple of days ago an emission shook the whole Zone. I’ve only seen an emission that powerful once before - when the Zone appeared. Back then, the army put together a large force and moved into the center of the Zone to nuke the whole place to kingdom come. As soon as they got close to the center they got hit by an emission that made tanks sail through the air like kids’ toys. Most of them died during the blast, and those who survived were just abandoned in the center of the Zone. They kept calling for help over the radio… But the generals didn’t have the balls to send another group. The survivors died pretty quick, what with all those anomalies and without any protection.\n \nI have no idea why there was another emission like that. Maybe the Zone is pissed at someone? Can’t have been the army, ’cause after that last time they don’t even leave the Cordon. The only ones roaming all over the place are stalkers, and the Zone never seemed to care much about them… But here we are: emission after emission, each one stronger than the last. I have a bad feeling about this whole thing…</text>
 	</string>
 	<string id="esc_trader_about_questions_44">
 		<text>You heard any interesting rumors from deep inside the Zone?</text>

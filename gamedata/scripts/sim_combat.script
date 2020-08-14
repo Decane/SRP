@@ -705,31 +705,29 @@ function CCombat_manager:get_squad_stage(squad)
 end
 
 function CCombat_manager:point_under_attack()
+
 	local community_list = {}
-	local num_attackers = 0
-	local self_smart_id = self.smart.id
+	local num_factions = 0
+	local smart_owner = self.smart.player_name
+
+	if smart_owner ~= "none" then
+		num_factions = 1
+		community_list[smart_owner] = true
+	end
+
+	local retval = false
 	local board_squads = self.board.squads
+
 	for id in pairs (self.squads) do
 		local squad = board_squads[id]
-		if squad ~= nil then
-			local player_id = squad.player_id
-			if community_list[player_id] == nil then
-				community_list[player_id] = 0
-				num_attackers = num_attackers + 1
-			end
-			if squad.smart_id == self_smart_id then
-				community_list[player_id] = community_list[player_id] - 100
-			else
-				community_list[player_id] = community_list[player_id] + 1
-			end
+		if squad and not community_list[squad.player_id] then
+			num_factions = num_factions + 1
+			community_list[squad.player_id] = true
+			retval = true
 		end
 	end
-	for k, v in pairs (community_list) do
-		if v > 0 then
-			return true, num_attackers
-		end
-	end
-	return false, num_attackers
+
+	return retval, num_factions
 end
 
 function CCombat_manager:get_squad_enemy(my_squad)

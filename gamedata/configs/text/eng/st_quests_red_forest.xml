@@ -136,7 +136,7 @@
 		<text>Receive the radio message</text>
 	</string>
 	<string id="red_find_signals_on_military_text">
-		<text>Forester received unintelligible bits and pieces of radio communications from an unidentified group that got trapped in a strange anomaly very near Limansk. The group may know an alternative way to Limansk. Go to the military warehouses and find a place suitable for receiving a clearer signal.</text>
+		<text>Forester receives unintelligible bits and pieces of radio communications from an unidentified group that got trapped in a strange anomaly very near Limansk. The group may know an alternative way to Limansk. Go to the military warehouses and find a place suitable for receiving a clearer signal.</text>
 	</string>
 	<string id="red_take_red_forest_map_pda_name">
 		<text>Pick up the PDA</text>

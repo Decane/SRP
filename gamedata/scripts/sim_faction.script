@@ -94,35 +94,34 @@ function se_sim_faction:read_params()
 
 	while setting_ini:section_exist(section) do
 
-		local t = {}
+		exp_table[i] =
+		{
+			id                            = i,
+			section                       = section,
+--			base_squad_number             = xr_logic.parse_condlist(nil, nil, nil, get_string(setting_ini, section, "base_squad_number", self, true, "")),
+			base_squad_number             = get_number(setting_ini, section, "base_squad_number", self, true),
+			forbidden_points              = parse_names_to_hash(get_string(setting_ini, section, "forbidden_points", nil, false, "", "")),
 
-		t.id                            = i
-		t.section                       = section
---		t.base_squad_number             = xr_logic.parse_condlist(nil, nil, nil, get_string(setting_ini, section, "base_squad_number", self, true, ""))
-		t.base_squad_number             = get_number(setting_ini, section, "base_squad_number", self, true)
-		t.forbidden_points              = parse_names_to_hash(get_string(setting_ini, section, "forbidden_points", self, false, "", ""))
+			respawn_idle_time             = get_number(setting_ini, section, "respawn_idle_time", nil, false, 30) * 60,
+			respawn_hours                 = parse_names_to_hash(get_string(setting_ini, section, "respawn_hours", nil, false, "", "0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23")),
 
-		t.respawn_idle_time             = get_number(setting_ini, section, "respawn_idle_time", self, false, 30) * 60
-		t.respawn_hours                 = parse_names_to_hash(get_string(setting_ini, section, "respawn_hours", self, false, "", "0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23"))
+			war_target_title              = get_string(setting_ini, section, "war_target_title", nil, false, "", ""),
+			war_stage_icon                = get_string(setting_ini, section, "war_stage_icon", nil, false, "", ""),
+			war_stage_icon_complete       = get_string(setting_ini, section, "war_stage_icon_complete", nil, false, "", ""),
+			war_stage_icon_hint           = get_string(setting_ini, section, "war_stage_icon_hint", nil, false, "", ""),
+			war_stage_icon_hint_complete  = get_string(setting_ini, section, "war_stage_icon_hint_complete", nil, false, "", ""),
 
-		t.war_target_title              = get_string(setting_ini, section, "war_target_title", self, false, "", "")
-		t.war_stage_icon                = get_string(setting_ini, section, "war_stage_icon", self, false, "", "")
-		t.war_stage_icon_complete       = get_string(setting_ini, section, "war_stage_icon_complete", self, false, "", "")
-		t.war_stage_icon_hint           = get_string(setting_ini, section, "war_stage_icon_hint", self, false, "", "")
-		t.war_stage_icon_hint_complete  = get_string(setting_ini, section, "war_stage_icon_hint_complete", self, false, "", "")
+			precondition_power            = get_number(setting_ini, section, "precondition_power", nil, false, 0),
+			precondition_target           = parse_names(get_string(setting_ini, section, "precondition_target", nil, false, "", "")),
+--			precondition_target_optional  = parse_names(get_string(setting_ini, section, "precondition_target_optional", nil, false, "", "")),
+			precondition_target_eliminate = parse_names(get_string(setting_ini, section, "precondition_target_eliminate", nil, false, "", "")),
+--			precondition_target_order     = get_string(setting_ini, section, "precondition_target_order", nil, false, "", "free"),
+			precondition_actor_in_faction = utils.cfg_get_bool(setting_ini, section, "precondition_actor_in_faction", nil, false, false),
+			precondition_cond             = xr_logic.parse_condlist(nil, nil, nil, get_string(setting_ini, section, "precondition_cond", nil, false, "", "true")),
 
-		t.precondition_power            = get_number(setting_ini, section, "precondition_power", self, false, 0)
-		t.precondition_target           = parse_names(get_string(setting_ini, section, "precondition_target", self, false, "", ""))
---		t.precondition_target_optional  = parse_names(get_string(setting_ini, section, "precondition_target_optional", self, false, "", ""))
-		t.precondition_target_eliminate = parse_names(get_string(setting_ini, section, "precondition_target_eliminate", self, false, "", ""))
---		t.precondition_target_order     = get_string(setting_ini, section, "precondition_target_order", self, false, "", "free")
-		t.precondition_actor_in_faction = utils.cfg_get_bool(setting_ini, section, "precondition_actor_in_faction", self, false, false)
-		t.precondition_cond             = xr_logic.parse_condlist(nil, nil, nil, get_string(setting_ini, section, "precondition_cond", self, false, "", "true"))
-
-		t.level_up_snd                  = get_string(setting_ini, section, "level_up_snd", self, false, "")
-		t.level_down_snd                = get_string(setting_ini, section, "level_down_snd", self, false, "")
-
-		exp_table[i] = t
+			level_up_snd                  = get_string(setting_ini, section, "level_up_snd", nil, false, ""),
+			level_down_snd                = get_string(setting_ini, section, "level_down_snd", nil, false, ""),
+		}
 
 		i = i + 1
 		section = "expansion_"..i

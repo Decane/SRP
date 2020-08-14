@@ -1,6 +1,7 @@
 -- DC170507: Optimization.
 
 local state_lib_states = state_lib.states
+local props = state_mgr_goap.props
 local move_walk = move.walk
 local move_run = move.run
 local move_stand = move.stand
@@ -142,8 +143,8 @@ end
 function act_state_mgr_movement_stand_turn:initialize()
 	action_base.initialize(self)
 	local sobj = self.object
-	state_mgr_direction.turn(sobj, self.st)
 	sobj:set_movement_type(move_stand)
+	state_mgr_direction.turn(sobj, self.st)
 end
 
 function act_state_mgr_movement_stand_turn:execute()
@@ -160,13 +161,14 @@ class "act_state_mgr_movement_stand_search" (action_base)
 
 function act_state_mgr_movement_stand_search:__init(st) super ()
 	self.st = st
+	self.movement_stand_eval = st.planner:evaluator(props.movement_stand) -- for look_position_type()
 end
 
 function act_state_mgr_movement_stand_search:initialize()
 	action_base.initialize(self)
 	local sobj = self.object
 	sobj:set_movement_type(move_stand)
-	sobj:set_sight(state_mgr_direction.look_position_type(sobj, self.st), nil, 0)
+	sobj:set_sight(state_mgr_direction.look_position_type(self, self.st), nil, 0)
 end
 
 function act_state_mgr_movement_stand_search:execute()
@@ -206,13 +208,14 @@ class "act_state_mgr_movement_walk_search" (action_base)
 
 function act_state_mgr_movement_walk_search:__init(st) super ()
 	self.st = st
+	self.movement_stand_eval = st.planner:evaluator(props.movement_stand) -- for look_position_type()
 end
 
 function act_state_mgr_movement_walk_search:initialize()
 	action_base.initialize(self)
 	local sobj = self.object
 	sobj:set_movement_type(move_walk)
-	sobj:set_sight(state_mgr_direction.look_position_type(sobj, self.st), nil, 0)
+	sobj:set_sight(state_mgr_direction.look_position_type(self, self.st), nil, 0)
 end
 
 function act_state_mgr_movement_walk_search:execute()
@@ -224,7 +227,7 @@ function act_state_mgr_movement_walk_search:finalize()
 end
 
 --------------------------------------------------------------------------------
-
+--[[
 class "act_state_mgr_movement_run_turn" (action_base)
 
 function act_state_mgr_movement_run_turn:__init(st) super ()
@@ -252,13 +255,14 @@ class "act_state_mgr_movement_run_search" (action_base)
 
 function act_state_mgr_movement_run_search:__init(st) super ()
 	self.st = st
+	self.movement_stand_eval = st.planner:evaluator(props.movement_stand) -- for look_position_type()
 end
 
 function act_state_mgr_movement_run_search:initialize()
 	action_base.initialize(self)
 	local sobj = self.object
 	sobj:set_movement_type(move_run)
-	sobj:set_sight(state_mgr_direction.look_position_type(sobj, self.st), nil, 0)
+	sobj:set_sight(state_mgr_direction.look_position_type(self, self.st), nil, 0)
 end
 
 function act_state_mgr_movement_run_search:execute()
@@ -268,3 +272,4 @@ end
 function act_state_mgr_movement_run_search:finalize()
 	action_base.finalize(self)
 end
+]]

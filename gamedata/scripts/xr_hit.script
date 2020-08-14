@@ -1,0 +1,63 @@
+class "action_process_hit"
+
+function action_process_hit:__init(storage)
+	self.info = storage.info
+	self.info2 = storage.info2
+end
+
+function action_process_hit:hit_callback(victim, amount)
+
+	if amount == 0 then
+		return
+	end
+--[[
+	Note: xr_conditions.hit_by_actor() won't work with the block below commented out.
+	It doesn't work in most cases in vanilla anyway, because for this callback to fire,
+	an instance of this class must be stored by xr_logic.subscribe_action_for_events() in
+	st.actions, which however only happens if 'on_hit' exists in an NPC's [logic] or
+	[logic@something] section - see xr_logic.enable_generic_schemes(). And most NPCs whose
+	logic uses '{=hit_by_actor}' don't have 'on_hit' defined, so this callback would never
+	fire for them, and hence their db.storage[npc:id()].hit.who wouldn't get set, and hence
+	hit_by_actor() would always return false for them.
+
+	The only place where hit_by_actor() works in vanilla is lim_bandit_wounded_1_logic.ltx,
+	where however it's redundant, since the effect following its '{=hit_by_actor}' is
+	anyway implemented (for all hitters) using a [hit] section.
+
+	if hitter then
+		db.storage[victim:id()].hit.who = hitter:id()
+	else
+		db.storage[victim:id()].hit.who = -1
+	end
+]]
+	if db.actor then
+
+		if self.info then
+			xr_logic.pick_section_from_condlist(db.actor, victim, self.info)
+		end
+
+		if self.info2 then
+			xr_logic.pick_section_from_condlist(db.actor, victim, self.info2)
+		end
+	end
+end
+
+--------------------------------------------------------------------------------
+-- binder
+--------------------------------------------------------------------------------
+
+function add_to_binder(npc, ini, scheme, section, storage)
+
+	if ini:section_exist(section) then
+
+		if ini:line_exist(section, "on_info") then
+			storage.info = xr_logic.parse_condlist(nil, nil, nil, ini:r_string(section, "on_info"))
+		end
+
+		if ini:line_exist(section, "on_info2") then
+			storage.info2 = xr_logic.parse_condlist(nil, nil, nil, ini:r_string(section, "on_info2"))
+		end
+
+		xr_logic.subscribe_action_for_events(npc, storage, this.action_process_hit(storage))
+	end
+end

@@ -4,22 +4,6 @@ local board = nil
 local table_sort = table.sort
 local table_remove = table.remove
 
-local squad_by_level = {
-
-	marsh                = 1,
-	escape               = 2,
-	garbage              = 3,
-	agroprom             = 4,
-	darkvalley           = 5,
-	agroprom_underground = 6,
-	yantar               = 7,
-	red_forest           = 8,
-	military             = 9,
-	limansk              = 10,
-	hospital             = 11,
-	stancia_2            = 12
-}
-
 sim_fight = {
 
 	csky       = "renegade",
@@ -392,7 +376,7 @@ function sim_board:get_spawn_smart(faction)
 	for smart_id, spawn_faction_condlist in pairs (self.spawn_smarts) do
 		local smart = self_smarts[smart_id].smrt
 		if is_point_avail(smart, faction_name) then
-			local spawn_faction = xr_logic.pick_section_from_condlist(db.actor_proxy, smart, spawn_faction_condlist)
+			local spawn_faction = xr_logic.pick_section_from_condlist(db.actor, smart, spawn_faction_condlist) -- db.actor guaranteed valid by se_sim_faction:update
 			if spawn_faction == faction_name or spawn_faction == "all" then
 				local population_okay = false
 				local smart_faction = smart.player_name
@@ -422,7 +406,7 @@ function sim_board:create_squad(faction_id, squad_class, spawn_smart, sq_id, set
 	local self_squads = self.squads
 
 	if self_squads[squad_id] ~= nil then
-		abort("[sim_board:create_squad]: Tried to assign a squad ID that is already in use: '%s'.", tostring(squad_id))
+		abort("[sim_board:create_squad]: Tried to assign a squad ID that is already in use: '%s'.", squad_id)
 	end
 
 	local squad = squad_class(self, faction_id, squad_id, settings_id)
@@ -438,19 +422,16 @@ function sim_board:create_squad(faction_id, squad_class, spawn_smart, sq_id, set
 
 	self:assign_squad_to_smart(squad, spawn_smart.id)
 
---	local board = squad.board
 	local sim = _G.sim
+	local spawn_squad_id = spawn_smart.squad_id
 
 	for npc_id in pairs (squad.squad_npc) do
-		local se_npc = sim:object(npc_id)
-		self:setup_squad_and_group(se_npc)
+		change_team_sqaud_group(sim:object(npc_id), spawn_squad_id)
 	end
 
-	local faction = self.players[faction_id]
+	self.players[faction_id]:register_squad(squad)
 
-	faction:register_squad(squad)
-
---	faction.brain:calculate_current_expansion() -- done in enter_smart() if appropriate
+--	self.players[faction_id].brain:calculate_current_expansion() -- done in enter_smart() if appropriate
 
 	self:enter_smart(squad, spawn_smart.id, after_load)
 
@@ -486,7 +467,7 @@ function sim_board:remove_squad(squad, squad_smart)
 		self.smarts[sim_combat_id].smrt.combat_manager:unregister_squad(squad)
 	end
 
-	self:exit_smart(squad, squad_smart, true)
+	self:exit_smart(squad, squad_smart)
 
 	squad:hide()
 
@@ -583,7 +564,7 @@ Summary of operations:
 
 ]]
 
-function sim_board:exit_smart(squad, smart, skip_brain_update)
+function sim_board:exit_smart(squad, smart, need_brain_update)
 --[[
 	if smart == nil then
 		return
@@ -606,25 +587,26 @@ function sim_board:exit_smart(squad, smart, skip_brain_update)
 	smart_info.stayed_squad_quan = smart_info.stayed_squad_quan - 1
 	smart_info.squads[squad.squad_id] = nil
 
-	if not smart.combat_manager:point_under_attack() then
-		self:reset_nearest_squads(smart)
-	end
+--	if not smart.combat_manager:point_under_attack() then
+--		self:reset_nearest_squads(smart) -- move this after brain updates if ever re-enabled
+--	end
 
 	local squad_faction = self.players[squad.player_id]
 
 	if smart_info.stayed_squad_quan > 0 then
-		squad_faction:calculate_squad_tasks()
-		return
-	end
+		if need_brain_update then
+			squad_faction:calculate_squad_tasks()
+		end
+	else
+		if smart.sim_type == "resource" then
+			squad_faction.resource_level = squad_faction.resource_level - 1
+		end
 
-	if smart.sim_type == "resource" then
-		squad_faction.resource_level = squad_faction.resource_level - 1
-	end
+		smart.player_name = "none" -- moved this up from below calculate_current_expansion()
 
-	smart.player_name = "none" -- moved this up from below calculate_current_expansion()
-
-	if skip_brain_update ~= true then
-		squad_faction.brain:calculate_current_expansion()
+		if need_brain_update then
+			squad_faction.brain:calculate_current_expansion()
+		end
 	end
 
 --	smart:refresh()
@@ -635,11 +617,11 @@ end
 Summary of operations:
 
 (1) smart_info.squads[squad.squad_id] = squad
-(2) squad.entered_smart = smart_id
-(3) smart.player_name = squad_faction.player_name
-(4) squad_faction.resource_level incremented if appropriate
-(5) squad faction brain updates as appropriate
-(6) smart_info.stayed_squad_quan = smart_info.stayed_squad_quan + 1
+(2) smart_info.stayed_squad_quan = smart_info.stayed_squad_quan + 1
+(3) squad.entered_smart = smart_id
+(4) smart.player_name = squad_faction.player_name
+(5) squad_faction.resource_level incremented if appropriate
+(6) squad faction brain updates as appropriate
 
 ]]
 
@@ -661,13 +643,14 @@ function sim_board:enter_smart(squad, smart_id, after_load)
 	end
 
 	smart_info.squads[squad.squad_id] = squad -- moved from assign_squad_to_smart()
+	smart_info.stayed_squad_quan = smart_info.stayed_squad_quan + 1 -- moved from end of func
 
 	squad.entered_smart = smart_id
 
 	local smart = smart_info.smrt
 	local squad_faction = self.players[squad.player_id]
 
-	if smart_info.stayed_squad_quan == 0 then
+	if smart_info.stayed_squad_quan == 1 then
 
 		if smart.player_name ~= "none" then
 			abort("[sim_board:enter_smart]: Smart with ID '%s' is supposed to be empty but it has '%s' as its registered owner.", tostring(smart_id), tostring(smart.player_name))
@@ -695,33 +678,44 @@ function sim_board:enter_smart(squad, smart_id, after_load)
 		end
 	end
 
-	smart_info.stayed_squad_quan = smart_info.stayed_squad_quan + 1
-
 	if not after_load then
 		squad.items_spawned = false
 	end
 end
 
-function sim_board:setup_squad_and_group(se_npc)
+--[[
+
+local squad_by_level =
+{
+	marsh                = 1,
+	escape               = 2,
+	garbage              = 3,
+	agroprom             = 4,
+	darkvalley           = 5,
+	agroprom_underground = 6,
+	yantar               = 7,
+	red_forest           = 8,
+	military             = 9,
+	limansk              = 10,
+	hospital             = 11,
+	stancia_2            = 12
+}
+
+function sim_board:setup_squad_and_group(se_npc, squad)
 
 	change_team_sqaud_group(se_npc, se_npc.team, se_npc.squad, squad_by_level[level.name()] or 0)
-
-	local squad = self.squads[se_npc.squad_id]
-
-	if squad == nil then
-		change_team_sqaud_group(se_npc, se_npc.team, 0, se_npc.group)
-		return
-	end
 
 	local smart_id = squad.current_action and squad.current_action.dest_smrt_id or squad.smart_id
 
 	change_team_sqaud_group(se_npc, se_npc.team, smart_id, se_npc.group)
 end
 
+]]
+
 function sim_board:build_cross_table(smart)
 
 	local ini = smart:spawn_ini()
-	local targets_str = ini:section_exist("smart_terrain") and ini:line_exist("smart_terrain", "targets") and ini:r_string("smart_terrain", "targets")
+	local targets_str = ini:line_exist("smart_terrain", "targets") and ini:r_string("smart_terrain", "targets")
 
 	if not targets_str then -- false if section or line doesn't exist; nil if the value of the 'targets' field is empty (that is, no targets supplied)
 		return
@@ -845,6 +839,8 @@ function sim_board:actor_near_smart(smart)
 	return db.actor:position():distance_to_sqr(smart.position) < 255
 end
 
+--[[
+
 function sim_board:reset_nearest_squads(smart)
 	local self_smarts = self.smarts
 	for nearest_smart_id in pairs (self:get_nearest_smarts(smart)) do
@@ -863,11 +859,13 @@ function sim_board:reset_nearest_squads(smart)
 	end
 end
 
--- function sim_board:show()
--- end
+function sim_board:show()
+end
 
--- function sim_board:hide()
--- end
+function sim_board:hide()
+end
+
+]]
 
 function get_sim_board()
 	if board == nil then

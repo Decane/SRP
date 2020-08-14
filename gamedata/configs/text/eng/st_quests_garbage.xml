@@ -118,7 +118,7 @@
 		<text>Get information about Fang from the diggers</text>
 	</string>
 	<string id="gar_story_find_diggers_text">
-		<text>Try to find out Fang’s whereabouts from the diggers that the trader said he went to see.</text>
+		<text>Try to find out Fang’s whereabouts from the diggers he went to see according to the trader.</text>
 	</string>
 	<string id="gar_story_get_pda_name">
 		<text>Pick up Fang’s PDA</text>
@@ -196,7 +196,7 @@
 		<text>Return the Chaser 13</text>
 	</string>
 	<string id="gar_recover_item_1_text">
-		<text>Well, here’s a story: one of our fellas caught some lame digger and took him for a walk between some anomalies. They both copped it in a Gravi and I don’t have a problem with that, but that fella borrowed my Chaser for the job and it’s still there. If you could get it back, that would be real nice.</text>
+		<text>Well, here’s a story: one of our fellas caught some lame digger and took him for a walk between some anomalies. They both copped it in a Vortex and I don’t have a problem with that, but that fella borrowed my Chaser for the job and it’s still there. If you could get it back, that would be real nice.</text>
 	</string>
 	<string id="gar_recover_item_2_name">
 		<text>Find the modified weapon</text>
@@ -214,7 +214,7 @@
 		<text>Return the rookie’s jacket</text>
 	</string>
 	<string id="gar_recover_item_4_text">
-		<text>A guy came here from the Cordon the other day, one of them green and annoying types. He told everyone and his dog about his magic jacket, which he claimed could withstand any anomaly. I heard that even when the bandits captured him he wouldn’t shut up until they chased him into a Gravi. Well, the poor bastard was right - the jacket survived the anomaly without a scratch. I could find a use for that jacket if you could bring it to me.</text>
+		<text>A guy came here from the Cordon the other day, one of them green and annoying types. He told everyone and his dog about his magic jacket, which he claimed could withstand any anomaly. I heard that even when the bandits captured him he wouldn’t shut up until they chased him into a Vortex. Well, the poor bastard was right - the jacket survived the anomaly without a scratch. I could find a use for that jacket if you could bring it to me.</text>
 	</string>
 	<string id="gar_recover_item_5_name">
 		<text>Bring back the inscribed pistol</text>

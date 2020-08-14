@@ -6,17 +6,19 @@ class "evaluator_need_walker" (property_evaluator)
 
 function evaluator_need_walker:__init(storage) super()
 	self.st = storage
+	self.npc_st = db.storage[storage.npc:id()]
 end
 
 function evaluator_need_walker:evaluate()
-	return xr_logic.is_active(self.object, self.st)
+--	return xr_logic.is_active(self.object, self.st)
+	return self.st.section == self.npc_st.active_section
 end
 
 ----------------------------------------------------------------------------------------------------
 
 class "action_walker_activity" (action_base)
 
-function action_walker_activity:__init (npc, storage) super()
+function action_walker_activity:__init(npc, storage) super()
 	self.st = storage
 	self.move_mgr = db.storage[npc:id()].move_mgr
 end
@@ -48,9 +50,9 @@ end
 function action_walker_activity:execute()
 	action_base.execute(self)
 	self.move_mgr:update()
-	local st = self.st
-	if st.sound_idle ~= nil then
-		xr_sound.set_sound_play(self.object:id(), st.sound_idle)
+	local sound_idle = self.st.sound_idle
+	if sound_idle ~= nil then
+		xr_sound.set_sound_play(self.object:id(), sound_idle)
 	end
 end
 
@@ -107,26 +109,26 @@ end
 function set_scheme(npc, ini, scheme, section, gulag_name)
 
 	local st                 = xr_logic.assign_storage_and_bind(npc, ini, scheme, section)
+
 	st.logic                 = xr_logic.cfg_get_switch_conditions(ini, section, npc)
-	local cfg_get_string     = utils.cfg_get_string
-	local path_walk          = cfg_get_string(ini, section, "path_walk", npc, true, gulag_name)
+
+	local get_string         = utils.cfg_get_string
+	local path_walk          = get_string(ini, section, "path_walk", npc, true, gulag_name)
+
 	st.path_walk             = path_walk
 
 	if not level.patrol_path_exists(path_walk) then
 		abort("[xr_walker.set_scheme]: There is no patrol path '%s'.", path_walk)
 	end
 
-	st.path_look             = cfg_get_string(ini, section, "path_look", npc, false, gulag_name)
-	st.team                  = cfg_get_string(ini, section, "team", npc, false, gulag_name)
-	st.sound_idle            = cfg_get_string(ini, section, "sound_idle", npc, false, "")
-
-	local suggested_state    = {}
-	st.suggested_state       = suggested_state
-	suggested_state.standing = cfg_get_string(ini, section, "def_state_standing", npc, false, "")
-
-	suggested_state.moving   = cfg_get_string(ini, section, "def_state_moving1", npc, false, "")
-	suggested_state.moving   = cfg_get_string(ini, section, "def_state_moving", npc, false, "", suggested_state.moving)
-
+	st.path_look             = get_string(ini, section, "path_look", nil, false, gulag_name)
+	st.team                  = get_string(ini, section, "team", nil, false, gulag_name)
+	st.sound_idle            = get_string(ini, section, "sound_idle", nil, false, "")
+	st.suggested_state       =
+	{
+		standing = get_string(ini, section, "def_state_standing", nil, false, ""),
+		moving = get_string(ini, section, "def_state_moving", nil, false, "") or get_string(ini, section, "def_state_moving1", nil, false, ""),
+	}
 	st.path_walk_info        = nil
 	st.path_look_info        = nil
 end

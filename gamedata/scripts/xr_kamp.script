@@ -14,11 +14,12 @@ class "evaluator_kamp_end" (property_evaluator)
 
 function evaluator_kamp_end:__init(storage) super ()
 	self.a = storage
+	self.npc_st = db.storage[storage.npc:id()]
 end
 
 function evaluator_kamp_end:evaluate()
 --	return not xr_logic.is_active(self.object, self.a)
-	return (self.a.section ~= db.storage[self.object:id()].active_section)
+	return self.a.section ~= self.npc_st.active_section
 end
 
 --------------------------------------------------------------------------------
@@ -749,7 +750,7 @@ function set_scheme(npc, ini, scheme, section, gulag_name)
 	st.logic            = xr_logic.cfg_get_switch_conditions(ini, section, npc)
 	local center_point  = utils.cfg_get_string(ini, section, "center_point", npc, true, gulag_name)
 	st.center_point     = center_point
-	st.radius           = utils.cfg_get_number(ini, section, "radius", npc, false, 2)
+	st.radius           = utils.cfg_get_number(ini, section, "radius", nil, false, 2)
 
 	if kamps[center_point] == nil then
 		kamps[center_point] = CKampManager(center_point)
@@ -757,5 +758,5 @@ function set_scheme(npc, ini, scheme, section, gulag_name)
 	kamps[center_point]:addNpc(npc)
 
 	st.pos_vertex       = nil
-	st.def_state_moving = utils.cfg_get_string(ini, section, "def_state_moving", npc, false, "", "walk")
+	st.def_state_moving = utils.cfg_get_string(ini, section, "def_state_moving", nil, false, "", "walk")
 end

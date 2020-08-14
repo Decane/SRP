@@ -12,10 +12,12 @@ class "evaluator_need_remark" (property_evaluator)
 
 function evaluator_need_remark:__init(storage) super()
 	self.st = storage
+	self.npc_st = db.storage[storage.npc:id()]
 end
 
 function evaluator_need_remark:evaluate()
-	return xr_logic.is_active(self.object, self.st)
+--	return xr_logic.is_active(self.object, self.st)
+	return self.st.section == self.npc_st.active_section
 end
 
 --------------------------------------------------------------------------------
@@ -45,9 +47,9 @@ function action_remark_activity:activate_scheme()
 --	self.anim_scheduled       = true
 
 	if self_st.snd_anim_sync == false and self_st.snd ~= nil then
-		self.snd_scheduled    = true
+		self.snd_scheduled = true
 	else
-		self.snd_scheduled    = false
+		self.snd_scheduled = false
 	end
 
 --	self.snd_started          = false
@@ -180,24 +182,29 @@ local wp_xr_evaluators_id_zmey_remark_base_1_false  = world_property(xr_evaluato
 
 function add_to_binder(npc, ini, scheme, section, storage)
 
-	local manager = npc:motivation_action_manager()
-	manager:add_evaluator(xr_evaluators_id_zmey_remark_base_1, this.evaluator_need_remark(storage))
+	local manager                = npc:motivation_action_manager()
 
-	local new_action = this.action_remark_activity(storage)
-	new_action:add_precondition(wp_stalker_ids_property_alive_true)
-	new_action:add_precondition(wp_stalker_ids_property_danger_false)
-	new_action:add_precondition(wp_stalker_ids_property_enemy_false)
-	new_action:add_precondition(wp_stalker_ids_property_anomaly_false)
-	new_action:add_precondition(wp_xr_evaluators_id_smartcover_action_3_false)
-	new_action:add_precondition(wp_xr_evaluators_id_zmey_remark_base_1_true)
+	manager:add_evaluator       (xr_evaluators_id_zmey_remark_base_1, this.evaluator_need_remark(storage))
+
+	local new_action             = this.action_remark_activity(storage)
+
+	new_action:add_precondition (wp_stalker_ids_property_alive_true)
+	new_action:add_precondition (wp_stalker_ids_property_danger_false)
+	new_action:add_precondition (wp_stalker_ids_property_enemy_false)
+	new_action:add_precondition (wp_stalker_ids_property_anomaly_false)
+	new_action:add_precondition (wp_xr_evaluators_id_smartcover_action_3_false)
+	new_action:add_precondition (wp_xr_evaluators_id_zmey_remark_base_1_true)
 
 	xr_motivator.addCommonPrecondition(new_action)
-	new_action:add_effect(wp_xr_evaluators_id_zmey_remark_base_1_false)
-	manager:add_action(xr_actions_id_zmey_remark_base_1, new_action)
+
+	new_action:add_effect       (wp_xr_evaluators_id_zmey_remark_base_1_false)
+	manager:add_action          (xr_actions_id_zmey_remark_base_1, new_action)
+
 	xr_logic.subscribe_action_for_events(npc, storage, new_action)
 
-	new_action = manager:action(xr_actions_id_alife)
-	new_action:add_precondition(wp_xr_evaluators_id_zmey_remark_base_1_false)
+	new_action                   = manager:action(xr_actions_id_alife)
+
+	new_action:add_precondition (wp_xr_evaluators_id_zmey_remark_base_1_false)
 end
 
 local function parse_target(target)
@@ -235,24 +242,26 @@ end
 
 function set_scheme(npc, ini, scheme, section) --, gulag_name)
 
-	local st = xr_logic.assign_storage_and_bind(npc, ini, scheme, section)
+	local get_string    = utils.cfg_get_string
+	local get_bool      = utils.cfg_get_bool
+	local st            = xr_logic.assign_storage_and_bind(npc, ini, scheme, section)
 
-	st.logic			= xr_logic.cfg_get_switch_conditions(ini, section, npc)
-	st.snd_anim_sync	= utils.cfg_get_bool(ini, section, "snd_anim_sync", npc, false)
-	st.snd				= utils.cfg_get_string(ini, section, "snd", npc, false, "", nil)
-	st.anim				= xr_logic.parse_condlist(nil, nil, nil, utils.cfg_get_string(ini, section, "anim", npc, false, "", "wait"))
-	st.tips_id			= utils.cfg_get_string(ini, section, "tips", npc, false, "")
+	st.logic            = xr_logic.cfg_get_switch_conditions(ini, section, npc)
+	st.snd_anim_sync    = get_bool(ini, section, "snd_anim_sync", nil, false)
+	st.snd              = get_string(ini, section, "snd", nil, false, "", nil)
+	st.anim             = xr_logic.parse_condlist(nil, nil, nil, get_string(ini, section, "anim", nil, false, "", "wait"))
+	st.tips_id          = get_string(ini, section, "tips", nil, false, "")
 
 	if st.tips_id then
-		st.sender		= utils.cfg_get_string(ini, section, "tips_sender", npc, false, "")
+		st.sender = get_string(ini, section, "tips_sender", nil, false, "")
 	end
 
-	st.anim_reset		= utils.cfg_get_bool(ini, section, "anim_reset", npc, false, true)
-	st.target			= utils.cfg_get_string(ini, section, "target", npc, false, "", "nil")
-	st.target_id		= nil
-	st.target_position	= nil
+	st.anim_reset       = get_bool(ini, section, "anim_reset", nil, false, true)
+	st.target           = get_string(ini, section, "target", nil, false, "", "nil")
+	st.target_id        = nil
+	st.target_position  = nil
 
-	if st.target and st.target ~= "nil" then
+	if st.target ~= "nil" then
 		if st.target == "actor" then
 			st.target_actor = true
 			st.target_init = true

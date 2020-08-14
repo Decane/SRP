@@ -33,9 +33,9 @@ stype_trader     = 5
 	-- stype_mobile:
 	------------------------------------------------------------
 
-	load_scheme("mob_remark",       "mob_remark")
+--	load_scheme("mob_remark",       "mob_remark")      -- unused
 	load_scheme("mob_walker",       "mob_walker")
-	load_scheme("mob_combat",       "mob_combat")
+--	load_scheme("mob_combat",       "mob_combat")      -- unused
 	load_scheme("mob_death",        "mob_death")
 	load_scheme("mob_jump",         "mob_jump")
 	load_scheme("mob_home",         "mob_home")

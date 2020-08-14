@@ -8,7 +8,6 @@
 	<info_portion id="mil_merc_talked_f1_f2_wt1"/>
 	<info_portion id="mil_merc_talked_f1_f2_wt1_ct1"/>
 	<info_portion id="mil_merc_talked_i_hate_freedom"/>
-	<info_portion id="mil_reach_merc_done"/>
 	<info_portion id="mil_bs_dead"/>
 	<info_portion id="mil_free_2_tower"/>
 	<info_portion id="mil_water_tower_radio"/>
@@ -42,7 +41,6 @@
 	<info_portion id="mil_additional_quest_4_spawn"/>
 	<info_portion id="mil_additional_quest_5_info_complete"/>
 	<info_portion id="mil_start_storyline_info"/>
-	<info_portion id="mil_destroy_military_finish"/>
 	<info_portion id="mil_actor_with_freedom_squad"/>
 	<info_portion id="mil_hog_death"/>
 	<info_portion id="mil_freedom_speaker_death"/>
@@ -56,6 +54,7 @@
 	<info_portion id="mil_village_sound_03"/>
 <!--
 	<info_portion id="mil_merc_talked_f1_wt1"/>
+	<info_portion id="mil_reach_merc_done"/>
 	<info_portion id="mil_transfer_coo"/>
 	<info_portion id="mil_merc_captured_lesnik4"/>
 	<info_portion id="mil_merc_captured_lesnik4_done"/>
@@ -71,6 +70,7 @@
 	<info_portion id="mil_sound_distant_growl_1"/>
 	<info_portion id="mil_minigunner_dead"/>
 	<info_portion id="mil_treasure_1_complete"/>
+	<info_portion id="mil_destroy_military_finish"/>
 -->
 
 </game_information_portions>

@@ -1,64 +1,47 @@
 -- DC170517: Optimization.
 
-local prop_patrol_end = xr_evaluators_id.sidor_patrol_base + 0
-local prop_patrol_comm = xr_evaluators_id.sidor_patrol_base + 1
-
-local op_action_patrol = xr_actions_id.sidor_act_patrol
-local op_action_commander = xr_actions_id.sidor_act_patrol + 1
-
-local wp_stalker_ids_property_alive_true = world_property(stalker_ids.property_alive, true)
-local wp_stalker_ids_property_danger_false = world_property(stalker_ids.property_danger, false)
-local wp_stalker_ids_property_enemy_false = world_property(stalker_ids.property_enemy, false)
-local wp_stalker_ids_property_anomaly_false = world_property(stalker_ids.property_anomaly, false)
-local wp_xr_evaluators_id_smartcover_action_false = world_property(xr_evaluators_id.smartcover_action + 3, false)
-
-local wp_prop_patrol_end_false = world_property(prop_patrol_end, false)
-local wp_prop_patrol_end_true = world_property(prop_patrol_end, true)
-local wp_prop_patrol_comm_true = world_property(prop_patrol_comm, true)
-local wp_prop_patrol_comm_false = world_property(prop_patrol_comm, false)
-
-local xr_actions_id_alife = xr_actions_id.alife
-
 local patrols = {}
-local formations = {}
 
-formations["line"] = {
+local formations =
+{
+	line =
+	{
+		{dir = vector():set(-1, 0, 0), dist = 2},
+		{dir = vector():set(-1, 0, 0), dist = 4},
+		{dir = vector():set(-1, 0, 0), dist = 6},
+		{dir = vector():set( 1, 0, 0), dist = 2},
+		{dir = vector():set( 1, 0, 0), dist = 4},
+		{dir = vector():set( 1, 0, 0), dist = 6},
+	},
 
-	{dir = vector():set(-1, 0, 0), dist = 2},
-	{dir = vector():set(-1, 0, 0), dist = 4},
-	{dir = vector():set(-1, 0, 0), dist = 6},
-	{dir = vector():set(1, 0, 0), dist = 2},
-	{dir = vector():set(1, 0, 0), dist = 4},
-	{dir = vector():set(1, 0, 0), dist = 6}
+	back =
+	{
+		{dir = vector():set( 0.3, 0, -1), dist = 1.2},
+		{dir = vector():set(-0.3, 0, -1), dist = 2.4},
+		{dir = vector():set( 0.3, 0, -1), dist = 3.6},
+		{dir = vector():set(-0.3, 0, -1), dist = 4.8},
+		{dir = vector():set( 0.3, 0, -1), dist = 6},
+		{dir = vector():set(-0.3, 0, -1), dist = 7.2},
+	},
+
+	around =
+	{
+		{dir = vector():set( 0.44721359, 0, -0.89442718), dist = 2.2360680},
+		{dir = vector():set(-0.44721359, 0, -0.89442718), dist = 2.2360680},
+		{dir = vector():set( 1,          0,  0         ), dist = 2},
+		{dir = vector():set(-1,          0,  0         ), dist = 2},
+		{dir = vector():set( 0.44721359, 0,  0.89442718), dist = 2.2360680},
+		{dir = vector():set(-0.44721359, 0,  0.89442718), dist = 2.2360680},
+	},
 }
 
-formations["back"] = {
-
-	{dir = vector():set(0.3, 0, -1), dist = 1.2},
-	{dir = vector():set(-0.3, 0, -1), dist = 2.4},
-	{dir = vector():set(0.3, 0, -1), dist = 3.6},
-	{dir = vector():set(-0.3, 0, -1), dist = 4.8},
-	{dir = vector():set(0.3, 0, -1), dist = 6},
-	{dir = vector():set(-0.3, 0, -1), dist = 7.2}
-}
-
-formations["around"] = {
-
-	{dir = vector():set(0.44721359, 0, -0.89442718), dist = 2.2360680},
-	{dir = vector():set(-0.44721359, 0, -0.89442718), dist = 2.2360680},
-	{dir = vector():set(1.0000000, 0, 0), dist = 2},
-	{dir = vector():set(-1, 0, 0), dist = 2},
-	{dir = vector():set(0.44721359, 0, 0.89442718), dist = 2.2360680},
-	{dir = vector():set(-0.44721359, 0, 0.89442718), dist = 2.2360680}
-}
-
-local accel_by_curtype = {
-
-	walk		=	"run",
-	patrol		=	"rush",
-	raid		=	"assault",
-	sneak		=	"sneak_run",
-	sneak_run	=	"assault"
+local accel_by_curtype =
+{
+	walk      = "run",
+	patrol    = "rush",
+	raid      = "assault",
+	sneak     = "sneak_run",
+	sneak_run = "assault",
 }
 
 class "PatrolManager"
@@ -297,10 +280,12 @@ class "evaluator_patrol_end" (property_evaluator)
 
 function evaluator_patrol_end:__init(storage) super ()
 	self.st = storage
+	self.npc_st = db.storage[storage.npc:id()]
 end
 
 function evaluator_patrol_end:evaluate()
-	return not xr_logic.is_active(self.object, self.st)
+--	return not xr_logic.is_active(self.object, self.st)
+	return self.st.section ~= self.npc_st.active_section
 end
 
 class "evaluator_patrol_comm" (property_evaluator)
@@ -515,99 +500,110 @@ end
 --' Patrol binder
 --'--------------------------------------------------------------------------------------------------------------------
 
+local prop_patrol_end                             = xr_evaluators_id.sidor_patrol_base
+local prop_patrol_comm                            = prop_patrol_end + 1
+
+local op_action_patrol                            = xr_actions_id.sidor_act_patrol
+local op_action_commander                         = op_action_patrol + 1
+
+local wp_stalker_ids_property_alive_true          = world_property(stalker_ids.property_alive, true)
+local wp_stalker_ids_property_danger_false        = world_property(stalker_ids.property_danger, false)
+local wp_stalker_ids_property_enemy_false         = world_property(stalker_ids.property_enemy, false)
+local wp_stalker_ids_property_anomaly_false       = world_property(stalker_ids.property_anomaly, false)
+local wp_xr_evaluators_id_smartcover_action_false = world_property(xr_evaluators_id.smartcover_action + 3, false)
+
+local wp_prop_patrol_end_false                    = world_property(prop_patrol_end, false)
+local wp_prop_patrol_end_true                     = world_property(prop_patrol_end, true)
+local wp_prop_patrol_comm_true                    = world_property(prop_patrol_comm, true)
+local wp_prop_patrol_comm_false                   = world_property(prop_patrol_comm, false)
+
+local xr_actions_id_alife                         = xr_actions_id.alife
+
 function add_to_binder(object, ini, scheme, section, storage)
 
-	local manager				= object:motivation_action_manager()
+	local manager               = object:motivation_action_manager()
 
 	-- Evaluators
 
-	manager:add_evaluator		(prop_patrol_end, this.evaluator_patrol_end(storage))
-	manager:add_evaluator		(prop_patrol_comm, this.evaluator_patrol_comm(storage))
+	manager:add_evaluator       (prop_patrol_end, this.evaluator_patrol_end(storage))
+	manager:add_evaluator       (prop_patrol_comm, this.evaluator_patrol_comm(storage))
 
 	-- Actions
 
-	local action				= this.action_commander(object, storage)
+	local action                = this.action_commander(object, storage)
 
-	action:add_precondition		(wp_stalker_ids_property_alive_true)
-	action:add_precondition		(wp_stalker_ids_property_danger_false)
-	action:add_precondition		(wp_stalker_ids_property_enemy_false)
-	action:add_precondition		(wp_stalker_ids_property_anomaly_false)
-	action:add_precondition		(wp_xr_evaluators_id_smartcover_action_false)
-
-	xr_motivator.addCommonPrecondition(action)
-
-	action:add_precondition		(wp_prop_patrol_end_false)
-	action:add_precondition		(wp_prop_patrol_comm_true)
-	action:add_effect			(wp_prop_patrol_end_true)
-	manager:add_action			(op_action_commander, action)
-
-	xr_logic.subscribe_action_for_events(object, storage, action)
-
-	action						= this.action_patrol(object, storage)
-
-	action:add_precondition		(wp_stalker_ids_property_alive_true)
-	action:add_precondition		(wp_stalker_ids_property_danger_false)
-	action:add_precondition		(wp_stalker_ids_property_enemy_false)
-	action:add_precondition		(wp_stalker_ids_property_anomaly_false)
-	action:add_precondition		(wp_xr_evaluators_id_smartcover_action_false)
+	action:add_precondition     (wp_stalker_ids_property_alive_true)
+	action:add_precondition     (wp_stalker_ids_property_danger_false)
+	action:add_precondition     (wp_stalker_ids_property_enemy_false)
+	action:add_precondition     (wp_stalker_ids_property_anomaly_false)
+	action:add_precondition     (wp_xr_evaluators_id_smartcover_action_false)
 
 	xr_motivator.addCommonPrecondition(action)
 
-	action:add_precondition		(wp_prop_patrol_end_false)
-	action:add_precondition		(wp_prop_patrol_comm_false)
-	action:add_effect			(wp_prop_patrol_end_true)
-	manager:add_action			(op_action_patrol, action)
+	action:add_precondition     (wp_prop_patrol_end_false)
+	action:add_precondition     (wp_prop_patrol_comm_true)
+	action:add_effect           (wp_prop_patrol_end_true)
+	manager:add_action          (op_action_commander, action)
 
 	xr_logic.subscribe_action_for_events(object, storage, action)
 
-	action						= manager:action(xr_actions_id_alife)
+	action                      = this.action_patrol(object, storage)
 
-	action:add_precondition		(wp_prop_patrol_end_true)
+	action:add_precondition     (wp_stalker_ids_property_alive_true)
+	action:add_precondition     (wp_stalker_ids_property_danger_false)
+	action:add_precondition     (wp_stalker_ids_property_enemy_false)
+	action:add_precondition     (wp_stalker_ids_property_anomaly_false)
+	action:add_precondition     (wp_xr_evaluators_id_smartcover_action_false)
+
+	xr_motivator.addCommonPrecondition(action)
+
+	action:add_precondition     (wp_prop_patrol_end_false)
+	action:add_precondition     (wp_prop_patrol_comm_false)
+	action:add_effect           (wp_prop_patrol_end_true)
+	manager:add_action          (op_action_patrol, action)
+
+	xr_logic.subscribe_action_for_events(object, storage, action)
+
+	action                      = manager:action(xr_actions_id_alife)
+
+	action:add_precondition     (wp_prop_patrol_end_true)
 end
 
 function set_scheme(npc, ini, scheme, section, gulag_name)
 
-	local cfg_get_string	= utils.cfg_get_string
-	local st				= xr_logic.assign_storage_and_bind(npc, ini, scheme, section)
-	st.logic				= xr_logic.cfg_get_switch_conditions(ini, section, npc)
-	local path_name			= cfg_get_string(ini, section, "path_walk", npc, true,	gulag_name)
-	st.path_name			= path_name
-	st.path_walk			= path_name
-	st.path_look			= cfg_get_string(ini, section, "path_look", npc, false, gulag_name)
-	st.formation			= cfg_get_string(ini, section, "formation", npc, false, "")
+	local get_string        = utils.cfg_get_string
+	local st                = xr_logic.assign_storage_and_bind(npc, ini, scheme, section)
 
-	if st.formation == nil then
-		st.formation		= "back"
-	end
+	st.logic                = xr_logic.cfg_get_switch_conditions(ini, section, npc)
 
-	st.move_type			= cfg_get_string(ini, section, "move_type", npc, false, "")
+	local path_name         = get_string(ini, section, "path_walk", npc, true, gulag_name)
 
-	if st.move_type == nil then
-		st.move_type		= "patrol"
-	end
+	st.path_name            = path_name
+	st.path_walk            = path_name
+	st.path_look            = get_string(ini, section, "path_look", nil, false, gulag_name)
+	st.formation            = get_string(ini, section, "formation", nil, false, "", "back")
+	st.move_type            = get_string(ini, section, "move_type", nil, false, "", "patrol")
+	st.suggested_state      =
+	{
+		standing = get_string(ini, section, "def_state_standing", nil, false, ""),
+		moving = get_string(ini, section, "def_state_moving", nil, false, "") or get_string(ini, section, "def_state_moving1", nil, false, ""),
+	}
+	st.path_walk_info       = nil
+	st.path_look_info       = nil
+	st.commander            = utils.cfg_get_bool(ini, section, "commander", nil, false, false)
 
-	local T					= {}
-	st.suggested_state		= T
-	T.standing				= cfg_get_string(ini, section, "def_state_standing", npc, false, "")
-	T.moving				= cfg_get_string(ini, section, "def_state_moving1", npc, false, "")
-	T.moving				= cfg_get_string(ini, section, "def_state_moving", npc, false, "", T.moving)
+	local patrol_key        = path_name
+	local squad             = db.storage[npc:id()].squad_obj
 
-	st.path_walk_info		= nil
-	st.path_look_info		= nil
-
-	st.commander			= utils.cfg_get_bool(ini, section, "commander", npc, false, false)
-	local patrol_key		= path_name
-
-	local squad				= db.storage[npc:id()].squad_obj
 	if squad ~= nil then
-		patrol_key			= patrol_key .. tostring(squad.squad_id)
+		patrol_key = patrol_key .. tostring(squad.squad_id)
 	end
 
 	if patrols[patrol_key] == nil then
-		patrols[patrol_key]	= PatrolManager(path_name)
+		patrols[patrol_key] = PatrolManager(path_name)
 	end
 
 	patrols[patrol_key]:add_npc(npc, st.commander)
 
-	st.patrol_key			= patrol_key
+	st.patrol_key           = patrol_key
 end

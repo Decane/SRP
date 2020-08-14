@@ -682,7 +682,7 @@
 		<text>Pipe at the station</text>
 	</string>
 	<string id="st_mar_nichka_0004_descr">
-		<text>I hid something in the bellmouth of a pipe next to a valve, in the old pump station in the middle of the Swamps.</text>
+		<text>I hid something in the bellmouth of a pipe next to a valve, in the old pump station in the middle of a swamp.</text>
 	</string>
 	<string id="st_mar_nichka_0005">
 		<text>Pipe in the swamp</text>
@@ -808,7 +808,7 @@
 		<text>Electrical control unit at the vehicle station</text>
 	</string>
 	<string id="st_mar_nichka_0025_descr">
-		<text>When I joined Grey’s gang, I put away some trinkets in the electrical control unit at the station. Who knows, they might be of use some day.</text>
+		<text>When I joined Grey’s gang, I put away some trinkets in the electrical control unit at the station. Who knows, they might come in useful some day.</text>
 	</string>
 	<string id="st_mar_nichka_0026">
 		<text>Backpack on the trail</text>
@@ -1030,10 +1030,10 @@
 		<text>Cracked tree log</text>
 	</string>
 	<string id="st_mil_trees_log_01_0000">
-		<text>Stash in the peasant’s sled</text>
+		<text>Stash in the peasant’s shed</text>
 	</string>
 	<string id="st_mil_trees_log_01_0000_descr">
-		<text>Stash in huge log next to peasant’s sled.</text>
+		<text>Stash in huge log next to peasant’s shed.</text>
 	</string>
 	<string id="st_mil_trees_log_01_0001">
 		<text>Log under the boulders</text>
@@ -1486,7 +1486,7 @@
 		<text>Under the cistern</text>
 	</string>
 	<string id="st_val_q1_n_descr">
-		<text>My loot - correction, your loot - is inside the backpack under the cistern.</text>
+		<text>My loot — correction, your loot — is inside the backpack under the cistern.</text>
 	</string>
 	<string id="st_val_q2_n">
 		<text>Shrubs near the fir tree</text>
@@ -1576,7 +1576,7 @@
 		<text>Switchboard</text>
 	</string>
 	<string id="st_agr_q6_n_descr">
-		<text>My stash - uhh, sorry, your stash - is inside the switchboard in Duty’s base.</text>
+		<text>My stash — uhh, sorry, your stash — is inside the switchboard in Duty’s base.</text>
 	</string>
 	<string id="st_agr_q7_n">
 		<text>Tree log near the tree</text>

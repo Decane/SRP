@@ -205,8 +205,13 @@ function bloodsucker_attack:update(delta)
 		self.panic_snd:stop()
 		bind_stalker.del_to_delayed_release(self.bloodsucker.id)
 		local sim = _G.sim
+		local se_npc = sim:object(self.target_obj_id)
 		sim:release(self.bloodsucker, true)
-		sim:release(sim:object(self.target_obj_id), true)
+		if se_npc.squad_id == nil then
+			sim:release(se_npc, true)
+		else
+			sim_board.get_sim_board().squads[se_npc.squad_id]:remove_npc(se_npc.id)
+		end
 --		bind_stalker.add_to_delayed_release(self.target_obj_id)
 		self.target_obj_id = nil
 --		self:reset_restrictions()

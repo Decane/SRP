@@ -1,6 +1,7 @@
 -- DC170507: Optimization.
 
 local state_lib_states = state_lib.states
+local props = state_mgr_goap.props
 local anim_danger = anim.danger
 local look_direction = look.direction
 local look_path_dir = look.path_dir
@@ -14,7 +15,7 @@ local look_direction_states =
 	guard_na  = true
 }
 
-local function look_object_type(npc, st)
+local function look_object_type(st)
 	local target_state = st.target_state
 	if look_direction_states[target_state] == true then
 		return true
@@ -23,7 +24,7 @@ local function look_object_type(npc, st)
 end
 
 local function look_at_object(npc, st)
-	st.point_obj_dir = look_object_type(npc, st)
+	st.point_obj_dir = look_object_type(st)
 	if st.point_obj_dir == true then
 		npc:set_sight(level.object_by_id(st.look_object), true, false, true)
 	else
@@ -37,6 +38,7 @@ class "eva_state_mgr_direction" (property_evaluator)
 
 function eva_state_mgr_direction:__init(st) super ()
 	self.st = st
+	self.movement_stand_eval = st.planner:evaluator(props.movement_stand) -- for look_position_type()
 end
 
 function eva_state_mgr_direction:evaluate()
@@ -46,7 +48,9 @@ function eva_state_mgr_direction:evaluate()
 	local self_st = self.st
 
 	if self_st.look_object ~= nil then
-		if sight_type.m_object == nil or sight_type.m_object:id() ~= self_st.look_object or self_st.point_obj_dir ~= look_object_type(npc, self_st) then
+		if sight_type.m_object == nil
+		or sight_type.m_object:id() ~= self_st.look_object
+		or self_st.point_obj_dir ~= look_object_type(self_st) then
 			return false
 		end
 		self:callback()
@@ -54,11 +58,11 @@ function eva_state_mgr_direction:evaluate()
 	end
 
 	if self_st.look_position ~= nil then
-		if sight_type.m_sight_type ~= look_position_type(npc, self_st) then
+		if sight_type.m_sight_type ~= look_position_type(self, self_st) then
 			return false
 		end
 		local dir = vector():sub(self_st.look_position, npc:position())
-		if look_object_type(npc, self_st) == true then
+		if look_object_type(self_st) == true then
 			dir.y = 0
 		end
 		if utils.vector_cmp_prec(sight_type.m_vector, dir, 0.01) ~= true then
@@ -72,7 +76,7 @@ function eva_state_mgr_direction:evaluate()
 		return false
 	end
 
-	if sight_type.m_sight_type ~= look_position_type(npc, self_st) then
+	if sight_type.m_sight_type ~= look_position_type(self, self_st) then
 		return false
 	end
 
@@ -148,7 +152,7 @@ end
 
 function act_state_mgr_direction_turn:turn(st)
 	local npc = self.object
-	st.point_obj_dir = look_object_type(npc, st)
+	st.point_obj_dir = look_object_type(st)
 	local look_object = st.look_object
 	if look_object ~= nil and level.object_by_id(look_object) ~= nil then
 		look_at_object(npc, st)
@@ -170,12 +174,12 @@ class "act_state_mgr_direction_search" (action_base)
 
 function act_state_mgr_direction_search:__init(st) super ()
 	self.st = st
+	self.movement_stand_eval = st.planner:evaluator(props.movement_stand) -- for look_position_type()
 end
 
 function act_state_mgr_direction_search:initialize()
 	action_base.initialize(self)
-	local npc = self.object
-	npc:set_sight(look_position_type(npc, self.st), nil, 0)
+	self.object:set_sight(look_position_type(self, self.st), nil, 0)
 end
 
 function act_state_mgr_direction_search:execute()
@@ -188,7 +192,7 @@ end
 
 --------------------------------------------------------------------------------
 
-function look_position_type(npc, st)
+function look_position_type(class_instance, st)
 
 	if st == nil then
 		return look_path_dir
@@ -196,23 +200,17 @@ function look_position_type(npc, st)
 
 	if st.look_position ~= nil then
 		return look_direction
-	else
-		if not st.planner:evaluator(st.properties["movement_stand"]):evaluate() then
-			return look_path_dir
-		end
 	end
 
-	local target_state = st.target_state
-
-	if state_lib_states[target_state].direction then
-		return state_lib_states[target_state].direction
+	if not class_instance.movement_stand_eval:evaluate() then
+		return look_path_dir
 	end
 
-	return look_danger
+	return state_lib_states[st.target_state].direction or look_danger
 end
 
 function turn(npc, st)
-	st.point_obj_dir = look_object_type(npc, st)
+	st.point_obj_dir = look_object_type(st)
 	local look_object = st.look_object
 	if look_object ~= nil and level.object_by_id(look_object) ~= nil then
 		look_at_object(npc, st)

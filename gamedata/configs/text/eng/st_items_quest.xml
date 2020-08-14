@@ -121,7 +121,7 @@
 		<text>This PDA contains technical documentation which may help scientists figure out what caused such a powerful psy-field to appear at Yantar.</text>
 	</string>
 	<string id="device_pda_digger_name">
-		<text>Lost party’s PDA.</text>
+		<text>Lost party’s PDA</text>
 	</string>
 	<string id="device_pda_garbage_traitor">
 		<text>Smuggler’s PDA</text>
@@ -190,7 +190,7 @@
 		<text>PDA with drawings only a genius can understand.</text>
 	</string>
 	<string id="st_device_pda_bloodsucker_name">
-		<text>Uncle Yar’s buddy’s PDA.</text>
+		<text>Uncle Yar’s buddy’s PDA</text>
 	</string>
 	<string id="st_device_pda_comendant_desc">
 		<text>Commandant Lingov’s personal PDA. Contains information about collaboration with mercenaries, among other things.</text>
@@ -265,7 +265,7 @@
 		<text>The medkit is marked with the words “NPR-21p antiradiation kit (test model)”. The directions contain a huge list of rather unpleasant side-effects.</text>
 	</string>
 	<string id="st_gar_quest_novice_outfit">
-		<text>A durable leather jacket</text>
+		<text>Durable leather jacket</text>
 	</string>
 	<string id="st_gar_quest_novice_outfit_descr">
 		<text>It looks like the previous owner of this jacket was torn to shreds by an anomaly, but, oddly, the jacket hasn’t got a scratch on it.</text>
@@ -286,16 +286,16 @@
 		<text>Inscribed pistol</text>
 	</string>
 	<string id="st_gar_quest_wpn_pm_descr">
-		<text>There is an inscription on the handle of this pistol. What can be made out of it reads “For s..vice be..nd the ca.. of ..ty”</text>
+		<text>There is an inscription on the handle of this pistol. What can be made out of it reads “For s..vice be..nd the ca.. of ..ty”.</text>
 	</string>
 	<string id="st_gar_quest_wpn_wincheaster1300">
-		<text>A bandit Chaser 13</text>
+		<text>Bandit Chaser 13</text>
 	</string>
 	<string id="st_gar_quest_wpn_wincheaster1300_descr">
 		<text>A few doodles on the shotgun barrel appear to depict stalkers killed with the weapon.</text>
 	</string>
 	<string id="st_red_forest_pda_map_2">
-		<text>A PDA with a map of the Red Forest</text>
+		<text>PDA with a map of the Red Forest</text>
 	</string>
 	<string id="st_red_forest_pda_map_2_descr">
 		<text>This PDA contains a map of the Red Forest with marks on it. The marks indicate areas with high levels of radiation. The last record was made at 23:15 and reads “We should have stayed the night at the bridge, we won’t make it out of this forest at night”.</text>
@@ -337,7 +337,7 @@
 		<text>A training grenade. There is a chain and a keyring in the shape of a white rabbit attached to the pin.</text>
 	</string>
 	<string id="st_yan_quest_scarlet_flower">
-		<text>The Scarlet Flower</text>
+		<text>“Scarlet Flower”</text>
 	</string>
 	<string id="st_yan_quest_scarlet_flower_descr">
 		<text>A mysterious artifact of unknown origin. Produces virtually no emissions: its only confirmed effect is to woo women.</text>

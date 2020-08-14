@@ -1,7 +1,6 @@
 -- DC170529: Corrected the defaulting in cfg_get_string() - a non-nil default value was not returned if r_string() was reached and returned nil. Also, optimizations.
 
 local math_abs = math.abs
-
 local string_find = string.find
 local string_gfind = string.gfind
 local string_sub = string.sub
@@ -44,13 +43,8 @@ end
 
 function cfg_get_bool(ini, section, field, object, is_mandatory, default)
 
-	-- Tolerate nil as falsey by commenting this out:
---	if is_mandatory == nil then
---		abort("[utils.cfg_get_bool]: Object '%s': Nil value supplied for parameter 'is_mandatory', boolean expected.", object and object:name() or "nil")
---	end
-
-	if section and ini:section_exist(section) and ini:line_exist(section, field) then
-		return ini:r_bool(section, field) -- field values "1" and "true" (in any case) evaluate to true; other numbers evaluate to false, as do "nil" and "test"
+	if section and ini:line_exist(section, field) then
+		return ini:r_bool(section, field) -- "1" and "true" (in any case) evaluate to true; other numbers evaluate to false, as do "nil" and "test"
 	end
 
 	if not is_mandatory then
@@ -68,20 +62,9 @@ function cfg_get_bool(ini, section, field, object, is_mandatory, default)
 end
 
 function cfg_get_string(ini, section, field, object, is_mandatory, gulag_name, default)
---[[
-	-- Tolerate nil as falsey by commenting this out:
-	if is_mandatory == nil or gulag_name == nil then
-		abort("[utils.cfg_get_string]: Object '%s': Nil value supplied for at least one of parameters 'is_mandatory' and 'gulag_name', boolean expected.", object and object:name() or "nil")
-	end
 
-	if section and ini:section_exist(section) and ini:line_exist(section, field) then
-		if gulag_name == "" or not gulag_name then
-			return ini:r_string(section, field) -- nil if field is empty (that is, no value supplied for it)
-		end
-		return gulag_name .. "_" .. ini:r_string(section, field)
-	end
-]]
-	local str = section and ini:section_exist(section) and ini:line_exist(section, field) and ini:r_string(section, field) -- false or nil or a string
+	local str = section and ini:line_exist(section, field) and ini:r_string(section, field) -- false or nil or a string
+
 	if str then
 		if gulag_name == "" or not gulag_name then
 			return str
@@ -98,12 +81,7 @@ end
 
 function cfg_get_number(ini, section, field, object, is_mandatory, default)
 
-	-- Tolerate nil as falsey by commenting this out:
---	if is_mandatory == nil then
---		abort("[utils.cfg_get_number]: Object '%s': Nil value supplied for parameter 'is_mandatory', boolean expected.", object and object:name() or "nil")
---	end
-
-	if section and ini:section_exist(section) and ini:line_exist(section, field) then
+	if section and ini:line_exist(section, field) then
 		return ini:r_float(section, field) -- "nil" and "a1" evaluate to 0; "2a" and "2" evaluate to 2
 	end
 
@@ -185,10 +163,9 @@ function path_parse_waypoints(pathname)
 	end
 
 	local ptr = patrol(pathname)
-	local cnt = ptr:count()
 	local rslt = {}
 
-	for pt = 0, cnt - 1 do
+	for pt = 0, ptr:count() - 1 do
 		rslt[pt] = parse_waypoint_data(pathname, ptr:flags(pt), ptr:name(pt))
 --		if not rslt[pt] then -- this test always fails; parse_waypoint_data() always returns a table
 --			abort("[utils.path_parse_waypoints]: error while parsing point %d of path '%s'", pt, pathname)
@@ -200,29 +177,25 @@ end
 
 function path_parse_waypoints_from_arglist(pathname, num_points, ...)
 
-	local arg = {...}
-
 	if not pathname then
 		return nil
 	end
 
-	local ptr = patrol(pathname)
-	local cnt = ptr:count()
+	local cnt = patrol(pathname):count()
 
 	if cnt ~= num_points then
 		abort("[utils.path_parse_waypoints_from_arglist]: path '%s' has %d points, but %d points were expected", pathname, cnt, num_points)
 	end
 
+	local arg = {...}
 	local rslt = {}
 
-	local cur_arg
-	local fl
-	for pt = 0, cnt-1 do
-		cur_arg = arg[pt + 1]
+	for pt = 0, cnt - 1 do
+		local cur_arg = arg[pt + 1]
 		if not cur_arg then
 			abort("[utils.path_parse_waypoints_from_arglist]: script error [1] while processing point %d of path '%s'", pt, pathname)
 		end
-		fl = flags32()
+		local fl = flags32()
 		fl:assign(cur_arg[1])
 		rslt[pt] = parse_waypoint_data(pathname, fl, cur_arg[2])
 --		if not rslt[pt] then -- this test always fails; parse_waypoint_data() always returns a table
@@ -232,16 +205,7 @@ function path_parse_waypoints_from_arglist(pathname, num_points, ...)
 
 	return rslt
 end
---[[
-function get_scheme_by_section(section) -- now inlined wherever previously called
-	local scheme = string.gsub(section, "%d", "")
-	local at = string_find(scheme, "@", 1, true)
-	if at then
-		scheme = string_sub(scheme, 1, at - 1)
-	end
-	return scheme
-end
-]]
+
 function parse_params(params)
 	local rslt = {}
 	local n = 1

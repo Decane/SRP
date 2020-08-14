@@ -1,22 +1,18 @@
 -- nv170324, nv170508: Fixed the use_object callback for doors and buttons being reset on scheme switch.
 -- DC170518, DC180328: Optimization.
 
-local sim = _G.sim
-local empty_table = {}
-
-local function get_string(ini, section, field, default)
-	if section and ini:section_exist(section) and ini:line_exist(section, field) then
-		return ini:r_string(section, field) or default -- string if field has a value, else default
-	end
-	return default
-end
+local get_string = utils.cfg_get_string
 
 local function get_string_field(ini, section, field, default)
 	if ini:line_exist(section, field) then
-		return ini:r_string(section, field) or default -- ditto
+		return ini:r_string(section, field) or default
 	end
 	return default
 end
+
+local sim              = _G.sim
+local db_storage       = db.storage
+local empty_table      = setmetatable({}, {__newindex = function() abort("Attempted to modify a read-only table") end})
 
 local string_find      = string.find
 local string_gfind     = string.gfind
@@ -36,23 +32,23 @@ local function disable_generic_schemes(npc, stype)
 	if stype == stype_stalker then
 
 		xr_combat.disable_scheme(npc, "combat")
-		xr_hit.disable_scheme(npc, "hit")
+--		xr_hit.disable_scheme(npc, "hit")
 		xr_combat_ignore.disable_scheme(npc, "combat_ignore")
-		npc:invulnerable(false) -- stalker_generic.disable_invulnerability(npc)
+--		npc:invulnerable(false) -- stalker_generic.disable_invulnerability(npc) -- pointless; set correctly in enable_generic_schemes() anyway
 
 	elseif stype == stype_mobile then
 
-		mob_combat.disable_scheme(npc, "mob_combat")
+--		mob_combat.disable_scheme(npc, "mob_combat") -- mob_combat not used
 		xr_combat_ignore.disable_scheme(npc, "combat_ignore")
-		npc:invulnerable(false) -- stalker_generic.disable_invulnerability(npc)
+--		npc:invulnerable(false) -- stalker_generic.disable_invulnerability(npc) -- pointless; set correctly in enable_generic_schemes() anyway
 
-	elseif stype == stype_item then
+--	elseif stype == stype_item then
 
-		ph_on_hit.disable_scheme(npc, "ph_on_hit")
+--		ph_on_hit.disable_scheme(npc, "ph_on_hit")
 
-	elseif stype == stype_heli then
+--	elseif stype == stype_heli then
 
-		xr_hit.disable_scheme(npc, "hit")
+--		xr_hit.disable_scheme(npc, "hit")
 	end
 end
 
@@ -62,63 +58,77 @@ local function enable_generic_schemes(ini, npc, stype, section)
 
 		if stype == stype_stalker then
 
-			xr_danger.set_danger(npc, ini, "danger", "danger")
-			xr_combat.set_combat_checker(npc, ini, "combat", nil)
-			stalker_generic.reset_invulnerability(npc, ini, section)
-			xr_wounded.set_wounded(npc, ini, "wounded", nil)
-			xr_abuse.set_abuse(npc, ini, "abuse", section)
-			xr_meet.set_meet(npc, ini, "meet", nil)
-			xr_death.set_death(npc, ini, "death", nil)
-			xr_combat_ignore.set_combat_ignore_checker(npc, ini, "combat_ignore")
+			assign_storage_and_bind(npc, ini, "danger") -- xr_danger.set_danger(npc, ini, "danger", "danger")
+			xr_combat.set_combat_checker(npc, ini, "combat")
+--			stalker_generic.reset_invulnerability(npc, ini, section) -- reset_generic_schemes_on_scheme_switch() will do this
+			assign_storage_and_bind(npc, ini, "wounded") -- xr_wounded.set_wounded(npc, ini, "wounded")
+			assign_storage_and_bind(npc, ini, "abuse") -- xr_abuse.set_abuse(npc, ini, "abuse", section)
+			assign_storage_and_bind(npc, ini, "meet") -- xr_meet.set_meet(npc, ini, "meet")
+--			assign_storage_and_bind(npc, ini, "death") -- xr_death.set_death(npc, ini, "death") -- pointless if no [logic]
+			assign_storage_and_bind(npc, ini, "combat_ignore") -- xr_combat_ignore.set_combat_ignore_checker(npc, ini, "combat_ignore")
 
 		elseif stype == stype_mobile then
 
-			mob_death.set_scheme(npc, ini, "mob_death", nil)
-			stalker_generic.reset_invulnerability(npc, ini, section)
-			xr_combat_ignore.set_combat_ignore_checker(npc, ini, "combat_ignore")
+--			stalker_generic.reset_invulnerability(npc, ini, section) -- reset_generic_schemes_on_scheme_switch() will do this
+--			assign_storage_and_bind(npc, ini, "mob_death") -- mob_death.set_scheme(npc, ini, "mob_death") -- pointless if no [logic]
+			assign_storage_and_bind(npc, ini, "combat_ignore") -- xr_combat_ignore.set_combat_ignore_checker(npc, ini, "combat_ignore")
 		end
 	else
 		if stype == stype_stalker then
 
-			xr_danger.set_danger(npc, ini, "danger", "danger")
+			assign_storage_and_bind(npc, ini, "danger") -- xr_danger.set_danger(npc, ini, "danger", "danger")
 			xr_combat.set_combat_checker(npc, ini, "combat", get_string_field(ini, section, "on_combat"))
-			stalker_generic.reset_invulnerability(npc, ini, section)
-			local section_string = get_string_field(ini, section, "on_hit")
-			if section_string then
-				xr_hit.set_hit_checker(npc, ini, "hit", section_string)
+--			stalker_generic.reset_invulnerability(npc, ini, section) -- reset_generic_schemes_on_scheme_switch() will do this
+
+			local hit_section = get_string_field(ini, section, "on_hit")
+			if hit_section then
+				assign_storage_and_bind(npc, ini, "hit", hit_section) -- xr_hit.set_hit_checker(npc, ini, "hit", hit_section)
 			end
-			xr_wounded.set_wounded(npc, ini, "wounded", get_string_field(ini, section, "wounded"))
-			xr_abuse.set_abuse(npc, ini, "abuse", section)
-			xr_meet.set_meet(npc, ini, "meet", get_string_field(ini, section, "meet"))
-			xr_death.set_death(npc, ini, "death", get_string_field(ini, section, "on_death"))
-			xr_combat_ignore.set_combat_ignore_checker(npc, ini, "combat_ignore")
+
+			assign_storage_and_bind(npc, ini, "wounded") -- xr_wounded.set_wounded(npc, ini, "wounded", get_string_field(ini, section, "wounded"))
+			assign_storage_and_bind(npc, ini, "abuse") -- xr_abuse.set_abuse(npc, ini, "abuse", section)
+			assign_storage_and_bind(npc, ini, "meet") -- xr_meet.set_meet(npc, ini, "meet", get_string_field(ini, section, "meet"))
+
+			local death_section = get_string_field(ini, section, "on_death")
+			if death_section then
+				assign_storage_and_bind(npc, ini, "death", death_section) -- xr_death.set_death(npc, ini, "death", death_section)
+			end
+
+			assign_storage_and_bind(npc, ini, "combat_ignore") -- xr_combat_ignore.set_combat_ignore_checker(npc, ini, "combat_ignore")
 
 		elseif stype == stype_mobile then
+--[[
+			local combat_section = get_string_field(ini, section, "on_combat")
+			if combat_section then
+				mob_combat.set_scheme(npc, ini, "mob_combat", combat_section) -- mob_combat not used
+			end
 
-			local section_string = get_string_field(ini, section, "on_combat")
-			if section_string then
-				mob_combat.set_scheme(npc, ini, "mob_combat", section_string)
+			stalker_generic.reset_invulnerability(npc, ini, section) -- reset_generic_schemes_on_scheme_switch() will do this
+]]
+			local death_section = get_string_field(ini, section, "on_death")
+			if death_section then
+				assign_storage_and_bind(npc, ini, "mob_death", death_section) -- mob_death.set_scheme(npc, ini, "mob_death", death_section)
 			end
-			mob_death.set_scheme(npc, ini, "mob_death", get_string_field(ini, section, "on_death"))
-			stalker_generic.reset_invulnerability(npc, ini, section)
-			section_string = get_string_field(ini, section, "on_hit")
-			if section_string then
-				xr_hit.set_hit_checker(npc, ini, "hit", section_string)
+
+			local hit_section = get_string_field(ini, section, "on_hit")
+			if hit_section then
+				assign_storage_and_bind(npc, ini, "hit", hit_section) -- xr_hit.set_hit_checker(npc, ini, "hit", hit_section)
 			end
-			xr_combat_ignore.set_combat_ignore_checker(npc, ini, "combat_ignore")
+
+			assign_storage_and_bind(npc, ini, "combat_ignore") -- xr_combat_ignore.set_combat_ignore_checker(npc, ini, "combat_ignore")
 
 		elseif stype == stype_item then
 
 			local hit_section = get_string_field(ini, section, "on_hit")
 			if hit_section then
-				ph_on_hit.set_scheme(npc, ini, "ph_on_hit", hit_section)
+				assign_storage_and_bind(npc, ini, "ph_on_hit", hit_section) -- ph_on_hit.set_scheme(npc, ini, "ph_on_hit", hit_section)
 			end
 
 		elseif stype == stype_heli then
 
 			local hit_section = get_string_field(ini, section, "on_hit")
 			if hit_section then
-				xr_hit.set_hit_checker(npc, ini, "hit", hit_section)
+				assign_storage_and_bind(npc, ini, "hit", hit_section) -- xr_hit.set_hit_checker(npc, ini, "hit", hit_section)
 			end
 		end
 	end
@@ -130,13 +140,9 @@ function issue_event(npc, st, event_func, ...) -- TODO: 'npc' not used
 		return
 	end
 
---	local activation_count = 0
---	local action, is_active = 0, 0
-
 	for action in pairs (st.actions) do
 		if action[event_func] then
 			action[event_func](action, ...)
---			activation_count = activation_count + 1
 		end
 	end
 end
@@ -146,24 +152,16 @@ local issue_event = issue_event
 function configure_schemes(npc, ini, ini_filename, stype, section_logic, gulag_name) -- section_logic is a logic section name, e.g. 'logic' or 'logic@work1'
 
 	local npc_id = npc:id()
-	local npc_st = db.storage[npc_id]
-
-	if npc_st.active_section then
-		issue_event(nil, npc_st[npc_st.active_scheme], "deactivate", npc)
-	end
-
-	local actual_ini_filename = ini_filename
-	local actual_ini = ini
+	local npc_st = db_storage[npc_id]
 
 	if ini:section_exist(section_logic) then
-		local filename = get_string_field(ini, section_logic, "cfg", nil)
+		local filename = section_logic == "logic" and get_string_field(ini, "logic", "cfg")
 		if filename then
-			actual_ini_filename = filename
-			actual_ini = ini_file(filename)
-			if not actual_ini:section_exist(section_logic) then
-				abort("[xr_logic.configure_schemes]: Configuration file '%s' was not found or section [logic] is not defined therein for NPC '%s'.", tostring(filename), npc:name())
+			local actual_ini = ini_file(filename)
+			if not actual_ini:section_exist("logic") then
+				abort("[xr_logic.configure_schemes]: Configuration file '%s' was not found or section [logic] is not defined therein for NPC '%s'.", filename, npc:name())
 			end
-			return configure_schemes(npc, actual_ini, actual_ini_filename, stype, section_logic, gulag_name)
+			return configure_schemes(npc, actual_ini, filename, stype, "logic", gulag_name)
 		else
 			if stype == stype_stalker or stype == stype_mobile then
 				local current_smart = xr_gulag.get_npc_smart(npc)
@@ -179,11 +177,15 @@ function configure_schemes(npc, ini, ini_filename, stype, section_logic, gulag_n
 		end
 	end
 
+	if npc_st.active_section then -- moved down to prevent duplicate execution if func recurses
+		issue_event(nil, npc_st[npc_st.active_scheme], "deactivate", npc)
+	end
+
 	disable_generic_schemes(npc, stype)
-	enable_generic_schemes(actual_ini, npc, stype, section_logic)
+	enable_generic_schemes(ini, npc, stype, section_logic)
 
 	if stype == stype_stalker or stype == stype_trader then -- npc:clsid() == clsid.script_trader
-		local trade_ini = get_string(actual_ini, section_logic, "trade", "misc\\trade_generic.ltx")
+		local trade_ini = get_string(ini, section_logic, "trade", nil, false, "", "misc\\trade_generic.ltx")
 		trade_manager.trade_init(npc, trade_ini)
 	end
 
@@ -192,11 +194,11 @@ function configure_schemes(npc, ini, ini_filename, stype, section_logic, gulag_n
 	npc_st.gulag_name = gulag_name
 
 	npc_st.stype = stype
-	npc_st.ini = actual_ini
-	npc_st.ini_filename = actual_ini_filename
+	npc_st.ini = ini
+	npc_st.ini_filename = ini_filename
 	npc_st.section_logic = section_logic
 
-	return actual_ini -- npc_st.ini
+	return ini -- npc_st.ini
 end
 
 function mob_release(mob)
@@ -209,8 +211,6 @@ local mob_release = mob_release
 
 local function reset_generic_schemes_on_scheme_switch(npc, scheme, section, npc_st)
 
---	local npc_st = db.storage[npc:id()]
-
 	npc_st.exit_from_smartcover_initialized = nil
 
 	local stype = npc_st.stype
@@ -221,20 +221,17 @@ local function reset_generic_schemes_on_scheme_switch(npc, scheme, section, npc_
 
 	if stype == stype_stalker then
 
-		-- xr_reactions.reset_reactions(npc, scheme, npc_st, section)
 		xr_meet.dialog_manager_reset(npc, stype)
 		xr_meet.reset_meet(npc, scheme, npc_st, section)
 		xr_abuse.reset_abuse(npc, scheme, npc_st, section)
 		xr_wounded.reset_wounded(npc, scheme, npc_st, section)
-		xr_death.reset_death(npc, npc_st)
+--		xr_death.reset_death(npc, npc_st) -- no need to run this on every section switch
 		xr_danger.reset_danger(npc, scheme, npc_st, section)
 		xr_combat_ignore.reset_combat_ignore_checker(npc, scheme, npc_st) --, section)
 		stalker_generic.reset_threshold(npc, scheme, npc_st, section)
 		stalker_generic.reset_show_spot(npc, scheme, npc_st, section)
-		-- stalker_generic.set_level_spot(npc, scheme, npc_st, section)
-		local st_ini = npc_st.ini
-		stalker_generic.reset_invulnerability(npc, st_ini, section)
-		stalker_generic.reset_group(npc, st_ini, section)
+		stalker_generic.reset_invulnerability(npc, npc_st.ini, section)
+		stalker_generic.reset_group(npc, npc_st.ini, section)
 		stalker_generic.take_items_enabled(npc, scheme, npc_st, section)
 		restrictor_manager.get_restrictor_manager(npc):reset_restrictions(npc_st, section)
 
@@ -242,7 +239,7 @@ local function reset_generic_schemes_on_scheme_switch(npc, scheme, section, npc_
 
 		xr_meet.dialog_manager_reset(npc, stype)
 		mob_release(npc)
-		if get_clsid(npc) == clsid.bloodsucker_s then
+		if npc:clsid() == clsid.bloodsucker_s then
 			npc:set_manual_invisibility(scheme ~= "nil")
 		end
 		xr_combat_ignore.reset_combat_ignore_checker(npc, scheme, npc_st) --, section)
@@ -261,7 +258,7 @@ local function reset_generic_schemes_on_scheme_switch(npc, scheme, section, npc_
 			npc:set_callback(callback.use_object, nil)
 		end
 		npc:set_nonscript_usable(true)
-		if get_clsid(npc) == clsid.car then
+		if npc:clsid() == clsid.car then
 			npc:destroy_car()
 			mob_release(npc)
 		end
@@ -384,31 +381,36 @@ local function cfg_get_overrides(ini, section, npc_st)
 
 	local l = {}
 
---	if section and ini:section_exist(section) then -- already verified in activate_by_section()
-		local tmp							= get_string_field(ini, section, "heli_hunter", nil)
-		if tmp then
-			l.heli_hunter					= parse_condlist(nil, nil, nil, tmp) -- (npc, section, "heli_hunter", tmp)
-		end
-		l.combat_ignore_keep_when_attacked	= ini:line_exist(section, "combat_ignore_keep_when_attacked") and ini:r_bool(section, "combat_ignore_keep_when_attacked") or false
-		tmp									= get_string_field(ini, section, "combat_ignore_cond", nil)
-		if tmp then
-			l.combat_ignore					= {name = "combat_ignore_cond", condlist = parse_condlist(nil, nil, nil, tmp)}
-		end
-		tmp									= get_string_field(ini, section, "combat_type", nil)
-		if tmp then
-			l.combat_type					= {name = "combat_type", condlist = parse_condlist(nil, nil, nil, tmp)}
-		end
-		tmp									= get_string_field(ini, section, "on_combat", nil)
-		if tmp then
-			l.on_combat						= {name = "on_combat", condlist = parse_condlist(nil, nil, nil, tmp)}
-		end
-		if string_find(section, "kamp", 1, true) ~= nil then
-			l.soundgroup					= get_string_field(ini, section, "center_point", nil)
-		else
-			l.soundgroup					= get_string_field(ini, section, "soundgroup", nil)
-		end
---	end
+	local tmp = get_string_field(ini, section, "heli_hunter")
+	if tmp then
+		l.heli_hunter = parse_condlist(nil, nil, nil, tmp)
+	end
 
+	l.combat_ignore_keep_when_attacked = ini:line_exist(section, "combat_ignore_keep_when_attacked") and ini:r_bool(section, "combat_ignore_keep_when_attacked") or nil
+
+	tmp = get_string_field(ini, section, "combat_ignore_cond")
+	if tmp then
+		l.combat_ignore = parse_condlist(nil, nil, nil, tmp)
+	end
+
+	tmp = get_string_field(ini, section, "combat_type")
+	if tmp then
+		l.combat_type = parse_condlist(nil, nil, nil, tmp)
+	end
+
+	tmp = get_string_field(ini, section, "on_combat")
+	if tmp then
+		l.on_combat = parse_condlist(nil, nil, nil, tmp)
+	end
+--[[
+	-- No 'soundgroup' references in the game.
+
+	if string_find(section, "kamp", 1, true) ~= nil then
+		l.soundgroup = get_string_field(ini, section, "center_point")
+	else
+		l.soundgroup = get_string_field(ini, section, "soundgroup")
+	end
+]]
 	if ini:line_exist(npc_st.section_logic, "post_combat_time") then
 		l.min_post_combat_time, l.max_post_combat_time = utils.r_2nums(ini, npc_st.section_logic, "post_combat_time", 10, 15)
 	else
@@ -425,7 +427,7 @@ function activate_by_section(npc, ini, section, loading)
 		abort("[xr_logic.activate_by_section]: 'loading' field is nil, true or false expected.")
 	end
 ]]
-	local npc_st = db.storage[npc:id()]
+	local npc_st = db_storage[npc:id()]
 
 	if not loading then
 		npc_st.activation_time = time_global()
@@ -476,7 +478,7 @@ function activate_by_section(npc, ini, section, loading)
 	_G[filename].set_scheme(npc, ini, scheme, section, gulag_name)
 ]]
 	-- if your scheme is nil, it might need to be added to modules.script
-	_G[filename].set_scheme(npc, ini, scheme, section, npc_st["gulag_name"]) -- NatVac edit
+	_G[filename].set_scheme(npc, ini, scheme, section, npc_st.gulag_name) -- NatVac edit
 
 	npc_st.active_section = section
 	npc_st.active_scheme = scheme
@@ -491,19 +493,17 @@ end
 
 function assign_storage_and_bind(npc, ini, scheme, section)
 
-	local npc_st = db.storage[npc:id()]
+	local npc_st = db_storage[npc:id()]
 	local st = npc_st[scheme]
 
 	if not st then
-		st = {}
+		st = {npc = npc, scheme = scheme} -- 'scheme' field used only for abort() in try_switch_to_another_section()
 		npc_st[scheme] = st
-		st["npc"] = npc
 		_G[schemes[scheme]].add_to_binder(npc, ini, scheme, section, st)
 	end
 
-	st["scheme"] = scheme
-	st["section"] = section
-	st["ini"] = ini
+	st.section = section
+	st.ini = ini
 
 	return st
 end
@@ -513,13 +513,6 @@ function subscribe_action_for_events(npc, storage, new_action) -- TODO: 'npc' no
 		storage.actions = {}
 	end
 	storage.actions[new_action] = true
-end
-
-function unsubscribe_action_from_events(npc, storage, old_action) -- TODO: 'npc' not used
-	if not storage.actions then
-		storage.actions = {}
-	end
-	storage.actions[old_action] = nil
 end
 
 function check_action(st, event_func) --, p)
@@ -615,7 +608,8 @@ end
 
 function cfg_get_condlist(ini, section, field) --, npc)
 
-	local str = get_string(ini, section, field)
+	local str = get_string(ini, section, field, nil, false, "", nil)
+
 	if not str then
 		return nil
 	end
@@ -658,7 +652,7 @@ function switch_to_section(npc, ini, section)
 		return false
 	end
 
-	local npc_st = db.storage[npc:id()]
+	local npc_st = db_storage[npc:id()]
 	local active_section = npc_st.active_section
 
 	if active_section == section then
@@ -673,7 +667,7 @@ function switch_to_section(npc, ini, section)
 	npc_st.active_section = nil
 	npc_st.active_scheme = nil
 --[[
-	if section == nil then	-- This was already checked!
+	if section == nil then -- This was already checked!
 		return true
 	end
 ]]
@@ -714,7 +708,7 @@ function try_switch_to_another_section(npc, st, actor)
 	local l = st.logic
 
 	if not l then
-		abort("[xr_logic.try_switch_to_another_section]: Cannot find script switching information in storage for scheme '%s' of NPC '%s'.", tostring(st.active_scheme), (npc and npc:name()) or "nil")
+		abort("[xr_logic.try_switch_to_another_section]: Cannot find script switching information in storage for scheme '%s' of NPC '%s'.", tostring(st.scheme), (npc and npc:name()) or "nil")
 	end
 
 	for x = 1, #l do
@@ -728,11 +722,11 @@ function try_switch_to_another_section(npc, st, actor)
 				switched = switch_to_section(npc, st.ini, pick_section_from_condlist(actor, npc, c.condlist))
 			end
 		elseif c_name == "on_timer" then
-			if time_global() >= db.storage[npc:id()].activation_time + c.v1 then
+			if time_global() >= db_storage[npc:id()].activation_time + c.v1 then
 				switched = switch_to_section(npc, st.ini, pick_section_from_condlist(actor, npc, c.condlist))
 			end
 		elseif c_name == "on_game_timer" then
-			if game.get_game_time():diffSec(db.storage[npc:id()].activation_game_time) >= c.v1 then
+			if game.get_game_time():diffSec(db_storage[npc:id()].activation_game_time) >= c.v1 then
 				switched = switch_to_section(npc, st.ini, pick_section_from_condlist(actor, npc, c.condlist))
 			end
 		elseif c_name == "on_actor_inside" then
@@ -795,135 +789,116 @@ end
 function is_active(npc, st)
 	local sect = st.section
 	if sect == nil then
-		abort("[xr_logic.is_active]: st.section is nil and active section is '%s' for NPC '%s'.", utils.to_str(db.storage[npc:id()].active_section), npc:name())
+		abort("[xr_logic.is_active]: st.section is nil and active section is '%s' for NPC '%s'.", utils.to_str(db_storage[npc:id()].active_section), npc:name())
 	end
-	return sect == db.storage[npc:id()].active_section
+	return sect == db_storage[npc:id()].active_section
 end
 
 local function abort_syntax_error_in_cond(npc, section, field) -- nv130116 make error reporting more robust
 	abort("[xr_logic.abort_syntax_error_in_cond]: Syntax error in switch condition/effect list value of field '%s' in section '%s' for NPC '%s'.", tostring(field), tostring(section), npc and npc:name() or "nil")
 end
 
-local function cfg_get_number_and_condlist_s(str, section, field, cond, npc)
---[[
-	local str = get_string_field(ini, section, field)
-	if not str then
-		return nil
-	end
+local function cfg_get_number_and_condlist_s(str, cond)
 
-	local par = utils.parse_params(str)
-	if not par[1] or not par[2] then
-]]
 	local num, condlist = string_match(str, "^([^|]+)|(.+)") -- see comments in cfg_get_number_string_and_condlist_s()
+
 	num = tonumber(num) -- validate numericity
+
 	if num == nil or condlist == nil then
-		abort_syntax_error_in_cond(npc, section, field)
+		return nil -- error
 	end
 
-	local t =
+	return
 	{
 		name     = cond,
 		v1       = num,
-		condlist = parse_condlist(nil, nil, nil, condlist) -- (npc, section, field, condlist)
+		condlist = parse_condlist(nil, nil, nil, condlist)
 	}
-
-	return t
 end
 
 function cfg_get_string_and_condlist(ini, section, field, npc)
 
-	local str = get_string(ini, section, field)
+	local str = get_string(ini, section, field, nil, false, "", nil)
+
 	if not str then
 		return nil
 	end
 
---	local par = utils.parse_params(str)
---	if not par[1] or not par[2] then
-
 	local strng, condlist = string_match(str, "^([^|]+)|(.+)") -- see comments in cfg_get_number_string_and_condlist_s()
+
 	if strng == nil or condlist == nil then
 		abort_syntax_error_in_cond(npc, section, field)
 	end
 
-	local t =
+	return
 	{
 		name     = field,
 		v1       = strng,
-		condlist = parse_condlist(nil, nil, nil, condlist) -- (npc, section, field, condlist)
+		condlist = parse_condlist(nil, nil, nil, condlist)
 	}
-
-	return t
 end
 
-local function cfg_get_string_and_condlist_s(str, section, field, cond, npc)
+local function cfg_get_string_and_condlist_s(str, cond)
 
 	local strng, condlist = string_match(str, "^([^|]+)|(.+)") -- see comments in cfg_get_number_string_and_condlist_s()
+
 	if strng == nil or condlist == nil then
-		abort_syntax_error_in_cond(npc, section, field)
+		return nil -- error
 	end
 
-	local t =
+	return
 	{
 		name     = cond,
 		v1       = strng,
-		condlist = parse_condlist(nil, nil, nil, condlist) -- (npc, section, field, condlist)
+		condlist = parse_condlist(nil, nil, nil, condlist)
 	}
-
-	return t
 end
 
-local function cfg_get_number_string_and_condlist_s(str, section, field, cond, npc)
---[[
-	local str = get_string_field(ini, section, field)
-	if not str then
-		return nil
-	end
+local function cfg_get_number_string_and_condlist_s(str, cond)
 
-	local par = utils.parse_params(str) -- leaves any trailing whitespace intact in each '|'-separated substring
-	if not par[1] or not par[2] or not par[3] then -- not a problem for the 1st substring (tonumber() can deal with it), but could be a problem for the 2nd
-]]
+--	local par = utils.parse_params(str) -- leaves any trailing whitespace intact in each '|'-separated substring
+--	if not par[1] or not par[2] or not par[3] then -- not a problem for the 1st substring (tonumber() can deal with it), but could be a problem for the 2nd
+
 --	local num, strng, condlist = string_match(str, "^([^|]+)|%s*([^|%s]+)%s*|(.+)") -- e.g. str = " 600 | b4r | {=moo} baz@1 " would yield ' 600 ', 'b4r', and ' {=moo} baz@1 '
 	local num, strng, condlist = string_match(str, "^([^|]+)|([^|]+)|(.+)") -- update: no need to worry about whitespace, every line in an LTX file has its whitespace stripped on being read
+
 	num = tonumber(num) -- validate numericity
+
 	if num == nil or strng == nil or condlist == nil then
-		abort_syntax_error_in_cond(npc, section, field)
+		return nil -- error
 	end
 
-	local t =
+	return
 	{
 		name     = cond,
 		v1       = num,
 		v2       = strng,
-		condlist = parse_condlist(nil, nil, nil, condlist) -- (npc, section, field, condlist)
+		condlist = parse_condlist(nil, nil, nil, condlist)
 	}
-
-	return t
 end
 
-local function cfg_get_condlist_s(str, section, field, cond) --, npc)
-	return {name = cond, condlist = parse_condlist(nil, nil, nil, str)} -- (npc, section, field, str)}
+local function cfg_get_condlist_s(str, cond)
+	return {name = cond, condlist = parse_condlist(nil, nil, nil, str)}
 end
 
-local function cfg_get_npc_and_zone_s(str, section, field, cond, npc)
+local function cfg_get_npc_and_zone_s(str, cond)
 
-	local t = cfg_get_number_string_and_condlist_s(str, section, field, cond, npc)
+	local t = cfg_get_number_string_and_condlist_s(str, cond)
 
 	if t then
---		local sim = alife()
 		if sim then
 			local se_obj = sim:story_object(t.v1)
 			if se_obj then
 				t.npc_id = se_obj.id
 			else
-				t.npc_id = -1
-				abort("[xr_logic.cfg_get_npc_and_zone_s]: NPC '%s', section '%s', field '%s': There is no server object with story_id '%d'.", npc:name(), tostring(section), tostring(field), t.v1)
+				abort("[xr_logic.cfg_get_npc_and_zone_s]: There is no server object with story_id '%d'.", t.v1)
 			end
 		else
 			t.npc_id = -1
 		end
 	end
 
-	return t
+	return t -- error if nil
 end
 
 local func_by_cond =
@@ -959,15 +934,17 @@ function cfg_get_switch_conditions(ini, section, npc)
 	for x = 1, last_cond_idx, 2 do
 		local cond, func = funcs[x], funcs[x + 1]
 		local cond_value = ini:line_exist(section, cond) and ini:r_string(section, cond)
-		local c = cond_value and func(cond_value, section, cond, cond, npc) or nil
-		local i = 1
-		while c ~= nil do
-			l[n] = c
-			n = n + 1
-			i = i + 1
-			local next_cond = cond..i
-			cond_value = ini:line_exist(section, next_cond) and ini:r_string(section, next_cond)
-			c = cond_value and func(cond_value, section, next_cond, cond, npc) or nil
+		if cond_value then
+			local c = func(cond_value, cond) or abort_syntax_error_in_cond(npc, section, cond)
+			local i = 1
+			repeat
+				l[n] = c
+				n = n + 1
+				i = i + 1
+				local next_cond = cond..i
+				cond_value = ini:line_exist(section, next_cond) and ini:r_string(section, next_cond)
+				c = cond_value and (func(cond_value, cond) or abort_syntax_error_in_cond(npc, section, next_cond)) or nil
+			until c == nil
 		end
 	end
 
@@ -975,7 +952,7 @@ function cfg_get_switch_conditions(ini, section, npc)
 end -- array now arranged roughly in descending order of frequency of condition occurrence with the SRP
 
 function generic_scheme_overrides(npc)
-	return db.storage[npc:id()].overrides
+	return db_storage[npc:id()].overrides
 end
 
 function mob_capture(mob, reset_actions)
@@ -1000,19 +977,19 @@ end
 --[[
 local function save_logic(obj, packet)
 
-	local npc_st = db.storage[obj:id()]
+	local npc_st = db_storage[obj:id()]
 	local activation_time = npc_st.activation_time
 
 	if not activation_time then
 		activation_time = 0
 	end
 
- 	packet:w_s32(activation_time - time_global())
+	packet:w_s32(activation_time - time_global())
 	utils.w_CTime(packet, npc_st.activation_game_time)
 end
 
 local function load_logic(obj, reader)
-	local npc_st = db.storage[obj:id()]
+	local npc_st = db_storage[obj:id()]
 	npc_st.activation_time = reader:r_s32() + time_global()
 	npc_st.activation_game_time = utils.r_CTime(reader)
 end
@@ -1023,7 +1000,7 @@ local pstor_boolean = 2
 
 function pstor_store(obj, varname, val)
 
-	local npc_st = db.storage[obj:id()]
+	local npc_st = db_storage[obj:id()]
 
 	if npc_st.pstor == nil then
 		npc_st.pstor = {}
@@ -1039,7 +1016,7 @@ function pstor_store(obj, varname, val)
 end
 
 function pstor_retrieve(obj, varname, defval)
-	local npc_st = db.storage[obj:id()]
+	local npc_st = db_storage[obj:id()]
 	if npc_st.pstor ~= nil then
 		local val = npc_st.pstor[varname]
 		if val ~= nil then
@@ -1051,7 +1028,7 @@ end
 
 function pstor_save_all(obj, packet)
 
-	local obj_st = db.storage[obj:id()]
+	local obj_st = db_storage[obj:id()]
 	local pstor = obj_st.pstor
 
 	if not pstor then
@@ -1068,17 +1045,17 @@ function pstor_save_all(obj, packet)
 	packet:w_u32(ctr)
 
 	for k, v in pairs (pstor) do
- 		packet:w_stringZ(k)
+		packet:w_stringZ(k)
 		local tv = type(v)
 		if tv == "number" then
 			packet:w_u8(pstor_number)
-	 		packet:w_float(v)
-	 	elseif tv == "string" then
+			packet:w_float(v)
+		elseif tv == "string" then
 			packet:w_u8(pstor_string)
-	 		packet:w_stringZ(v)
-	 	elseif tv == "boolean" then
+			packet:w_stringZ(v)
+		elseif tv == "boolean" then
 			packet:w_u8(pstor_boolean)
-	 		packet:w_bool(v)
+			packet:w_bool(v)
 		else
 			local ppos = obj:position()
 			dbglog("[xr_logic.pstor_save_all]: Tried to save an unregistered pstor value-type ["..tostring(tv).."] with key ["..tostring(k).."] and value ["..tostring(v).."] for NPC with ID ["..tostring(obj:id()).."], name ["..tostring(obj:name()).."], and position [x: "..tostring(ppos.x)..", y: "..tostring(ppos.y)..", z: "..tostring(ppos.z).."].")
@@ -1090,7 +1067,7 @@ end
 
 function pstor_load_all(obj, reader)
 
-	local obj_st = db.storage[obj:id()]
+	local obj_st = db_storage[obj:id()]
 	local pstor = obj_st.pstor
 
 	if not pstor then
@@ -1127,7 +1104,7 @@ function save_obj(obj, packet)
 
 	set_save_marker(packet, "save", false, object_name)
 
-	local obj_st = db.storage[obj:id()]
+	local obj_st = db_storage[obj:id()]
 
 	local TMP = obj_st.job_ini
 	if TMP then
@@ -1168,7 +1145,7 @@ function save_obj(obj, packet)
 
 	local activation_time = obj_st.activation_time or 0
 
- 	packet:w_s32(activation_time - time_global())
+	packet:w_s32(activation_time - time_global())
 	utils.w_CTime(packet, obj_st.activation_game_time)
 
 	if obj_st.active_scheme then
@@ -1188,7 +1165,7 @@ function load_obj(obj, reader)
 
 	set_save_marker(reader, "load", false, object_name)
 
-	local obj_st = db.storage[obj:id()]
+	local obj_st = db_storage[obj:id()]
 
 	local job_ini = reader:r_stringZ()
 	if job_ini == "" then
@@ -1240,7 +1217,7 @@ local function get_customdata_or_ini_file(npc, filename)
 	if filename == "<customdata>" then
 		return npc:spawn_ini() or dummy_ini_file
 	elseif string_sub(filename, 1, 1) == "*" then
-		local job_ini = db.storage[npc:id()].job_ini
+		local job_ini = db_storage[npc:id()].job_ini
 		if job_ini ~= nil then
 			return ini_file(job_ini)
 		end
@@ -1259,7 +1236,7 @@ function initialize_obj(obj, obj_st, loaded, stype)
 		local sect = determine_section_to_activate(obj, ini, "logic")
 		activate_by_section(obj, ini, sect, false)
 		if ini:section_exist("logic") then
-			local relation = get_string_field(ini, "logic", "relation", nil)
+			local relation = get_string_field(ini, "logic", "relation")
 			if relation ~= nil then
 				-- general_goodwill toward actor = personal_goodwill {-3000, 9000} + community_goodwill {-3000, 1000} + community_to_community {-5000, 1000}
 				local actor = db.actor

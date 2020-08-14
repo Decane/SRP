@@ -2,17 +2,19 @@ class "evaluator_need_cover" (property_evaluator)
 
 function evaluator_need_cover:__init(storage) super()
 	self.st = storage
+	self.npc_st = db.storage[storage.npc:id()]
 end
 
 function evaluator_need_cover:evaluate()
-	return xr_logic.is_active(self.object, self.st)
+--	return xr_logic.is_active(self.object, self.st)
+	return self.st.section == self.npc_st.active_section
 end
 
 --------------------------------------------------------------------------------
 
 class "action_cover" (action_base)
 
-function action_cover:__init (storage) super()
+function action_cover:__init(storage) super()
 	self.st = storage
 end
 
@@ -179,18 +181,19 @@ function set_scheme(npc, ini, scheme, section) --, gulag_name)
 	local get_string        = utils.cfg_get_string
 
 	local st                = xr_logic.assign_storage_and_bind(npc, ini, scheme, section)
+
 	st.logic                = xr_logic.cfg_get_switch_conditions(ini, section, npc)
---	st.path                 = get_string(ini, section, "path_walk", npc, false, gulag_name)
-	st.smart                = get_string(ini, section, "smart", npc, false, "")
-	st.anim                 = xr_logic.parse_condlist(nil, nil, nil, get_string(ini, section, "anim", npc, false, "", "hide"))
-	st.sound_idle           = get_string(ini, section, "sound_idle", npc, false, "")
+--	st.path                 = get_string(ini, section, "path_walk", nil, false, gulag_name)
+	st.smart                = get_string(ini, section, "smart", nil, false, "")
+	st.anim                 = xr_logic.parse_condlist(nil, nil, nil, get_string(ini, section, "anim", nil, false, "", "hide"))
+	st.sound_idle           = get_string(ini, section, "sound_idle", nil, false, "")
 
 	if st.smart == nil then
 		abort("[xr_cover.set_scheme]: There is no 'smart' field in xr_cover.")
 	end
 
---	st.use_attack_direction = get_bool(ini, section, "use_attack_direction", npc, false, true) -- always false in vanilla
-	st.use_precalc_cover    = get_bool(ini, section, "use_precalc_cover", npc, false, false)
-	st.radius_min           = get_number(ini, section, "radius_min", npc, false, 3)
-	st.radius_max           = get_number(ini, section, "radius_max", npc, false, 5)
+--	st.use_attack_direction = get_bool(ini, section, "use_attack_direction", nil, false, true) -- always false in vanilla
+	st.use_precalc_cover    = get_bool(ini, section, "use_precalc_cover", nil, false, false)
+	st.radius_min           = get_number(ini, section, "radius_min", nil, false, 3)
+	st.radius_max           = get_number(ini, section, "radius_max", nil, false, 5)
 end

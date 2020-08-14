@@ -220,6 +220,12 @@ name = mar_smart_terrain_8_11_to_mar_smart_terrain_9_10_patrol_1_wait_3_smartcov
 
 ------------------------------------
 
+[1184] <deleted>
+
+• Superfluous space restrictor: 'mar_space_restrictor_start_sim'. Not referenced anywhere in the game code. The logic it binds is handled elsewhere in the SRP, rendering it obsolete.
+
+------------------------------------
+
 [1235] <deleted>
 
 • Duplicate section: 'mar_physic_destroyable_object_0028'. Identical to 'mar_physic_destroyable_object_0027' of [1234] above it. This alteration resolves the issue with the duplicate supply box spawn at the back of the UAZ-469 at the Trailhead.
@@ -1089,6 +1095,12 @@ object_flags = 0xffffff3b
 
 ------------------------------------
 
+[6318] <deleted>
+
+• Superfluous space restrictor: 'red_forest_gate_keepers_spawn_rest'. Not referenced anywhere in the game code. The logic it binds is buggy and superfluous, rendering it obsolete.
+
+------------------------------------
+
 [6376]
 
 ;custom_data = <<END
@@ -1448,6 +1460,12 @@ position = -3.6932909488678,5,0.331966996192932
 
 ------------------------------------
 
+[8141] <deleted>
+
+• Superfluous space restrictor: 'yan_squad_stalker_in_sci_base'. Not referenced anywhere in the game code. The logic it binds is handled elsewhere in the SRP, rendering it obsolete.
+
+------------------------------------
+
 [8150] <deleted>
 
 • Superfluous space restrictor: 'yan_space_restrictor_not_for_stalkers'. Not referenced anywhere in the game code.
@@ -1571,6 +1589,16 @@ object_flags = 0xffffff3b
 [8903] <deleted>
 
 • Superfluous space restrictor: 'mil_space_restrictor_bloodsucker_task'. Not referenced anywhere in the game code and its story ID (1208) is not used.
+
+------------------------------------
+
+[8904]
+
+[logic]
+cfg = scripts\military\mil_base_entrance.ltx
+END
+
+• Exported the script logic to a custom LTX file for convenience of manipulation. In that file, conditionalized %+mil_actor_with_freedom_squad% on {+mil_merc_talked_f1_f2_wt1} to fix the bug where Kostyan's squad would start to attack the military base prematurely if the player already entered space restrictor 'mil_space_restrictor_freedom_comm' before Kostyan's squad spawned.
 
 ------------------------------------
 

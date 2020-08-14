@@ -387,9 +387,8 @@ function motivator_binder:update(delta)
 			if manager:initialized() and manager:current_action_id() == stalker_ids_action_combat_planner then
 				local overrides = npc_st.overrides
 				if overrides then
-					local overrides_on_combat = overrides.on_combat
-					if overrides_on_combat then
-						xr_logic.pick_section_from_condlist(actor, npc, overrides_on_combat.condlist)
+					if overrides.on_combat then
+						xr_logic.pick_section_from_condlist(actor, npc, overrides.on_combat)
 					end
 					if st_combat and st_combat.logic and not xr_logic.try_switch_to_another_section(npc, st_combat, actor) then
 --						if overrides.combat_type then

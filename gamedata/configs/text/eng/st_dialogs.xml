@@ -244,7 +244,7 @@
 		<text>Great. Here’s your money. Now I can perform new upgrades.</text>
 	</string>
 	<string id="find_upgrade_task_0">
-		<text>I found information about the upgrades you were looking for.</text>
+		<text>I found the upgrade information you were looking for.</text>
 	</string>
 	<string id="find_upgrade_task_1">
 		<text>Thanks for your help. Now I can perform new upgrades.</text>
@@ -592,6 +592,6 @@
 		<text>A bit later.</text>
 	</string>
 	<string id="st_tm_guide_3">
-		<text>Whoops, I can’t afford this.</text>
+		<text>Empty</text>
 	</string>
 </string_table>

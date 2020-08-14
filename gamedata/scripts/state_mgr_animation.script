@@ -3,6 +3,8 @@
 
 local state_lib_states = state_lib.states
 local anims = state_mgr_animation_list.animations
+local ops = state_mgr_goap.ops
+local props = state_mgr_goap.props
 local sight_dir = CSightParams.eSightTypeAnimationDirection
 
 --------------------------------------------------------------------------------
@@ -91,7 +93,7 @@ function eva_state_mgr_animation_reset:evaluate()
 			return true
 		end
 	end
-	return self_st.reset_state == true and target_state ~= nil and self_st.current_state == self_st.target_state and target_state.reset == true
+	return self_st.reset_state == true and self_st.current_state == self_st.target_state and target_state.reset == true
 end
 
 --------------------------------------------------------------------------------
@@ -214,10 +216,6 @@ function animation:__init(npc, mgr)
 	}
 	self.clb_settings = {}
 --	self.clb_cnt = 0
-	local props = mgr.properties
-	self.ops_end = mgr.operators["end"]
-	self.props_animation = props["animation"]
-	self.props_weapon = props["weapon"]
 end
 
 function animation:set_state(id, reset) -- TODO
@@ -334,7 +332,7 @@ function animation:set_state(id, reset) -- TODO
 			if mgr.callback ~= nil then
 				mgr.callback.begin = nil
 			end
-			self:play_rnd(id, 100)
+			self:play_rnd(id, true)
 		end
 		local a = anims[id]
 		if a.idle ~= nil then
@@ -397,7 +395,7 @@ function animation:update()
 
 	if self_states.current_state == "_new" then
 		local nnum = 0
-		local target_anim = state_mgr_animation_list.animations[self_states.target_state]
+		local target_anim = anims[self_states.target_state]
 		if (target_anim ~= nil and target_anim.idle ~= nil) or self.mgr.animstate:idle_animation_present() then
 			nnum = 1
 		end
@@ -411,7 +409,7 @@ function animation:update()
 	if self_states.current_state == "_wait" then
 		local nnum = 0
 		local target_state = self_states.target_state
-		local target_anim = state_mgr_animation_list.animations[target_state]
+		local target_anim = anims[target_state]
 		if (target_anim ~= nil and target_anim.idle ~= nil) or self.mgr.animstate:idle_animation_present() then
 			nnum = 1
 		end
@@ -523,9 +521,9 @@ function animation:play_rnd(state, must_play)
 
 	local planner = self.mgr.planner
 
-	planner:action(self.ops_end):weapon_update()
+	planner:action(ops["end"]):weapon_update()
 
-	if not (planner:evaluator(self.props_animation):evaluate() and planner:evaluator(self.props_weapon):evaluate()) then
+	if not (planner:evaluator(props.animation):evaluate() and planner:evaluator(props.weapon):evaluate()) then
 		return
 	end
 
@@ -548,7 +546,7 @@ function animation:play_rnd(state, must_play)
 		self_states.idle = (math.random(state_prop.maxidle) + state_prop.sumidle) * 1000
 	end
 
-	if math.random(100) < state_prop.rnd or must_play then
+	if must_play or math.random(100) < state_prop.rnd then
 		local wpn_slot = self:weapon_slot()
 		local anima = anim_for_slot(wpn_slot, state.rnd)
 		if anima == nil then

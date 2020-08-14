@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="windows-1251" ?>
 <string_table>
 	<string id="agr_dialog_go_to_leader_0">
-		<text>Hey, where do you think you’re going?</text>
+		<text>Hey… Where do you think you’re going?</text>
 	</string>
 	<string id="agr_dialog_go_to_leader_011">
 		<text>Go on then.</text>
@@ -31,7 +31,7 @@
 		<text>I haven’t seen many folks who’d be willing to go down there. Do you have any idea what you’ll be up against in there?</text>
 	</string>
 	<string id="agr_leader_hello_dialog_111111">
-		<text>“Shouldn’t be too dangerous…” - hah! Things have really changed ever since we decided to block that one side tunnel. I guess we went overboard with the explosives: the blow took down some of the walls and opened up ways to new caverns. A swarm of mutants came flooding out faster than you can say “bloodsucker!” Many of our boys never made it back to the surface…</text>
+		<text>“Shouldn’t be too dangerous…” - hah! Things have really changed ever since we decided to block that one side tunnel. I guess we went overboard with the explosives: the blow took down some of the walls and opened up ways to new caverns. A swarm of mutants came flooding out faster than you can say “bloodsucker”! Many of our boys never made it back to the surface…</text>
 	</string>
 	<string id="agr_leader_hello_dialog_11111111">
 		<text>I ordered to have all exits welded shut! That helped, but only for a little while. The mutants started digging holes and coming up from underground. By the time we’d block one hole they’d already dig up another. It seems like they are driven by a single goal: to finish us off at all costs.</text>
@@ -283,7 +283,7 @@
 		<text>Any interesting stories to tell?</text>
 	</string>
 	<string id="agr_duty_weaponmaster_about_story_1">
-		<text>Sure, and a bit of devilry too. Have you heard about Doctor? Supposedly he lives in the most remote of marshes. Never heard of him? Well, brother, let me tell you one of the Zone’s oldest legends. So, there’s this doctor. He can bring anyone back from the dead, even if they were hacked up into pieces. No one knows how he does this, but it is a known fact! I haven’t seen any of these resurrected people, but I know people who have. Now for the most interesting part. They say that Doctor is one of the original stalkers. Supposedly he managed to reach the Wish Granter. And you know what he asked for? The ability to help every living creature. He was granted this gift all right, but he can no longer see the difference between humans and mutants. If I - a living creature - were to wound another living creature - a bloodsucker - Doctor would go and heal him. And vice versa. Oh, and Doctor is almost impossible to find, most of the time he shows up by himself. When he doesn’t, he comes with a tame Chernobyl dog. Those who have seen them say it’s quite a sight.</text>
+		<text>Sure, and a bit of devilry too. Have you heard about Doctor? Supposedly he lives in the most remote of marshes. Never heard of him? Well, brother, let me tell you one of the Zone’s oldest legends. So, there’s this doctor. He can bring anyone back from the dead, even if they were hacked up into pieces. No one knows how he does this, but it is a known fact! I haven’t seen any of these resurrected people, but I know people who have. Now for the most interesting part. They say that Doctor is one of the original stalkers. Supposedly he managed to reach the Wish Granter. And you know what he asked for? The ability to help every living creature. He was granted this gift all right, but he can no longer see the difference between humans and mutants. If I — a living creature — were to wound another living creature — a bloodsucker — Doctor would go and heal him. And vice versa. Oh, and Doctor is almost impossible to find, most of the time he shows up by himself. When he doesn’t, he comes with a tame Chernobyl dog. Those who have seen them say it’s quite a sight.</text>
 	</string>
 	<string id="agr_duty_weaponmaster_about_you_in_zone_0">
 		<text>How did you end up in the Zone?</text>
@@ -295,7 +295,7 @@
 		<text>Who catches your animals for you?</text>
 	</string>
 	<string id="agr_duty_zooman_about_animals_1">
-		<text>I used to have to do it myself. That was some hassle, I tell you! I nearly kicked the bucket a couple of times. Then a few more guys joined me, one by one. It’s great experience, and exciting too. Besides, imagine the bragging rights when hanging out in a bar: hey, man, you may have killed this monster, but I caught him alive! I had a couple of jerboas die recently. Two kids volunteered to go hunting for a replacement. Ballsy, but so damn naive. They tied some meat to a string and approached the jerboa. They did everything right - almost. One lured in a few while the other kept the pack at bay with gunfire. They did catch their prey, but as soon as they turned to leave the whole pack went after them! They ran half a marathon before reaching the base, and then our guys helped them out with fire. Each of the heroes then gulped down a whole bottle of liquor just to relax.</text>
+		<text>I used to have to do it myself. That was some hassle, I tell you! I nearly kicked the bucket a couple of times. Then a few more guys joined me, one by one. It’s great experience, and exciting too. Besides, imagine the bragging rights when hanging out in a bar: “Hey, man, you may have killed this monster, but I caught him alive!” I had a couple of jerboas die recently. Two kids volunteered to go hunting for a replacement. Ballsy, but so damn naive. They tied some meat to a string and approached the jerboa. They did everything right - almost. One lured in a few while the other kept the pack at bay with gunfire. They did catch their prey, but as soon as they turned to leave the whole pack went after them! They ran half a marathon before reaching the base, and then our guys helped them out with fire. Each of the heroes then gulped down a whole bottle of liquor just to relax.</text>
 	</string>
 	<string id="agr_duty_zooman_about_zoo_0">
 		<text>What’s this zoo for?</text>
@@ -352,7 +352,7 @@
 		<text>But you use artifacts yourselves, don’t you?</text>
 	</string>
 	<string id="agr_leader_about_zone_111">
-		<text>They say war is a no-holds-barred kind of deal. I don’t see anything wrong with using the enemy’s resources against them. I mean, we don’t collect these for our personal gain, do we? An average artifact is worth two or three new guns and some ammo to boot, and three guns are worth a dozen dead mutants a day…</text>
+		<text>They say war is a no-holds-barred kind of deal. I don’t see anything wrong with using the enemy’s resources against him. I mean, we don’t collect these for our personal gain, do we? An average artifact is worth two or three new guns and some ammo to boot, and three guns are worth a dozen dead mutants a day…</text>
 	</string>
 	<string id="agr_leader_about_zone_1111">
 		<text>But how does one defeat the Zone?</text>

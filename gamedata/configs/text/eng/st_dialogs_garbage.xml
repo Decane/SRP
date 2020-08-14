@@ -10,7 +10,7 @@
 		<text>Hey, buddy… hic! … Whatcha need?</text>
 	</string>
 	<string id="gar_bandit_trader_hello_11">
-		<text>So, got some swag?</text>
+		<text>So… Got some swag?</text>
 	</string>
 	<string id="gar_bandit_barman_bandit_secret_0">
 		<text>Yoga gave me the coordinates of his stash, but supposedly the place is now crawling with either anomalies or mutants.</text>
@@ -397,7 +397,7 @@
 		<text>Can you even do anything?</text>
 	</string>
 	<string id="gar_bandit_tech_questions_121">
-		<text>Just ’cause my hands are shaking don’t mean I’m useless. I’ve just got a hangover that’s all - let me have a couple of shots and that’ll solve that little problem right up - I’ll be good as new! And don’t you worry, I’ll do a better job than any sober son of a bitch out there, no shit. I can do anything you need: repair your shooter, add some new Kevlar to your armor or sort you out with an upgrade. Just remember to keep your good friend Limpid in mind and pour him a drink for his hard work now and again.</text>
+		<text>Just ’cause my hands are shaking don’t mean I’m useless. I’ve just got a hangover, that’s all. Let me have a couple of shots and that’ll solve that little problem right up - I’ll be good as new! And don’t you worry, I’ll do a better job than any sober son of a bitch out there, no shit. I can do anything you need: repair your shooter, add some new Kevlar to your armor or sort you out with an upgrade. Just remember to keep your good friend Limpid in mind and pour him a drink for his hard work now and again.</text>
 	</string>
 	<string id="gar_bandit_tech_questions_13">
 		<text>Do you even know what’s going on around you?</text>
@@ -451,7 +451,7 @@
 		<text>What do you think about Yoga?</text>
 	</string>
 	<string id="gar_bandit_trader_questions_121">
-		<text>Here’s what I think: Yoga ain’t gonna be the boss for long. I have this feeling Borov is gonna make his move sooner or later, ’cause Yoga is getting a bit too big for his britches, and he can’t seem to see an inch beyond his nose. He’s got him a snake in his bosom and it’s gonna bite him sooner or later. I ain’t tellin’ you this for you to go and share it with every Tom, Dick and Harry. I’m trusting you with information, so if you find something worthwhile you bring it here, understand? Don’t you worry, it don’t matter who the boss is - Yoga or Borov - I’ll still be trading here.</text>
+		<text>Here’s what I think: Yoga ain’t gonna be the boss for long. I have this feeling Borov is gonna make his move sooner or later, ’cause Yoga is getting a bit too big for his britches, and he can’t seem to see an inch beyond his nose. He’s got him a snake in his bosom and it’s gonna bite him sooner or later. I ain’t tellin’ you this for you to go and share it with every Tom, Dick and Harry. I’m trusting you with information, so if you find something worthwhile you bring it here, understand? Don’t you worry, it don’t matter who the boss is — Yoga or Borov — I’ll still be trading here.</text>
 	</string>
 	<string id="gar_bandit_trader_questions_13">
 		<text>Tell me about the Garbage.</text>
@@ -463,7 +463,7 @@
 		<text>What are the latest news in the Zone?</text>
 	</string>
 	<string id="gar_bandit_trader_questions_141">
-		<text>Latest news, huh? Just make sure that latest doesn’t become last, if you know what I mean. The mutants here generally ain’t as bad as they are further in the Zone, but there was an incident the other day… a stalker came back, all pale, hands shaking and all… started confessing his sins and shit. Anyhow, him and a buddy were running away from some poltergeists when they bumped into a group of hamsters. So this guy decides that it’s every man for himself, unloads into his buddy and runs off. The hamsters obviously don’t bother to chase him ’cause they already got fresh meat to feast on, but when our little hero got away he started thinking about what he’d done… After a second bottle at Borov’s you could hear him wailing about how his buddy’d given him his last medkit and all that… Well, anyway, the guy hung himself that night… that’s what happens to people in the Zone.</text>
+		<text>Latest news, huh? Just make sure that latest doesn’t become last, if you know what I mean. The mutants here generally ain’t as bad as they are further in the Zone, but there was an incident the other day… A stalker came back, all pale, hands shaking and all… Started confessing his sins and shit. Anyhow, him and a buddy were running away from some poltergeists when they bumped into a group of hamsters. So this guy decides that it’s every man for himself, unloads into his buddy and runs off. The hamsters obviously don’t bother to chase him ’cause they already got fresh meat to feast on, but when our little hero got away he started thinking about what he’d done… After a second bottle at Borov’s you could hear him wailing about how his buddy’d given him his last medkit and all that… Well, anyway, the guy hung himself that night… That’s what happens to people in the Zone.</text>
 	</string>
 	<string id="gar_bandit_trader_questions_15">
 		<text>Nothing, I guess.</text>
@@ -481,7 +481,7 @@
 		<text>And how do you plan to do that?</text>
 	</string>
 	<string id="gar_digger_leader_attack_111">
-		<text>I want to free the diggers held in the camp and wipe it off the face of the Earth. Do that, and the diggers will realize that bandits are far from invincible. All they need is a symbol, like the one Che Guevara gave to the people of Cuba! That’s what I need the weapons for - to give my boys a fighting chance against the bandits. Frankly, even with the shooters our chances ain’t great… that’s why I’m asking you to lead them. You are an experienced fighter - with you in command we’re sure to come out on top! Will you help us?</text>
+		<text>I want to free the diggers held in the camp and wipe it off the face of the Earth. Do that, and the diggers will realize that bandits are far from invincible. All they need is a symbol, like the one Che Guevara gave to the people of Cuba! That’s what I need the weapons for - to give my boys a fighting chance against the bandits. Frankly, even with the shooters our chances ain’t great… That’s why I’m asking you to lead them. You are an experienced fighter - with you in command we’re sure to come out on top! Will you help us?</text>
 	</string>
 	<string id="gar_digger_leader_attack_1111">
 		<text>Help you attack the concentration camp? Yes, I will.</text>
@@ -577,7 +577,7 @@
 		<text>Not yet.</text>
 	</string>
 	<string id="gar_digger_leader_bring_money_321">
-		<text>Well, the medkit is waiting for you, and I’m waiting for you even more. Hell, I ain’t got anywhere else to get the money from.</text>
+		<text>Well… The medkit is waiting for you, and I’m waiting for you even more. Hell, I ain’t got anywhere else to get the money from.</text>
 	</string>
 	<string id="gar_digger_leader_hello_11">
 		<text>Piss off, dude, life’s bad enough as it is. The weather is shit, there’s no loot to be had, bandits and mutants got all the best places covered… Even if you get lucky and dig up something decent, you ain’t gonna get it past the Garbage. Someone will damn sure confiscate it, and on top of all of that Freshy and the boys have gone missing.</text>

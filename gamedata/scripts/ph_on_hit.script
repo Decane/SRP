@@ -1,47 +1,27 @@
-----------------------------------------------------------------------------------------------------
--- Physics hit checker
-----------------------------------------------------------------------------------------------------
--- Author: Andrey Fidrya (Zmey) af@svitonline.com
-----------------------------------------------------------------------------------------------------
-
 class "ph_on_hit"
 
-function ph_on_hit:__init(obj, storage)
-	self.object = obj
-	self.st = storage
+function ph_on_hit:__init(storage)
+	self.info = storage.info
 end
 
-function ph_on_hit:reset_scheme()
-end
-
-function ph_on_hit:update(delta)
-end
-
-function ph_on_hit:hit_callback(obj) --, amount, local_direction, who, bone_index)
-	if db.storage[self.object:id()].active_scheme then
-		xr_logic.try_switch_to_another_section(obj, self.st, db.actor)
+function ph_on_hit:hit_callback(obj)
+	if db.actor and self.info then
+		xr_logic.pick_section_from_condlist(db.actor, obj, self.info)
 	end
 end
 
-function ph_on_hit:deactivate()
-end
-
-----------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+-- binder
+--------------------------------------------------------------------------------
 
 function add_to_binder(obj, ini, scheme, section, storage)
-	local action = ph_on_hit(obj, storage)
-	storage.action = action
-end
 
-function set_scheme(obj, ini, scheme, section) --, gulag_name)
-	local st = xr_logic.assign_storage_and_bind(obj, ini, scheme, section)
-	st.logic = xr_logic.cfg_get_switch_conditions(ini, section, obj)
-	xr_logic.subscribe_action_for_events(obj, st, st.action)
-end
+	if ini:section_exist(section) then
 
-function disable_scheme(obj, scheme)
-	local st = db.storage[obj:id()][scheme]
-	if st then
-		xr_logic.unsubscribe_action_from_events(obj, st, st.action)
+		if ini:line_exist(section, "on_info") then
+			storage.info = xr_logic.parse_condlist(nil, nil, nil, ini:r_string(section, "on_info"))
+		end
+
+		xr_logic.subscribe_action_for_events(obj, storage, this.ph_on_hit(storage))
 	end
 end

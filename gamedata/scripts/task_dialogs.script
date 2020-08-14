@@ -349,27 +349,7 @@ function rewarder_has_reward(npc) --, actor)
 end
 
 function rewarder_hasnt_reward(npc) --, actor)
-
-	local tm = task_manager.get_task_manager()
-	local community = nil
-	local npc_id = npc:id()
-
-	for k, v in pairs (tm.rewarders) do
-		if v == npc_id then
-			community = k
-			break
-		end
-	end
-
-	if community == nil then
-		return true
-	end
-
-	if tm.rewards[community] == nil then
-		return true
-	end
-
-	return #tm.rewards[community] == 0
+	return not rewarder_has_reward(npc)
 end
 
 function rewarder_give_reward(npc) --, actor, p1, p2)

@@ -18,9 +18,9 @@ v1.1.3
 + Fixed the issue where speaking to a mechanic with incomplete 'find upgrade' tasks would leak task entity IDs. - Decane
 + Implemented a tail-recursive algorithm to automatically detect and resolve faction war stalemates arising out of a squad being grid-locked into a camp by all surrounding camps being occupied by non-hostiles, thereby preventing the grid-locked squad from leaving the camp. - Decane
 + Fixed the issue where loading a savegame would make the game copy offered but unassigned combat tasks to a Lua table intended only for assigned combat tasks, causing various bugs ranging from stuck faction wars to the robbery scheme ceasing to activate. - Decane
-+ Fixed the storyline breaking if Hog is killed or his squad turns hostile when the player's task is to talk to them. - Decane
++ Fixed the storyline breaking if Hog is killed or his squad turns hostile when the player's task is to talk to them to find out where to find the strongest radio signal. - Decane
 + Fixed the issue where asking a squad commander for work after accepting a 'capture' task from him via dialogue would prevent the 'capture' task from failing if the squad perishes, leaving the task incompletable and in progress indefinitely. - Decane
-+ Fixed the issue where squads would sometimes fail to capture a camp upon reaching it. - Decane
++ Worked around some instances of the issue where squads would sometimes fail to capture a camp upon reaching it. - Decane
 + Worked around an SRP v1.0.4 regression where the AI of NPCs approaching the Fishing Hamlet from the Hidden Camp would occasionally break. - Decane
 + Enabled offline squads to engage enemy 'idle' stage squads in addition to enemy 'combat' stage squads to prevent perpetual inaction when one squad is 'idle'. - Decane
 + Fixed combatting offline squads sometimes dealing zero damage to each other perpetually due to an incorrect use of math.random(). - Decane
@@ -34,6 +34,7 @@ v1.1.3
 + Fixed the issue where 'find upgrade' tasks would not cancel when the mechanic who gave them dies or becomes hostile after loading a savegame. - Decane
 + Fixed the issue where the skirmish between the loners and military at the Cordon bus stop could begin prematurely, preventing the player from receiving the task to defend the loner patrol. - Decane
 + Fixed the "Help the stalkers" task in Agroprom being cancelled immediately after being received if the loner faction is hostile to the player. - Decane
++ Fixed the issue where a generic 'eliminate' task would be assigned instead of a resource/territory smart terrain specific one even when the relevant smart terrain meets the criteria for the latter. - SurDno
 + Fixed some generic faction war tasks not yielding their intended faction-specific reward. - Decane
 + Fixed an SRP v1.0.7 regression that prevented new faction equipment chest supplies from spawning on a smart terrain upon its occupying squad switching online if the squad captured it while offline. - Decane
 + Fixed an SRP v1.1.1 regression that under some circumstances prevented the pseudodogs that spawn beside the military base from immediately attacking it. - Decane
@@ -43,6 +44,7 @@ v1.1.3
 + Fixed the issue where squads would readily abandon forward targets during the faction war upon loss of an earlier target even if squads at less important smart terrains are available to resecure the earlier target. - Decane
 + Fixed the issue where submitting the item requested in a 'return item' task would not complete the task if the player possesses multiple units of the item when submitting it. (Previous fixes will already have prevented this situation in the SRP. This fix is listed for completeness only.) - Decane
 + Fixed the issue where returning to the Swamps for the first time would not unlock the level changers to the Cordon if Clear Sky has regressed from total victory against the renegades, leaving the player locked into the Swamps without explanation until Clear Sky advances back to its final faction war tier. - Decane
++ Fixed the issue where Kostyan's squad would begin attacking the military base prematurely if the player has already been to the military base entrance before Kostyan's squad spawns (new game required for effect). - Decane
 + Fixed Clear Sky's "Find the “Compass” artifact" task being received and immediately completed before the "Bring the “Compass” to Forester" task is received if the player already has the Compass when Forester asks the player to retrieve it. - Decane
 + Fixed Clear Sky's "Find the generator" task being received and immediately completed if the player initially bypasses its assigning space restrictor in the institute building but returns to it after deactivating the generator. (The fix below renders this obsolete. This fix is listed for completeness only.) - Decane
 + Fixed the issue where the player could bypass the space restrictor that completes Clear Sky's "Find the generator" task by entering the institute building through its eastern entrance (new game required for effect). - Decane
@@ -58,6 +60,7 @@ v1.1.3
 + Fixed Sakharov and Lingov not being marked as important characters on the map. - Decane
 + Fixed the issue where a squad commander icon could overlap with a trader icon on the map. - Decane
 + Fixed an SRP v1.0.4 regression that caused the digger captives at the Garbage concentration camp to appear to hold an invisible artifact detector during their artifact search animations. - Decane
++ Fixed the issue where scripted Yantar stalker squads could respawn right in front of the player. - Decane
 + Fixed the issue where zombified stalkers at the Army Warehouses could sometimes vanish right in front of the player. - Decane
 + Fixed some groups of zombified stalkers using cover as if they were ordinary stalkers. - Decane
 + Made the task to rescue Hound become available only upon the player having completed the task to rescue Drifter, as likely intended, rather than merely upon having initiated it. - Decane
@@ -68,13 +71,14 @@ v1.1.3
 + Fixed a few instances of a mechanic not being able to upgrade a pre-upgraded variant of a weapon even if they could upgrade the base weapon. - Decane
 + Fixed the incorrect parsing of hyphenated item names appearing as dependees for ammo in section 'item_dependence' in death_generic.ltx. - Decane
 + Fixed a typo in Sakharov's trade config that prevented the right multiplier being applied to the sell-price of shotgun ammo. - warcatt00
++ Fixed medicaments becoming more rather than less expensive at the Flea Market after liberating the concentration camp. - Decane
 + Fixed a range of trade config mistakes and omissions that resulted in some items being wrongly bought/sold at market price by certain traders. - Decane, SurDno
 + Fixed the smoothing of the bridge to Limansk mesh, which could cause shadow glitches at some angles and lighting conditions. - PYP
 + Fixed the issue where no money would actually be taken from the player in exchange for hiring the stalker squad overlooking the Cordon vehicle station to raid it. - Decane
 + Fixed the issue where the stalker squad overlooking the Cordon vehicle station could be hired to raid it in exchange for payment even if the player lacks sufficient funds. - Decane
 + Improved error diagnostics on _g.abort() invocation if the optional 'Improved LuaJIT Library' is installed - a Lua stack traceback is now printed. - Decane
 + Russian translation. - olegj5, SurDno
-+ Fixed the "Electronic stabilizer" upgrade for the SPAS-12 and Mossberg 88 wrongly decrementing their ammo capacity by 2. - AR2R
++ Fixed the "Electronic stabilizer" upgrade for the SPAS-12 and Maverick 88 wrongly decrementing their ammo capacity by 2. - AR2R
 + Fixed the "Relief backpack" upgrade for various armors wrongly incrementing the carry weight tooltip value by only 5kg instead of the 15kg actually unlocked by the upgrade. - vlad54rus
 + Fixed the issue where stationary squad commanders would claim hostiles are nearby when greeting the player even if only neutral/friendly factions occupy neighboring smart terrains. - Decane
 + Restored a few unused parting phrases for Sidorovich and one unused greeting phrase for Forester. - Decane
@@ -82,7 +86,6 @@ v1.1.3
 + Fixed corpse map spots haphazardly failing to appear on the minimap. - Shoker, Decane
 + Replaced the generic masked face of the player's unarmored character model with Scar's face, as in the leather jacket armored character model (new game required for effect). - Decane
 + Fixed a regression that caused the in-game name and description of 7.62x54 mmR 7N1 rounds on localizations other than English to be replaced with their XML string IDs. - Decane
-+ Fixed medicaments becoming more rather than less expensive at the Flea Market after liberating the concentration camp. - Decane
 + Added a unique name and description for 7.62x54 mmR armor-piercing sniper rounds to distinguish them from those boxed for the PKM and corrected their weapon applicability. - Decane
 + Improved the randomization of generic NPC dialogs by preventing a dialog of a given type from being repeated until all suitable dialogs of that type have been uttered once. - Decane
 + Unlocked several previously unused greeting phrases for stationary squad NPCs. - Decane
@@ -255,6 +258,7 @@ v1.0.4
 + Fixed several potentially crash-inducing empty section references in the Yantar and Limansk logic scripts. - Decane
 + Fixed the storyline breaking if the player kills every stalker in the Cordon stalker base before extracting the location of Sidorovich's loot from Khaletskiy, even after paying Sidorovich to set things right with the stalkers. - Decane
 + Fixed the storyline breaking intermittently in Agroprom if the player kills the Duty blockpost commander while he is speaking. - Decane
++ Fixed the issue where joining the bandits before completing the storyline in Yantar would make Lefty and his group hostile toward the player, rendering the storyline impossible to complete. - Decane
 + Fixed the Yantar "Follow the stalker onto the hangar roof" task being completed rather than cancelled if the player does not get into position before the cooling device has been repaired. - Decane
 + Fixed the issue where the Limansk bridge Clear Sky squad would keep firing at the house on the hill after the player speaks to the squad commander even after the military presence therein has been wiped out. - Decane
 + Fixed the Limansk "Destroy the machine gun nest" task being assigned to the player even if it has already been destroyed by the time the task would be contemporary. - Decane
@@ -305,7 +309,7 @@ v1.0.4
 + Fixed the issue where the Freedom (/Duty) base megaphone would continue to play Freedom's (/Duty's) propaganda even after the base is no longer captured by Freedom (/Duty). - Decane
 + Made the Freedom base megaphone play Yar and Ashot's conversations only when the player is in the vicinity of the Freedom base. - Decane
 + Fixed the issue where the VSS "Vintorez" received as a reward from Forester could not be upgraded. - Decane
-+ Added the missing 'doesn't use shot' attribute text to the "Barrel modification" upgrade tooltip for the Mossberg 88. - Decane
++ Added the missing 'doesn't use shot' attribute text to the "Barrel modification" upgrade tooltip for the Maverick 88. - Decane
 + Fixed the CS-1 suit and CS-3a suit having their names reversed in the English localization of the game. - Decane per Charcharo
 + Fixed a few dialog typos. - Decane per RK Roadkill
 + Added a localized text string for the Agroprom Underground, which fixes the issue where the level name would be displayed as 'agroprom_underground' in the save/load menus. - Decane
@@ -412,6 +416,7 @@ v1.0.2
 + Fixed unlit campfires emitting a burning sound. - Decane
 + Optimized some logic scripts by replacing continuous health restore calls with discrete calls. - Decane
 + Fixed a crash upon the game attempting to assign a 'capture' task to a non-existing squad: task_objects.script:718: attempt to index field '?' (a nil value). - Decane
++ Fixed a rare crash: bind_anomaly_zone.script:75: attempt to index local 'art' (a nil value). - Decane
 + Fixed the issue where friendly NPCs would not turn hostile to the player when they should. For example, bandit robber squads in the Garbage now behave as they are supposed to when the player refuses cooperation with them whilst being on good terms with the bandits generally. - Decane
 + Fixed the issue where, under some circumstances, important characters would not disappear if their parent smart terrain is hostile to the player. Almost all traders, barmen, mechanics, leaders, and minigame NPCs will now 'go in hiding' if the player attacks their base. The only exceptions are the Agroprom stalker trader and mechanic since GSC's code reveals that they were intended to remain put. - Decane
 + Fixed a glitch which would allow the player to use a guide's services even if the player couldn't afford it, potentially leading to a situation where the player has negative money. - Decane
@@ -472,7 +477,7 @@ v1.0.1
 
 + Fixed the issues with the Professor Sakharov dialog where (i) he would ask the player to go see Lefty even after the player had restarted the cooling device, and (ii) the player could ask for information about zombie attacks even after that is no longer contemporary. - Decane
 + Fixed the Uncle Yar dialog succeeding the completion of the night bloodsucker task, where the player could only reply to Yar's greeting with a prompt "Bye." - Decane
-+ Made the two second-tier SPAS-12 and Mossberg 88 upgrades mutually exclusive, as they should be. - Decane per RoboMook
++ Made the two second-tier SPAS-12 and Maverick 88 upgrades mutually exclusive, as they should be. - Decane per RoboMook
 + Fixed the issue with the first Clear Sky 'return item' task where the Makarov PM on the soldier's corpse is actually not "modified", despite the task description clearly stating that it is. - Decane
 + Assigned unique names to some quest weapons and armors which were missing them. - Decane
 
@@ -486,7 +491,7 @@ v1.0.0
 + Synchronized the bore and reload sounds of the following weapons: Abakan, AKS-74, AKS-74U, TOZ-66, F2000, G36, LR-300, PKM, SVD, SVU, TOZ-34. - RoboMook, smrtphoneusr
 + Added a sound for the 2nd bore animation of the following weapons: G36, L85, LR-300, MP5, SIG 550. - Decane
 + Corrected a few minor grammatical inconsistencies in stash descriptions. - Decane
-+ Made the Mossberg 88 use the intended sound files. - Decane
++ Made the Maverick 88 use the intended sound files. - Decane
 
 -----------------------------------------------------------------------------
 
@@ -564,7 +569,7 @@ v0.7 BETA
 
 v0.6 BETA
 
-+ Added Gosuke weapon mod 4 - better animations for the Mossberg 88 and LR-300. - Gosuke
++ Added Gosuke weapon mod 4 - better animations for the Maverick 88 and LR-300. - Gosuke
 - Removed the optional mods in order to keep the SRP clean and simple. The complete SRP package size is now only 1195KB.
 
 -----------------------------------------------------------------------------

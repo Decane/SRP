@@ -98,30 +98,33 @@ function add_to_binder(npc, ini, scheme, section, storage)
 	xr_logic.subscribe_action_for_events(npc, storage, crowkiller(npc, storage))
 end
 
-function set_scheme(obj, ini, scheme, section)	--, gulag_name)
-	local get_string = utils.cfg_get_string
-	local get_number = utils.cfg_get_number
-	local st = xr_logic.assign_storage_and_bind(obj, ini, scheme, section)
-	st.logic = xr_logic.cfg_get_switch_conditions(ini, section, obj)
-	st.max_crows_on_level = get_number(ini, section, "max_crows_on_level", obj, false, 16)
-	local path = get_string(ini, section, "spawn_path", obj, false, "", nil)
-	st.path_table = parse_names(path)
-	st.on_win = get_string(ini, section, "on_win", obj, false, "", nil)
-	local game_name = get_string(ini, section, "game_name", obj, false, "", "test_crowkiller")
-	st.game_name = game_name
-	local m = minigames_manager.get_minigames_manager()
+function set_scheme(obj, ini, scheme, section) --, gulag_name)
+
+	local get_string       = utils.cfg_get_string
+	local get_number       = utils.cfg_get_number
+
+	local st               = xr_logic.assign_storage_and_bind(obj, ini, scheme, section)
+
+	st.logic               = xr_logic.cfg_get_switch_conditions(ini, section, obj)
+	st.max_crows_on_level  = get_number(ini, section, "max_crows_on_level", nil, false, 16)
+	st.path_table          = parse_names(get_string(ini, section, "spawn_path", obj, true, ""))
+	st.on_win              = get_string(ini, section, "on_win", nil, false, "", nil)
+
+	local m                = minigames_manager.get_minigames_manager()
+	local game_name        = get_string(ini, section, "game_name", nil, false, "", "test_crowkiller")
+
+	st.game_name           = game_name
+
 	m:set_current_crowkiller(game_name)
-	st.highscore = get_number(ini, section, "highscore", obj, false, 0)
-	st.timer = get_number(ini, section, "timer", obj, false, 90)
-	local crows_to_kill = get_string(ini, section, "crows_to_kill", obj, false, "", "{0,0,0,0}")
-	if crows_to_kill ~= nil then
-		st.crows_to_kill = parse_nums(crows_to_kill)
-	else
-		st.crows_to_kill = {0,0,0,0}
-	end
-	st.money_multiplier = get_number(ini, section, "money_multiplier", obj, false, 10)
-	st.champion_multiplier = get_number(ini, section, "champion_multiplier", obj, false, 100)
-	st.new_highscore_time = get_number(ini, section, "new_highscore_time", obj, false, 100) * 1000
+
+	st.highscore           = get_number(ini, section, "highscore", nil, false, 0)
+	st.timer               = get_number(ini, section, "timer", nil, false, 90)
+	st.crows_to_kill       = parse_nums(get_string(ini, section, "crows_to_kill", nil, false, "", "{0,0,0,0}"))
+
+	st.money_multiplier    = get_number(ini, section, "money_multiplier", nil, false, 10)
+	st.champion_multiplier = get_number(ini, section, "champion_multiplier", nil, false, 100)
+	st.new_highscore_time  = get_number(ini, section, "new_highscore_time", nil, false, 100) * 1000
+
 	if not m:params_exist(game_name) then
 		m:create_new_minigame_parameter_list(game_name, minigame_crowkiller.CMGCrowKiller())
 		m:set_minigame_param(game_name, "highscore", st.highscore)

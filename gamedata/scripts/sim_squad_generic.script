@@ -568,11 +568,15 @@ end
 
 function sim_squad_generic:get_next_action()
 
+	if db.actor == nil then
+		return
+	end
+
 	local board = self.board
 
 	-- If simulation not started for us, stay.
 
-	if db.actor and not board.simulation_started then
+	if not board.simulation_started then
 		self.current_action = sim_stay_point(self, true)
 		self.current_action:make()
 		return
@@ -775,13 +779,14 @@ function sim_squad_generic:init_squad_task()
 							if game_relations.is_factions_enemies(squad_faction_name, neighbor_faction_name) then
 								if smart_under_attack(neighbor_faction_name, board_factions, neighbor_smart_id) == false then
 									local neighbor_smart_task = tm:get_tasks_by_smart(neighbor_smart_id)
-									if not neighbor_smart_task or neighbor_smart_task.base_prior <= 1 then
+									if not neighbor_smart_task or neighbor_smart_task.base_prior <= 1 then -- only permits replacing 'generic' eliminate tasks with capture tasks
 										task = tm:select_task("capture_smart", neighbor_smart, squad_faction_name)
 										task.src_obj = self.squad_id
 										if random_tasks[1] == nil then
 											random_tasks[1] = task.entity_id
 										elseif random_tasks[2] == nil then
 											random_tasks[2] = task.entity_id
+											break
 										end
 									end
 								end
@@ -1329,7 +1334,7 @@ function sim_squad_generic:get_squad_props()
 	-- DEBUG INFO: --
 	-----------------
 
---	str = str.." ["..self.squad_id.."]"
+--	str = str.." ["..self.squad_id.."]"..(self.name == "sim_squad_scripted" and "*" or "")..(self:get_script_target() and "*" or "")
 
 	-----------------
 	-- /DEBUG INFO --
@@ -1363,11 +1368,14 @@ function sim_squad_generic:get_squad_props()
 	local cache_target = board.players[self.player_id].squad_target_cache[self.squad_id]
 	local assigned_target_id = self.assigned_target_smart_id
 
-	str = str.."\\nFrom: "..(squad_smart_id ~= nil and smart_names.get_smart_terrain_name(board_smarts[squad_smart_id].smrt) or "")
-	str = str.."\\nPath: "..((current_action and current_action.name == "attack_point") and smart_names.get_smart_terrain_name(board_smarts[current_action.dest_smrt_id].smrt) or "")
-	str = str.."\\nNext: "..((current_action and current_action.next_point_id ~= nil) and smart_names.get_smart_terrain_name(board_smarts[current_action.next_point_id].smrt) or "")
-	str = str.."\\nCache: "..(cache_target ~= nil and smart_names.get_smart_terrain_name(board_smarts[cache_target].smrt) or "")
-	str = str.."\\nTo: "..(assigned_target_id ~= nil and smart_names.get_smart_terrain_name(board_smarts[assigned_target_id].smrt) or "")
+	str = str.."\\nAt: "..(squad_smart_id and smart_names.get_smart_terrain_name(board_smarts[squad_smart_id].smrt) or "")
+	str = str.."\\nPath: "..(current_action and current_action.name == "attack_point" and smart_names.get_smart_terrain_name(board_smarts[current_action.dest_smrt_id].smrt) or "")
+	str = str.."\\nNext: "..(current_action and current_action.next_point_id and smart_names.get_smart_terrain_name(board_smarts[current_action.next_point_id].smrt) or "")
+	str = str.."\\nCache: "..(cache_target and smart_names.get_smart_terrain_name(board_smarts[cache_target].smrt) or "")
+	str = str.."\\nTo: "..(assigned_target_id and smart_names.get_smart_terrain_name(board_smarts[assigned_target_id].smrt) or "")
+	str = str.."\\n-----"
+	str = str.."\\nSquad Power: "..string.format("%.7g", self.squad_power)
+	str = str.."\\nAttack Power: "..string.format("%.7g", self.squad_attack_power)
 ]]
 	-----------------
 	-- /DEBUG INFO --
@@ -1509,15 +1517,13 @@ function sim_attack_point:make()
 
 	dest_smart.combat_manager:register_squad(squad)
 
-	board:exit_smart(squad, src_smart)
+	board:exit_smart(squad, src_smart, true)
 
---	squad.current_action = self -- superfluous
-
---	local sim = alife()
+	local dest_squad_id = dest_smart.squad_id
 
 	for npc_id in pairs (squad.squad_npc) do
 		local se_npc = sim:object(npc_id)
-		board:setup_squad_and_group(se_npc)
+		change_team_sqaud_group(se_npc, dest_squad_id)
 		src_smart:update_jobs(se_npc)
 	end
 
@@ -1608,16 +1614,16 @@ function sim_stay_point:is_finished()
 		end
 	end
 
-	-- We can't leave smart if we are delay attacking.
+	-- We can't leave smart if we're delay attacking.
 
 	if squad.delayed_attack_task ~= nil then
 --		dbgmsg("delayed_attack_task is not nil for "..trans(squad.player_id).." squad with ID "..tostring(squad.squad_id).." and npc count "..tostring(squad.npc_count)..".")
 		return false
 	end
 
-	local src_smart = self.board.smarts[squad.smart_id].smrt
+	-- We can't leave smart if we're not idle.
 
-	if src_smart.combat_manager:get_squad_stage(squad) ~= "idle" then
+	if self.board.smarts[squad.smart_id].smrt.combat_manager:get_squad_stage(squad) ~= "idle" then
 		return false
 	end
 
@@ -1634,11 +1640,14 @@ function sim_stay_point:is_finished()
 	if get_game_time():diffSec(self.begin_time) < 360 then
 		return false
 	end
+--[[
+	-- Not necessary for stay -> stay transitions; done in sim_attack_point:make
+	-- for stay -> attack transitions:
 
 	if squad.sim_combat_id ~= nil then
-		src_smart.combat_manager:unregister_squad(squad)
+		self.board.smarts[squad.smart_id].smrt.combat_manager:unregister_squad(squad)
 	end
-
+]]
 	self.begin_time = nil
 
 	return true

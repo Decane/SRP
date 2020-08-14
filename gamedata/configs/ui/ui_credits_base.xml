@@ -445,7 +445,7 @@
 					<text align="c" font="graffiti32" color="ui_white">st_voiceworks</text>
 				</auto_static>
 				<auto_static start_time="143" length_sec="5" x="185" y="280" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
-					<text align="c" font="letterica25" color="ui_white">st_casting_direction</text>
+					<text align="c" font="letterica25" color="ui_6">st_casting_direction</text>
 				</auto_static>
 				<auto_static start_time="143" length_sec="5" x="185" y="315" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
 					<text align="c" font="graffiti32" color="ui_white">st_carrigan</text>
@@ -457,7 +457,7 @@
 					<text align="c" font="graffiti32" color="ui_white">st_johnson</text>
 				</auto_static>
 				<auto_static start_time="143" length_sec="5" x="185" y="440" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
-					<text align="c" font="graffiti32" color="ui_white">st_editor_design</text>
+					<text align="c" font="letterica25" color="ui_6">st_editor_design</text>
 				</auto_static>
 				<auto_static start_time="143" length_sec="5" x="185" y="475" width="500" height="40" light_anim="credits_head" la_cyclic="0" la_texture="0" la_alpha="1">
 					<text align="c" font="graffiti32" color="ui_white">st_siedow</text>

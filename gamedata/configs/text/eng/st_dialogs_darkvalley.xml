@@ -120,7 +120,7 @@
 		<text>Got any useful info for a stalker?</text>
 	</string>
 	<string id="val_fixer_about_benefit_1">
-		<text>Useful? Useful in our line of work means something that’s gonna help you stay alive. That, or something that’s gonna make your enemy dead. I’ll tell you about artifacts. What’s an artifact? It’s a cluster of anomalous energy, kinda like a stock cube. There’s also artifacts that can… rrr… what’s that damn word… ah, right… ge-ne-ra-te anomalies! I think that’s how Chekhov says it. Anyway, only problem is, once the artifact generates an anomaly it’s as good as useless. The anomaly itself ain’t exactly powerful nor does it last long, but it’s good enough to delay someone or knock ’em off your trail altogether.</text>
+		<text>Useful? Useful in our line of work means something that’s gonna help you stay alive. That, or something that’s gonna make your enemy dead. I’ll tell you about artifacts. What’s an artifact? It’s a cluster of anomalous energy, kinda like a stock cube. There’s also artifacts that can… err… what’s that damn word… ah, right… ge-ne-ra-te anomalies! I think that’s how Chekhov says it. Anyway, only problem is, once the artifact generates an anomaly it’s as good as useless. The anomaly itself ain’t exactly powerful nor does it last long, but it’s good enough to delay someone or knock ’em off your trail altogether.</text>
 	</string>
 	<string id="val_fixer_about_power_0">
 		<text>So what’s your field of work?</text>
@@ -495,7 +495,7 @@
 		<text>Oh, brother! You see, Freedom is all about, well, being free of any obligations. Everyone’s free to do his own thing. You wanna collect artifacts? Go ahead! Feel like trading? That’s fine too. You could even start a chess club if that floats your boat! Our basic rule is: no limits… as long as you don’t infringe the rights of fellow Freedom members. We’re not just a faction, brother - we’re a commune of free stalkers! We got fighters, but we got artists, too. And our engineers are the best in the Zone, anyone will tell you that!</text>
 	</string>
 	<string id="val_freeedom_leader_about_clan_111">
-		<text>That’s life, brother… Those of us who value personal freedom and don’t want to be governed by a bunch of suits must stick together to survive. This is how it works: the powers that be - on the outside - don’t want to set foot in the Zone. That gives us all this room to do what we’ve always wanted..! Here you’ll find people who couldn’t find their place in that other world.</text>
+		<text>That’s life, brother… Those of us who value personal freedom and don’t want to be governed by a bunch of suits must stick together to survive. This is how it works: the powers that be — on the outside — don’t want to set foot in the Zone. That gives us all this room to do what we’ve always wanted..! Here you’ll find people who couldn’t find their place in that other world.</text>
 	</string>
 	<string id="val_freeedom_leader_about_zone_1">
 		<text>Brother, the Zone is a gift from above! From its very conception, humanity has suffered under the burden of disease. And now - look at all these opportunities! These wound-healing artifacts, for example - they’re gonna revolutionize medicine! And what about the anomalies that defy the laws of gravity and the theory of magnetic fields? Building a facility for just one tiny experiment used to take years, right? But now, the Zone is like a ready-made outdoor science lab that research centers could only dream about!</text>

@@ -206,8 +206,8 @@ Gameplay fixes:
 + Fixed the issue where crows could get stuck floating in the air upon being shot.
 + Fixed the "Life support system" upgrade for the Freedom Exoskeleton making the player bleed out faster rather than slower as intended.
 + Fixed a few instances of a mechanic not being able to upgrade a pre-upgraded variant of a weapon even if they could upgrade the base weapon.
-+ Added the missing 'doesn't use shot' text to the threaded barrel upgrade tooltip for the Mossberg 88.
-+ Fixed the "Electronic stabilizer" upgrade for the SPAS-12 and Mossberg 88 wrongly decrementing their ammo capacity by 2.
++ Added the missing 'doesn't use shot' text to the threaded barrel upgrade tooltip for the Maverick 88.
++ Fixed the "Electronic stabilizer" upgrade for the SPAS-12 and Maverick 88 wrongly decrementing their ammo capacity by 2.
 + Fixed the "Relief backpack" upgrade for various armors wrongly incrementing the carry weight tooltip value by only 5kg instead of the 15kg actually unlocked by the upgrade.
 + Corrected the behavior of shot megaphones.
 + Fixed medicaments becoming more rather than less expensive at the Flea Market after liberating the concentration camp.
@@ -430,7 +430,6 @@ Bugs still in the game:
 • Volumetric smoke may not appear properly or at all on some DX10-capable hardware.
 • Skyboxes are visible through terrain when there is sufficient fog between the player and the terrain. The effect increases in prominence with fog density and the player's distance from the terrain.
 • Hugging the wall next to Forester from the other side triggers his greeting audio due to an imprecisely aligned space restrictor.
-• Some NPCs may occasionally utter two overlapping dialogs at once.
 • Attempting to exit the game while an NPC's death animation is in progress crashes the game:
 
   stack trace:

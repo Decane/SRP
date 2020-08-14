@@ -13,7 +13,7 @@
 		<text>What do you mean by “lost”? What happened?</text>
 	</string>
 	<string id="hello_mil_freedom_222">
-		<text>Nobody knows for sure, merc, but people are missing. Lone stalkers and even whole groups. Sometimes we catch bits and pieces of radio comms with requests for help. A mercenary squad spent the entire last week looking for their own at the farmstead.</text>
+		<text>Nobody knows for sure, merc, but people are missing. Lone stalkers and even whole groups. Sometimes we catch bits and pieces of radio comms with requests for help. A mercenary squad has spent the entire last week looking for their own at the farmstead.</text>
 	</string>
 	<string id="hello_mil_freedom_3">
 		<text>Let me go there and see what’s up.</text>
@@ -40,7 +40,7 @@
 		<text>Go see the Forester first, he’ll fill you in.</text>
 	</string>
 	<string id="hello_mil_freedom_77">
-		<text>What?</text>
+		<text>What now?</text>
 	</string>
 	<string id="hello_mil_freedom_777">
 		<text>Never mind, see you.</text>
@@ -64,10 +64,10 @@
 		<text>A fun job you got for me there. But hey, a man’s gotta do what a man’s gotta do. I need to figure out how to rescue that group just as much as you do.</text>
 	</string>
 	<string id="hello_mil_killer_11111112">
-		<text>I took care of that beast. Now I need to transmit the coordinates from the water tower.</text>
+		<text>I took care of that beast. Now I need to receive the transmission from the water tower.</text>
 	</string>
 	<string id="hello_mil_killer_11111113">
-		<text>Nothing to worry about. I’ve already transmitted the coordinates from the water tower.</text>
+		<text>Nothing to worry about. I’ve already received the transmission from the water tower.</text>
 	</string>
 	<string id="hello_mil_killer_22">
 		<text>Glad to see you. Did you find out how to get our guys out?</text>
@@ -88,7 +88,7 @@
 		<text>Sure did. Forester gave me the coordinates of the exit that will allow the mercenaries to get out of the space bubble. Only thing I need is a powerful transmitter to get in touch with the group and send them the coordinates.</text>
 	</string>
 	<string id="hello_mil_killer_5555">
-		<text>The army base should have a transmitter. The soldiers were hit by the large emission pretty hard and only a dozen survived all in all. They’re all sending SOS signals, thinking there’ll be a rescue operation. Except I don’t think anyone will come - they’ll be left to die, same as always.</text>
+		<text>The army base should have a transmitter. The soldiers were hit by the large emission pretty hard and only a dozen survived in all. They’re all sending SOS signals, thinking there’ll be a rescue operation. Except I don’t think anyone will come - they’ll be left to die, same as always.</text>
 	</string>
 	<string id="hello_mil_killer_55555">
 		<text>A dozen military guys are quite a force, even after an emission. Could you lend me some help? I mean, we’re working towards a common goal, aren’t we?</text>

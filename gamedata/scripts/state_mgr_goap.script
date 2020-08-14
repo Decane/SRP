@@ -1,6 +1,6 @@
 -- DC170507: Optimization.
 
-local props =
+props =
 {
 	-- MANAGER
 
@@ -83,7 +83,7 @@ local props =
 	["animation_reset"]             = 87
 }
 
-local ops =
+ops =
 {
 	["end"]                         = 1,
 	["locked"]                      = 2,
@@ -99,12 +99,12 @@ local ops =
 	["movement_walk"]               = 22,
 	["movement_run"]                = 23,
 	["movement_stand"]              = 24,
-	["movement_walk_turn"]		    = 25,
-	["movement_walk_search"]	    = 26,
-	["movement_stand_turn"]		    = 27,
-	["movement_stand_search"]	    = 28,
-	["movement_run_turn"]		    = 29,
-	["movement_run_search"]		    = 30,
+	["movement_walk_turn"]          = 25,
+	["movement_walk_search"]        = 26,
+	["movement_stand_turn"]         = 27,
+	["movement_stand_search"]       = 28,
+	["movement_run_turn"]           = 29,
+	["movement_run_search"]         = 30,
 
 	["mental_free"]                 = 31,
 	["mental_danger"]               = 32,
@@ -134,10 +134,10 @@ local ops =
 	["animation_reset"]             = 73,
 	["animation_clear_anim"]        = 74,
 
-	["walk_turn"]				    = 75,
-	["walk_search"]				    = 76,
-	["stand_turn"]				    = 77,
-	["stand_search"]			    = 78
+	["walk_turn"]                   = 75,
+	["walk_search"]                 = 76,
+	["stand_turn"]                  = 77,
+	["stand_search"]                = 78
 }
 
 local wp_end_true = world_property(1, true)
@@ -210,8 +210,8 @@ function goap_graph(st, npc)
 	planner:setup(npc)
 
 	st.planner = planner
-	st.properties = props
-	st.operators = ops
+--	st.properties = props
+--	st.operators = ops
 
 	--------------------------------------------------------------------------------
 	-- EVALUATORS
@@ -275,9 +275,9 @@ function goap_graph(st, npc)
 	planner:add_evaluator(75, state_mgr_animstate.eva_state_mgr_animstate_wounded_heavy(st))
 	planner:add_evaluator(76, state_mgr_animstate.eva_state_mgr_animstate_wounded_heavy_now(st))
 
-	local st_animation = state_mgr_animation.animation(npc, st)
-	st.animation = st_animation
-	npc:set_callback(callback.script_animation, st_animation.anim_callback, st_animation)
+	st.animation = state_mgr_animation.animation(npc, st)
+
+	npc:set_callback(callback.script_animation, st.animation.anim_callback, st.animation)
 
 	planner:add_evaluator(81, state_mgr_animation.eva_state_mgr_animation(st))
 	planner:add_evaluator(82, state_mgr_animation.eva_state_mgr_animation_locked(st))
@@ -290,44 +290,6 @@ function goap_graph(st, npc)
 	--------------------------------------------------------------------------------
 	-- ACTIONS
 	--------------------------------------------------------------------------------
-
-	local wp_end_true = wp_end_true
-	local wp_locked_false = wp_locked_false
-	local wp_locked_external_false = wp_locked_external_false
-
-	local wp_weapon_true = wp_weapon_true
-
-	local wp_movement_true = wp_movement_true
-	local wp_movement_false = wp_movement_false
-	local wp_movement_walk_true = wp_movement_walk_true
-	local wp_movement_run_true = wp_movement_run_true
-	local wp_movement_stand_true = wp_movement_stand_true
-
-	local wp_mental_true = wp_mental_true
-	local wp_mental_false = wp_mental_false
-	local wp_mental_danger_now_true = wp_mental_danger_now_true
-
-	local wp_bodystate_true = wp_bodystate_true
-	local wp_bodystate_false = wp_bodystate_false
-	local wp_bodystate_crouch_true = wp_bodystate_crouch_true
-	local wp_bodystate_standing_true = wp_bodystate_standing_true
-	local wp_bodystate_crouch_now_false = wp_bodystate_crouch_now_false
-	local wp_bodystate_standing_now_true = wp_bodystate_standing_now_true
-	local wp_bodystate_standing_now_false = wp_bodystate_standing_now_false
-
-	local wp_direction_true = wp_direction_true
-	local wp_direction_false = wp_direction_false
-	local wp_direction_search_true = wp_direction_search_true
-	local wp_direction_search_false = wp_direction_search_false
-
-	local wp_animstate_true = wp_animstate_true
-	local wp_animstate_false = wp_animstate_false
-	local wp_animstate_idle_now_true = wp_animstate_idle_now_true
-
-	local wp_animation_true = wp_animation_true
-	local wp_animation_false = wp_animation_false
-	local wp_animation_play_true = wp_animation_play_true
-	local wp_animation_none_now_true = wp_animation_none_now_true
 
 	--------------------------------------------------------------------------------
 	-- WEAPON
@@ -853,7 +815,7 @@ function goap_graph(st, npc)
 	goal:add_property(wp_end_true)
 	planner:set_goal_world_state(goal)
 
-	if npc.debug_planner ~= nil then
-		npc:debug_planner(planner)
-	end
+--	if npc.debug_planner ~= nil then -- nv160713 not needed in retail
+--		npc:debug_planner(planner)
+--	end
 end

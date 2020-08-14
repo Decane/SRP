@@ -2,7 +2,7 @@ class "faction_brain_mutant"
 
 function faction_brain_mutant:__init(faction)
 	self.faction = faction
-	self.human = false
+--	self.human = false
 	self.use_issue_order = false
 	self.use_cover_attack = false
 	if faction.player_name == "monster" then

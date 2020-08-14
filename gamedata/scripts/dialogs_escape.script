@@ -1,6 +1,7 @@
 -- Andrey "Bandicoot" Zakoliukin --
 
 local money_for_relation = 1000
+local money_for_support = 500
 
 function transfer_money_for_relation(first_speaker, second_speaker)
 	dialogs.relocate_money(second_speaker, money_for_relation, "out")
@@ -49,7 +50,7 @@ end
 function transfer_habar(first_speaker, second_speaker)
 	dialogs.relocate_item_section_from_actor(first_speaker, second_speaker, "esc_trader_habar")
 end
-
+--[[
 function transfer_pistol(first_speaker, second_speaker)
 	dialogs.transfer_any_pistol_from_actor(first_speaker, second_speaker)
 end
@@ -57,15 +58,15 @@ end
 function transfer_pistol_driver(first_speaker, second_speaker)
 	dialogs.transfer_any_pistol_from_actor(first_speaker, second_speaker)
 end
---[[
+
 function transfer_gun(first_speaker, second_speaker)
 	dialogs.transfer_any_gun_from_actor(first_speaker, second_speaker)
 end
-]]
+
 function transfer_leader_pda(first_speaker, second_speaker)
 	dialogs.relocate_item_section_from_actor(first_speaker, second_speaker, "device_pda_military")
 end
---[[
+
 function actor_has_general_pda(first_speaker)
 	return first_speaker:object("device_pda_military") ~= nil
 end
@@ -73,7 +74,7 @@ end
 function actor_hasnt_general_pda(first_speaker)
 	return not actor_has_general_pda(first_speaker)
 end
-]]
+
 function transfer_prisoner_pistol(first_speaker, second_speaker)
 	dialogs.transfer_any_pistol_from_actor(first_speaker, second_speaker)
 end
@@ -85,7 +86,7 @@ end
 function transfer_prisoner_gun(first_speaker, second_speaker)
 	dialogs.transfer_any_gun_from_actor(first_speaker, second_speaker)
 end
-
+]]
 function transfer_device_pda_driver(first_speaker, second_speaker)
 	dialogs.relocate_item_section_from_actor(first_speaker, second_speaker, "esc_device_pda_driver")
 end
@@ -99,11 +100,11 @@ function actor_hasnt_device_pda_driver(first_speaker)
 end
 
 function has_money_for_support(first_speaker)
-	return first_speaker:money() >= 500
+	return first_speaker:money() >= money_for_support
 end
 
 function give_money_for_support(first_speaker, second_speaker)
-	dialogs.relocate_money(second_speaker, 500, "out")
+	dialogs.relocate_money(second_speaker, money_for_support, "out")
 end
 --[[
 function esc_additional_quest_5c_reward()

@@ -1,5 +1,5 @@
-local global_animations = { -- unlocalized in vanilla
-
+local global_animations =
+{
 	desk_idle                = {"idle", "idle_1", "palci", "zatylok"},
 --	desk_talk                = {"idle"},
 	desk_to_chair_hack       = {"idle_spinka"},
@@ -34,34 +34,22 @@ local global_animations = { -- unlocalized in vanilla
 	forester_see             = {"see_in", "see", "see_out"},
 	forester_talk_1          = {"sit_talk_1_in", "sit_talk_1", "sit_talk_1_out"},
 	forester_talk_2          = {"sit_talk_2_in", "sit_talk_2", "sit_talk_2_out"},
-	forester_talk_3          = {"sit_talk_3_in", "sit_talk_3", "sit_talk_3_out"}
+	forester_talk_3          = {"sit_talk_3_in", "sit_talk_3", "sit_talk_3_out"},
 }
 
-local head_animations = { -- unlocalized in vanilla
-
+local head_animations =
+{
 	forester_talk_1          = {"sit_talk_1_in", "sit_talk_1", "sit_talk_1_out"},
 	forester_talk_2          = {"sit_talk_2_in", "sit_talk_2", "sit_talk_2_out"},
 	forester_talk_3          = {"sit_talk_3_in", "sit_talk_3", "sit_talk_3_out"},
 	forester_reaction        = {"reaction_in", "reaction", "reaction_out"},
 	normal                   = {"talk_0", "talk_1", "talk_4"},
 	angry                    = {"talk_3", "talk_2", "talk_1"},
-	good                     = {"talk_glad_0"}
---	first_phrase             = {"vstuplenie_head"}
+	good                     = {"talk_glad_0"},
+--	first_phrase             = {"vstuplenie_head"},
 }
 
-----------------------------------------------------------------------------------------------------
---[[
-function on_start_tutorial_item_1()
-	if db.trader == nil then return end
-	db.trader:external_sound_start("characters_voice\\scenario\\trader\\trader_tutorial_pda_12")
-end
-
-function on_stop_tutorial_item()
-	if db.trader == nil then return end
-	db.trader:external_sound_stop()
-end
-]]
-----------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 
 class "mob_trader"
 
@@ -93,9 +81,9 @@ function mob_trader:reset_scheme()
 		end
 	end
 
-	if self_st.anim_head == nil then
-		self_st.anim_head = "normal"
-	end
+--	if self_st.anim_head == nil then
+--		self_st.anim_head = "normal"
+--	end
 
 --	db.trader = sobj
 end
@@ -103,14 +91,13 @@ end
 function mob_trader:use_callback()
 	trade_manager.update(self.object)
 end
-
+--[[
 function mob_trader:update(delta)
-	if xr_logic.try_switch_to_another_section(self.object, self.st, db.actor) then
-		return
-	end
+	-- bind_monster.update() will already have done this:
+	xr_logic.try_switch_to_another_section(self.object, self.st, db.actor)
 end
-
----------------------------------------------------------------------------------------------------------------------
+]]
+--------------------------------------------------------------------------------
 
 function mob_trader:select_global_animation()
 	local anim_set = global_animations[self.st.anim_global]
@@ -124,7 +111,7 @@ function mob_trader:select_head_animation()
 	return anim_set[r]
 end
 
----------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 
 function mob_trader:on_global_anim_request()
 	local self_st = self.st
@@ -135,7 +122,7 @@ function mob_trader:on_global_anim_request()
 end
 
 function mob_trader:on_head_anim_request()
-	if self.st.anim_head == nil then return end
+--	if self.st.anim_head == nil then return end -- now not possible
 	self.object:set_trader_head_anim(self:select_head_animation())
 end
 
@@ -143,7 +130,7 @@ function mob_trader:on_sound_end()
 	self.st.signals["sound_phrase_end"] = true
 end
 
----------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 
 function mob_trader:deactivate()
 	local sobj = self.object
@@ -155,48 +142,36 @@ function mob_trader:deactivate()
 --	db.trader = nil
 end
 
----------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 
 function add_to_binder(npc, ini, scheme, section, storage)
-	local new_action = mob_trader(npc, storage)
-	xr_logic.subscribe_action_for_events(npc, storage, new_action)
+	xr_logic.subscribe_action_for_events(npc, storage, mob_trader(npc, storage))
 end
 
 function set_scheme(npc, ini, scheme, section) --, gulag_name)
 
-	local st       = xr_logic.assign_storage_and_bind(npc, ini, scheme, section)
-	st.logic       = xr_logic.cfg_get_switch_conditions(ini, section, npc)
-	st.anim_global = utils.cfg_get_string(ini, section, "anim_global", npc, true, "")
-	st.can_talk    = utils.cfg_get_bool(ini, section, "can_talk", npc, false, true)
-	st.tip_text    = utils.cfg_get_string(ini, section, "tip_text", npc, false, "", "character_use")
+	npc:set_tip_text(utils.cfg_get_string(ini, section, "tip_text", nil, false, "", "character_use"))
 
-	if st.tip_text == nil then
-		st.tip_text = ""
-	end
-
-	npc:set_tip_text(st.tip_text)
-
-	if ini:line_exist(section, "sound_phrase") then
-		st.anim_head    = utils.cfg_get_string(ini, section, "anim_head", npc, false, "")
-		st.sound_phrase = utils.cfg_get_string(ini, section, "sound_phrase", npc, false, "")
+	if utils.cfg_get_bool(ini, section, "can_talk", nil, false, true) then
+		npc:enable_talk()
 	else
-		st.anim_head    = nil
-		st.sound_phrase = nil
+		npc:disable_talk()
 	end
 
-	--' check if play once animation
-	st.play_once = false
-	if ini:line_exist(section, "on_signal") then
-		local str = utils.cfg_get_string(ini, section, "on_signal", npc, false, "")
+	local st        = xr_logic.assign_storage_and_bind(npc, ini, scheme, section)
+
+	st.logic        = xr_logic.cfg_get_switch_conditions(ini, section, npc)
+	st.anim_global  = utils.cfg_get_string(ini, section, "anim_global", npc, true, "")
+	st.anim_head    = utils.cfg_get_string(ini, section, "anim_head", nil, false, "", "normal")
+	st.sound_phrase = utils.cfg_get_string(ini, section, "sound_phrase", nil, false, "")
+	st.play_once    = false
+
+	local str       = utils.cfg_get_string(ini, section, "on_signal", nil, false, "")
+
+	if str then
 		local par = utils.parse_params(str)
 		if par[1] == "animation_end" then
 			st.play_once = true
 		end
-	end
-
-	if st.can_talk == true then
-		npc:enable_talk()
-	else
-		npc:disable_talk()
 	end
 end

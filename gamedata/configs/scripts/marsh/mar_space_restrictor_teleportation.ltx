@@ -14,7 +14,7 @@ on_timer = 2500 | sr_idle@ui %=teleport_actor(mar_actor_teleport_at_marsh_walk:m
 on_info = sr_idle@place_choice %-mar_csky_guide_teleport_to_escape =set_actor_faction(none) =enable_ui =teleport_actor(mar_actor_teleport_to_escape_walk:mar_actor_teleport_to_escape_look)%
 
 [sr_idle@ui]
-on_timer = 2500 | {-mar_csky_guide_teleport_talk_marsh} sr_idle@sound_marsh %=enable_ui +mar_csky_guide_teleport_talk_marsh%, sr_idle@place_choice %=enable_ui%
+on_timer = 2500 | {-mar_csky_guide_teleport_talk_marsh} sr_idle@sound_marsh %=enable_ui =start_sim +mar_csky_guide_teleport_talk_marsh%, sr_idle@place_choice %=enable_ui%
 
 [sr_idle@sound_marsh]
 on_info = {!is_playing_sound} sr_idle@sound_commander

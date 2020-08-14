@@ -42,9 +42,9 @@ target_story_ids = 1207
 condlist_0 = {+mil_merc_talked} complete
 condlist_1 = {+mil_hog_death} fail
 condlist_2 = {+mil_actor_inside_wtower} reversed, {=is_squad_enemy_to_actor(mil_killer_invaders)} reversed
-on_complete = %+mil_reach_merc_done%
-on_reversed = %+mil_reach_merc_done%
-on_fail = %+mil_reach_merc_done%
+;on_complete = %+mil_reach_merc_done%
+;on_reversed = %+mil_reach_merc_done%
+;on_fail = %+mil_reach_merc_done%
 prior = 10
 auto_faction = false
 
@@ -194,8 +194,9 @@ wait_time = -1
 immediate_reward = true
 reward_money = 2000
 requested_items = mil_quest_ammo_gauss
-;on_complete = %+mil_additional_quest_1_info_complete%
-on_init = %+mil_additional_quest_1_info_complete%
+on_complete = %+mil_additional_quest_1_info_complete%
+on_reversed = %+mil_additional_quest_1_info_complete%
+on_fail = %+mil_additional_quest_1_info_complete%
 community_relation_delta_fail=-100
 community_relation_delta_complete=+100
 auto_faction = true

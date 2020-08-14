@@ -2,25 +2,21 @@ class "faction_brain_human"
 
 function faction_brain_human:__init(faction)
 	self.faction = faction
-	self.human = true
+--	self.human = true
 	self.use_issue_order = true
 	self.use_cover_attack = true
 	self.use_prepare_phase = true
 	self.use_delay_attack = false
-	if faction.player_name == "killer" then
-		self.use_counter_attack = false
-	else
-		self.use_counter_attack = true
-	end
+	self.use_counter_attack = faction.player_name ~= "killer"
 end
 
 local faction_leader_tbl =
 {
-	["csky"]	= "mar_csky_commander_name",
-	["stalker"]	= "esc_leader_stalkerbase_name",
-	["bandit"]	= "gar_bandit_leader_name",
-	["dolg"]	= "agr_duty_base_commander_name",
-	["freedom"]	= "val_freedom_leader_name"
+	["csky"]    = "mar_csky_commander_name",
+	["stalker"] = "esc_leader_stalkerbase_name",
+	["bandit"]  = "gar_bandit_leader_name",
+	["dolg"]    = "agr_duty_base_commander_name",
+	["freedom"] = "val_freedom_leader_name"
 }
 
 function faction_brain_human:calculate_current_expansion(no_sound)

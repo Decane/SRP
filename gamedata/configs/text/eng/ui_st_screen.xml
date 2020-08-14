@@ -46,7 +46,7 @@
 		<text>Task updated:</text>
 	</string>
 	<string id="gun_jammed">
-		<text>Your weapon has jammed!</text>
+		<text>Your weapon has jammed! Reload!</text>
 	</string>
 	<string id="inventory_box_use">
 		<text>Search ($$ACTION_USE$$)</text>
@@ -196,6 +196,6 @@
 		<text>Renegades</text>
 	</string>
 	<string id="agru_cs_warning">
-		<text>ATTENTION! LEAVE HAZARDOUS AREA IMMEDIATELY</text>
+		<text>ATTENTION! LEAVE HAZARDOUS AREA IMMEDIATELY!</text>
 	</string>
 </string_table>

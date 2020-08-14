@@ -6,33 +6,14 @@ class "se_stalker" (cse_alife_human_stalker)
 
 --------------------
 
-function se_stalker:__init (section) super (section)
-	self.ini                                  = nil
---	self.ini_initialized                      = false
---	self.smart_terrain_conditions             = nil
---	self.smart_terrain_conditions_initialized = false
---	self.job_online                           = nil
---	self.job_online_condlist                  = nil
-	self.death_droped                         = false
-	self.squad_id                             = nil
---	self.m_registred                          = false
-	self.sim_forced_online                    = false
-	self.treasure_processed                   = 0 -- SRP: 1 means true, other values (should be only 0 or 2) mean false
+function se_stalker:__init(section) super(section)
+	self.ini                  = nil
+	self.death_droped         = false
+	self.squad_id             = nil
+	self.sim_forced_online    = false
+	self.treasure_processed   = 0 -- SRP: 1 means true, other values (should be only 0 or 2) mean false
 end
 
---------------------
---[[
-function se_stalker:get_ini()
-	if not self.ini_initialized then
-		local ini = self:spawn_ini()
-		self.ini = ini
-		self.ini_initialized = true
-		if ini:section_exist("spawner") then
-			self.spawner = xr_logic.parse_condlist(db.actor, "spawner", "cond", ini:r_string("spawner", "cond"))
-		end
-	end
-end
-]]
 --------------------
 
 function se_stalker:can_switch_offline()
@@ -44,11 +25,7 @@ function se_stalker:can_switch_offline()
 	if self.sim_forced_online == true then
 		return false
 	end
---[[
-	if self.job_online_condlist ~= nil then
-		return xr_logic.pick_section_from_condlist(db.actor_proxy, self, self.job_online) ~= true
-	end
-]]
+
 	return cse_alife_human_stalker.can_switch_offline(self)
 end
 
@@ -63,11 +40,7 @@ function se_stalker:can_switch_online()
 	if self.sim_forced_online == true then
 		return true
 	end
---[[
-	if self.job_online_condlist ~= nil then
-		return xr_logic.pick_section_from_condlist(db.actor_proxy, self, self.job_online) == true
-	end
-]]
+
 	if self.ini == nil or self.spawner == nil then
 		return cse_alife_human_stalker.can_switch_online(self)
 	end
@@ -107,7 +80,7 @@ end
 
 function se_stalker:STATE_Write(packet)
 
-	cse_alife_human_stalker.STATE_Write (self, packet)
+	cse_alife_human_stalker.STATE_Write(self, packet)
 
 	packet:w_u8(self.treasure_processed) -- SRP
 
@@ -135,7 +108,7 @@ end
 
 function se_stalker:STATE_Read(packet, size)
 
-	cse_alife_human_stalker.STATE_Read (self, packet, size)
+	cse_alife_human_stalker.STATE_Read(self, packet, size)
 
 	self.treasure_processed = packet:r_u8() -- SRP
 
@@ -171,7 +144,6 @@ end
 --------------------
 
 function se_stalker:on_before_register()
---	self:fill_exclusives()
 	local ini = self:spawn_ini()
 	self.ini = ini
 	if ini:section_exist("spawner") then
@@ -185,39 +157,25 @@ function se_stalker:on_register()
 
 	cse_alife_human_stalker.on_register(self)
 
-	local board = sim_board.get_sim_board()
-	self.board = board
-
-	local tm = task_manager.get_task_manager()
-	self.tm = tm
-
---	self.m_registred = true
-
-	local obj_ini = self.ini
-
-	if obj_ini:section_exist("task_manager") then
-
-		local reward = utils.cfg_get_string(obj_ini, "task_manager", "reward", self, false, "", nil)
-		if reward ~= nil then
-			tm:register_rewarder(self.id, reward)
-		end
-
-		local task = utils.cfg_get_string(obj_ini, "task_manager", "task", self, false, "", nil)
-		if task ~= nil then
-			tm:register_tasker(self.id, task)
-		end
-	end
+	self.board = sim_board.get_sim_board()
+	self.tm = task_manager.get_task_manager()
 
 	self:brain():can_choose_alife_tasks(false)
 
-	local smart = utils.cfg_get_string(obj_ini, "logic", "smart_terrain", self, false, "", "")
-	local smart_obj = board:get_smart_by_name(smart)
+	local ini = self.ini
 
-	if smart_obj == nil then
-		return
+	if ini:section_exist("task_manager") then
+
+		local reward = utils.cfg_get_string(ini, "task_manager", "reward", nil, false, "", nil)
+		if reward ~= nil then
+			self.tm:register_rewarder(self.id, reward)
+		end
+
+		local task = utils.cfg_get_string(ini, "task_manager", "task", nil, false, "", nil)
+		if task ~= nil then
+			self.tm:register_tasker(self.id, task)
+		end
 	end
-
-	_G.sim:object(smart_obj.id):register_npc(self)
 end
 
 --------------------
@@ -235,12 +193,6 @@ end
 
 --------------------
 
-function se_stalker:on_spawn()
-	cse_alife_human_stalker.on_spawn(self)
-end
-
---------------------
-
 function se_stalker:on_death(killer)
 	cse_alife_human_stalker.on_death(self, killer)
 	smart_terrain.on_death(self)
@@ -254,17 +206,7 @@ function se_stalker:on_death(killer)
 end
 
 --------------------
---[[
-function se_stalker:fill_exclusives()
-	self:get_ini()
-	self.smart_terrain_conditions = smart_terrain.read_smart_terrain_conditions(self)
-	if self.smart_terrain_conditions then
-		for name, condlist in pairs (self.smart_terrain_conditions) do
-			smart_terrain.exclusives[name] = (smart_terrain.exclusives[name] or 0) + 1
-		end
-	end
-end
-]]
+
 function se_stalker:update()
 	cse_alife_human_stalker_update(self)
 	if self.squad_id ~= nil then
@@ -277,9 +219,15 @@ end
 
 --------------------
 
+function se_stalker:on_spawn()
+	cse_alife_human_stalker.on_spawn(self)
+end
+
+--------------------
+
 class "se_trader" (cse_alife_trader)
 
-function se_trader:__init (section) super (section)
+function se_trader:__init(section) super(section)
 end
 
 function se_trader:keep_saved_data_anyway()

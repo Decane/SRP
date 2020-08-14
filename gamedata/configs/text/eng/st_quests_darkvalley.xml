@@ -52,7 +52,7 @@
 		<text>Deliver the PDA to Chekhov</text>
 	</string>
 	<string id="val_deliver_pda_text">
-		<text>The commandant’s PDA contains a lot of information which can help Freedom work out who is attacking them and how they’re getting into the Dark Valley. Deliver the PDA to the leader of Freedom.</text>
+		<text>The commandant’s PDA contains a lot of information, which can help Freedom work out who is attacking them and how they’re getting into the Dark Valley. Deliver the PDA to the leader of Freedom.</text>
 	</string>
 	<string id="val_destroy_boar_guard_9_2_name">
 		<text>Destroy the boar lair</text>
@@ -193,6 +193,6 @@
 		<text>Return Serega’s guitar</text>
 	</string>
 	<string id="val_recover_item_3_text">
-		<text>Someone stole Serega’s guitar, can you imagine that? He’s the only one who can play the guitar around here, and he does it well too, unlike the rest of them. We figured out who the thief was real quick but the cocksucker hid it somewhere. Bring that guitar back ’cause Serega refuses to play any other, OK?</text>
+		<text>Someone stole Serega’s guitar, can you imagine that? He’s the only one who can play the guitar around here, and he does it well too, unlike the rest of them. We figured out who the thief is real quick but the cocksucker hid it someplace. Bring that guitar back ’cause Serega refuses to play any other, OK?</text>
 	</string>
 </string_table>

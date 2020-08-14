@@ -1,35 +1,11 @@
 if (jit == nil) then
 	profiler.setup_hook()
 end
---[[
-function empty(container)
 
-	if type(container) == "function" then
-		for i in container do
-			return false
-		end
-		return true
-	end
-
-	assert (type(container) == "table")
-
-	if container[1] ~= nil then
-		return false
-	end
-
-	for i in pairs (container) do
-		return false
-	end
-
-	return true
-end
-]]
 schemes = {}
--- stypes = {}
 
-function load_scheme(filename, scheme) --, stype)
+function load_scheme(filename, scheme)
 	schemes[scheme] = filename
---	stypes[scheme] = stype
 	-- nv130308 pre-load schemes for early validation
 	-- this prefetches the logic and reports problems before loading any save
 	if not _G[filename] then
@@ -77,507 +53,103 @@ end
 function callstack()
 end
 
+--[[
+
+local function print_indented(fmt, indent_level, ...)
+	error_log(string.rep("  ", indent_level) .. string.format(fmt, ...))
+end
+
+function print_tbl(table, indent_level)
+
+	if indent_level == nil then
+		indent_level = 0
+	end
+
+	print_indented("{", indent_level)
+
+	for k, v in pairs (table) do
+
+		local ktype = type(k)
+		local vtype = type(v)
+
+		local print_key
+
+		if ktype == "string" then
+			print_key = "'"..k.."'"
+		elseif ktype == "function" or ktype == "userdata" then
+			print_key = "<"..ktype..">"
+		else
+			print_key = tostring(k)
+		end
+
+		if vtype == "table" then
+			print_indented("[%s] =", indent_level + 1, print_key)
+			print_tbl(v, indent_level + 1)
+		elseif vtype == "function" or vtype == "userdata" then
+			print_indented("[%s] = <%s>,", indent_level + 1, print_key, vtype)
+		else -- string/number/boolean
+			local print_val = vtype == "string" and "'"..v.."'" or tostring(v)
+			print_indented("[%s] = %s,", indent_level + 1, print_key, print_val)
+		end
+	end
+
+	print_indented(indent_level == 0 and "}" or "},", indent_level)
+end
+
+]]
+
 ----------------------------------------------------------------------
 
-if nil == time_global then
-	time_global = function() return device():time_global() end
-end
---[[
-function wait_game(time_to_wait)
-	verify_if_thread_is_running()
-	if (time_to_wait == nil) then
-		coroutine.yield()
-	else
-		local time_to_stop = game.time() + time_to_wait
-		while game.time() <= time_to_stop do
-			coroutine.yield()
-		end
-	end
-end
-
-function wait(time_to_wait)
-	verify_if_thread_is_running()
-	if (time_to_wait == nil) then
-		coroutine.yield()
-	else
-		local time_to_stop = time_global() + time_to_wait
-		while time_global() <= time_to_stop do
-			coroutine.yield()
-		end
-	end
-end
-]]
 function action(obj, ...)
-	local arg = {...}
-	local act = entity_action()
-	local i = 1
-	while true do
-		local argument = arg[i]
-		if (argument ~= nil) then
-			act:set_action(argument)
-		else
-			break
-		end
-		i = i + 1
-	end
-	if (obj ~= nil) then
-		obj:command(act, false)
-	end
-	return entity_action(act)
-end
---[[
-function action_first(obj, ...)
-	local arg = {...}
-	local act = entity_action()
-	local i = 1
-	while true do
-		if (arg[i] ~= nil) then
-			act:set_action(arg[i])
-		else
-			break
-		end
-		i = i + 1
-	end
-	if (obj ~= nil) then
-		obj:command(act, true)
-	end
-	return entity_action(act)
-end
-]]
-function round(value)
-	local min = math.floor(value)
-	local max = min + 1
-	return value - min > max - value and max or min
---	if value - min > max - value then return max end
---	return min
-end
---[[
-function debug_get_level_object(obj_name)
-	local res = level.debug_object(obj_name)
-	while res == nil do
-		res = level.object(obj_name)
-		wait()
-	end
-	return res
-end
-
-function debug_get_actor()
-	local res = level.debug_actor()
-	while res == nil do
-		res = level.debug_actor()
-		wait()
-	end
-	return res
-end
-]]
-function distance_between(obj1, obj2)
-	return obj1:position():distance_to(obj2:position())
-end
---[[
-function distance_between_safe(obj1, obj2)
-	if (obj1 == nil or obj2 == nil) then return 100000 end
-	return obj1:position():distance_to(obj2:position())
-end
-]]
-function has_alife_info(info_id)
---[[
-	if sim == nil then
-		return false
-	end
-	return sim:has_info(0, info_id)
-]]
-	return sim ~= nil and sim:has_info(0, info_id) or false
-end
---[[
-function reset_action(npc, script_name)
-	if npc:get_script() then
-		npc:script(false, script_name)
-	end
-	npc:script(true, script_name)
-end
-
-class "script_object"
-
-function script_object.__init(self, name, script, ...)
-	self.action         = action(nil, ...)
-	self.object_name    = name
-	self.script_name    = script
-	self.object         = nil
-end
-
-function script_object:update()
-	local obj = self.object
-	self.object = level.object(self.object_name)
-	if (obj == nil) and (self.object ~= nil) then
-		obj = self.object
-		obj:script(true, self.script_name)
-		obj:command(self.action, false)
-	end
-end
-
-function GiveInfoViaPda(obj_receiver, obj_sender, info_number)
-	obj_receiver:give_info_portion_via_pda(info_number, obj_sender)
-end
-]]
---------------------------------------------------
--- Functions and variables added by Zmey
---------------------------------------------------
-
-time_infinite = 100000000
---[[
-debug_script_name = ""
-
-function debug_log(script_name, fmt, ...)
-	if debug_script_name == script_name then
-		log(string.format(fmt, ...))
-	end
-end
-
-function interrupt_action(who, script_name)
-	if who:get_script() then
-		who:script(false, script_name)
-	end
-end
-]]
-function random_choice(...)
-	local arg = {...}
-	local r = math.random(1, #arg)
-	return arg[r]
-end
---[[
-function new_action(...)
 	local arg = {...}
 	local act = entity_action()
 	for i = 1, #arg do
 		act:set_action(arg[i])
 	end
-	return act
-end
-
-obj_last_actions = {}
-
-function perform_action(obj, action_name, action)
-	if (obj ~= nil) then
-		obj_last_actions[obj] = action_name
+	if obj ~= nil then
 		obj:command(act, false)
 	end
+	return entity_action(act)
 end
 
-function last_action(obj)
-	return obj_last_actions[obj]
+function round(value)
+	local min = math.floor(value)
+	local max = min + 1
+	return value - min > max - value and max or min
 end
-]]
+
+function distance_between(obj1, obj2)
+	return obj1:position():distance_to(obj2:position())
+end
+
+function has_alife_info(info_id)
+	return sim ~= nil and sim:has_info(0, info_id)
+end
+
+--------------------------------------------------
+-- Functions and variables added by Zmey
+--------------------------------------------------
+
+time_infinite = 100000000
+
+function random_choice(...)
+	local arg = {...}
+	local r = math.random(1, #arg)
+	return arg[r]
+end
+
 function if_then_else(cond, if_true, if_false)
-	return cond and if_true or if_false
---[[
 	if cond then
 		return if_true
 	end
 	return if_false
-]]
-end
---[[
-function update_action(npc, script, ...)
-
-	if npc == nil then return end
-
-	local arg = {...}
-
-	if arg.n == 0 then return end
-
-	local act = npc:action()
-
-	if act == nil then
-		act = entity_action()
-	end
-
-	for a = 1, arg.n, 1 do
-		if arg[a] ~= nil then
-			act:set_action(arg[a])
-		end
-	end
-
-	reset_action(npc, script)
-
-	npc:command(act, false)
 end
 
-function set_current_time(hour, min, sec)
-
-	local current_time_factor = level.get_time_factor()
-	local current_time = game.time()
-	local c_day = math.floor(current_time / 86400000)
-	local c_time = current_time - c_day * 86400000
-	local n_time = (sec + min * 60 + hour * 3600) * 1000
-
-	if c_time > n_time then c_day = c_day + 1 end
-	n_time = n_time + c_day * 86400000
-
-	level.set_time_factor(10000)
-	while game.time() < n_time do wait() end
-
-	level.set_time_factor(current_time_factor)
-end
-
-if (editor() == false) then
-
-class "pp_effector" (effector)
-
-function pp_effector:__init (effector_type, start_time, dest_power, life_time) super (effector_type, start_time)
-	self.start_time	= start_time
-	self.stop_time	= start_time + life_time
-	self.max_power	= dest_power
-end
-
-function pp_effector:process(pp)
-
-	effector.process(self, pp)
-
-	local curr_time = time_global()
-	local d = 0
-
-	if curr_time < self.start_time then
-		d = 0
-	else
-		if curr_time < self.stop_time then
-			d = (curr_time - self.start_time) / (self.stop_time - self.start_time)
-		else
-			self.info = self.max_power
-			return true
-		end
-	end
-
-	local dual	= duality()
-	local noise	= noise()
-	local base	= color()
-	local gray	= color()
-	local add	= color()
-
-	dual.h		= self.max_power.dual.h * d
-	dual.v		= self.max_power.dual.v * d
-
-	noise.grain	= self.max_power.noise.grain * d
-	noise.intensity	= self.max_power.noise.intensity * d
-	noise.fps	= self.max_power.noise.fps * d
-
-	base.r		= self.max_power.color_base.r * d
-	base.g		= self.max_power.color_base.g * d
-	base.b		= self.max_power.color_base.b * d
-
-	gray.r		= self.max_power.color_gray.r * d
-	gray.g		= self.max_power.color_gray.g * d
-	gray.b		= self.max_power.color_gray.b * d
-
-	add.r		= self.max_power.color_add.r * d
-	add.g		= self.max_power.color_add.g * d
-	add.b		= self.max_power.color_add.b * d
-
-	pp.gray		= self.max_power.gray * d
-	pp.blur		= self.max_power.blur * d
-
-	pp.dual		= dual
-	pp.noise	= noise
-	pp.color_base	= base
-	pp.color_gray	= gray
-	pp.color_add	= add
-
-	self.info	= pp
-
-	return true
-end
-
-function pp_effector:finished()
-	return self.stop_time < time_global()
-end
-
-class "pp_linear_lerp" (effector)
-
-function pp_linear_lerp:__init (effector_type, start_time, life_time, start_power, dest_power) super (effector_type, start_time)
-	self.start_time	= start_time
-	self.stop_time	= start_time + life_time
-	self.min_power	= start_power
-	self.max_power	= dest_power
-end
-
-function pp_linear_lerp:process(pp)
-
-	effector.process(self, pp)
-
-	local curr_time = time_global()
-	local d = 0.0
-
-	if curr_time < self.start_time then
-		d = 0.0
-	else
-		if curr_time < self.stop_time then
-			d = (curr_time - self.start_time) / (self.stop_time - self.start_time)
-		else
-			self.info = self.max_power
-			return true
-		end
-	end
-
-	local dual	= duality()
-	local noise	= noise()
-	local base	= color()
-	local gray	= color()
-	local add	= color()
-
-	dual.h		= self.min_power.dual.h + (self.max_power.dual.h - self.min_power.dual.h) * d
-	dual.v		= self.min_power.dual.v + (self.max_power.dual.v - self.min_power.dual.v) * d
-
-	noise.grain	= self.min_power.noise.grain + (self.max_power.noise.grain - self.min_power.noise.grain) * d
-	noise.intensity	= self.min_power.noise.intensity + (self.max_power.noise.intensity - self.min_power.noise.intensity) * d
-	noise.fps	= self.min_power.noise.fps + (self.max_power.noise.fps - self.min_power.noise.fps) * d
-
-	base.r		= self.min_power.color_base.r + (self.max_power.color_base.r - self.min_power.color_base.r) * d
-	base.g		= self.min_power.color_base.g + (self.max_power.color_base.g - self.min_power.color_base.g) * d
-	base.b		= self.min_power.color_base.b + (self.max_power.color_base.b - self.min_power.color_base.b) * d
-
-	gray.r		= self.min_power.color_gray.r + (self.max_power.color_gray.r - self.min_power.color_gray.r) * d
-	gray.g		= self.min_power.color_gray.g + (self.max_power.color_gray.g - self.min_power.color_gray.g) * d
-	gray.b		= self.min_power.color_gray.b + (self.max_power.color_gray.b - self.min_power.color_gray.b) * d
-
-	add.r		= self.min_power.color_add.r + (self.max_power.color_add.r - self.min_power.color_add.r) * d
-	add.g		= self.min_power.color_add.g + (self.max_power.color_add.g - self.min_power.color_add.g) * d
-	add.b		= self.min_power.color_add.b + (self.max_power.color_add.b - self.min_power.color_add.b) * d
-
-	pp.gray		= self.min_power.gray + (self.max_power.gray - self.min_power.gray) * d
-	pp.blur		= self.min_power.blur + (self.max_power.blur - self.min_power.blur) * d
-
-	pp.dual		= dual
-	pp.noise	= noise
-	pp.color_base	= base
-	pp.color_gray	= gray
-	pp.color_add	= add
-
-	self.info	= pp
-
-	return true
-end
-
-function pp_linear_lerp:finished()
-	return self.stop_time < time_global()
-end
-
-----------------------------------------------------------------------------------------------------------------------
--- Evaluators
-----------------------------------------------------------------------------------------------------------------------
-
-class "const_evaluator" (property_evaluator)
-
-function const_evaluator:__init (name, value) super (nil, name)
-	self.value = value
-end
-
-function const_evaluator:evaluate()
-	return self.value
-end
-
-class "wait_evaluator" (property_evaluator)
-
-function wait_evaluator:__init (wait_time) super ()
-	self.wait_time = wait_time
-	self.first_call = true
-	self.current_time = 0
-end
-
-function wait_evaluator:evaluate()
-
-	if self.first_call == true then
-		self.first_call = false
-		self.current_time = device():time_global()
-		return false
-	end
-
-	local t = device():time_global() - self.current_time
-	return t > self.wait_time and true or false
---	if t > self.wait_time then return true end
---	return false
-end
-
---------------------------------------------------------------------------------
-
-class "enabled_evaluator" (property_evaluator)
-
-function enabled_evaluator:__init (name, storage) super ()
-	self.a = storage
-end
-
-function enabled_evaluator:evaluate()
-	return  self.a.enabled
-end
-
-end -- end of editor() == false
-
-function str_split(str)
-
-	local strlen = string.len(str)
-	local parts = {{}, {}, {}, {}}
-	local cpart = 1
-
-	for a = 1, strlen, 1 do
-		local char = string.byte(str, a)
-		if char ~= 95 then
-			table.insert(parts[cpart], char)
-		else
-			cpart = cpart + 1
-			if cpart > 4 then break end
-		end
-	end
-
-	if cpart ~= 4 then return "unknown", "stalker", 0, 0 end
-
-	local str1 = string.char()
-	local str2 = string.char()
-	local str3 = string.char()
-	local str4 = string.char()
-
-	local ref = parts[1]
-	for a = 1, #ref, 1 do
-		str1 = string.format("%s%c", str1, ref[a])
-	end
-
-	ref = parts[2]
-	for a = 1, #ref, 1 do
-		str2 = string.format("%s%c", str2, ref[a])
-	end
-
-	ref = parts[3]
-	for a = 1, #ref, 1 do
-		str3 = string.format("%s%c", str3, ref[a])
-	end
-
-	ref = parts[4]
-	for a = 1, #ref, 1 do
-		str4 = string.format("%s%c", str4, ref[a])
-	end
-
-	return str1, str2, (str3 + 1) - 1, (str4 + 1) - 1
-end
-]]
 function random_number(min_value, max_value)
 	math.randomseed(device():time_global())
---[[
-	if min_value == nil and max_value == nil then
-		return math.random()
-	else
-		return math.random(min_value, max_value)
-	end
-]]
-	return (min_value == nil and max_value == nil) and math.random() or math.random(min_value, max_value)
-end
---[[
-local ms_per_day = 24 * 60 * 60 * 1000
-
-function day_time()
-	return math.mod(game.time(), ms_per_day)
+	return min_value and max_value and math.random(min_value, max_value) or math.random()
 end
 
-function local_hours()
-	return math.floor(math.mod(game.time() / 1000, 86400) / 3600)
-end
-]]
 function parse_names(s)
 	local t = {}
 	local c = 0
@@ -595,44 +167,7 @@ function parse_names_to_hash(s)
 	end
 	return t
 end
---[[
-function parse_key_value(s)
-	local t = {}
-	if s == nil then
-		return nil
-	end
-	local key, nam = nil, nil
-	for name in string.gfind(s, "([%w_\\]+)%p*") do
-		if key == nil then
-			key = name
-		else
-			t[key] = name
-			key = nil
-		end
-	end
-	return t
-end
 
-function empty(container) -- duplicate
-
-	if type(container) == "function" then
-		for i in container do
-			return false
-		end
-		return true
-	end
-
-	if container[1] ~= nil then
-		return false
-	end
-
-	for i, j in pairs (container) do
-		return false
-	end
-
-	return true
-end
-]]
 function parse_nums(s)
 	local t = {}
 	local c = 0
@@ -648,8 +183,7 @@ function is_object_online(obj_id)
 end
 
 function get_clsid(npc)
-	if npc == nil then return nil end
-	return npc:clsid()
+	return npc and npc:clsid()
 end
 
 function yaw(v1, v2)
@@ -679,107 +213,18 @@ function vector_rotate_y(v, angle)
 	local v_z = v.z
 	return vector():set(v_x * c - v_z * s, v.y, v_x * s + v_z * c)
 end
---[[
-function clear_table(t)
-	while #t > 0 do
-		table.remove(t, #t)
-	end
-end
 
-function new_point(center_id, position_id, radius, min_radius)
-	local rand = math.random
-	local dir = vector():set(rand(-1000, 1000) / 1000, 0.0001, rand(-1000, 1000) / 1000)
-	local pos = level.vertex_in_direction(center_id, dir, radius)
-	local i = 1
-	while (level.vertex_position(position_id):distance_to(level.vertex_position(pos)) < min_radius and i < 20) do
-		dir = vector():set(rand(-1000, 1000) / 1000, 0.0001, rand(-1000, 1000) / 1000)
-		pos = level.vertex_in_direction(center_id, dir, radius)
-		i = i + 1
-	end
-	return level.vertex_position(pos)
-end
-]]
 function stop_play_sound(obj)
 	if obj:alive() == true then
 		obj:set_sound_mask(-1)
 		obj:set_sound_mask(0)
 	end
 end
---[[
-function point_with_bit(patrol_path, bit, old_point)
 
-	local points = {}
-
-	for i = 0, patrol_path:count() - 1 do
-		if patrol_path:flag(i, bit) then
-			if (old_point == nil) then
-				table.insert(points, patrol_path:point(i))
-			elseif (old_point ~= i) then
-				table.insert(points, patrol_path:point(i))
-			end
-		end
-	end
-
-	local number_point = #points
-
-	if (number_point == 0) then
-		return nil
-	elseif (number_point == 1) then
-		return points[1]
-	else
-		return points[math.random(1, number_point)]
-	end
-end
-
-function point_with_bit_id(patrol_path, bit, old_point)
-
-	local points = {}
-
-	for i = 0, patrol_path:count() - 1 do
-		if patrol_path:flag(i, bit) then
-			if (old_point == nil) then
-				table.insert(points, i)
-			elseif (old_point ~= i) then
-				table.insert(points, i)
-			end
-		end
-	end
-
-	local number_point = #points
-
-	if (number_point == 0) then
-		return nil
-	elseif (number_point == 1) then
-		return patrol_path:level_vertex_id(points[1])
-	else
-		return patrol_path:level_vertex_id(points[math.random(1, number_point)])
-	end
-end
-
-function near_point_with_bit(point, patrol_path, bit)
-
-	local new_point = nil
-	local index = nil
-	local dist = 1000
-
-	for i = 0, patrol_path:count() - 1 do
-		if patrol_path:flag(i, bit) then
-			if (new_point == nil or patrol_path:point(i):distance_to(point) < dist) then
-				new_point = patrol_path:point(i)
-				index = i
-				dist = new_point:distance_to(point)
-			end
-		end
-	end
-
-	return index
-end
-]]
 -------------------------------------------------------------------------------------------
 
 function switch_online(id)
 	if id == -1 then return end
---	local sim = alife()
 	if sim then
 		sim:set_switch_online(id, true)
 		sim:set_switch_offline(id, false)
@@ -790,7 +235,6 @@ end
 
 function switch_offline(npc)
 	if npc == nil or npc:alive() == false then return end
---	local sim = alife()
 	if sim then
 		local npc_id = npc:id()
 		sim:set_switch_online(npc_id, false)
@@ -798,15 +242,6 @@ function switch_offline(npc)
 	end
 end
 
--------------------------------------------------------------------------------------------
---[[
-function get_actor_id()
-	local actor = level.actor()
---	if (actor == nil) then return -1 end
---	return actor:id()
-	return actor == nil and -1 or actor:id()
-end
-]]
 -------------------------------------------------------------------------------------------
 
 local monster_classes = {}
@@ -837,59 +272,30 @@ end
 -------------------------------------------------------------------------------------------
 
 function level_object_by_sid(sid)
-
---	local sim = alife()
-
 	if sim then
 		local se_obj = sim:story_object(sid)
 		if se_obj then
 			return level.object_by_id(se_obj.id)
 		end
 	end
-
 	return nil
 end
 
 function id_by_sid(sid)
-
---	local sim = alife()
-
 	if sim then
 		local se_obj = sim:story_object(sid)
 		if se_obj then
 			return se_obj.id
 		end
 	end
-
 	return nil
 end
---[[
-function set_postprocess(name_ini_file)
-	bind_stalker.post_process = postprocess.PostProcess(ini_file(name_ini_file))
-end
 
-function remove_postprocess()
-	bind_stalker.post_process = nil
-end
-]]
 function set_inactivate_input_time(delta)
 	local actor_storage = db.storage[0] -- 0 = actor ID
 	actor_storage.disable_input_time = game.get_game_time()
 	actor_storage.disable_input_idle = delta
 	level.disable_input()
-end
---[[
-function set_sleep_relocate(point, look, timeout)
-	local actor_storage = db.storage[db.actor:id()]
-	actor_storage.sleep_relocate_time = game.get_game_time()
-	actor_storage.sleep_relocate_idle = timeout * 60
-	actor_storage.sleep_relocate_point = point
-	actor_storage.sleep_relocate_look = look
-end
-]]
-function odd(x)
---	return math.floor( x * 0.5 ) * 2 == math.floor( x )
-	return x ~= 2 * math.floor(x * 0.5)
 end
 
 function npc_in_actor_frustrum(npc)
@@ -922,32 +328,7 @@ end
 
 function on_actor_psy()
 end
---[[
-function set_actor_rank(rank)
-	if rank == "novice" then
-		db.actor:set_character_rank(0)
-	elseif rank == "stalker" then
-		db.actor:set_character_rank(300)
-	elseif rank == "veteran" then
-		db.actor:set_character_rank(600)
-	elseif rank == "master" then
-		db.actor:set_character_rank(900)
-	end
-end
 
-function get_texture_info(id_name, id_default)
-
-	if id_default == nil then id_default = id_name end
-
-	local task_info = GetTextureInfo(id_name, id_default)
-	local r = task_info:get_rect()
-
-	r.x2 = r.x2 - r.x1
-	r.y2 = r.y2 - r.y1
-
-	return task_info:get_file_name(), r
-end
-]]
 function start_game_callback()
 
 	sim = alife()
@@ -1079,8 +460,6 @@ ammo_section =
 	["ammo_m209"]           = true  -- SRP
 }
 
--- quest_section = {}
-
 function get_param_string(src_string, obj)
 	local script_ids = db.script_ids[obj:id()]
 	local out_string, num = string.gsub(src_string, "%$script_id%$", tostring(script_ids))
@@ -1109,7 +488,7 @@ function set_save_marker(p, mode, check, prefix)
 			p:w_u16(dif)
 		else
 			local c_dif = p:r_tell() - save_markers[result]
-			local dif   = p:r_u16()
+			local dif = p:r_u16()
 			if dif ~= c_dif then
 				abort("[_G.set_save_marker]: Save marker mismatch '%s' %.0f ~= %.0f.", result, dif, c_dif)
 			 end
@@ -1128,18 +507,74 @@ function set_save_marker(p, mode, check, prefix)
 end
 
 function vec_to_str()
---	if vector == nil then return "nil" end
---	return string.format("[%d:%d:%d]", vector.x, vector.y, vector.z)
 end
 
-function change_team_sqaud_group(se_obj, team, squad, group)
-	local cl_obj = db.storage[se_obj.id]
-	cl_obj = cl_obj and cl_obj.object
-	if cl_obj ~= nil then
-		cl_obj:change_team(team, squad, group)
+local group = nil
+local group_by_level =
+{
+	marsh                = 1,
+	escape               = 2,
+	garbage              = 3,
+	agroprom             = 4,
+	darkvalley           = 5,
+	agroprom_underground = 6,
+	yantar               = 7,
+	red_forest           = 8,
+	military             = 9,
+	limansk              = 10,
+	hospital             = 11,
+	stancia_2            = 12,
+}
+
+function change_team_sqaud_group(se_npc, squad) -- (se_npc, team, squad, group)
+--[[
+	The SRP's 'squad' arg differs from vanilla:
+
+	- In vanilla, the 'squad' arg is the value of a smart terrain's 'squad_id'
+	in all.spawn, or 0 if that's undefined. The SRP's 'squad' arg is instead the
+	smart's index in se_smart_terrain:on_before_register(). This begins from 1
+	for each map.
+
+	Since the game's smarts seem to always be processed in the order in which
+	they appeared in all.spawn at the start of a new game, the SRP's 'squad' arg
+	should be stable for a given smart across saves based on the same all.spawn
+	smart listing, and all smarts on a given map should have contiguous indices.
+	(Inter-map smart IDs are not contiguous.) So, two squads on different smarts
+	on the same map should never have the same 'squad' property, as long as
+	there aren't more than 255 smart terrains on the map. In vanilla, there
+	aren't that many in the entire game.
+
+	Why doesn't the SRP just pass the smart ID itself as the 'squad' arg? The
+	engine clamps {team, squad, group} to {u8, u8, u8} via unsigned modulo 256
+	if they don't fit a u8. And a smart ID doesn't always fit a u8, so passing
+	that as the 'squad' arg would sometimes cause it to wrap around, e.g.
+	11262 % 256 = 254. Now suppose the smart ID is a factor of 256. That would
+	wrap around to 0, which is supposed to be reserved for important NPCs!
+	So passing the smart ID would mean that some squad NPCs would have the same
+	'squad' property as important NPCs, which can cause disposition bugs.
+
+	OTOH, there's no guarantee that two squads on different maps won't have the
+	same 'squad' property value. This is also true in vanilla, where several
+	smart terrains on different maps share the same 'squad_id' in all.spawn.
+	This doesn't seem to cause any problems.
+
+	- The SRP's 'group' arg is calculated the same way as in vanilla. By
+	experiment, this must always be below 33, else newly spawned online squads
+	crash the game.
+
+	So, even if squads on different maps have the same 'squad' value, their
+	'group' property will differ.
+]]
+	if not group then
+		group = group_by_level[level.name()] or 0
+	end
+	local npc = db.storage[se_npc.id]
+	npc = npc and npc.object
+	if npc then
+		npc:change_team(se_npc.team, squad, group)
 	else
-		se_obj.team = team
-		se_obj.squad = squad
-		se_obj.group = group
+--		se_npc.team = team
+		se_npc.squad = squad
+		se_npc.group = group
 	end
 end

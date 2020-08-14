@@ -4,6 +4,8 @@
 -- DC170507: Localized a few globals and repeatedly used class variables; further streamlined some functions' logic.
 
 local state_lib_states = state_lib.states
+local ops = state_mgr_goap.ops
+local props = state_mgr_goap.props
 
 local prop_state_mgr_idle_combat = xr_evaluators_id.state_mgr + 1
 local prop_state_mgr_idle_alife = xr_evaluators_id.state_mgr + 2
@@ -41,22 +43,16 @@ class "evaluator_state_mgr_idle" (property_evaluator)
 
 function evaluator_state_mgr_idle:__init(state_manager) super ()
 	self.st = state_manager
-	self.mgr = nil
+	self.mgr = state_manager.npc:motivation_action_manager()
 	local planner = state_manager.planner
-	local props = state_manager.properties
-	self.movement_eval = planner:evaluator(props["movement"])
-	self.animstate_eval = planner:evaluator(props["animstate"])
-	self.animation_eval = planner:evaluator(props["animation"])
+	self.movement_eval = planner:evaluator(props.movement)
+	self.animstate_eval = planner:evaluator(props.animstate)
+	self.animation_eval = planner:evaluator(props.animation)
 end
 
 function evaluator_state_mgr_idle:evaluate()
 
 	local mgr = self.mgr
-
-	if mgr == nil then
-		mgr = self.object:motivation_action_manager()
-		self.mgr = mgr
-	end
 
 	if not mgr:initialized() then
 		return false
@@ -97,13 +93,13 @@ class "evaluator_state_mgr_idle_alife" (property_evaluator)
 
 function evaluator_state_mgr_idle_alife:__init(state_manager) super ()
 	self.st = state_manager
-	self.mgr = nil
+	self.mgr = state_manager.npc:motivation_action_manager()
+	self.npc_st = db.storage[state_manager.npc:id()]
 	local planner = state_manager.planner
-	local props = state_manager.properties
-	self.locked_eval = planner:evaluator(props["locked"])
-	self.movement_eval = planner:evaluator(props["movement"])
-	self.animstate_eval = planner:evaluator(props["animstate"])
-	self.animation_eval = planner:evaluator(props["animation"])
+	self.locked_eval = planner:evaluator(props.locked)
+	self.movement_eval = planner:evaluator(props.movement)
+	self.animstate_eval = planner:evaluator(props.animstate)
+	self.animation_eval = planner:evaluator(props.animation)
 end
 
 function evaluator_state_mgr_idle_alife:evaluate()
@@ -113,19 +109,13 @@ function evaluator_state_mgr_idle_alife:evaluate()
 	end
 
 	local mgr = self.mgr
-
-	if mgr == nil then
-		mgr = self.object:motivation_action_manager()
-		self.mgr = mgr -- nv150604: fix global mgr ref
-	end
-
 	local self_st = self.st
 
 	if mgr:initialized() and mgr:current_action_id() ~= xr_actions_id_alife then
 		self_st.alife = false
 	end
 
-	if db.storage[self_st.npc:id()].active_section == nil then
+	if self.npc_st.active_section == nil then
 		if xr_meet.is_meet(self.object) == false then
 			if self_st.target_state == "idle"
 			and not self.locked_eval:evaluate()
@@ -148,12 +138,10 @@ class "evaluator_state_mgr_idle_smartcover" (property_evaluator)
 
 function evaluator_state_mgr_idle_smartcover:__init(state_manager) super ()
 	self.st = state_manager
---	self.mgr = nil
 	local planner = state_manager.planner
-	local props = state_manager.properties
-	self.movement_eval = planner:evaluator(props["movement"])
-	self.animstate_eval = planner:evaluator(props["animstate"])
-	self.animation_eval = planner:evaluator(props["animation"])
+	self.movement_eval = planner:evaluator(props.movement)
+	self.animstate_eval = planner:evaluator(props.animstate)
+	self.animation_eval = planner:evaluator(props.animation)
 end
 
 function evaluator_state_mgr_idle_smartcover:evaluate()
@@ -207,24 +195,12 @@ class "eva_state_mgr_end" (property_evaluator)
 
 function eva_state_mgr_end:__init(st) super ()
 	self.st = st
-	self.mgr = nil
+	self.mgr = st.npc:motivation_action_manager()
 end
 
 function eva_state_mgr_end:evaluate()
 
 	local mgr = self.mgr
-
-	if mgr == nil then
-		mgr = self.object:motivation_action_manager()
-		self.mgr = mgr
-	end
-
-	local combat_planner = self.combat_planner
-
-	if combat_planner == nil then
-		combat_planner = cast_planner(mgr:action(stalker_ids_action_combat_planner))
-		self.combat_planner = combat_planner
-	end
 
 	if not mgr:initialized() then
 		return false
@@ -233,6 +209,11 @@ function eva_state_mgr_end:evaluate()
 	local current_action_id = mgr:current_action_id()
 
 	if current_action_id == stalker_ids_action_combat_planner then
+		local combat_planner = self.combat_planner
+		if combat_planner == nil then
+			combat_planner = cast_planner(mgr:action(stalker_ids_action_combat_planner))
+			self.combat_planner = combat_planner
+		end
 		if not combat_planner:initialized() then
 			return false
 		end
@@ -255,15 +236,16 @@ class "eva_state_mgr_locked" (property_evaluator)
 
 function eva_state_mgr_locked:__init(st) super ()
 	self.st = st
-	local props = st.properties
-	self.props_animstate_locked = props["animstate_locked"]
-	self.props_animation_locked = props["animation_locked"]
-	self.props_direction_turning = props["direction_turning"]
 end
 
 function eva_state_mgr_locked:evaluate()
 	local planner = self.st.planner
-	return planner:initialized() and (planner:evaluator(self.props_animstate_locked):evaluate() or planner:evaluator(self.props_animation_locked):evaluate() or planner:evaluator(self.props_direction_turning):evaluate())
+	if self.animstate_locked_eval == nil then
+		self.animstate_locked_eval = planner:evaluator(props.animstate_locked)
+		self.animation_locked_eval = planner:evaluator(props.animation_locked)
+		self.direction_turning_eval = planner:evaluator(props.direction_turning)
+	end
+	return planner:initialized() and (self.animstate_locked_eval:evaluate() or self.animation_locked_eval:evaluate() or self.direction_turning_eval:evaluate())
 end
 
 --------------------------------------------------------------------------------
@@ -397,8 +379,7 @@ end
 
 function state_manager:set_state(state_name, callback, timeout, target, emerg, synsound, extrakeys)
 
-	local states = state_lib_states
-	local new_state = states[state_name]
+	local new_state = state_lib_states[state_name]
 
 	if new_state == nil then
 		abort("[state_mgr.state_manager:set_state]: ERROR: ILLEGAL SET STATE (%s) CALLED for %s", tostring(state_name), self.npc:name())
@@ -406,27 +387,15 @@ function state_manager:set_state(state_name, callback, timeout, target, emerg, s
 
 	if target ~= nil then
 		self.look_position = target.look_position
-		local target_look_object = target.look_object
-		if target_look_object ~= nil then
-			self.look_object = target_look_object:id()
-		else
-			self.look_object = nil
-		end
+		self.look_object = target.look_object and target.look_object:id()
 	else
 		self.look_position = nil
 		self.look_object = nil
 	end
 
-	if extrakeys and extrakeys.yaw_delta ~= nil then
-		self.yaw_delta = extrakeys.yaw_delta
-	else
-		self.yaw_delta = 5
-	end
-
-	if extrakeys and extrakeys.subanim ~= nil then
-		self.subanim = extrakeys.subanim
-	else
-		self.subanim = 0
+	if extrakeys then
+		self.yaw_delta = extrakeys.yaw_delta or 5
+		self.subanim = extrakeys.subanim or 0
 	end
 
 	local switched = false
@@ -435,7 +404,7 @@ function state_manager:set_state(state_name, callback, timeout, target, emerg, s
 	if last_state ~= state_name then
 
 		local npc = self.npc
-		local last_state_weap = states[last_state].weapon
+		local last_state_weap = state_lib_states[last_state].weapon
 
 		if (last_state_weap == "fire" or last_state_weap == "sniper_fire" or last_state == "idle") and new_state.weapon ~= "fire" and new_state.weapon ~= "sniper_fire" then
 			npc:set_item(state_mgr_weapon.get_idle_state(state_name), state_mgr_weapon.get_weapon(npc, state_name))
@@ -508,7 +477,7 @@ function state_manager:update()
 	local pl_id = planner:current_action_id()
 	local last_pl_id = nil
 
-	while pl_id ~= last_pl_id and pl_id ~= self.operators["end"] and pl_id ~= self.operators["locked"] do
+	while pl_id ~= last_pl_id and pl_id ~= ops["end"] and pl_id ~= ops.locked do
 		last_pl_id = pl_id
 		planner:update()
 		pl_id = planner:current_action_id()

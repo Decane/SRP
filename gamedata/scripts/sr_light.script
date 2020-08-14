@@ -6,10 +6,10 @@ local zones = {}
 
 class "action_light"
 
-function action_light:__init(obj, storage)
-	self.object = obj
+function action_light:__init(npc, storage)
+	self.object = npc
 	self.st = storage
-	self.id = obj:id()
+	self.id = npc:id()
 end
 
 function action_light:reset_scheme()
@@ -25,18 +25,13 @@ end
 ----------------------------------------------------------------------------------------------------
 
 function add_to_binder(npc, ini, scheme, section, storage)
-	local new_action = action_light(npc, storage)
-	xr_logic.subscribe_action_for_events(npc, storage, new_action)
+	xr_logic.subscribe_action_for_events(npc, storage, action_light(npc, storage))
 end
 
 function set_scheme(npc, ini, scheme, section)
 	local st = xr_logic.assign_storage_and_bind(npc, ini, scheme, section)
 	st.logic = xr_logic.cfg_get_switch_conditions(ini, section, npc)
-	if ini:section_exist(section) and ini:line_exist(section, "light_on") then
-		st.light = ini:r_bool(section, "light_on")
-	else
-		st.light = false
-	end
+	st.light = utils.cfg_get_bool(ini, section, "light_on", nil, false, false)
 end
 
 ----------------------------------------------------------------------------------------------------

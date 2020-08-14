@@ -479,7 +479,7 @@ end
 local function i_am_is_enemy(obj, actor, st)
 	local overrides = st.overrides
 	if overrides and overrides.combat_ignore then
-		if xr_logic.pick_section_from_condlist(actor, obj, overrides.combat_ignore.condlist) ~= nil then
+		if xr_logic.pick_section_from_condlist(actor, obj, overrides.combat_ignore) ~= nil then
 			--printf("pl:Disabling_memory_object[10] obj [%s]", obj:name())
 			--obj:enable_memory_object(actor, false)
 			return false
