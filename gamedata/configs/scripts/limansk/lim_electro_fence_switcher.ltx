@@ -1,0 +1,18 @@
+[logic]
+active = ph_button@init
+
+[ph_button@init]
+anim = idle
+on_press = ph_button@deactivate %=play_sound(lim_electro_fience_swither)%
+tooltip = tips_tranformer_off
+
+[ph_button@deactivate]
+anim = off
+on_game_timer = 15 | ph_idle@nil %+lim_electro_fence_off%
+
+[ph_idle@nil]
+on_info = {=black_screen} ph_button@off
+
+[ph_button@off]
+anim = off
+on_info = {!black_screen} ph_idle@nil
