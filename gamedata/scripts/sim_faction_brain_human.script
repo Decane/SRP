@@ -152,13 +152,14 @@ function faction_brain_human:get_sim_targets_advance()
 	local smarts_by_name = faction.board.smarts_by_names
 	local exp_table = faction.expansion_level
 	local cur_exp = faction.current_expansion_level
+	local is_actor_in_faction = faction.community_player
 
 	for i = 0, cur_exp do
 
 		local expansion = exp_table[i]
 
 		for k, smart_name in pairs (expansion.precondition_target) do
-			self:register_target_point(smarts_by_name[smart_name], true, false, false, 2, i == cur_exp)
+			self:register_target_point(smarts_by_name[smart_name], true, false, false, 2, is_actor_in_faction and i == cur_exp)
 		end
 
 		for k, smart_name in pairs (expansion.precondition_target_eliminate) do
