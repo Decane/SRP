@@ -456,7 +456,9 @@ function sim_board:remove_squad(squad, squad_smart)
 						squad.random_tasks[k] = nil
 					end
 				elseif task_type == "capture_smart" then
-					task.last_check_task = "fail"
+					if task.src_obj == squad.squad_id then
+						task.last_check_task = "fail"
+					end
 				end
 			end
 		end
