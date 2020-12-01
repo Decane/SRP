@@ -86,6 +86,7 @@ Crash fixes:
 + Fixed a crash in the Garbage if a bandit robber squad suddenly leaves for another camp during a hold-up.
 + Fixed a crash in the Garbage if the robbery scheme tries to assign the robber leader role to a mutant due to incorrect detection of squads belonging to a robbery camp.
 + Fixed potential crashing due to smart terrain overloading.
++ Fixed potential crashing during the marsh creature scene in Agroprom and in the Swamps.
 + Fixed several potential crashes caused by the game attempting to alter the attitude of a non-existing squad.
 + Fixed an occasional crash upon the game evaluating whether to assign the player a 'help' task.
 + Fixed several potential crashes caused by missing script logic sections.

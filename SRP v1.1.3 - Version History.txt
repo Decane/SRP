@@ -12,6 +12,7 @@ v1.1.3
 + Fixed the game sometimes becoming corrupted due to release_body_manager.script deleting the wrong type of game entity after a human corpse identifier tracked by it becomes orphaned and re-used. - Decane
 + Fixed a rare crash upon reloading a savegame: sim_combat.script:419: attempt to index field 'actor' (a nil value). - Decane
 + Fixed a rare crash upon a smart terrain being captured: sim_squad_generic.script:456: attempt to index field 'current_action' (a nil value). - Decane
++ Fixed the sr_bloodsucker scheme crashing the game due to a race condition sometimes causing the marsh creature's server entity to be deleted immediately after being created. - Decane
 + Fixed a rare crash: xr_kamp.script:433: bad argument #1 to 'random' (interval is empty). - Decane
 + Fixed the sr_robbery scheme crashing the game if a robber squad suddenly leaves for another camp in the middle of a hold-up: sr_robbery.script:149: attempt to index field '?' (a nil value). - Decane
 + Fixed a rare crash caused by the sr_robbery scheme treating squads that have recently left the robbery camp as members of it when assigning the robbery leader role: actor_reaction.script:168: attempt to index local 'manager' (a nil value). - Decane

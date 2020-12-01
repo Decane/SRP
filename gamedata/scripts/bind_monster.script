@@ -64,13 +64,15 @@ function generic_object_binder:update(delta)
 	local npc = self.object
 
 	if not self.first_update_done then
-		local npc_id = npc:id()
-		if bind_stalker.delayed_alife_release_objects[npc_id] == true then
-			local sim = _G.sim
---			dbglog("[bind_monster.update]: Releasing "..npc_id)
-			sim:release(sim:object(npc_id), true)
-			bind_stalker.delayed_alife_release_objects[npc_id] = nil
-			return
+		if self.loaded then
+			local npc_id = npc:id()
+			if bind_stalker.delayed_alife_release_objects[npc_id] == true then
+				local sim = _G.sim
+--				dbglog("[bind_monster.update]: Releasing "..npc_id)
+				sim:release(sim:object(npc_id), true)
+				bind_stalker.delayed_alife_release_objects[npc_id] = nil
+				return
+			end
 		end
 		if self.is_trader and npc:alive() then
 			trade_manager.update(npc)
