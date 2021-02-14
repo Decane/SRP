@@ -33,7 +33,7 @@ function CCombat_manager:register_squad(squad)
 	end
 	local self_smart_id = self.smart.id
 	if squad.smart_id == self_smart_id then
-		self.cover_manager:register_squad(squad)
+		self.cover_manager:register_squad(squad_id)
 		for k, data in pairs (self_squads) do
 			if data._attack_squad then
 				local stage = data._stage
@@ -188,6 +188,7 @@ function CCombat_manager:enemy_callback(my_squad, enemy_squad)
 --					if not data._attack_squad then
 						data._stage = "defence"
 						data._inited_defend_time = game.get_game_time()
+						self.cover_manager.is_invalid = false
 --					else
 --						dbgmsg("Rejected idle --> defence switch for squad "..k.." because it is attacking.")
 --					end
@@ -361,6 +362,7 @@ function CCombat_manager:update_actor()
 				if data._stage == "idle" then
 					data._stage = "defence"
 					data._inited_defend_time = game_time
+					self.cover_manager.is_invalid = false
 				end
 			end
 			-- DC170501:
@@ -846,6 +848,9 @@ function CCombat_manager:load(packet)
 		dbglog(i..": ["..id.."]: _inited_defend_time: "..tostring(squad_data._inited_defend_time ~= nil)..", _start_attack_wait: "..tostring(squad_data._start_attack_wait ~= nil)..", _last_defence_kill_time: "..tostring(squad_data._last_defence_kill_time ~= nil))
 ]]
 		squad_data._squad_power = packet:r_float()
+		if not squad_data._attack_squad then
+			self.cover_manager:register_squad(id)
+		end
 	end
 	self.force_online = packet:r_bool()
 	n = packet:r_u8()

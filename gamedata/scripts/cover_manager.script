@@ -7,12 +7,9 @@ function CCover_manager:__init(smart, board)
 	self.is_invalid = true
 end
 
-function CCover_manager:register_squad(squad)
-	local faction_name = squad.player_id
-	if faction_name ~= "monster" and faction_name ~= "zombied" then -- prevent zombies from behaving like stalkers
-		self.squads[squad.squad_id] = true
-		self.is_invalid = false
-	end
+function CCover_manager:register_squad(squad_id)
+	self.squads[squad_id] = true
+	self.is_invalid = false
 end
 
 function CCover_manager:unregister_squad(squad)
@@ -36,16 +33,22 @@ function CCover_manager:calculate_covers(position)
 	local st = db.storage
 
 	for squad_id in pairs (self.squads) do
-		for npc_id in pairs (board_squads[squad_id].squad_npc) do
-			local npc_obj = st[npc_id]
-			npc_obj = npc_obj and npc_obj.object
-			if npc_obj ~= nil then
-				npc_obj:register_in_combat()
-				local cover = npc_obj:find_best_cover(position)
-				if cover ~= nil then
-					self.cover_table[npc_id] = {cover_vertex_id = cover:level_vertex_id(), cover_position = cover:position(), look_pos = position, is_smart_cover = cover:is_smart_cover()}
+		local squad = board_squads[squad_id]
+		local faction_name = squad.player_id
+		if faction_name == "monster" or faction_name == "zombied" then
+			self.squads[squad_id] = nil
+		else
+			for npc_id in pairs (squad.squad_npc) do
+				local npc_obj = st[npc_id]
+				npc_obj = npc_obj and npc_obj.object
+				if npc_obj ~= nil then
+					npc_obj:register_in_combat()
+					local cover = npc_obj:find_best_cover(position)
+					if cover ~= nil then
+						self.cover_table[npc_id] = {cover_vertex_id = cover:level_vertex_id(), cover_position = cover:position(), look_pos = position, is_smart_cover = cover:is_smart_cover()}
+					end
+					npc_obj:unregister_in_combat()
 				end
-				npc_obj:unregister_in_combat()
 			end
 		end
 	end
