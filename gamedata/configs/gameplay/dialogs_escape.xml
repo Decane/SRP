@@ -1194,6 +1194,7 @@
 				<text>esc_trader_meet_22</text>
 				<give_info>esc_bring_habar_complete</give_info>
 				<action>dialogs_escape.transfer_habar</action>
+				<action>dialogs_escape.update_trade_manager</action>
 				<next>222</next>
 			</phrase>
 			<phrase id="44">
