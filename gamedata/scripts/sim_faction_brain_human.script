@@ -271,7 +271,8 @@ function faction_brain_human:reset_actor_tasks() -- all and only tasks assigned 
 				if task ~= nil then
 					if task.actor_helped then
 						local smart_owner = faction.board.smarts[smart_id].smrt.player_name
-						if smart_owner == "none" or smart_owner == faction.player_name then
+						if smart_owner == faction.player_name
+						or smart_owner == "none" and task.type == "eliminate_smart" then
 							task.last_check_task = "complete"
 						else
 							task.last_check_task = "reversed"
