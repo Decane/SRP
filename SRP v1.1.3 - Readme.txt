@@ -220,7 +220,7 @@ Gameplay fixes:
 + Deleted the duplicate supply box spawn at the Trailhead in the Swamp.
 + Moved the eastern Cordon-to-Garbage level changer in order to make the player less likely to accidentally walk into it.
 + Made both the inventory box in the Old Church at the Great Swamp and the downward-facing safe at the Yantar factory less tedious to access. Also spawned a wooden box underneath the former in order to prevent it from seeming to levitate.
-+ Made each attribute bar length in the "Faction War" tab of the PDA reflect the sum of the levels of that attribute for the two factions concerned, instead of the highest level of the attribute among all factions.
++ Made each attribute bar length in the "Faction War" tab of the PDA reflect something sensible.
 + Made a few additional way-points available to NPCs that were not so due to bugs.
 + Made it possible to refuse payment to Garbage bandit robber squads via dialog.
 + Improved support for playing the game in a non-linear fashion.

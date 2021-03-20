@@ -1,4 +1,6 @@
 -- DC170611: Made each attribute bar length in the "Faction War" tab of the PDA reflect the sum of the levels of that attribute for the two factions concerned, instead of the highest level of the attribute among all factions.
+-- DC210307: Made the resources bar length reflect the resource level at which the player's faction spawns NPCs from its highest-tier supply probability distribution.
+-- DC210319: Made the squads bar length reflect the maximum number of squads the player's faction can have at its highest expansion.
 
 function fill_faction_state(state)
 
@@ -178,8 +180,9 @@ function get_max_member_count()
 	local board = sim_board.get_sim_board()
 	for faction_name, faction in pairs (board.players) do
 		if faction.community_player == true then
-			local opposing_faction = board.players[sim_board.sim_fight[faction_name]]
-			return opposing_faction and #faction.squads + #opposing_faction.squads or 0
+--			local opposing_faction = board.players[sim_board.sim_fight[faction_name]]
+--			return opposing_faction and #faction.squads + #opposing_faction.squads or 0
+			return faction.expansion_level[#faction.expansion_level].base_squad_number -- DC210319
 		end
 	end
 	return 0
@@ -189,8 +192,9 @@ function get_max_resource()
 	local board = sim_board.get_sim_board()
 	for faction_name, faction in pairs (board.players) do
 		if faction.community_player == true then
-			local opposing_faction = board.players[sim_board.sim_fight[faction_name]]
-			return opposing_faction and faction.resource_level + opposing_faction.resource_level or 0
+--			local opposing_faction = board.players[sim_board.sim_fight[faction_name]]
+--			return opposing_faction and faction.resource_level + opposing_faction.resource_level or 0
+			return #faction.spawn_by_resource -- DC210307
 		end
 	end
 	return 0
