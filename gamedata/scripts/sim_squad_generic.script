@@ -768,7 +768,7 @@ function sim_squad_generic:init_squad_task()
 	self.random_tasks = random_tasks
 
 	if board:get_smart_population(squad_smart) > 1 or (board_factions[squad_faction_name].precondition_targets[squad_smart_id] == nil and smart_under_attack(squad_faction_name, board_factions, squad_smart_id) == false) then
-		if self:get_script_target() == nil then
+		if self:get_script_target() == nil and not tm:get_tasks_by_smart(squad_smart_id) then
 			local level_cluster = sim_board.sim_level_cluster
 			local squad_smart_cluster = level_cluster[squad_smart.smart_level]
 			for neighbor_smart_id, neighbor_smart in pairs (board:get_nearest_smarts(squad_smart)) do
