@@ -62,6 +62,7 @@ v1.1.3
 + Fixed the parting audio of an NPC playing prematurely upon entering the trade or upgrade screen with them. - Decane
 + Fixed the greeting audio of some NPCs (most notably Professor Beanpolev) occasionally playing over their first spoken dialogue when the player opens a dialogue window with them. - Decane
 + Worked around the death of a squad poltergeist failing to be processed correctly if the death callback from its object binder triggers before that of its server entity equivalent, se_monster:on_death(). As a side-effect, poltergeists now leave behind a corpse when killed. - Decane
++ Fixed the issue where Yar's friend's PDA could be returned even if absent from the player's inventory e.g. due to having been moved into a container. - Decane
 + Fixed Sakharov and Lingov not being marked as important characters on the map. - Decane
 + Fixed the issue where a squad commander icon could overlap with a trader icon on the map. - Decane
 + Fixed an SRP v1.0.4 regression that caused the digger captives at the Garbage concentration camp to appear to hold an invisible artifact detector during their artifact search animations. - Decane

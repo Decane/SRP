@@ -1,0 +1,62 @@
+function transfer_ammo()
+	local give_actor = dialogs.relocate_item_section_to_actor
+	give_actor(nil, nil, "ammo_5.56x45_ap", 4)
+	give_actor(nil, nil, "grenade_rgd5", 3)
+end
+
+function is_day()
+	local hour = level.get_time_hours()
+	return hour > 3 and hour < 23
+end
+
+function is_not_day()
+	return not is_day()
+end
+
+function return_freedom_pda(first_speaker, second_speaker)
+	if db.actor:object("device_pda_freedom") ~= nil then
+		dialogs.relocate_item_section_from_actor(first_speaker, second_speaker, "device_pda_freedom")
+	end
+end
+
+function return_komendant_pda(first_speaker, second_speaker)
+	if db.actor:object("device_pda_comendant") ~= nil then
+		dialogs.relocate_item_section_from_actor(first_speaker, second_speaker, "device_pda_comendant")
+	end
+end
+
+function return_pda_bloodsucker(first_speaker, second_speaker)
+	dialogs.relocate_item_section_from_actor(first_speaker, second_speaker, "device_pda_bloodsucker")
+end
+
+function give_reward_for_destroy_killer_base()
+	dialogs.relocate_item_section_to_actor(nil, nil, "flesh_up_abcd_svu")
+end
+
+function freedom_join_reward()
+	if not has_alife_info("val_joined_freedom") then
+		local give_actor = dialogs.relocate_item_section_to_actor
+		give_actor(nil, nil, "svoboda_heavy_outfit")
+		give_actor(nil, nil, "wpn_sig550_up2")
+		give_actor(nil, nil, "wpn_addon_scope_susat")
+		give_actor(nil, nil, "ammo_5.56x45_ap", 3)
+		give_actor(nil, nil, "medkit_scientic", 3)
+		db.actor:give_info_portion("val_joined_freedom")
+	end
+end
+
+function barman_give_reward_for_bandits()
+	dialogs.relocate_money(nil, 1000, "in")
+end
+
+function is_bloobsucker_task_complete()
+	return has_alife_info("val_night_bloodsucker_complete") or has_alife_info("val_night_bloodsucker_fail")
+end
+
+function has_pda_bloodsucker()
+	return db.actor:object("device_pda_bloodsucker") ~= nil
+end
+
+function hasnt_pda_bloodsucker()
+	return not has_pda_bloodsucker()
+end

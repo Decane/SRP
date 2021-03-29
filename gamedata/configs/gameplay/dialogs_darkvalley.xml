@@ -1044,13 +1044,13 @@
 			</phrase>
 			<phrase id="211">
 				<text>val_freedom_fixer_hello_dialog_211</text>
-				<has_info>val_night_bloodsucker_complete</has_info>
+				<precondition>dialogs_darkvalley.has_pda_bloodsucker</precondition>
 				<action>dialogs_darkvalley.return_pda_bloodsucker</action>
 				<next>2111</next>
 			</phrase>
 			<phrase id="212">
 				<text>val_freedom_fixer_hello_dialog_212</text>
-				<dont_has_info>val_night_bloodsucker_complete</dont_has_info>
+				<precondition>dialogs_darkvalley.hasnt_pda_bloodsucker</precondition>
 				<next>2121</next>
 			</phrase>
 			<phrase id="311">
