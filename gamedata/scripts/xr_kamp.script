@@ -265,11 +265,11 @@ function CKampManager:getDestVertex(npc, radius)
 	local pp = self.patrol_point
 	local dir = position_vectors[camp_npc_pos]
 
-	dir.x = dir.x + math_random(-1, 1) / 5
-	dir.z = dir.z + math_random(-1, 1) / 5
+--	dir.x = dir.x + math_random(-1, 1) / 5
+--	dir.z = dir.z + math_random(-1, 1) / 5
 	dir:normalize()
 
-	radius = radius + math_random(-0.3, 0.3)
+	radius = radius + 0.3 -- math_random(-0.3, 0.3)
 
 	local dest_vertex = 4294967295
 

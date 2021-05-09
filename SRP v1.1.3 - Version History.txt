@@ -84,6 +84,7 @@ v1.1.3
 + Fixed the smoothing of the bridge to Limansk mesh, which could cause shadow glitches at some angles and lighting conditions. - PYP
 + Fixed the issue where no money would actually be taken from the player in exchange for hiring the stalker squad overlooking the Cordon vehicle station to raid it. - Decane
 + Fixed the issue where the stalker squad overlooking the Cordon vehicle station could be hired to raid it in exchange for payment even if the player lacks sufficient funds. - Decane
++ Fixed campfire NPCs sometimes clipping into each other due to overlapping positions. - Decane
 + Improved error diagnostics on _g.abort() invocation if the optional 'Improved LuaJIT Library' is installed - a Lua stack traceback is now printed. - Decane
 + Russian translation. - olegj5, SurDno
 + Fixed the "Electronic stabilizer" upgrade for the SPAS-12 and Maverick 88 wrongly decrementing their ammo capacity by 2. - AR2R
