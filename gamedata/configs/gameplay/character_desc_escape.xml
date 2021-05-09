@@ -214,39 +214,6 @@
 
 	</specific_character>
 
-	<specific_character id="esc_st_patrol_lead" team_default = "1">
-
-		<name>esc_st_patrol_lead_name</name>
-		<icon>ui_npc_u_neutral_2</icon>
-
-		<class>esc_st_patrol_lead</class>
-		<community>stalker</community> <terrain_sect>stalker_terrain</terrain_sect>
-
-		<rank>200</rank>
-		<reputation>0</reputation>
-
-		<money min="375" max="775" infinitive="0"/>
-
-		<visual>actors\stalker_neutral\stalker_neutral_2</visual>
-		<snd_config>characters_voice\human_03\stalker\</snd_config>
-
-		<supplies>
-			[spawn] \n
-			wpn_ak74u \n
-			ammo_5.45x39_fmj \n
-			wpn_pm \n
-			ammo_9x18_fmj \n
-			grenade_rgd5 = 2 \n
-#include "gameplay\character_items.xml"
-#include "gameplay\character_food.xml"
-#include "gameplay\character_drugs.xml"
-		</supplies>
-
-#include "gameplay\character_criticals_4.xml"
-#include "gameplay\character_dialogs.xml"
-
-	</specific_character>
-
 	<specific_character id="esc_wolf" team_default = "1">
 
 		<name>esc_wolf_name</name>

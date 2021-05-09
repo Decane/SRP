@@ -1825,6 +1825,7 @@
 		</supplies>
 
 #include "gameplay\character_criticals_4.xml"
+#include "gameplay\character_dialogs_killer.xml"
 
 	</specific_character>
 
@@ -1854,6 +1855,7 @@
 		</supplies>
 
 #include "gameplay\character_criticals_4.xml"
+#include "gameplay\character_dialogs_killer.xml"
 
 	</specific_character>
 
@@ -1887,6 +1889,7 @@
 		</supplies>
 
 #include "gameplay\character_criticals_4.xml"
+#include "gameplay\character_dialogs_killer.xml"
 
 	</specific_character>
 
@@ -1918,6 +1921,7 @@
 		</supplies>
 
 #include "gameplay\character_criticals_4.xml"
+#include "gameplay\character_dialogs_killer.xml"
 
 	</specific_character>
 
@@ -1951,6 +1955,7 @@
 		</supplies>
 
 #include "gameplay\character_criticals_4.xml"
+#include "gameplay\character_dialogs_killer.xml"
 
 	</specific_character>
 
@@ -1982,6 +1987,7 @@
 		</supplies>
 
 #include "gameplay\character_criticals_4.xml"
+#include "gameplay\character_dialogs_killer.xml"
 
 	</specific_character>
 
@@ -2015,6 +2021,7 @@
 		</supplies>
 
 #include "gameplay\character_criticals_4.xml"
+#include "gameplay\character_dialogs_killer.xml"
 
 	</specific_character>
 
@@ -2046,6 +2053,7 @@
 		</supplies>
 
 #include "gameplay\character_criticals_4.xml"
+#include "gameplay\character_dialogs_killer.xml"
 
 	</specific_character>
 
@@ -2079,6 +2087,7 @@
 		</supplies>
 
 #include "gameplay\character_criticals_4.xml"
+#include "gameplay\character_dialogs_killer.xml"
 
 	</specific_character>
 
@@ -2110,6 +2119,7 @@
 		</supplies>
 
 #include "gameplay\character_criticals_4.xml"
+#include "gameplay\character_dialogs_killer.xml"
 
 	</specific_character>
 

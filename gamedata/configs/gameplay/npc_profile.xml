@@ -627,6 +627,9 @@
 	<character id="mil_questman">
 		<class>mil_questman</class>
 	</character>
+	<character id="mil_killer">
+		<class>mil_killer</class>
+	</character>
 
 		<!--- Limansk -->
 

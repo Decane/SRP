@@ -159,7 +159,7 @@
 			ammo_5.56x45_ap \n
 			wpn_sig220 \n
 			ammo_11.43x23_fmj \n
-			grenade_f1 \n
+			grenade_f1 = 1, prob=0.4 \n
 #include "gameplay\character_items.xml"
 #include "gameplay\character_food.xml"
 #include "gameplay\character_drugs.xml"
@@ -191,7 +191,7 @@
 			ammo_5.56x45_ap \n
 			wpn_usp \n
 			ammo_11.43x23_fmj \n
-			grenade_f1 \n
+			grenade_f1 = 1, prob=0.4 \n
 #include "gameplay\character_items.xml"
 #include "gameplay\character_food.xml"
 #include "gameplay\character_drugs.xml"

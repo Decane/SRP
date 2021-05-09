@@ -237,6 +237,7 @@ function Cmeet_manager:update()
 ]]
             if self.a.sound_stop ~= "nil" and self.a.sound_stop ~= "meet_general_stop" and pda.dialog_closed and xr_sound.sound_table[npc_id] == nil then
                 xr_sound.set_sound_play(npc_id, self.a.sound_stop)
+				self.was_dialog = false
             end
             return
         else

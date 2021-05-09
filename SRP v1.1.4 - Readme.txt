@@ -1,20 +1,20 @@
 ------------------------------------
 
-Sky Reclamation Project (SRP) v1.1.3
+Sky Reclamation Project (SRP) v1.1.4
 
 ------------------------------------
 
 
 ====================================
 
-About the Sky Reclamation Project:
+About:
 
 ====================================
 
 
-The Sky Reclamation Project (SRP) is a community patch to address bugs that remain in S.T.A.L.K.E.R.: Clear Sky after the official patch v1.5.10. All game content with the core patch has been kept original wherever feasible. To ask a question or provide feedback, drop by the project discussion thread at the following URL:
+The Sky Reclamation Project (SRP) is a community patch to address bugs that remain in S.T.A.L.K.E.R.: Clear Sky after the official patch v1.5.10. All original game content has been preserved wherever feasible. To ask a question or provide feedback, drop by the project discussion thread at the following URL:
 
-http://www.gsc-game.com/main.php?t=community&s=forums&s_game_type=xr2&thm_page=1&thm_id=20140&page=1&sort=ASC&sec_id=22&lang=en
+https://www.gsc-game.com/index.php?t=community&s=forums&s_game_type=xr2&thm_page=1&thm_id=20140&page=1&sort=ASC&sec_id=22&lang=en
 
 
 ====================================
@@ -24,7 +24,7 @@ Is a new game required?
 ====================================
 
 
-Yes.
+Yes, unless you are upgrading from SRP v1.1.3. This SRP release is compatible only with savegames created with SRP v1.1.3 or above.
 
 
 ====================================
@@ -34,19 +34,17 @@ Installation:
 ====================================
 
 
-Before proceeding, ensure that your game is patched to version 1.5.10. If you are unsure of this, launch the game and check the bottom left corner of the main menu. It should read: "ver. 1.5.10". Additionally, if playing the Steam version of the game, verify the integrity of your game cache before proceeding. Then:
+Before proceeding, ensure your game is patched to version 1.5.10. If you are unsure of this, launch the game and check the bottom left corner of the main menu. It should read: "ver. 1.5.10". Also, if playing the Steam version of the game, verify the integrity of your game cache before proceeding. Then:
 
-1.) Paste the 'gamedata' folder from the root of the SRP archive into your Clear Sky root directory. The root directory is usually one of:
+1.) Paste the 'gamedata' folder from the root of the SRP archive into your game's root directory. The root directory is usually one of:
 
 • C:\Program Files (x86)\Deep Silver\S.T.A.L.K.E.R. - Clear Sky\       (Retail version)
 • C:\Program Files (x86)\Steam\steamapps\common\stalker clear sky\     (Steam version)
 • C:\GOG Games\S.T.A.L.K.E.R. Clear Sky\                               (GOG version)
 
-If you already have mods installed, you will need to merge the contents of any conflicting files - do not just overwrite pre-existing files.
+2.) If you are using a widescreen display, overwrite the 'gamedata' folder that now exists in your game's root directory with the 'gamedata' folder located in the 'Widescreen Patch' folder. Otherwise, skip this step.
 
-2.) If you are using a widescreen display, overwrite the 'gamedata' folder that now exists in your Clear Sky root directory with the 'gamedata' folder located in the 'Widescreen Patch' folder. Otherwise, skip this step.
-
-3.) Install any desired optional features by pasting into your Clear Sky root directory the contents of the folder named after the desired optional feature. Overwrite any pre-existing files and folders if prompted, unless they did not originate in the SRP, in which case you will need to manually merge the new files with the pre-existing ones.
+3.) Install any desired optional features by pasting into your game's root directory the contents of the folder named after the desired optional feature. For example, to install 'Alternative Ballistics', locate the 'Alternative Ballistics' folder and paste its contents — the 'gamedata' folder it contains — into your game's root directory. Overwrite any pre-existing files and folders when prompted.
 
 To prevent conflicts, install any optional features desired from folder #1 before installing any from folder #2. The 'Prefilled Stashes' and 'Prefilled Randomized Stashes' features require a new game, but all other optional features can be installed at any point in the game. Note also that the 'Reduced Grenade Spam' feature will take full effect only after starting a new game, although it is safe to install at any time. Consult the documentation marked 'Optional Features' for information on each feature, including recommendations for players unsure of which features to use.
 
@@ -58,7 +56,7 @@ Uninstallation:
 ====================================
 
 
-1.) Delete the 'gamedata' folder (and its contents) from your Clear Sky root directory.
+1.) Delete the 'gamedata' folder from your game's root directory.
 
 2.) If you installed the optional 'Improved LuaJIT Library' and wish to remove it, navigate to the game's 'bin' folder and restore the original 'lua.JIT.1.1.4.dll' file from the 'SRP Original LuaJIT Backup' archive.
 
@@ -317,6 +315,7 @@ Optional additional features:
 • No enemy map spots
 • Ally map spots only
 • Reduced grenade spam
+• No weapon sway on strafe
 • Easier Cordon machine gun
 • Re-enabled pistol ironsights aiming
 • NPCs do not toss weapons upon death
@@ -342,9 +341,9 @@ Advice / good to know:
 
 • Keep the key bound to the 'use' command pressed down when approaching corpses to display the names of any tossed weapons in the vicinity.
 
-• Double-clicking usable inventory items is a convenient shortcut to right-clicking them and selecting 'use this' from the droplist.
+• Double-click usable inventory items as a convenient shortcut to right-clicking them and selecting 'use this' from the droplist.
 
-• Pressing the 'SHIFT' key is a convenient shortcut to take everything from a container or corpse when the inventory screen is open.
+• Press the 'SHIFT' key as a convenient shortcut to take everything from a container or corpse when the inventory screen is open.
 
 • Press the key bound to the 'order to attack' command (default: 'K') to order a nearby friendly squad, currently on standby, to attack.
 
@@ -371,7 +370,7 @@ Problems running the game? Ensure:
  • Your game is patched to version 1.5.10.
  • You have validated your game cache if running the Steam version of the game.
  • Your anti-virus software is not blocking the game from running.
- • You are running the game with administrator privileges. If you are not sure whether this is so, navigate to your Clear Sky root directory, open the 'bin' folder, right-click xrEngine.exe, and select 'Properties'. In the 'Compatibility' tab, check the box next to 'Run this program as an administrator', and then accept the changes. If this is not an option, refer to:
+ • You are running the game with administrator privileges. If you are not sure whether this is so, navigate to your game's root directory, open the 'bin' folder, right-click xrEngine.exe, and select 'Properties'. In the 'Compatibility' tab, check the box next to 'Run this program as an administrator', and then accept the changes. If this is not an option, refer to:
 
   https://www.gog.com/forum/stalker_series/how_do_you_run_the_game_without_admin_rights/post7
 
@@ -386,13 +385,13 @@ Trying to run the game in DX10/10.1 mode? Getting intermittent freezes? Possible
 
  • Disable anti-aliasing in the game's graphics settings. It has been correlated to intermittent freezing in DX10/10.1 mode on Windows 7 64-bit with 'Update for Microsoft Windows (KB2670838)' installed.
  • Switch to DX9 mode.
- • Uninstall 'Update for Microsoft Windows (KB2670838)' if you have it installed — it is known to cause problems with Clear Sky. But beware that uninstalling it may have undesirable consequences for other applications on your PC. Research first.
+ • Uninstall 'Update for Microsoft Windows (KB2670838)' if you have it installed — it is known to cause problems with the game. But beware that uninstalling it may have undesirable consequences for other applications on your PC. Research first.
 
 Still have trouble?
 
- • Lower your graphical settings to the minimum, either from the main menu or manually via the user.ltx file located in your %PUBLIC%\Documents\STALKER-STCS\ folder. (See http://www.tweakguides.com/ClearSky_7.html for details on the latter method.) If that helps, you can begin raising the settings one-by-one until you pin-point the problematic setting. Then simply use a value for it that works.
+ • Lower your graphical settings to the minimum, either from the main menu or manually via the user.ltx file located in your %PUBLIC%\Documents\STALKER-STCS\ folder. (See https://tweakguides.pcgamingwiki.com/ClearSky_7.html for details on the latter method.) If that helps, you can begin raising the settings one-by-one until you pin-point the problematic setting. Then simply use a value for it that works.
 
-If the steps above do not resolve your issue, make a post on the official GSC forum, here: http://www.gsc-game.com/main.php?t=community&s=forums&s_game_type=xr2&sec_id=19. The forum members are very helpful and knowledgeable and will usually reply within a day or two. You can hasten the process by quoting the last few lines of your crash log if you have one - this will usually be located inside a compressed folder in %AppData%\XRay Engine\reports\ and will be named 'xray_<Yourname>.log'. You can also quote the lines between 'Error Reason:' and 'Registers:' in 'errorlog.log', located in the same folder.
+If the steps above do not resolve your issue, make a post on the official GSC forum, here: https://www.gsc-game.com/index.php?t=community&s=forums&s_game_type=xr2&sec_id=19. The forum members are very helpful and knowledgeable and will usually reply within a day or two. You can hasten the process by quoting the last few lines of your crash log if you have one - this will usually be located inside a compressed folder in %AppData%\XRay Engine\reports\ and will be named 'xray_<Yourname>.log'. You can also quote the lines between 'Error Reason:' and 'Registers:' in 'errorlog.log', located in the same folder.
 
 
 ====================================
@@ -404,7 +403,7 @@ Bugs still in the game:
 
 • Strelok can fall off a platform at the NPP, making the game unfinishable.
 • Emissions may rarely break active tasks and NPC logic.
-• NPCs may occasionally get stuck in an unresponsive state.
+• NPCs may occasionally get stuck in an unresponsive state. Save and reload to work around this.
 • Artifacts sometimes glitch into terrain, making them unattainable.
 • Weapon scope zoom upgrades are 'forgotten' when another upgrade is installed over them, or when the player reloads a savegame - the new scope zoom value does not persist.
 • The AI of the military NPCs at the Cordon outpost sometimes becomes unresponsive.
@@ -413,8 +412,7 @@ Bugs still in the game:
 • The reload animation for shotguns sometimes glitches and shows the wrong number of shells being loaded into the shotgun.
 • The player's nightvision gets disabled when a new suit of armor enters the player's inventory.
 • The player's character model reverts back to the default leather jacket model upon picking up another suit.
-• Bullet tracers may be visible through geometry on some hardware in DX10/10.1 mode with in-game anti-aliasing enabled. Disable in-game anti-aliasing and restart the game to work around this.
-• Attempting to quit the game from the main menu can freeze the game on some hardware in DX10/10.1 mode.
+• Attempting to quit the game from the main menu can sometimes freeze the game on some hardware in DX10/10.1 mode.
 • Controller psy-aura sounds playing before a savegame is loaded persist into that savegame. Restart the game before loading to work around this.
 • Entries made to the PDA message log persist into a subsequently loaded savegame until overwritten by a new entry. Restart the game before loading to work around this.
 • A squad NPC will issue squad audio prompts even if he is the sole member of the squad.
