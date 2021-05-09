@@ -41,7 +41,7 @@ local object_idle = object.idle
 
 class "evaluator_state_mgr_idle" (property_evaluator)
 
-function evaluator_state_mgr_idle:__init(state_manager) super ()
+function evaluator_state_mgr_idle:__init(state_manager) super()
 	self.st = state_manager
 	self.mgr = state_manager.npc:motivation_action_manager()
 	local planner = state_manager.planner
@@ -60,16 +60,16 @@ function evaluator_state_mgr_idle:evaluate()
 
 	local self_st = self.st
 
+	if self_st.combat == true then
+		return true
+	end
+
 	if self_st.target_state == "idle"
 	and self.movement_eval:evaluate()
 	and self.animstate_eval:evaluate()
 	and self.animation_eval:evaluate()
 	and mgr:current_action_id() == op_state_mgr_to_idle_combat then
 		self_st.combat = true
-		return true
-	end
-
-	if self_st.combat == true then
 		return true
 	end
 
@@ -91,7 +91,7 @@ end
 
 class "evaluator_state_mgr_idle_alife" (property_evaluator)
 
-function evaluator_state_mgr_idle_alife:__init(state_manager) super ()
+function evaluator_state_mgr_idle_alife:__init(state_manager) super()
 	self.st = state_manager
 	self.mgr = state_manager.npc:motivation_action_manager()
 	self.npc_st = db.storage[state_manager.npc:id()]
@@ -136,7 +136,7 @@ end
 
 class "evaluator_state_mgr_idle_smartcover" (property_evaluator)
 
-function evaluator_state_mgr_idle_smartcover:__init(state_manager) super ()
+function evaluator_state_mgr_idle_smartcover:__init(state_manager) super()
 	self.st = state_manager
 	local planner = state_manager.planner
 	self.movement_eval = planner:evaluator(props.movement)
@@ -158,14 +158,14 @@ end
 
 class "act_state_mgr_to_idle" (action_base)
 
-function act_state_mgr_to_idle:__init(state_manager) super ()
+function act_state_mgr_to_idle:__init(state_manager) super()
 	self.st = state_manager
 end
 
 function act_state_mgr_to_idle:initialize()
 	action_base.initialize(self)
-	local sobj = self.object
-	if sobj:best_enemy() or sobj:best_danger() then
+	local npc = self.object
+	if npc:best_enemy() or npc:best_danger() then
 		self.st:set_state("idle", nil, nil, nil, {animation = true})
 		return
 	end
@@ -174,8 +174,8 @@ end
 
 function act_state_mgr_to_idle:execute()
 	action_base.execute(self)
-	local sobj = self.object
-	if sobj:best_enemy() or sobj:best_danger() then
+	local npc = self.object
+	if npc:best_enemy() or npc:best_danger() then
 		self.st:set_state("idle", nil, nil, nil, {animation = true})
 		return
 	end
@@ -183,7 +183,6 @@ function act_state_mgr_to_idle:execute()
 end
 
 function act_state_mgr_to_idle:finalize()
---	self.st.current_object = -1
 	action_base.finalize(self)
 end
 
@@ -193,7 +192,7 @@ end
 
 class "eva_state_mgr_end" (property_evaluator)
 
-function eva_state_mgr_end:__init(st) super ()
+function eva_state_mgr_end:__init(st) super()
 	self.st = st
 	self.mgr = st.npc:motivation_action_manager()
 end
@@ -234,7 +233,7 @@ end
 
 class "eva_state_mgr_locked" (property_evaluator)
 
-function eva_state_mgr_locked:__init(st) super ()
+function eva_state_mgr_locked:__init(st) super()
 	self.st = st
 end
 
@@ -252,7 +251,7 @@ end
 
 class "eva_state_mgr_locked_external" (property_evaluator)
 
-function eva_state_mgr_locked_external:__init(st) super ()
+function eva_state_mgr_locked_external:__init(st) super()
 	self.st = st
 end
 
@@ -268,7 +267,7 @@ end
 
 class "act_state_mgr_end" (action_base)
 
-function act_state_mgr_end:__init(st) super ()
+function act_state_mgr_end:__init(st) super()
 	self.st = st
 end
 
@@ -283,8 +282,8 @@ end
 
 function act_state_mgr_end:weapon_update()
 
-	local sobj = self.object
-	local best_wpn = sobj:best_weapon()
+	local npc = self.object
+	local best_wpn = npc:best_weapon()
 
 	if not isWeapon(best_wpn) then
 		return
@@ -303,25 +302,25 @@ function act_state_mgr_end:weapon_update()
 				self_st.look_object = nil
 				return
 			end -- Red75 via bardak:
-			if sobj:see(look_object) and (not IsStalker(look_object) or sobj:relation(look_object) == prop_enemy) and look_object:alive() == true then
+			if npc:see(look_object) and (not IsStalker(look_object) or npc:relation(look_object) == prop_enemy) and look_object:alive() == true then
 				if t == "sniper_fire" then
-					local sniper_aim = sobj:position():distance_to(look_object:position()) * 20
-					sobj:set_item(object_fire1, best_wpn, 1, sniper_aim <= 1500 and 1500 or sniper_aim)
+					local sniper_aim = npc:position():distance_to(look_object:position()) * 20
+					npc:set_item(object_fire1, best_wpn, 1, sniper_aim <= 1500 and 1500 or sniper_aim)
 				else
-					sobj:set_item(object_fire1, best_wpn, state_mgr_weapon.get_queue_params(sobj, target_state_data))
+					npc:set_item(object_fire1, best_wpn, state_mgr_weapon.get_queue_params(npc, target_state_data))
 				end
 				return
 			end
-			sobj:set_item(object_idle, best_wpn)
+			npc:set_item(object_idle, best_wpn)
 			return
 		end
 		if self_st.look_position ~= nil and t == "sniper_fire" then
-			sobj:set_item(object_fire1, best_wpn, 1, 3000)
+			npc:set_item(object_fire1, best_wpn, 1, 3000)
 		else
-			sobj:set_item(object_fire1, best_wpn, state_mgr_weapon.get_queue_params(sobj, target_state_data))
+			npc:set_item(object_fire1, best_wpn, state_mgr_weapon.get_queue_params(npc, target_state_data))
 		end
 	elseif t == "unstrapped" then
-		sobj:set_item(state_mgr_weapon.get_idle_state(target_state), best_wpn)
+		npc:set_item(state_mgr_weapon.get_idle_state(target_state), best_wpn)
 	end
 end
 
@@ -333,7 +332,7 @@ end
 
 class "act_state_mgr_locked" (action_base)
 
-function act_state_mgr_locked:__init() super ()
+function act_state_mgr_locked:__init() super()
 --	self.st = st
 end
 
@@ -365,16 +364,12 @@ local animation_reset_denied =
 function state_manager:__init(npc)
 	state_mgr_goap.goap_graph(self, npc)
 	self.target_state = "idle"
---	self.current_direction = nil
---	self.target_position = nil
---	self.current_object = nil
 	self.combat = false
 	self.alife = true
 	self.emerg = {}
 	self.synsound = nil
 	self.yaw_delta = nil
 	self.subanim = 0
---	self.need_reweapon = false
 end
 
 function state_manager:set_state(state_name, callback, timeout, target, emerg, synsound, extrakeys)
@@ -421,15 +416,10 @@ function state_manager:set_state(state_name, callback, timeout, target, emerg, s
 		end
 
 		self.target_state = state_name
---		self.current_object = nil
 		switched = true
 	end
 
-	if new_state.reset == true then
-		self.reset_state = true
-	else
-		self.reset_state = false
-	end
+	self.reset_state = new_state.reset == true
 
 	if switched and emerg ~= nil then
 		if animation_reset_denied[last_state] ~= true then
@@ -493,25 +483,19 @@ end
 
 function get_state(npc)
 	local state_mgr = db.storage[npc:id()].state_mgr
-	if state_mgr then
-		return state_mgr:get_state()
-	end
-	return nil
+	return state_mgr and state_mgr:get_state()
 end
 
 --------------------------------------------------------------------------------
 
 function bind_manager(npc)
 
-	local manager = npc:motivation_action_manager()
-	local state_manager = state_mgr.state_manager(npc)
+	local manager               = npc:motivation_action_manager()
+	local state_manager         = state_mgr.state_manager(npc)
 
-	manager:add_evaluator(prop_state_mgr_idle_combat, evaluator_state_mgr_idle(state_manager))
-	manager:add_evaluator(prop_state_mgr_idle_alife, evaluator_state_mgr_idle_alife(state_manager))
-	manager:add_evaluator(prop_state_mgr_idle_smartcover, evaluator_state_mgr_idle_smartcover(state_manager))
-
-	local wp_prop_state_mgr_idle_combat_true = wp_prop_state_mgr_idle_combat_true
-	local wp_prop_state_mgr_idle_alife_true = wp_prop_state_mgr_idle_alife_true
+	manager:add_evaluator       (prop_state_mgr_idle_combat, evaluator_state_mgr_idle(state_manager))
+	manager:add_evaluator       (prop_state_mgr_idle_alife, evaluator_state_mgr_idle_alife(state_manager))
+	manager:add_evaluator       (prop_state_mgr_idle_smartcover, evaluator_state_mgr_idle_smartcover(state_manager))
 
 	local action                = this.act_state_mgr_to_idle(state_manager)
 	action:add_precondition     (wp_prop_state_mgr_idle_combat_false)

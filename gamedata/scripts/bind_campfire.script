@@ -1,43 +1,45 @@
-local object_binder_update = object_binder.update
-local string_gsub = string.gsub
-local patrol_path_exists = level.patrol_path_exists
-
 campfire_table = {}
-fire_zones_table = {}
 
 function bind(obj)
 	obj:bind_object(campfire_binder(obj))
 end
 
+--------------------------------------------------------------------------------
+
 class "campfire_binder" (object_binder)
 
 function campfire_binder:__init(obj) super(obj)
---	self.campfire = obj:get_campfire()
 end
 
-function campfire_binder:net_spawn(server_object)
+function campfire_binder:net_spawn(se_abstract)
 
-	if not object_binder.net_spawn(self, server_object) then
+	if not object_binder.net_spawn(self, se_abstract) then
 		return false
 	end
 
-	local sobj = self.object
-	local sobj_name = sobj:name()
-	local self_campfire = sobj:get_campfire() -- self.campfire
-	local camp_name = string_gsub(sobj_name, "_campfire", "")
+	local obj = self.object
+	local obj_name = obj:name()
+	local campfire = obj:get_campfire()
+	local camp_name = string.gsub(obj_name, "_campfire", "")
 
-	if patrol_path_exists(camp_name) then
-		self_campfire:turn_off()
-		campfire_table[sobj_name] = self_campfire
+	if level.patrol_path_exists(camp_name) then
+		campfire:turn_off()
+		campfire_table[obj_name] = campfire
 	end
 
-	if sobj:section() == "campfire_gas_fire" then
-		self_campfire:turn_off()
-		fire_zones_table[sobj_name] = self_campfire
+	if obj:section() == "campfire_gas_fire" then
+		campfire:turn_off()
 	end
 
 	return true
 end
+
+function campfire_binder:net_destroy() -- missing in vanilla
+	campfire_table[self.object:name()] = nil
+	object_binder.net_destroy(self)
+end
+
+local object_binder_update = object_binder.update
 
 function campfire_binder:update(delta)
 	object_binder_update(self, delta)

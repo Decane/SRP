@@ -1,53 +1,47 @@
-----------------------------------------------------------------------------------------------------
--- Walkers
-----------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+-- Evaluators
+--------------------------------------------------------------------------------
 
 class "evaluator_need_walker" (property_evaluator)
 
-function evaluator_need_walker:__init(storage) super()
-	self.st = storage
-	self.npc_st = db.storage[storage.npc:id()]
+function evaluator_need_walker:__init(st) super()
+	self.st = st
+	self.npc_st = db.storage[st.npc:id()]
 end
 
 function evaluator_need_walker:evaluate()
---	return xr_logic.is_active(self.object, self.st)
 	return self.st.section == self.npc_st.active_section
 end
 
-----------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+-- Actions
+--------------------------------------------------------------------------------
 
-class "action_walker_activity" (action_base)
+class "action_walker" (action_base)
 
-function action_walker_activity:__init(npc, storage) super()
-	self.st = storage
-	self.move_mgr = db.storage[npc:id()].move_mgr
+function action_walker:__init(st) super()
+	self.st = st
+	self.move_mgr = db.storage[st.npc:id()].move_mgr
 end
 
-function action_walker_activity:initialize()
+function action_walker:initialize()
 	action_base.initialize(self)
-	local npc = self.object
-	npc:set_desired_position()
-	npc:set_desired_direction()
-	self:reset_scheme(npc)
+	self.object:set_desired_position()
+	self.object:set_desired_direction()
+	self:reset_scheme()
 end
 
-function action_walker_activity:activate_scheme(loading, npc)
+function action_walker:activate_scheme()
 	self.st.signals = {}
-	self:reset_scheme(npc)
+	self:reset_scheme()
 end
 
-function action_walker_activity:reset_scheme(npc)
+function action_walker:reset_scheme()
 	local st = self.st
-	if st.path_walk_info == nil then
-		st.path_walk_info = utils.path_parse_waypoints(st.path_walk)
-	end
-	if st.path_look_info == nil then
-		st.path_look_info = utils.path_parse_waypoints(st.path_look)
-	end
 	self.move_mgr:reset(st.path_walk, st.path_walk_info, st.path_look, st.path_look_info, st.team, st.suggested_state)
 end
 
-function action_walker_activity:execute()
+function action_walker:execute()
 	action_base.execute(self)
 	self.move_mgr:update()
 	local sound_idle = self.st.sound_idle
@@ -56,54 +50,48 @@ function action_walker_activity:execute()
 	end
 end
 
-function action_walker_activity:finalize()
+function action_walker:finalize()
 	self.move_mgr:finalize()
 	action_base.finalize(self)
 end
 
-function action_walker_activity:position_riched()
+function action_walker:position_riched()
 	return self.move_mgr:arrived_to_first_waypoint()
 end
 
-----------------------------------------------------------------------------------------------------
--- Walker binder
-----------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+-- Binder
+--------------------------------------------------------------------------------
 
-local op_action_walker                         = xr_actions_id.zmey_walker_base + 1
-local prop_need_walker                         = xr_evaluators_id.zmey_walker_base + 1
+local op_alife                  = xr_actions_id.alife
+local op_walker                 = xr_actions_id.zmey_walker_base + 1
+local prop_need_walker          = xr_evaluators_id.zmey_walker_base + 1
 
-local xr_actions_id_alife                      = xr_actions_id.alife
+local wp_switched_section_false = world_property(prop_need_walker, true)
+local wp_switched_section_true  = world_property(prop_need_walker, false)
 
-local wp_prop_need_walker_true                 = world_property(prop_need_walker, true)
-local wp_prop_need_walker_false                = world_property(prop_need_walker, false)
+function add_to_binder(npc, ini, scheme, section, st)
 
-local wp_stalker_ids_property_alive_true       = world_property(stalker_ids.property_alive, true)
-local wp_stalker_ids_property_danger_false     = world_property(stalker_ids.property_danger, false)
-local wp_stalker_ids_property_enemy_false      = world_property(stalker_ids.property_enemy, false)
-local wp_stalker_ids_property_anomaly_false    = world_property(stalker_ids.property_anomaly, false)
-local wp_stalker_ids_smartcover_action_3_false = world_property(xr_evaluators_id.smartcover_action + 3, false)
+	local manager               = npc:motivation_action_manager()
+	manager:add_evaluator       (prop_need_walker, evaluator_need_walker(st))
 
-function add_to_binder(npc, ini, scheme, section, storage)
+	-------------------------
 
-	local manager                        = npc:motivation_action_manager()
-	manager:add_evaluator                (prop_need_walker, this.evaluator_need_walker(storage))
+	local action                = action_walker(st)
 
-	local new_action                     = this.action_walker_activity(npc, storage)
-	new_action:add_precondition          (wp_stalker_ids_property_alive_true)
-	new_action:add_precondition          (wp_stalker_ids_property_danger_false)
-	new_action:add_precondition          (wp_stalker_ids_property_enemy_false)
-	new_action:add_precondition          (wp_stalker_ids_property_anomaly_false)
-	new_action:add_precondition          (wp_prop_need_walker_true)
-	new_action:add_precondition          (wp_stalker_ids_smartcover_action_3_false)
+	xr_motivator.addPrecondAliveNoDangerNoEnemyNoAnomalyNoSmartcover(action)
+	xr_motivator.addCommonPrecondition(action)
 
-	xr_motivator.addCommonPrecondition   (new_action)
-	new_action:add_effect                (wp_prop_need_walker_false)
-	manager:add_action                   (op_action_walker, new_action)
+	action:add_precondition     (wp_switched_section_false)
+	action:add_effect           (wp_switched_section_true)
+	manager:add_action          (op_walker, action)
 
-	xr_logic.subscribe_action_for_events (npc, storage, new_action)
+	xr_logic.subscribe_action_for_events(nil, st, action)
 
-	new_action = manager:action          (xr_actions_id_alife)
-	new_action:add_precondition          (wp_prop_need_walker_false)
+	-------------------------
+
+	action                      = manager:action(op_alife)
+	action:add_precondition     (wp_switched_section_true)
 end
 
 function set_scheme(npc, ini, scheme, section, gulag_name)
@@ -114,21 +102,22 @@ function set_scheme(npc, ini, scheme, section, gulag_name)
 
 	local get_string         = utils.cfg_get_string
 	local path_walk          = get_string(ini, section, "path_walk", npc, true, gulag_name)
-
-	st.path_walk             = path_walk
+	local path_look          = get_string(ini, section, "path_look", nil, false, gulag_name)
 
 	if not level.patrol_path_exists(path_walk) then
 		abort("[xr_walker.set_scheme]: There is no patrol path '%s'.", path_walk)
 	end
 
-	st.path_look             = get_string(ini, section, "path_look", nil, false, gulag_name)
+	st.path_walk             = path_walk
+	st.path_look             = path_look
+	st.path_walk_info        = utils.path_parse_waypoints(path_walk)
+	st.path_look_info        = utils.path_parse_waypoints(path_look)
 	st.team                  = get_string(ini, section, "team", nil, false, gulag_name)
 	st.sound_idle            = get_string(ini, section, "sound_idle", nil, false, "")
 	st.suggested_state       =
 	{
 		standing = get_string(ini, section, "def_state_standing", nil, false, ""),
-		moving = get_string(ini, section, "def_state_moving", nil, false, "") or get_string(ini, section, "def_state_moving1", nil, false, ""),
+		  moving = get_string(ini, section, "def_state_moving", nil, false, "") or
+		           get_string(ini, section, "def_state_moving1", nil, false, ""),
 	}
-	st.path_walk_info        = nil
-	st.path_look_info        = nil
 end

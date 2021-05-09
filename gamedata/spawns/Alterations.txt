@@ -765,6 +765,26 @@ cond = {!npc_stay_offline(val_smart_terrain_7_3) !npc_stay_offline(val_smart_ter
 
 ------------------------------------
 
+[4599] <deleted>
+
+• Superfluous space restrictor: 'val_space_restrictor_actor_inside'. Not referenced anywhere in the game code. The logic it binds is handled elsewhere in the SRP, rendering it obsolete.
+
+------------------------------------
+
+[4606] <deleted>
+
+• Superfluous space restrictor: 'val_space_restrictor_db_sound'. Not referenced anywhere in the game code and its story ID (1102) has instead been assigned to space restrictor 'val_space_restrictor_db_sound_info' in the SRP. The logic it binds is handled elsewhere in the SRP, rendering it obsolete.
+
+------------------------------------
+
+[4607]
+
+story_id = 1102
+
+• This is 'val_space_restrictor_db_sound_info'. See comment on [4606] above.
+
+------------------------------------
+
 [4613]
 
 custom_data = <<END
@@ -815,6 +835,12 @@ END
 ;END
 
 • Unnecessary weapon hide logic in Lingov's zone. The weapon hide scheme for Freedom's base is handled by space restrictor 'val_freedom_base_no_weapon_zone'.
+
+------------------------------------
+
+[4672] <deleted>
+
+• Superfluous space restrictor: 'val_space_restrictor_db_sound_2'. Not referenced anywhere in the game code. The logic it binds is handled elsewhere in the SRP, rendering it obsolete.
 
 ------------------------------------
 

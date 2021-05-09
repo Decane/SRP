@@ -41,7 +41,6 @@ local function calc_point(point, prev_point, squad, src_smart, tgt_smart_id, arh
 	end
 
 	local point_value = prev_point.value
---	local board = get_sim_board()
 
 	if sim_level_cluster[point.smart_level] == sim_level_cluster[src_smart.smart_level] then
 		local squad_faction = squad.player_id
@@ -49,18 +48,6 @@ local function calc_point(point, prev_point, squad, src_smart, tgt_smart_id, arh
 			local point_faction = point.player_name
 			if point_faction == "none" then
 				point_value = point_value + 1
---[[
-				local respawn_point = point.respawn_sector
-				if respawn_point ~= nil then
-					local respawn_faction = xr_logic.pick_section_from_condlist(db.actor_proxy, point, respawn_point)
-					if board.players[respawn_faction] then
-						if not game_relations.is_factions_enemies(squad_faction, respawn_faction) then	-- if point is empty but is respawn point for non-hostiles, can't go there
-							point_value = point_value + 1000
-							dbgmsg("Made "..smart_names.get_smart_terrain_name(point).." inaccessible to "..squad_faction.." because it's a spawn point for "..respawn_faction)
-						end
-					end
-				end
-]]
 				if not board:is_empty_or_enemy_smart_avail(point, squad_faction) then
 					point_value = point_value + 1000
 				end
@@ -72,15 +59,12 @@ local function calc_point(point, prev_point, squad, src_smart, tgt_smart_id, arh
 					point_value = point_value + 1000
 				end
 			else
-				if game_relations.is_factions_enemies(squad_faction, point_faction) then
+				if game_relations.is_factions_enemies(squad_faction, point_faction) and board:is_empty_or_enemy_smart_avail(point, squad_faction) then
 					for k, point_squad in pairs (board.smarts[point_id].squads) do
 						point_value = point_value + point_squad.squad_power
 					end
 					if point.combat_manager:point_under_attack() then
 						point_value = point_value + 100
-					end
-					if not board:is_empty_or_enemy_smart_avail(point, squad_faction) then
-						point_value = point_value + 1000
 					end
 				else
 					point_value = point_value + 1000
@@ -324,7 +308,7 @@ function sim_board:register_smart(smart)
 	self.smarts_by_names[smart:name()] = smart
 
 	if smart.respawn_sector ~= nil then
-		self:register_spawn_smart(smart)
+		self.spawn_smarts[smart_id] = smart.respawn_sector
 	end
 
 --	if smart.mutant_lair == true then
@@ -359,10 +343,6 @@ function sim_board:unregister_smart(smart)
 		abort("[sim_board:unregister_smart]: Tried to unregister a nil smart: '%s'.", smart:name())
 	end
 	self_smarts[smart_id] = nil
-end
-
-function sim_board:register_spawn_smart(smart)
-	self.spawn_smarts[smart.id] = smart.respawn_sector
 end
 
 -- function sim_board:register_mutant_lair(smart)
@@ -748,10 +728,6 @@ function sim_board:get_smart_by_name(name)
 	return self.smarts_by_names[name]
 end
 
--- function sim_board:get_smart_player(smart)
---	return smart.player_name
--- end
-
 function sim_board:get_smart_population(smart)
 	return self.smarts[smart.id].stayed_squad_quan
 end
@@ -861,12 +837,6 @@ function sim_board:reset_nearest_squads(smart)
 	end
 end
 
-function sim_board:show()
-end
-
-function sim_board:hide()
-end
-
 ]]
 
 function get_sim_board()
@@ -913,6 +883,3 @@ function is_point_avail(point, faction_id) -- returns nil, true, or false (false
 
 	return point.sim_avail == nil or xr_logic.pick_section_from_condlist(db.actor_proxy, nil, point.sim_avail) == "true"
 end
-
--- function print()
--- end

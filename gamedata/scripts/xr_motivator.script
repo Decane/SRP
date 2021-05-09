@@ -1,97 +1,93 @@
--- memtsg = {}
--- lasthealth = 0
--- lastime = nil
+function AddToMotivator(npc) -- called 1st
+	npc:bind_object(this.motivator_binder(npc))
+end
 
-local sim = _G.sim
-local object_binder_update = object_binder.update
-local bloodsuckers_restr = {}
 bloodsucker_zone_enter = {}
+local bloodsuckers_restr = {}
 
-----------------------------------------------------------------------------------------------------------------------
+function register_bloodsucker_restr(obj)
+	bloodsuckers_restr[obj:id()] = obj
+end
+
+local function clear_npc_from_bloodsucker_zones(npc_id)
+	for restr_id in pairs (bloodsuckers_restr) do
+		if bloodsucker_zone_enter[restr_id] and bloodsucker_zone_enter[restr_id]:id() == npc_id then
+			bloodsucker_zone_enter[restr_id] = nil
+		end
+	end
+end
+
+local function init_corpse_known_info(npc)
+	local spawn_ini = npc:spawn_ini()
+	local filename = nil
+	if spawn_ini then
+		filename = utils.cfg_get_string(spawn_ini, "logic", "cfg", nil, false, "")
+	end
+	local char_ini = nil
+	if filename ~= nil then
+		char_ini = ini_file(filename)
+	else
+		char_ini = spawn_ini
+	end
+	if char_ini and char_ini:section_exist("known_info") then
+		for i = 0, char_ini:line_count("known_info") - 1 do
+			local found, info = char_ini:r_line("known_info", i, "", "")
+			npc:give_info_portion(info)
+		end
+--		dbglog("Dead NPC with ID "..npc:id().." has known info.")
+	end
+end
+
+--------------------------------------------------------------------------------
 
 class "motivator_binder" (object_binder)
 
-function motivator_binder:__init(npc) super(npc)
+function motivator_binder:__init(npc) super(npc) -- called 2nd
 	self.loaded = false
-	self.update_time = 1000
+	self.update_time = -10000
 	self.first_update_done = false
---	self.treasure_processed = false
---	self.now_in_combat = false
---	self.strelok_particles_added = false
 	self.death_recorded = false
 	self.is_strelok = npc:profile_name() == "stc_strelok"
+	self.st = {}
 end
 
-function motivator_binder:extrapolate_callback(cur_pt)
+function motivator_binder:reload(section) -- called 3rd
+	object_binder.reload(self, section)
+end
+
+function motivator_binder:reinit() -- called 4th
+	object_binder.reinit(self)
 	local npc = self.object
 	local npc_st = self.st
-	if npc_st.active_section then
-		xr_logic.issue_event(nil, npc_st[npc_st.active_scheme], "extrapolate_callback")
-		npc_st.move_mgr:extrapolate_callback(npc)
-	end
-	return patrol(npc:patrol()):flags(cur_pt):get() == 0
-end
-
-function motivator_binder:reinit()
-	object_binder.reinit(self)
-	local t = {} -- {followers = {}}
-	local npc = self.object
-	db.storage[npc:id()] = t
-	self.st = t
+	db.storage[npc:id()] = npc_st
 	if npc:alive() then
-		t.state_mgr = state_mgr.bind_manager(npc)
-		t.move_mgr = move_mgr.move_mgr(npc)
-		t.move_mgr:initialize()
+		npc_st.state_mgr = state_mgr.bind_manager(npc)
+		npc_st.move_mgr = move_mgr.move_mgr(npc)
+		npc_st.move_mgr:initialize()
 	end
 end
 
-----------------------------------------------------------------------------------------------------------------------
+function motivator_binder:net_spawn(se_abstract) -- called 5th
 
--- local dummy_ini = ini_file("scripts\\dummy.ltx")
-local callback_hit = callback.hit
-local callback_death = callback.death
-local callback_use_object = callback.use_object
-local stalker_ids_property_anomaly = stalker_ids.property_anomaly
-local stalker_ids_action_combat_planner = stalker_ids.action_combat_planner
-
-function motivator_binder:net_spawn(sobject)
-
-	if not object_binder.net_spawn(self, sobject) then
+	if not object_binder.net_spawn(self, se_abstract) then
 		return false
 	end
 
 	local npc = self.object
 
-	npc:set_callback(callback_use_object, motivator_binder.use_callback, self)
+	npc:set_callback(callback.use_object, motivator_binder.use_callback, self)
 
 	if not npc:alive() then
-		if self.loaded == false then
-			local spawn_ini = npc:spawn_ini()
-			local filename = nil
-			if spawn_ini then
-				filename = utils.cfg_get_string(spawn_ini, "logic", "cfg", npc, false, "")
-			end
-			local char_ini = nil
-			if filename ~= nil then
-				char_ini = ini_file(filename)
-			else
-				char_ini = spawn_ini
-			end
-			if char_ini and char_ini:section_exist("known_info") then
-				for i = 0, char_ini:line_count("known_info") - 1 do
-					local found, info = char_ini:r_line("known_info", i, "", "")
-					npc:give_info_portion(info)
-				end
---				dbglog("Dead NPC with ID "..npc:id().." has known info.")
-			end
+		if not self.loaded then
+			init_corpse_known_info(npc)
 		end
 		return true
 	end
 
 	xrs_dyn_music.add_object(npc)
 
-	local id = npc:id()
-	local se_npc = sim:object(id)
+	local npc_id = npc:id()
+	local se_npc = _G.sim:object(npc_id)
 	local npc_st = self.st
 
 	npc_st.squad_obj = sim_board.get_sim_board().squads[se_npc.squad_id]
@@ -99,21 +95,23 @@ function motivator_binder:net_spawn(sobject)
 	db.add_obj(npc)
 
 	npc:set_patrol_extrapolate_callback(motivator_binder.extrapolate_callback, self)
-	npc:set_callback(callback_hit, motivator_binder.hit_callback, self)
-	npc:set_callback(callback_death, motivator_binder.death_callback, self)
+	npc:set_callback(callback.hit, motivator_binder.hit_callback, self)
+	npc:set_callback(callback.death, motivator_binder.death_callback, self)
 	npc:apply_loophole_direction_distance(1)
 
-	local goodwill = db.goodwill.relations[id]
+	-- It's possible for an NPC's net_spawn() to be called before actor_binder:__init().
+	-- So, we need to check that db.actor ~= nil, as npc:set_goodwill(goodwill, nil)
+	-- corrupts the NPC. TODO: Consider moving into update() instead.
+
+	local goodwill = db.goodwill.relations[npc_id]
 	if goodwill and db.actor then
 		npc:set_goodwill(goodwill, db.actor)
 	end
 
-	local sympathy = db.goodwill.sympathy[id]
+	local sympathy = db.goodwill.sympathy[npc_id]
 	if sympathy then
 		npc:set_sympathy(sympathy)
 	end
-
---	game_relations.set_level_faction_community(npc)
 
 	db.add_enemy(npc)
 
@@ -122,8 +120,8 @@ function motivator_binder:net_spawn(sobject)
 	sound_theme.init_npc_sound(npc)
 
 	local manager = npc:motivation_action_manager()
-	manager:remove_evaluator(stalker_ids_property_anomaly)
-	manager:add_evaluator(stalker_ids_property_anomaly, property_evaluator_const(false))
+	manager:remove_evaluator(stalker_ids.property_anomaly)
+	manager:add_evaluator(stalker_ids.property_anomaly, property_evaluator_const(false))
 
 	xr_smartcover.init_global_evaluators(npc)
 
@@ -136,11 +134,10 @@ function motivator_binder:net_spawn(sobject)
 			npc:give_info_portion(info)
 		end
 		se_npc.has_known_info = true
---		dbglog("NPC with ID "..id.." has known info.")
+--		dbglog("NPC with ID "..npc_id.." has known info.")
 	end
 
 	bloodsucker_reaction.add_bloodsucker_reactions(npc)
-
 	actor_reaction.add_actor_reactions(npc)
 
 	if npc:character_community() ~= "zombied" then
@@ -159,23 +156,22 @@ end
 function motivator_binder:net_destroy()
 
 	local npc = self.object
-	local id = npc:id()
 
---	xrs_dyn_music.npc_table[id] = nil
---	xrs_dyn_music.stop_combat(id)
-	xrs_dyn_music.remove_object(id)
-	xr_sound.stop_sounds_by_id(id)
+	npc:set_callback(callback.use_object, nil) -- SRP
+	self:clear_callbacks()
+
+	local npc_id = npc:id()
+
+	clear_npc_from_bloodsucker_zones(npc_id)
+
+	xrs_dyn_music.remove_object(npc_id)
+	xr_sound.stop_sounds_by_id(npc_id)
 
 	local npc_st = self.st
+
 	if npc_st.active_scheme then
 		xr_logic.issue_event(nil, npc_st[npc_st.active_scheme], "net_destroy", npc)
 	end
-
---	db.del_obj(npc) -- done below
-	db.storage[id] = nil
-
-	self:clear_callbacks()
-	npc:set_callback(callback_use_object, nil) -- SRP
 
 	if self.e_index ~= nil then
 		db.delete_enemy(self.e_index)
@@ -185,15 +181,133 @@ function motivator_binder:net_destroy()
 		stc_strelok_health_manager.remove_health_bar()
 	end
 
+	db.del_obj(npc)
+
 	object_binder.net_destroy(self)
 end
+
+local stalker_ids_action_combat_planner = stalker_ids.action_combat_planner
+local object_binder_update = object_binder.update
+
+function motivator_binder:update(delta) -- called 6th
+
+	object_binder_update(self, delta)
+
+	if self.death_recorded then
+		return
+	end
+
+	local npc = self.object
+	local npc_alive = npc:alive()
+
+	if not self.first_update_done then
+		if npc_alive then
+			-- We update the NPC's trade supplies on the first update to prevent
+			-- e.g. his walkie-talkie (Suslov) or pistol (flea market night
+			-- trader) vanishing from his hands if the first time the NPC is
+			-- "used" after loading is with the item equipped:
+			trade_manager.update(npc)
+			if self.is_strelok then
+				npc:start_particles("monsters\\polter_idle", "bip01_head")
+			end
+		else
+			local npc_id = npc:id()
+			local se_npc = _G.sim:object(npc_id)
+			if se_npc.death_droped ~= true then
+				-- We create drop items for perma-corpses if we haven't already;
+				-- they don't get a death_callback() call:
+				death_manager.drop_manager(npc):create_release_item(se_npc, npc_id)
+				level.map_add_object_spot_ser(npc_id, "deadbody_location", "") -- see DC20190408
+				level.map_add_object_spot_ser(npc_id, "deadbody_location", "")
+			end
+		end
+		self.first_update_done = true
+	end
+
+	local global_time = time_global()
+
+	if global_time > self.update_time then
+		sr_light.check_light(npc)
+		if npc_alive then
+			local npc_pos = npc:position()
+			for restr_id, restr in pairs (bloodsuckers_restr) do
+				if restr:inside(npc_pos) then
+					if bloodsucker_zone_enter[restr_id] == nil then
+						bloodsucker_zone_enter[restr_id] = npc
+					end
+				else
+					if bloodsucker_zone_enter[restr_id] and bloodsucker_zone_enter[restr_id]:id() == npc:id() then
+						bloodsucker_zone_enter[restr_id] = nil
+					end
+				end
+			end
+			self.update_time = global_time + 1000
+		end
+	end
+
+	local npc_st = self.st
+
+	if npc_alive then
+
+		if npc_st.active_scheme then
+			local need_switch = true
+			local manager = npc:motivation_action_manager()
+			if manager:initialized() and manager:current_action_id() == stalker_ids_action_combat_planner then
+--				local overrides = npc_st.overrides
+--				if overrides.on_combat then -- overrides guaranteed valid given npc_st.active_scheme is; see xr_logic.activate_by_section()
+--					xr_logic.pick_section_from_condlist(db.actor, npc, overrides.on_combat) -- no on_combat lines outside of [logic] in vanilla
+--				end
+				local st_combat = npc_st.combat
+				if st_combat and st_combat.enabled then
+					if xr_logic.try_switch_to_another_section(npc, st_combat, db.actor) then
+						need_switch = false
+					end
+				end
+			end
+			if need_switch then
+				xr_logic.try_switch_to_another_section(npc, npc_st[npc_st.active_scheme], db.actor)
+			end
+		end
+
+		npc_st.active_sector = sr_danger.select_active_sectors(npc)
+		npc_st.state_mgr:update()
+
+		local npc_id = npc:id()
+
+		xr_sound.update(npc_id)
+
+		local squad = npc_st.squad_obj
+
+		if squad and squad.commander_id == npc_id then
+			squad:update()
+		end
+	else
+		npc_st.state_mgr = nil
+		npc_st.move_mgr = nil -- SRP
+		self.death_recorded = true
+	end
+end
+
+--------------------------------------------------------------------------------
 
 function motivator_binder:clear_callbacks()
 	local npc = self.object
 	npc:set_patrol_extrapolate_callback(nil)
-	npc:set_callback(callback_hit, nil)
-	npc:set_callback(callback_death, nil)
-	-- npc:set_callback(callback_use_object, nil)
+	npc:set_callback(callback.hit, nil)
+	npc:set_callback(callback.death, nil)
+end
+
+function motivator_binder:extrapolate_callback(current_point_index)
+
+	local npc = self.object
+	local npc_st = self.st
+
+	if npc_st.active_scheme then
+		xr_logic.issue_event(nil, npc_st[npc_st.active_scheme], "extrapolate_callback")
+		npc_st.move_mgr:extrapolate_callback(npc)
+	end
+
+	return patrol(npc:patrol()):flags(current_point_index):get() == 0
 end
 
 function motivator_binder:hit_callback(victim, amount, local_direction, hitter, bone_index)
@@ -204,28 +318,24 @@ function motivator_binder:hit_callback(victim, amount, local_direction, hitter, 
 
 	local npc_st = self.st
 
-	if npc_st.active_section then
+	if npc_st.active_scheme then
 		xr_logic.issue_event(nil, npc_st[npc_st.active_scheme], "hit_callback", victim, amount, local_direction, hitter, bone_index)
 	end
 
-	local temp_var = npc_st.combat_ignore
-	if temp_var then
-		xr_logic.issue_event(nil, temp_var, "hit_callback", victim, amount, local_direction, hitter, bone_index)
+	if npc_st.combat_ignore then
+		xr_logic.issue_event(nil, npc_st.combat_ignore, "hit_callback", victim, amount, local_direction, hitter, bone_index)
 	end
 
-	temp_var = npc_st.combat
-	if temp_var then
-		xr_logic.issue_event(nil, temp_var, "hit_callback", victim, amount, local_direction, hitter, bone_index)
+	if npc_st.combat then
+		xr_logic.issue_event(nil, npc_st.combat, "hit_callback", victim, amount, local_direction, hitter, bone_index)
 	end
 
-	temp_var = npc_st.hit
-	if temp_var then
-		xr_logic.issue_event(nil, temp_var, "hit_callback", victim, amount, local_direction, hitter, bone_index)
+	if npc_st.hit then
+		xr_logic.issue_event(nil, npc_st.hit, "hit_callback", victim, amount, local_direction, hitter, bone_index)
 	end
 
 	if amount > 0 then
 		local victim_id = victim:id()
---		sr_territory.issue_event(nil, "hit_callback", victim, amount, local_direction, hitter, bone_index)
 		xr_wounded.hit_callback(victim_id)
 		if hitter:id() == 0 then -- 0 = actor ID
 			sim_combat.hit_callback(victim_id)
@@ -235,216 +345,69 @@ end
 
 function motivator_binder:death_callback(victim, culprit)
 
-	local id = victim:id()
+	self:clear_callbacks()
 
---	xrs_dyn_music.stop_combat(id)	--' Distemper 03.2008
-	xrs_dyn_music.remove_object(id)
-
+	local npc_id = victim:id()
 	local npc_st = self.st
+
+	clear_npc_from_bloodsucker_zones(npc_id)
+
+	xrs_dyn_music.remove_object(npc_id)
 
 	stalker_generic.remove_level_spot(victim, npc_st)
 
 	-- DC20190408: Hack per Shoker to add a corpse map spot in case the engine fails to.
 	-- The spot needs to be added twice to guarantee that the engine's interference will
 	-- not prevent it from being rendered on the minimap.
---	dbglog("Killed %s has %d spots on death", victim:name(), level.map_has_object_spot(id, "deadbody_location"))
-	level.map_add_object_spot_ser(id, "deadbody_location", "")
-	level.map_add_object_spot_ser(id, "deadbody_location", "")
+
+	level.map_add_object_spot_ser(npc_id, "deadbody_location", "")
+	level.map_add_object_spot_ser(npc_id, "deadbody_location", "")
 
 	if culprit:id() == 0 then -- 0 = actor ID
 		xr_statistic.addKillCount(victim)
 		xr_statistic.inc_killed_stalkers_counter()
 	end
---[[
-	local st_ini = npc_st.ini
-	local known_info = utils.cfg_get_string(st_ini, npc_st.section_logic, "known_info", victim, false, "", nil)
-	xr_info.loadInfo(victim, st_ini, known_info)
-]]
-	local npc_st_death = npc_st.death
-	if npc_st_death then
-		xr_logic.issue_event(nil, npc_st_death, "death_callback", victim, culprit)
+
+	if npc_st.death then
+		xr_logic.issue_event(nil, npc_st.death, "death_callback", victim, culprit)
 	end
 
-	if npc_st.active_section then
+	if npc_st.active_scheme then
 		xr_logic.issue_event(nil, npc_st[npc_st.active_scheme], "death_callback", victim, culprit)
 	end
 
---	sr_territory.issue_event(nil, "death_callback", victim, culprit)
-
 	sr_light.check_light(victim)
 
---	local sim = alife()
-	local se_npc = sim:object(id)
+	local se_npc = _G.sim:object(npc_id)
 
-	death_manager.drop_manager(victim):create_release_item(se_npc, id)
+	death_manager.drop_manager(victim):create_release_item(se_npc, npc_id)
 
 	db.delete_enemy(self.e_index)
 
-	self:clear_callbacks()
-
 	bloodsucker_reaction.disable_bloodsucker_reaction(victim)
---[[
-	if actor_stats.remove_from_ranking ~= nil then
-		local community = victim:character_community()
-		if community ~= "zombied" then
-			if community ~= "monolith" then
-				actor_stats.remove_from_ranking(id)
-			end
-		end
-	end
-]]
-	release_body_manager.moving_dead_body(victim, se_npc, id) --' Distemper 11.02.2008
+
+	release_body_manager.moving_dead_body(victim, se_npc, npc_id) --' Distemper 11.02.2008
 end
 
 function motivator_binder:use_callback(used_npc, user)
 	if used_npc:alive() then
 		trade_manager.update(used_npc)
 		dialog_manager.restore_certain_disabled_phrases(used_npc)
---		inventory_upgrades.need_victim(used_npc) --' Distemper 03.2008
 		xr_use.notify_on_use(used_npc, user)
 		local npc_st = self.st
-		if npc_st.active_section then
+		if npc_st.active_scheme then
 			xr_logic.issue_event(nil, npc_st[npc_st.active_scheme], "use_callback", used_npc, user)
 		end
 	else
-		local se_npc = sim:object(used_npc:id())
-		if se_npc ~= nil and se_npc.treasure_processed ~= 1 then
+		local se_npc = _G.sim:object(used_npc:id())
+		if se_npc.treasure_processed ~= 1 then
 			treasure_manager.use(used_npc)
 			se_npc.treasure_processed = 1
 		end
 	end
 end
 
-function motivator_binder:update(delta)
-
-	object_binder_update(self, delta)
-
-	if self.death_recorded == true then
-		return
-	end
-
-	local npc = self.object
-	local id = npc:id()
-	local npc_alive = npc:alive()
-
-	if self.first_update_done == false then
---		if bind_stalker.to_delayed_alife_release_objects[id] == true then
---			local sim = alife()
---			sim:release(sim:object(id), true)
---			bind_stalker.to_delayed_alife_release_objects[id] = nil
---			return
---		end
-		if npc_alive == true then
-			trade_manager.update(npc) -- update the NPC on first update to prevent e.g. his walkie-talkie (Suslov) or pistol (flea market night trader) vanishing from his hands if the first time the NPC is "used" after loading is with the item equipped
-		else
---			dbglog("Loaded %s has %d spots on load", npc:name(), level.map_has_object_spot(id, "deadbody_location"))
---			local sim = alife()
-			local se_npc = sim:object(id)
-			if se_npc and se_npc.death_droped ~= true then
-				death_manager.drop_manager(npc):create_release_item(se_npc, id) -- create drop items for perma-corpses if haven't already; they don't get a death_callback() call
---				if level.map_has_object_spot(id, "deadbody_location") < 2 then
-					level.map_add_object_spot_ser(id, "deadbody_location", "") -- see DC20190408
-					level.map_add_object_spot_ser(id, "deadbody_location", "")
---					dbglog("Loaded %s has %d spots after additions", npc:name(), level.map_has_object_spot(id, "deadbody_location"))
---				end
-			end
-		end
-		if self.is_strelok then
-			npc:start_particles("monsters\\polter_idle", "bip01_head")
-		end
-		self.first_update_done = true
-	end
-
-	local global_time = time_global()
-
-	if global_time > self.update_time then
-		sr_light.check_light(npc)
-		local npc_pos = npc:position()
-		for k, v in pairs (bloodsuckers_restr) do -- moved this loop here, no need to run it every update
-			if v:inside(npc_pos) and npc_alive then
-				if bloodsucker_zone_enter[k] == nil then
-					bloodsucker_zone_enter[k] = npc
-				end
-			else
-				if bloodsucker_zone_enter[k] ~= nil then
-					bloodsucker_zone_enter[k] = nil
-				end
-			end
-		end
-		self.update_time = global_time + 1000
-	end
-
-	local npc_st = self.st
-
-	if npc_alive then
-
-		local actor = db.actor
-		local st_combat = npc_st.combat
-
-		if npc_st.active_scheme ~= nil then
-			local switched = false
-			local manager = npc:motivation_action_manager()
-			if manager:initialized() and manager:current_action_id() == stalker_ids_action_combat_planner then
-				local overrides = npc_st.overrides
-				if overrides then
-					if overrides.on_combat then
-						xr_logic.pick_section_from_condlist(actor, npc, overrides.on_combat)
-					end
-					if st_combat and st_combat.logic and not xr_logic.try_switch_to_another_section(npc, st_combat, actor) then
---						if overrides.combat_type then
---							set_combat_type(npc, actor, overrides) -- undefined global function; maybe should be xr_combat.set_combat_type?
---						end
-					else
-						switched = true
-					end
---				else
---					set_combat_type(npc, actor, st_combat) -- undefined global function; maybe should be xr_combat.set_combat_type?
-				end
-			end
-			if not switched then
-				xr_logic.try_switch_to_another_section(npc, npc_st[npc_st.active_scheme], actor)
-			end
-		else
-			xr_combat.set_combat_type(npc, actor, st_combat)
-		end
-
-		npc_st.active_sector = sr_danger.select_active_sectors(npc)
-
-		local npc_state_mgr = npc_st.state_mgr
-
-		if npc_state_mgr then
-			npc_state_mgr:update()
---			if npc_state_mgr.combat == false and npc_state_mgr.alife == false then
---				trade_manager.update(npc)
---			end
-		end
-
-		xr_sound.update(id)
-
-		if npc:is_talk_enabled() then
-			npc:set_tip_text("character_use")
-		else
-			npc:set_tip_text("")
-		end
-
-		local squad = npc_st.squad_obj
-
-		if squad ~= nil then
-			if squad.commander_id == id then
-				squad:update()
-			end
-		end
-	else
-		npc_st.state_mgr = nil
-		npc_st.move_mgr = nil -- SRP
-		npc:set_tip_text_default()
-		self.death_recorded = true
-	end
-end
-
-function motivator_binder:reload(section)
-	object_binder.reload(self, section)
-end
+--------------------------------------------------------------------------------
 
 function motivator_binder:net_save_relevant()
 	return true
@@ -460,26 +423,15 @@ function motivator_binder:save(packet)
 		stc_strelok_health_manager.save(packet)
 	end
 
---	packet:w_bool(self.treasure_processed)
-
 	local npc = self.object
 
 	xr_logic.save_obj(npc, packet)
-
---	trade_manager.save(npc, packet)
-
-	-- treasure_manager.save(packet)
-
 	xr_sound.save_npc(packet, npc:id())
-
---	dialog_manager.save_npc(packet, npc:id())
 
 	set_save_marker(packet, "save", true, "motivator_binder")
 end
 
-function motivator_binder:load(reader)
-
-	self.loaded = true
+function motivator_binder:load(reader) -- called 4.5th (only on load)
 
 	set_save_marker(reader, "load", false, "motivator_binder")
 
@@ -489,96 +441,38 @@ function motivator_binder:load(reader)
 		stc_strelok_health_manager.load(reader)
 	end
 
---	self.treasure_processed = reader:r_bool()
-
 	local npc = self.object
 
 	xr_logic.load_obj(npc, reader)
-
---	trade_manager.load(npc, reader)
-
-	-- treasure_manager.load(reader)
-
 	xr_sound.load_npc(reader, npc:id())
 
---	dialog_manager.load_npc(reader, npc:id())
-
 	set_save_marker(reader, "load", true, "motivator_binder")
-end
---[[
-function motivator_binder:hear_callback(self, who, sound_type, sound_position, sound_power)
 
-	if who:id() == self:id() then
-		return
-	end
-
-	local type = "NIL"
-
-	if bit_and(sound_type, snd_type.weapon) == snd_type.weapon then
-
-		type = "WPN"
-		if bit_and(sound_type, snd_type.weapon_shoot) == snd_type.weapon_shoot then
-			type = "WPN_shoot"
-		elseif bit_and(sound_type, snd_type.weapon_empty) == snd_type.weapon_empty then
-			type = "WPN_empty"
-		elseif bit_and(sound_type, snd_type.weapon_bullet_hit) == snd_type.weapon_bullet_hit then
-			type = "WPN_hit"
-		elseif bit_and(sound_type, snd_type.weapon_reload) == snd_type.weapon_reload then
-			type = "WPN_reload"
-		end
-
-	elseif bit_and(sound_type, snd_type.item) == snd_type.item then
-
-		type = "ITM"
-		if bit_and(sound_type, snd_type.item_pick_up) == snd_type.item_pick_up then
-			type = "ITM_pckup"
-		elseif bit_and(sound_type, snd_type.item_drop) == snd_type.item_drop then
-			type = "ITM_drop"
-		elseif bit_and(sound_type, snd_type.item_hide) == snd_type.item_hide then
-			type = "ITM_hide"
-		elseif bit_and(sound_type, snd_type.item_take) == snd_type.item_take then
-			type = "ITM_take"
-		elseif bit_and(sound_type, snd_type.item_use) == snd_type.item_use then
-			type = "ITM_use"
-		end
-
-	elseif bit_and(sound_type, snd_type.monster) == snd_type.monster then
-
-		type = "MST"
-		if bit_and(sound_type, snd_type.monster_die) == snd_type.monster_die then
-			type = "MST_die"
-		elseif bit_and(sound_type, snd_type.monster_injure) == snd_type.monster_injure then
-			type = "MST_damage"
-		elseif bit_and(sound_type, snd_type.monster_step) == snd_type.monster_step then
-			type = "MST_step"
-		elseif bit_and(sound_type, snd_type.monster_talk) == snd_type.monster_talk then
-			type = "MST_talk"
-		elseif bit_and(sound_type, snd_type.monster_attack) == snd_type.monster_attack then
-			type = "MST_attack"
-		elseif bit_and(sound_type, snd_type.monster_eat) == snd_type.monster_eat then
-			type = "MST_eat"
-		end
-	end
-end
-]]
-function AddToMotivator(npc)
-	if sim then
-		npc:bind_object(this.motivator_binder(npc))
-	end
+	self.loaded = true
 end
 
-local wp_meet_false = world_property(xr_evaluators_id.stohe_meet_base + 1, false)
-local wp_wounded_false = world_property(xr_evaluators_id.sidor_wounded_base + 0, false)
-local wp_abuse_false = world_property(xr_evaluators_id.abuse_base, false)
+--------------------------------------------------------------------------------
+
+local wp_meet_false       = world_property(xr_evaluators_id.stohe_meet_base + 1, false)
+local wp_wounded_false    = world_property(xr_evaluators_id.sidor_wounded_base, false)
+local wp_abuse_false      = world_property(xr_evaluators_id.abuse_base, false)
+
+local wp_alive_true       = world_property(stalker_ids.property_alive, true)
+local wp_danger_false     = world_property(stalker_ids.property_danger, false)
+local wp_enemy_false      = world_property(stalker_ids.property_enemy, false)
+local wp_anomaly_false    = world_property(stalker_ids.property_anomaly, false)
+local wp_smartcover_false = world_property(xr_evaluators_id.smartcover_action + 3, false)
 
 function addCommonPrecondition(action)
-	-- action:add_precondition (world_property(xr_evaluators_id.reaction, false))
-	action:add_precondition (wp_meet_false)
-	action:add_precondition (wp_wounded_false)
-	-- action:add_precondition (world_property(xr_evaluators_id.chugai_heli_hunter_base, false))
-	action:add_precondition (wp_abuse_false)
+	action:add_precondition(wp_meet_false)
+	action:add_precondition(wp_wounded_false)
+	action:add_precondition(wp_abuse_false)
 end
 
-function register_bloodsucker_restr(obj)
-	bloodsuckers_restr[obj:id()] = obj
+function addPrecondAliveNoDangerNoEnemyNoAnomalyNoSmartcover(action)
+	action:add_precondition(wp_alive_true)
+	action:add_precondition(wp_danger_false)
+	action:add_precondition(wp_enemy_false)
+	action:add_precondition(wp_anomaly_false)
+	action:add_precondition(wp_smartcover_false)
 end

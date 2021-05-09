@@ -7,15 +7,12 @@ end
 
 function action_process_death:death_callback(victim)
 
-	if db.actor then
+	if self.info then
+		xr_logic.pick_section_from_condlist(db.actor, victim, self.info)
+	end
 
-		if self.info then
-			xr_logic.pick_section_from_condlist(db.actor, victim, self.info)
-		end
-
-		if self.info2 then
-			xr_logic.pick_section_from_condlist(db.actor, victim, self.info2)
-		end
+	if self.info2 then
+		xr_logic.pick_section_from_condlist(db.actor, victim, self.info2)
 	end
 end
 

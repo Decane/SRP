@@ -86,7 +86,7 @@ end
 
 function move_mgr:extrapolate_callback(npc)
 	self.can_use_get_current_point_index = true
-	self.current_point_init_time = time_global()
+--	self.current_point_init_time = time_global()
 	self.current_point_index = self.object:get_current_point_index()
 end
 

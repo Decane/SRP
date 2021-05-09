@@ -5,7 +5,7 @@ function ph_on_hit:__init(storage)
 end
 
 function ph_on_hit:hit_callback(obj)
-	if db.actor and self.info then
+	if self.info then
 		xr_logic.pick_section_from_condlist(db.actor, obj, self.info)
 	end
 end

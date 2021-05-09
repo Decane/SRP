@@ -1,52 +1,59 @@
-----------------------------------------------------------------------------------------------------------------------
---	Схема встречи двух сталкеров
---	автор: Диденко Руслан (Stohe)
---	TODO:
-----------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+-- Evaluators
+--------------------------------------------------------------------------------
 
----------------------------------------------------------------------------------------------------------------------
---Evaluators
-----------------------------------------------------------------------------------------------------------------------
---' Возвращает есть ли у нас контакт с другим сталкером
 class "evaluator_contact" (property_evaluator)
-function evaluator_contact:__init(name, storage) super (nil, name)
-	self.a = storage
+
+function evaluator_contact:__init(st) super()
+	self.st = st
 end
+
 function evaluator_contact:evaluate()
-	if self.a.meet_set ~= true then return false end
-	if self.a.meet_only_at_path == true and not db.storage[self.object:id()].move_mgr:arrived_to_first_waypoint() then
+
+	if self.st.meet_set ~= true then
 		return false
 	end
 
-	if db.actor then
-		if not db.actor:alive() then
+	if self.st.meet_only_at_path == true then
+		if self.move_mgr == nil then
+			self.move_mgr = db.storage[self.object:id()].move_mgr
+		end
+		if not self.move_mgr:arrived_to_first_waypoint() then
 			return false
 		end
+	end
 
-		if xr_wounded.is_wounded(self.object) then
-			return false
-		end
-
-		self.a.meet_manager:update()
-
-		if self.mgr == nil then
-			self.mgr = self.object:motivation_action_manager()
-		end
-		if self.mgr:evaluator(stalker_ids.property_enemy):evaluate() then
-			self.object:disable_talk()
-			return false
-		end
-		--printf("eva [%s]", tostring(self.a.meet_manager.state))
-        return tostring(self.a.meet_manager.state) ~= "nil"
-	else
+	if not db.actor then
 		return false
 	end
+
+	if not db.actor:alive() then
+		return false
+	end
+
+	if xr_wounded.is_wounded(self.object) then
+		return false
+	end
+
+	if self.enemy_evaluator == nil then
+		local mgr = self.object:motivation_action_manager()
+		self.enemy_evaluator = mgr:evaluator(stalker_ids.property_enemy)
+	end
+
+	if self.enemy_evaluator:evaluate() then
+		self.object:disable_talk()
+		return false
+	end
+
+	self.st.meet_manager:update()
+
+	return tostring(self.st.meet_manager.state) ~= "nil"
 end
 
-----------------------------------------------------------------------------------------------------------------------
---Actions
-----------------------------------------------------------------------------------------------------------------------
---' Приглашение к тороговле
+--------------------------------------------------------------------------------
+-- Actions
+--------------------------------------------------------------------------------
+
 class "action_meet_wait" (action_base)
 function action_meet_wait:__init (npc_name,action_name, storage, char_ini) super (nil, action_name)
 	self.char_ini = char_ini
@@ -398,45 +405,51 @@ function Cmeet_manager:process_use()
 	end
 end
 
-----------------------------------------------------------------------------------------------------------------------
--- binder
-----------------------------------------------------------------------------------------------------------------------
-function add_to_binder(object, char_ini, scheme, section, st)
-	local operators		= {}
-	local properties	= {}
+--------------------------------------------------------------------------------
+-- Binder
+--------------------------------------------------------------------------------
 
-	local manager = object:motivation_action_manager()
+local op_alife                   = xr_actions_id.alife
+local op_contact                 = xr_actions_id.stohe_meet_base + 1
+local op_state_mgr_to_idle_alife = xr_actions_id.state_mgr + 2
+local prop_contact               = xr_evaluators_id.stohe_meet_base + 1
 
-	properties["contact"]		= xr_evaluators_id.stohe_meet_base + 1
-	properties["wounded"]		= xr_evaluators_id.sidor_wounded_base
-	properties["abuse"]			= xr_evaluators_id.abuse_base
+local wp_meet_true               = world_property(prop_contact, true)
+local wp_meet_false              = world_property(prop_contact, false)
+local wp_wounded_false           = world_property(xr_evaluators_id.sidor_wounded_base, false)
+local wp_abuse_false             = world_property(xr_evaluators_id.abuse_base, false)
 
-	operators["contact"]		= xr_actions_id.stohe_meet_base + 1
-	operators["state_mgr_to_idle_alife"]	= xr_actions_id.state_mgr + 2
+function add_to_binder(npc, ini, scheme, section, st)
 
-	-- Evaluators
-	manager:add_evaluator (properties["contact"], 		evaluator_contact("meet_contact", st))
+	local manager               = npc:motivation_action_manager()
+	manager:add_evaluator       (prop_contact, evaluator_contact(st))
 
-	-- Actions
-	local action = action_meet_wait (object:name(),"action_process_meet", st, char_ini)
-	action:add_precondition		(world_property(stalker_ids.property_alive, true))
-	action:add_precondition		(world_property(stalker_ids.property_enemy,	false))
-	action:add_precondition		(world_property(stalker_ids.property_danger,false))
-	action:add_precondition		(world_property(stalker_ids.property_anomaly,false))
-	action:add_precondition(world_property(xr_evaluators_id.smartcover_action + 3, false))
-	action:add_precondition		(world_property(properties["contact"], 		true))
-	action:add_precondition		(world_property(properties["wounded"], 		false))
-	action:add_precondition		(world_property(properties["abuse"],		false))
-	action:add_effect (world_property(properties["contact"], 			false))
-	manager:add_action (operators["contact"], action)
+	-------------------------
 
-	action = manager:action (xr_actions_id.alife)
-	action:add_precondition		(world_property(properties["contact"],		false))
+	local action                = action_meet_wait(npc:name(), "action_process_meet", st, ini)
 
-	action = manager:action (operators["state_mgr_to_idle_alife"])
-	action:add_precondition		(world_property(properties["contact"],		false))
+	xr_motivator.addPrecondAliveNoDangerNoEnemyNoAnomalyNoSmartcover(action)
 
-	st.meet_manager = Cmeet_manager(object, st)
+	action:add_precondition     (wp_meet_true)
+	action:add_precondition     (wp_wounded_false)
+	action:add_precondition     (wp_abuse_false)
+
+	action:add_effect           (wp_meet_false)
+	manager:add_action          (op_contact, action)
+
+	-------------------------
+
+	action                      = manager:action(op_alife)
+	action:add_precondition     (wp_meet_false)
+
+	-------------------------
+
+	action                      = manager:action(op_state_mgr_to_idle_alife)
+	action:add_precondition     (wp_meet_false)
+
+	-------------------------
+
+	st.meet_manager             = Cmeet_manager(npc, st)
 end
 
 

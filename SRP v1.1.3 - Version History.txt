@@ -22,18 +22,18 @@ v1.1.3
 + Fixed the storyline breaking if Hog is killed or his squad turns hostile when the player's task is to talk to them to find out where to find the strongest radio signal. - Decane
 + Fixed the issue where asking a squad commander for work after accepting a 'capture' task from him via dialogue would prevent the 'capture' task from failing if the squad perishes, leaving the task incompletable and in progress indefinitely. - Decane
 + Worked around some instances of the issue where squads would sometimes fail to capture a camp upon reaching it. - Decane
-+ Worked around an SRP v1.0.4 regression where the AI of NPCs approaching the Fishing Hamlet from the Hidden Camp would occasionally break. - Decane
++ Fixed an SRP v1.0.4 regression where the AI of NPCs approaching the Fishing Hamlet from the Hidden Camp would occasionally break. - Decane
 + Enabled offline squads to engage enemy 'idle' stage squads in addition to enemy 'combat' stage squads to prevent perpetual inaction when one squad is 'idle'. - Decane
 + Fixed combatting offline squads sometimes dealing zero damage to each other perpetually due to an incorrect use of math.random(). - Decane
 + Fixed a race condition causing factions to sometimes momentarily lose faction war targets only to immediately regain them again. - Decane
 + Prevented the faction war sometimes jamming due to the same squad being assigned to an unreachable target over and over again ad infinitum. - Decane
 + Fixed the issue where the player could join the loners before they are permitted to capture targets necessary to progress the faction war. - Decane
 + Fixed the issue where the player's assistance could fail to be registered in a random faction war task, causing the task to be cancelled when it should be completed. - Decane
-+ Fixed the issue where assaulting even a squad from the tasking faction would register the player's assistance in a random faction war task not received via dialogue. - Decane
++ Fixed the issue where assaulting a squad from the tasking faction would register the player's assistance in a random faction war task not received via dialogue. - Decane
 + Fixed the issue where a 'defend' task would get cancelled instead of completed if the player kills the attack squad before it leaves for its target point (i.e. before the timer reaches zero). - Decane
 + Fixed the issue where a 'defend' task could occasionally be received in unwarranted circumstances, most frequently resulting in the task being immediately cancelled. - Decane
 + Fixed the issue where a 'capture' task would be completed instead of cancelled in response to its target being captured by no-one when the task's assigning faction regresses from the faction war phase that prompted the task. - Decane
-+ Fixed the issue where a 'capture' task could be accepted from a squad leader via dialogue even while another 'capture' task is active against the squad leader's own smart terrain, enabling the newer task to be masked by a generic 'eliminate' task targeting the same smart terrain and preventing the player's assistance from being registered for it. - Decane
++ Fixed the issue where a 'capture' task could be accepted from a squad leader via dialogue even while another 'capture' task is active against the squad leader's own smart terrain, enabling the newer task to be masked by a generic 'eliminate' task with the same target and preventing the player's assistance from ever being registered for it. - Decane
 + Fixed the issue where 'capture' tasks would sometimes be offered by NPCs even for smart terrains unreachable to them. - Decane
 + Fixed the issue where 'find upgrade' tasks would not cancel when the mechanic who gave them dies or becomes hostile after loading a savegame. - Decane
 + Fixed the issue where the skirmish between the loners and military at the Cordon bus stop could begin prematurely, preventing the player from receiving the task to defend the loner patrol. - Decane
@@ -43,6 +43,7 @@ v1.1.3
 + Fixed the issue where idle enemy squads would sometimes not congregate into a defensive formation upon spotting the player approaching their camp in the distance. - Decane
 + Fixed an SRP v1.0.7 regression that prevented new faction equipment chest supplies from spawning on a smart terrain upon its occupying squad switching online if the squad captured it while offline. - Decane
 + Fixed an SRP v1.1.1 regression that under some circumstances prevented the pseudodogs that spawn beside the military base from immediately attacking it. - Decane
++ Fixed the issue where the marsh creature scene would sometimes fail to terminate if the marsh creature glitches into geometry after snatching its victim. - Decane
 + Fixed the issue where non-scripted squads loaded from a savegame (as opposed to spawning into the Zone in the current game session) would not spawn inventory box items. - Decane
 + Fixed the wrong location-based multiplier being used to spawn faction equipment chest supplies for scripted squads loaded from a savegame (as opposed to spawning into the Zone in the current game session). - Decane
 + Fixed the issue where squads could prioritize secondary faction war targets over primary targets, potentially leading to absurd behavior such as Freedom preferring to send squads towards a loner-captured Barrier rather than sending them to capture the Duty base. - Decane
@@ -107,7 +108,7 @@ v1.1.3
 + (ZRP import) Prevented NPCs dying of collision damage when spawning at the same spot as another NPC. - bardak
 + (Optional) Added a stash prefiller mod that randomizes a stash's spawn container. - Decane
 + (Optional) Added a feature to disable enemy map spots on the mini-map, too, instead of only on the world map as done by the 'No Enemy Map Spots' and 'Show Only Ally Map Spots' features. - Decane
-~ Optimized and fine-tuned the DX10/10.1 wet surfaces shader: (i) slightly reduced its glossiness; (ii) restored the efficacy of the r3_dynamic_wet_surfaces_* console vars on the distance at which the shader's effects are visible (regressed in SRP v1.0.4); (iii) reduced water splash size to be more realistic. - Decane
+~ Optimized and fine-tuned the DX10/10.1 wet surfaces shader: (i) slightly reduced its glossiness; (ii) restored the efficacy of the r3_dynamic_wet_surfaces_* console vars on the distance at which the shader's effects are visible (regressed in SRP v1.0.4). - Decane
 ~ Re-enabled the ending credits after the final cutscene and made freeplay require explicitly returning to the game from the main menu in order to make it clearer to first-time players that the game has officially ended. - Decane
 ~ The bandits now try to capture the stalkers' main respawn points after winning their mutual faction war to prevent the stalkers from securing reinforcements. - Decane
 ~ Made the maximum length of each attribute progress bar in the "Faction War" tab of the PDA reflect something more sensible than the highest level of the relevant attribute among all factions, as in the unmodded game: - Decane
@@ -123,7 +124,7 @@ v1.1.3
 - Reversed the SRP v1.0.4 'fix' to make the "Return the experimental device", "Find the missing stalker’s loot", and "Take the artifact from the dead stalker" tasks unavailable from Duty members due to each's description purportedly implying the task-giver to be a neutral stalker. Each description can be read in a way that does not render it inconsistent with the tasker being a Duty member.
 - Reversed the SRP v1.0.4 decision to convert the "Take over the flea market together with the bandits" task into an 'eliminate' task to work around the issue where the ally bandit squad might perish and leave the 'capture' task impossible to complete. Instead, the bandit squad now simply respawns if necessary.
 - Reversed the SRP v1.0.4 decision to make Clear Sky squads attempt to capture several further explicitly defined smart terrains after capturing the Southern Farmstead.
-- Removed the optional 'DX10 Patch'. It did not fix the intermittent freezing caused by 'Update for Microsoft Windows (KB2670838)' when playing in DX10/10.1 mode with anti-aliasing enabled through the game's graphics settings.
+- Removed the optional 'DX10 Patch'. It did not fix the intermittent freezing caused by 'Update for Microsoft Windows (KB2670838)' on Windows 7 when playing in DX10/10.1 mode with anti-aliasing enabled through the game's graphics settings.
 - Removed the optional Float32 feature. It caused wet surfaces to appear overexposed and desaturated in DX10/10.1 mode.
 
 -----------------------------------------------------------------------------

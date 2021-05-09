@@ -34,9 +34,9 @@ Installation:
 ====================================
 
 
-Before proceeding, ensure that your game is patched to version 1.5.10. If you are unsure of this, launch the game and check the lower left corner of the main menu. It should read: "ver. 1.5.10". Additionally, if playing the Steam version of the game, verify the integrity of your game cache before proceeding. Then:
+Before proceeding, ensure that your game is patched to version 1.5.10. If you are unsure of this, launch the game and check the bottom left corner of the main menu. It should read: "ver. 1.5.10". Additionally, if playing the Steam version of the game, verify the integrity of your game cache before proceeding. Then:
 
-1.) Extract the contents of the archive in which you found this readme to your Clear Sky root directory. The root directory is usually one of:
+1.) Paste the 'gamedata' folder from the root of the SRP archive into your Clear Sky root directory. The root directory is usually one of:
 
 • C:\Program Files (x86)\Deep Silver\S.T.A.L.K.E.R. - Clear Sky\       (Retail version)
 • C:\Program Files (x86)\Steam\steamapps\common\stalker clear sky\     (Steam version)

@@ -69,44 +69,40 @@ function transfer_bandage(first_speaker, second_speaker)
 end
 
 function relocate_item_section(npc, section, type, amount)
-	local actor = db.actor
-	if actor then
-		if not amount then
-			amount = 1
-		end
-		if type == "in" then
-			local sim = _G.sim
-			local vec = vector()
-			for i = 1, amount do
-				sim:create(section, vec, 0, 0, 0) -- 0 = actor ID
-			end
-		elseif npc and type == "out" then
-			for i = 1, amount do
-				actor:transfer_item(actor:object(section), npc)
-			end
-		end
-		if ammo_section[section] == true then
-			local box_size = system_ini():r_s32(section, "box_size")
-			amount = amount * box_size
-		end
-		news_manager.relocate_item(actor, type, section, amount)
+	if not amount then
+		amount = 1
 	end
+	local actor = db.actor
+	if type == "in" then
+		local sim = _G.sim
+		local vec = vector()
+		for i = 1, amount do
+			sim:create(section, vec, 0, 0, 0) -- 0 = actor ID
+		end
+	elseif npc and type == "out" then
+		for i = 1, amount do
+			actor:transfer_item(actor:object(section), npc)
+		end
+	end
+	if ammo_section[section] == true then
+		local box_size = system_ini():r_s32(section, "box_size")
+		amount = amount * box_size
+	end
+	news_manager.relocate_item(actor, type, section, amount)
 end
 
 function relocate_money(npc, num, type)
 	local actor = db.actor
-	if actor then
-		if type == "in" then
-			actor:give_money(num)
---			game_stats.money_quest_update(num)
-			xr_statistic.inc_recieved_money_counter(num)
-		elseif npc and type == "out" then
-			actor:transfer_money(num, npc)
---			game_stats.money_quest_update(-num)
-			xr_statistic.inc_spent_money_counter(num)
-		end
-		news_manager.relocate_money(actor, type, num)
+	if type == "in" then
+		actor:give_money(num)
+--		game_stats.money_quest_update(num)
+		xr_statistic.inc_recieved_money_counter(num)
+	elseif npc and type == "out" then
+		actor:transfer_money(num, npc)
+--		game_stats.money_quest_update(-num)
+		xr_statistic.inc_spent_money_counter(num)
 	end
+	news_manager.relocate_money(actor, type, num)
 end
 
 -----------------------------------------------------------------------------------

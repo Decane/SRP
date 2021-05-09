@@ -1652,16 +1652,16 @@ end
 --' Stancia functions
 --'------------------------------------------------------
 
-function stc_stop_particle_sounds()
+local particles_table =
+{
+	[1] = {particle = particles_object("anomaly2\\teleport_out_00"), sound = sound_object("anomaly\\teleport_incoming")},
+	[2] = {particle = particles_object("anomaly2\\teleport_out_00"), sound = sound_object("anomaly\\teleport_incoming")},
+	[3] = {particle = particles_object("anomaly2\\teleport_out_00"), sound = sound_object("anomaly\\teleport_incoming")},
+	[4] = {particle = particles_object("anomaly2\\teleport_out_00"), sound = sound_object("anomaly\\teleport_incoming")},
+	[5] = {particle = particles_object("anomaly2\\teleport_out_00"), sound = sound_object("anomaly\\teleport_incoming")},
+}
 
-	local particles_table =
-	{
-		[1] = {particle = particles_object("anomaly2\\teleport_out_00"), sound = sound_object("anomaly\\teleport_incoming")},
-		[2] = {particle = particles_object("anomaly2\\teleport_out_00"), sound = sound_object("anomaly\\teleport_incoming")},
-		[3] = {particle = particles_object("anomaly2\\teleport_out_00"), sound = sound_object("anomaly\\teleport_incoming")},
-		[4] = {particle = particles_object("anomaly2\\teleport_out_00"), sound = sound_object("anomaly\\teleport_incoming")},
-		[5] = {particle = particles_object("anomaly2\\teleport_out_00"), sound = sound_object("anomaly\\teleport_incoming")}
-	}
+function stc_stop_particle_sounds()
 	for i = 1, 5 do
 		if particles_table[i].sound:playing() then
 			particles_table[i].sound:stop()
@@ -1689,15 +1689,6 @@ function stc_create_some_csky_stalkers(actor, npc, p)
 end
 
 function stc_create_some_monolith_stalkers(actor, npc, p)
-
-	local particles_table =
-	{
-		[1] = {particle = particles_object("anomaly2\\teleport_out_00"), sound = sound_object("anomaly\\teleport_incoming")},
-		[2] = {particle = particles_object("anomaly2\\teleport_out_00"), sound = sound_object("anomaly\\teleport_incoming")},
-		[3] = {particle = particles_object("anomaly2\\teleport_out_00"), sound = sound_object("anomaly\\teleport_incoming")},
-		[4] = {particle = particles_object("anomaly2\\teleport_out_00"), sound = sound_object("anomaly\\teleport_incoming")},
-		[5] = {particle = particles_object("anomaly2\\teleport_out_00"), sound = sound_object("anomaly\\teleport_incoming")}
-	}
 	local patrol_path = patrol(p[1])
 	local used_points = {}
 	for i = 1, patrol_path:count() do
@@ -1781,16 +1772,6 @@ function stc_surge()
 	level.add_pp_effector("snd_shock.ppe", 20080401, false)
 	level.set_pp_effector_factor(20080401, 0, 1)
 end
-
-local particles_table =
-
-{
-	[1] = {particle = particles_object("anomaly2\\teleport_out_00"), sound = sound_object("anomaly\\teleport_incoming")},
-	[2] = {particle = particles_object("anomaly2\\teleport_out_00"), sound = sound_object("anomaly\\teleport_incoming")},
-	[3] = {particle = particles_object("anomaly2\\teleport_out_00"), sound = sound_object("anomaly\\teleport_incoming")},
-	[4] = {particle = particles_object("anomaly2\\teleport_out_00"), sound = sound_object("anomaly\\teleport_incoming")},
-	[5] = {particle = particles_object("anomaly2\\teleport_out_00"), sound = sound_object("anomaly\\teleport_incoming")}
-}
 
 ]]
 

@@ -22,7 +22,7 @@ function CCombat_manager:__init(smart, board)
 	self.force_online = false
 	self.force_online_squads = {}
 	self.actor_combat = false
-	self.cover_manager = cover_manager.CCover_manager(smart, board)
+	self.cover_manager = cover_manager.CCover_manager(board)
 end
 
 function CCombat_manager:register_squad(squad)
@@ -56,10 +56,10 @@ function CCombat_manager:register_squad(squad)
 end
 
 function CCombat_manager:unregister_squad(squad)
-	squad.sim_combat_id = nil
-	self.cover_manager:unregister_squad(squad)
 	local squad_id = squad.squad_id
 	local self_squads = self.squads
+	squad.sim_combat_id = nil
+	self.cover_manager:unregister_squad(squad_id)
 	if self_squads[squad_id] ~= nil then
 		if self.force_online == true then
 			squad:force_online(false)
@@ -185,18 +185,12 @@ function CCombat_manager:enemy_callback(my_squad, enemy_squad)
 		if my_squad.smart_id == self.smart.id then
 			for k, data in pairs (self_squads) do
 				if data._stage == "idle" then
---					if not data._attack_squad then
-						data._stage = "defence"
-						data._inited_defend_time = game.get_game_time()
-						self.cover_manager.is_invalid = false
---					else
---						dbgmsg("Rejected idle --> defence switch for squad "..k.." because it is attacking.")
---					end
+					data._stage = "defence"
+					data._inited_defend_time = game.get_game_time()
+					self.cover_manager.is_current = false
 				end
 			end
 			self.cover_manager:calculate_covers(_G.sim:object(enemy_squad.commander_id).position)
---		else
---			dbgmsg("Squad "..my_squad.squad_id.." is not on combat smart.")
 		end
 	elseif my_stage == "defence" then
 		if self.combat_quest == "capture" then
@@ -286,54 +280,38 @@ local function actor_come(squad)
 end
 
 function CCombat_manager:update_actor()
+
 	local enemy_who_saw_actor = self.see_actor_enemy
+
 	if enemy_who_saw_actor == nil then
 		self.actor_combat = false
 		return
 	end
+
 	local self_squads = self.squads
---[[
-	if self_squads[enemy_who_saw_actor] == nil then -- this block precludes the more expansive block below from executing
-		self.actor_combat = false
-		return
-	end
-]]
-	if self_squads[enemy_who_saw_actor] == nil then
+
+	if self_squads[enemy_who_saw_actor] == nil
+	or game.get_game_time():diffSec(self.see_actor_enemy_time) > SQUAD_IN_ACTOR_ATTACK_TIME then
 		self.see_actor_enemy = nil
 		self.see_actor_enemy_time = nil
 		self.actor_combat = false
-		if self:point_under_attack() then
-			return
-		end
-		for k, data in pairs (self_squads) do
-			if data._stage ~= "idle" then
-				data._stage = "idle"
+		if not self:point_under_attack() then
+			for k, data in pairs (self_squads) do
+				if data._stage ~= "idle" then
+					data._stage = "idle"
+				end
 			end
 		end
 		return
 	end
-	local game_time = game.get_game_time()
-	if game_time:diffSec(self.see_actor_enemy_time) > SQUAD_IN_ACTOR_ATTACK_TIME then
-		self.see_actor_enemy = nil
-		self.see_actor_enemy_time = nil
-		self.actor_combat = false
-		if self:point_under_attack() then
-			return
-		end
-		for k, data in pairs (self_squads) do
-			if data._stage ~= "idle" then
-				data._stage = "idle"
-			end
-		end
-		return
-	end
+
 	local board_squads = self.board.squads
-	local my_squad = board_squads[enemy_who_saw_actor]
-	local my_squad_action = my_squad.current_action
-	if my_squad_action ~= nil and my_squad_action.name == "attack_point" then
-		if actor_come(my_squad) then
-			local my_squad_data = self_squads[my_squad.squad_id]
-			my_squad_data._stage = "combat"
+	local enemy_squad = board_squads[enemy_who_saw_actor]
+	local enemy_squad_action = enemy_squad.current_action
+
+	if enemy_squad_action ~= nil and enemy_squad_action.name == "attack_point" then
+		if actor_come(enemy_squad) then
+			self_squads[enemy_who_saw_actor]._stage = "combat"
 			self.actor_combat = true
 		end
 		if self.combat_quest == "defend" then
@@ -343,7 +321,7 @@ function CCombat_manager:update_actor()
 			end
 		end
 	else
-		if actor_come(my_squad) then
+		if actor_come(enemy_squad) then
 			for id, data in pairs (self_squads) do
 				if data._stage ~= "combat" then
 					local sq = board_squads[id]
@@ -361,8 +339,8 @@ function CCombat_manager:update_actor()
 			for k, data in pairs (self_squads) do
 				if data._stage == "idle" then
 					data._stage = "defence"
-					data._inited_defend_time = game_time
-					self.cover_manager.is_invalid = false
+					data._inited_defend_time = game.get_game_time()
+					self.cover_manager.is_current = false
 				end
 			end
 			-- DC170501:
@@ -378,11 +356,6 @@ function CCombat_manager:update_squad(id, data)
 
 	local board_squads = self.board.squads
 	local squad = board_squads[id]
-
---	Already checked in CCombat_manager:update()
---	if squad == nil then
---		abort("[sim_combat.update_squad]: Squad with ID '%s' is nil.", tostring(id))
---	end
 
 	if id ~= "esc_smart_terrain_5_9_military_2_squad" then -- exempt Cordon Bus Stop military squad
 		if data._stage == "move" then
@@ -593,7 +566,6 @@ function CCombat_manager:update_squad(id, data)
 												self.task = task.entity_id
 												self.actor_defence_come = false
 												task:give_task(squad.player_id)
---												data._last_defence_kill_time = nil -- not used
 											end
 										end
 									end
@@ -783,14 +755,6 @@ function CCombat_manager:save(packet)
 			packet:w_bool(true)
 			utils.w_CTime(packet, v._start_attack_wait)
 		end
---[[
-		if v._last_defence_kill_time == nil then
-			packet:w_bool(false)
-		else
-			packet:w_bool(true)
-			utils.w_CTime(packet, v._last_defence_kill_time)
-		end
-]]
 		packet:w_float(v._squad_power)
 	end
 	packet:w_bool(self.force_online)
@@ -840,13 +804,6 @@ function CCombat_manager:load(packet)
 		if flag then
 			squad_data._start_attack_wait = utils.r_CTime(packet)
 		end
---[[
-		flag = packet:r_bool()
-		if flag then
-			squad_data._last_defence_kill_time = utils.r_CTime(packet)
-		end
-		dbglog(i..": ["..id.."]: _inited_defend_time: "..tostring(squad_data._inited_defend_time ~= nil)..", _start_attack_wait: "..tostring(squad_data._start_attack_wait ~= nil)..", _last_defence_kill_time: "..tostring(squad_data._last_defence_kill_time ~= nil))
-]]
 		squad_data._squad_power = packet:r_float()
 		if not squad_data._attack_squad then
 			self.cover_manager:register_squad(id)
@@ -880,27 +837,16 @@ function hit_callback(victim_id)
 end
 
 function actor_come_to_point(smart)
-	local act = db.actor
-	if act == nil then
+	local actor = db.actor
+	if actor == nil then
 		return false
 	end
-	local def_restr = smart.def_restr
+	local def_restr = smart.def_restr and db.zone_by_name[smart.def_restr]
 	if def_restr == nil then
-		if act:position():distance_to_sqr(smart.position) < ACTOR_COME_DEFENCE_DIST then
-			return true
-		end
+		return actor:position():distance_to_sqr(smart.position) < ACTOR_COME_DEFENCE_DIST
 	else
-		local zone = db.zone_by_name[def_restr]
-		return zone and zone:inside(act:position())
---[[
-		if zone then
-			if zone:inside(act:position()) then
-				return true
-			end
-		end
-]]
+		return def_restr:inside(actor:position())
 	end
-	return false
 end
 
 wait_for_combat = {}

@@ -4,16 +4,6 @@ end
 
 schemes = {}
 
-function load_scheme(filename, scheme)
-	schemes[scheme] = filename
-	-- nv130308 pre-load schemes for early validation
-	-- this prefetches the logic and reports problems before loading any save
-	if not _G[filename] then
-		dbglog("Scheme file %s.script is not valid!", tostring(filename))
-		get_console():execute("quit")
-	end
-end
-
 ----------------------------------------------------------------------
 dev_debug = false
 ----------------------------------------------------------------------
@@ -34,26 +24,17 @@ function dbglog(fmt, ...)
 	error_log(string.format(fmt, ...))
 end
 
-function dbgmsg(msg)
+function dbgmsg(fmt, ...)
 	local act = db.actor
 	if act then
-		act:give_game_news("Debug message:", msg, "ui_iconsTotal_monster_part", 0, 10000, 1)
+		act:give_game_news("Debug message:", string.format(fmt, ...), "ui_iconsTotal_monster_part", 0, 10000, 1)
 	end
 end
 
-function printf()
-end
-
-function print_table()
-end
-
-function store_table()
-end
-
-function callstack()
-end
-
---[[
+function printf() end
+function print_table() end
+function store_table() end
+function callstack() end
 
 local function print_indented(fmt, indent_level, ...)
 	error_log(string.rep("  ", indent_level) .. string.format(fmt, ...))
@@ -71,32 +52,33 @@ function print_tbl(table, indent_level)
 
 		local ktype = type(k)
 		local vtype = type(v)
-
-		local print_key
+		local kstring
 
 		if ktype == "string" then
-			print_key = "'"..k.."'"
-		elseif ktype == "function" or ktype == "userdata" then
-			print_key = "<"..ktype..">"
-		else
-			print_key = tostring(k)
+			kstring = "'"..k.."'"
+		elseif ktype == "userdata" then
+			kstring = "<userdata>"
+		elseif ktype == "number" or ktype == "boolean" then
+			kstring = tostring(k)
+		else -- table/function/thread
+			kstring = "<"..tostring(k)..">"
 		end
 
 		if vtype == "table" then
-			print_indented("[%s] =", indent_level + 1, print_key)
+			print_indented("[%s] =", indent_level + 1, kstring)
 			print_tbl(v, indent_level + 1)
-		elseif vtype == "function" or vtype == "userdata" then
-			print_indented("[%s] = <%s>,", indent_level + 1, print_key, vtype)
+		elseif vtype == "userdata" then
+			print_indented("[%s] = <userdata>,", indent_level + 1, kstring)
+		elseif vtype == "function" or vtype == "thread" then
+			print_indented("[%s] = <%s>,", indent_level + 1, kstring, tostring(v))
 		else -- string/number/boolean
-			local print_val = vtype == "string" and "'"..v.."'" or tostring(v)
-			print_indented("[%s] = %s,", indent_level + 1, print_key, print_val)
+			local vstring = vtype == "string" and "'"..v.."'" or tostring(v)
+			print_indented("[%s] = %s,", indent_level + 1, kstring, vstring)
 		end
 	end
 
 	print_indented(indent_level == 0 and "}" or "},", indent_level)
 end
-
-]]
 
 ----------------------------------------------------------------------
 
@@ -114,8 +96,11 @@ end
 
 function round(value)
 	local min = math.floor(value)
-	local max = min + 1
-	return value - min > max - value and max or min
+	if value > 0 then
+		return value < min + 0.5 and min or min + 1 -- fails for negative multiples of 0.5
+	else
+		return value > min + 0.5 and min + 1 or min -- fails for positive multiples of 0.5
+	end
 end
 
 function distance_between(obj1, obj2)
@@ -188,15 +173,15 @@ end
 
 function yaw(v1, v2)
 	local sqrt = math.sqrt
-	return math.acos(((v1.x * v2.x) + (v1.z * v2.z )) / (sqrt(v1.x * v1.x + v1.z * v1.z) * sqrt(v2.x * v2.x + v2.z * v2.z)))
+	return math.acos((v1.x * v2.x + v1.z * v2.z) / (sqrt(v1.x * v1.x + v1.z * v1.z) * sqrt(v2.x * v2.x + v2.z * v2.z)))
 end
 
 function yaw_degree(v1, v2)
 	local sqrt = math.sqrt
-	return math.acos(((v1.x * v2.x) + (v1.z * v2.z)) / (sqrt(v1.x * v1.x + v1.z * v1.z) * sqrt(v2.x * v2.x + v2.z * v2.z ))) * 57.2957
+	return math.acos((v1.x * v2.x + v1.z * v2.z) / (sqrt(v1.x * v1.x + v1.z * v1.z) * sqrt(v2.x * v2.x + v2.z * v2.z))) * 57.2957
 end
 
-function yaw_degree3d(v1, v2)
+local function yaw_degree3d(v1, v2)
 	local sqrt = math.sqrt
 	return math.acos((v1.x * v2.x + v1.y * v2.y + v1.z * v2.z) / (sqrt(v1.x * v1.x + v1.y * v1.y + v1.z * v1.z) * sqrt(v2.x * v2.x + v2.y * v2.y + v2.z * v2.z))) * 57.2957
 end
@@ -230,8 +215,6 @@ function switch_online(id)
 		sim:set_switch_offline(id, false)
 	end
 end
-
--------------------------------------------------------------------------------------------
 
 function switch_offline(npc)
 	if npc == nil or npc:alive() == false then return end
@@ -301,33 +284,17 @@ end
 function npc_in_actor_frustrum(npc)
 	local actor_dir = device().cam_dir
 	local npc_dir = npc:position():sub(db.actor:position())
-	local yaw = yaw_degree3d(actor_dir, npc_dir)
-	return yaw < 35
+	return yaw_degree3d(actor_dir, npc_dir) < 35
 end
 
-function on_actor_critical_power()
-end
-
-function on_actor_critical_max_power()
-end
-
-function on_actor_bleeding()
-end
-
-function on_actor_satiety()
-end
-
-function on_actor_radiation()
-end
-
-function on_actor_weapon_jammed()
-end
-
-function on_actor_cant_walk_weight()
-end
-
-function on_actor_psy()
-end
+function on_actor_critical_power() end
+function on_actor_critical_max_power() end
+function on_actor_bleeding() end
+function on_actor_satiety() end
+function on_actor_radiation() end
+function on_actor_weapon_jammed() end
+function on_actor_cant_walk_weight() end
+function on_actor_psy() end
 
 function start_game_callback()
 
@@ -424,10 +391,6 @@ function start_game_callback()
 	release_body_manager.init() -- SRP
 end
 
-function gi(info)
-	db.actor:give_info_portion(info)
-end
-
 ammo_section =
 {
 	["ammo_9x18_fmj"]       = true,
@@ -506,8 +469,7 @@ function set_save_marker(p, mode, check, prefix)
 	end
 end
 
-function vec_to_str()
-end
+function vec_to_str() end
 
 local group = nil
 local group_by_level =

@@ -781,6 +781,8 @@ function CCaptureSmartTask:give_task(community) -- called 5th (not on load)
 	self.counter_attack_community = self.board.smarts[self.target].smrt.player_name
 	self.counter_sound_started = false
 	self.last_called_time = get_game_time() -- SRP fix
+	self.title_changed_to_counter_attack = false
+	self.title_changed_to_hold_position = false
 end
 
 function CCaptureSmartTask:check_task(tm) -- called 6th
@@ -939,21 +941,23 @@ function CCaptureSmartTask:check_title(is_counterattack)
 		self.t = t
 	end
 
-	local target_obj = self.board.smarts[self.target].smrt
-
-	if is_counterattack == true then
-		local sname = smart_names.get_smart_terrain_name(target_obj)
-		local title = trans("sim_repeal_counterattack").." ("..sname..")"
-		t:set_title(title)
-		return
-	end
-
-	if target_obj.player_name == "none" then
-		if self.board:actor_near_smart(target_obj) then
+	if is_counterattack then
+		if not self.title_changed_to_counter_attack then
+			local target_obj = self.board.smarts[self.target].smrt
 			local sname = smart_names.get_smart_terrain_name(target_obj)
-			local title = trans("sim_capture_wait_smart").." ("..sname..")"
+			local title = (string.gsub(trans("sim_repeal_counterattack"), "%p", ""))..": "..sname
 			t:set_title(title)
-			return
+			self.title_changed_to_counter_attack = true
+		end
+	else
+		if not self.title_changed_to_hold_position then
+			local target_obj = self.board.smarts[self.target].smrt
+			if target_obj.player_name == "none" and self.board:actor_near_smart(target_obj) then
+				local sname = smart_names.get_smart_terrain_name(target_obj)
+				local title = trans("sim_capture_wait_smart")..": "..sname
+				t:set_title(title)
+				self.title_changed_to_hold_position = true
+			end
 		end
 	end
 end

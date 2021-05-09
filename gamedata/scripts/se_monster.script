@@ -140,7 +140,7 @@ function se_monster:on_register()
 	cse_alife_monster_base.on_register(self)
 
 	self.board = sim_board.get_sim_board()
-	self.tm = task_manager.get_task_manager()
+--	self.tm = task_manager.get_task_manager()
 
 	self:brain():can_choose_alife_tasks(false)
 end

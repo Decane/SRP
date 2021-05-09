@@ -2,7 +2,6 @@ class "faction_brain_mutant"
 
 function faction_brain_mutant:__init(faction)
 	self.faction = faction
---	self.human = false
 	self.use_issue_order = false
 	self.use_cover_attack = false
 	if faction.player_name == "monster" then
@@ -52,7 +51,6 @@ function faction_brain_mutant:calculate_expansion_targets()
 
 	self:register_night_point()
 
---	faction:calculate_total_squads()
 	faction:calculate_squad_tasks()
 end
 
@@ -61,33 +59,29 @@ function faction_brain_mutant:register_night_point()
 	local faction = self.faction
 	local faction_name = faction.player_name
 
-	for k, smart_info in pairs (faction.board.smarts) do
-
-		local smart_obj = smart_info.smrt
-		local point_faction = smart_obj.player_name
-
+	for k, smart in pairs (faction.board.smarts_by_names) do
+		local point_faction = smart.player_name
 		if point_faction ~= "none" then
 --			if faction.board.players[point_faction].brain.human == true then
 			if game_relations.is_factions_enemies(faction_name, point_faction) then
-				if sim_board.is_point_avail(smart_obj, faction_name) then
-					self:register_target_point(smart_obj)
+				if sim_board.is_point_avail(smart, faction_name) then
+					self:register_target_point(smart)
 				end
 			end
 		end
 	end
 end
 
-function faction_brain_mutant:register_target_point(smart_obj)
+function faction_brain_mutant:register_target_point(smart)
 
-	local smrt_id = smart_obj.id
+	local smart_id = smart.id
 
-	self.faction.target_smart_value[smrt_id] =
+	self.faction.target_smart_value[smart_id] =
 	{
-		smart = smart_obj,
-		cap = smart_obj.squad_capacity, -- was 2 * smart_obj.squad_capacity; unsuitable for monolith
+		smart = smart,
+		cap = smart.squad_capacity, -- was 2 * smart.squad_capacity; unsuitable for monolith
 		num = 0,
---		smart_name = smart_obj:name(),
-		smart_id = smrt_id,
+		smart_id = smart_id,
 		value = 0, -- every smart is equally valuable to mutants
 	}
 end

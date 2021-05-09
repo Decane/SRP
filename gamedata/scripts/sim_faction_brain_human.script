@@ -1,8 +1,12 @@
+local TASK_POINT_NONE      = 0
+local TASK_POINT_CAPTURE   = 1
+local TASK_POINT_ELIMINATE = 2
+local TASK_POINT_DYNAMIC   = 3
+
 class "faction_brain_human"
 
 function faction_brain_human:__init(faction)
 	self.faction = faction
---	self.human = true
 	self.use_issue_order = true
 	self.use_cover_attack = true
 	self.use_prepare_phase = true
@@ -16,7 +20,7 @@ local faction_leader_tbl =
 	["stalker"] = "esc_leader_stalkerbase_name",
 	["bandit"]  = "gar_bandit_leader_name",
 	["dolg"]    = "agr_duty_base_commander_name",
-	["freedom"] = "val_freedom_leader_name"
+	["freedom"] = "val_freedom_leader_name",
 }
 
 function faction_brain_human:calculate_current_expansion(no_sound)
@@ -79,48 +83,6 @@ function faction_brain_human:calculate_current_expansion(no_sound)
 	self:calculate_expansion_targets()
 end
 
-function faction_brain_human:calculate_expansion_targets()
-
-	local faction = self.faction
-
-	faction.target_smart_value = {}
-
-	-- Secondary targets are registered first so power and expansion target parameters take precedence if the same smart is specified for them:
-	for smart_name in pairs (faction.secondary_targets) do
-		self:register_target_point(faction.board.smarts_by_names[smart_name], false, false, true, 0)
-	end
-
-	self:get_sim_targets_power(faction:get_relative_power() < faction.expansion_level[faction.current_expansion_level].precondition_power)
-	self:get_sim_targets_advance()
-
-	if db.actor ~= nil and faction.community_player == true then
-		self:reset_actor_tasks()
-	end
-
---	faction:calculate_total_squads()
-	faction:calculate_squad_tasks()
-end
-
-function faction_brain_human:get_sim_targets_power(need_power_targets)
-
-	local faction = self.faction
-	local faction_name = faction.player_name
-
-	for smart_id, smart_info in pairs (faction.board.smarts) do
-
-		local smart_obj = smart_info.smrt
-		local smart_type = smart_obj.sim_type
-
-		if smart_type == "territory" or smart_type == "resource" then
-			if need_power_targets or smart_obj.player_name == faction_name then
-				if sim_board.is_point_avail(smart_obj, faction_name) then
-					self:register_target_point(smart_obj, false, false, false, 1)
-				end
-			end
-		end
-	end
-end
-
 function faction_brain_human:check_sim_targets_advance(expansion)
 
 	local faction = self.faction
@@ -145,6 +107,55 @@ function faction_brain_human:check_sim_targets_advance(expansion)
 	return true
 end
 
+function faction_brain_human:calculate_expansion_targets()
+
+	local faction = self.faction
+
+	faction.target_smart_value = {}
+
+	-- Secondary targets are registered first so power and expansion target
+	-- parameters take precedence if the same smart is specified for them:
+
+	self:get_sim_targets_secondary()
+	self:get_sim_targets_power()
+	self:get_sim_targets_advance()
+
+	if db.actor ~= nil and faction.community_player == true then
+		self:reset_actor_tasks()
+	end
+
+	faction:calculate_squad_tasks()
+end
+
+function faction_brain_human:get_sim_targets_secondary()
+
+	local faction = self.faction
+
+	for smart_name in pairs (faction.secondary_targets) do
+		self:register_target_point(faction.board.smarts_by_names[smart_name], TASK_POINT_NONE, 0)
+	end
+end
+
+function faction_brain_human:get_sim_targets_power()
+
+	local faction = self.faction
+	local faction_name = faction.player_name
+	local need_power_targets = faction:get_relative_power() < faction.expansion_level[faction.current_expansion_level].precondition_power
+
+	for k, smart in pairs (faction.board.smarts_by_names) do
+		local smart_type = smart.sim_type
+		if smart_type == "territory" or smart_type == "resource" then
+			local is_smart_owner = smart.player_name == faction_name
+			if need_power_targets or is_smart_owner then
+				if sim_board.is_point_avail(smart, faction_name) then
+					-- Makes squads reluctant to leave resource smarts empty:
+					self:register_target_point(smart, TASK_POINT_DYNAMIC, is_smart_owner and smart_type == "resource" and 2 or 1)
+				end
+			end
+		end
+	end
+end
+
 function faction_brain_human:get_sim_targets_advance()
 
 	local faction = self.faction
@@ -154,44 +165,44 @@ function faction_brain_human:get_sim_targets_advance()
 	local cur_exp = faction.current_expansion_level
 	local is_actor_in_faction = faction.community_player
 
+	-- Makes squads reluctant to leave expansion targets for higher expansion levels than the current one:
+	for i = cur_exp + 1, #exp_table do
+		for k, smart_name in pairs (exp_table[i].precondition_target) do
+			local smart = smarts_by_name[smart_name]
+			if smart.player_name == faction_name then
+				self:register_target_point(smart, TASK_POINT_NONE, 2)
+			end
+		end
+	end
+
 	for i = 0, cur_exp do
 
 		local expansion = exp_table[i]
 
-		for k, smart_name in pairs (expansion.precondition_target) do
-			self:register_target_point(smarts_by_name[smart_name], true, false, false, 2, is_actor_in_faction and i == cur_exp)
-		end
-
 		for k, smart_name in pairs (expansion.precondition_target_eliminate) do
-			local smart_obj = smarts_by_name[smart_name]
-			if game_relations.is_factions_enemies(faction_name, smart_obj.player_name) then
-				self:register_target_point(smart_obj, false, true, false, 2)
+			local smart = smarts_by_name[smart_name]
+			if game_relations.is_factions_enemies(faction_name, smart.player_name) then
+				self:register_target_point(smart, TASK_POINT_ELIMINATE, 2)
 			end
 		end
-	end
 
-	-- Makes squads reluctant to leave expansion targets for higher expansion levels than the current one:
-	for i = cur_exp + 1, #exp_table do
-		for k, smart_name in pairs (exp_table[i].precondition_target) do
-			local smart_obj = smarts_by_name[smart_name]
-			if smart_obj.player_name == faction_name then
-				self:register_target_point(smart_obj, false, false, true, 2)
-			end
+		for k, smart_name in pairs (expansion.precondition_target) do
+			self:register_target_point(smarts_by_name[smart_name], TASK_POINT_CAPTURE, 2, is_actor_in_faction and i == cur_exp)
 		end
 	end
 end
 
-function faction_brain_human:register_target_point(smart_obj, advance_point, eliminate, no_task, smart_value, is_current_priority)
+function faction_brain_human:register_target_point(smart, task_point_type, smart_value, is_current_priority)
 
 	local faction = self.faction
-	local point_capacity = smart_obj.squad_capacity
-	local point_faction = smart_obj.player_name
+	local point_capacity = smart.squad_capacity
+	local point_faction = smart.player_name
 
 	if point_faction == faction.player_name or point_faction == "none" then
---		if smart_obj.important_point then
-		if is_current_priority or smart_obj.sim_type == "base" then
-			if smart_obj.respawn_sector ~= nil then
---				local respawn_faction = xr_logic.pick_section_from_condlist(db.actor_proxy, smart_obj, smart_obj.respawn_sector)
+--		if smart.important_point then
+		if is_current_priority or smart.sim_type == "base" then
+			if smart.respawn_sector ~= nil then
+--				local respawn_faction = xr_logic.pick_section_from_condlist(db.actor_proxy, smart, smart.respawn_sector)
 --				if respawn_faction == faction.player_name or respawn_faction == "all" then
 					point_capacity = point_capacity - 1
 --				end
@@ -201,18 +212,15 @@ function faction_brain_human:register_target_point(smart_obj, advance_point, eli
 		end
 	end
 
-	local smrt_id = smart_obj.id
+	local smart_id = smart.id
 
-	faction.target_smart_value[smrt_id] =
+	faction.target_smart_value[smart_id] =
 	{
-		smart = smart_obj,
+		smart = smart,
 		cap = point_capacity,
 		num = 0,
---		smart_name = smart_obj:name(),
-		smart_id = smrt_id,
-		advance_point = advance_point,
-		eliminate = eliminate,
-		no_task = no_task,
+		smart_id = smart_id,
+		task_point_type = task_point_type,
 		value = smart_value,
 	}
 end
@@ -295,7 +303,6 @@ function faction_brain_human:reset_actor_tasks() -- all and only tasks assigned 
 		if tm:get_tasks_by_smart(smart_id) == nil then -- implies faction_rand_tasks[smart_id] == nil
 			if utils.graph_distance(act_vx, smart.m_game_vertex_id) <= 300 then
 				local task = tm:select_task("eliminate_smart", smart, faction.player_name)
---				task.faction = faction
 				faction_rand_tasks[smart_id] = task.entity_id
 				task:give_task(faction.player_name)
 			end
@@ -309,12 +316,12 @@ local faction_cluster =
 	stalker   = 2,
 	bandit    = 2,
 	dolg      = 2,
-	freedom   = 2
+	freedom   = 2,
 }
 
 function faction_brain_human:init_player_task(target_data)
 
-	if target_data.no_task == true then
+	if target_data.task_point_type == TASK_POINT_NONE then
 		return
 	end
 
@@ -340,11 +347,11 @@ function faction_brain_human:init_player_task(target_data)
 
 	local task_type = nil
 
-	if target_data.eliminate == true then
+	if target_data.task_point_type == TASK_POINT_ELIMINATE then
 		if enemy_point == true then
 			task_type = "eliminate_smart"
 		end
-	elseif target_data.advance_point == true then
+	elseif target_data.task_point_type == TASK_POINT_CAPTURE then
 		task_type = "capture_smart"
 	elseif enemy_point == true then
 		if target_data.allies_exist == true then
@@ -367,15 +374,12 @@ function faction_brain_human:init_player_task(target_data)
 			if current_task.type == task_type then
 				return
 			end
-			current_task.last_check_task = "reversed_silent" -- 'current_task' was 'task'
+			current_task.last_check_task = "reversed_silent"
 			bind_stalker.task_update = true
---			return
 		end
 	end
 
 	local task = tm:select_task(task_type, smart, faction_name)
-
---	task.faction = faction
 
 	faction.random_tasks[smart.id] = task.entity_id
 

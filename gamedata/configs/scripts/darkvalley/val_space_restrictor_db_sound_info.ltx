@@ -1,0 +1,11 @@
+[logic]
+active = sr_idle
+
+[sr_idle]
+on_info = {+val_play_sound_gunfire_1_start} sr_idle@2 %=play_sound(gunfire_1)%
+
+[sr_idle@2]
+on_actor_inside = sr_idle@wait %+val_come_to_deadblockpost_sound =create_squad(val_dogs_lair_guard_1_1:val_smart_terrain_6_5) =play_sound(val_freedom_dead_squad)%
+
+[sr_idle@wait]
+on_game_timer = 30 | nil %+val_reply_to_sos_complete%

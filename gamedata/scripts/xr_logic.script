@@ -27,109 +27,97 @@ local stype_item       = 2 -- modules.stype_item
 local stype_heli       = 3 -- modules.stype_heli
 local stype_trader     = 5 -- modules.stype_trader
 
-local function disable_generic_schemes(npc, stype)
+local function disable_generic_schemes(npc, npc_st, stype)
 
 	if stype == stype_stalker then
 
-		xr_combat.disable_scheme(npc, "combat")
---		xr_hit.disable_scheme(npc, "hit")
-		xr_combat_ignore.disable_scheme(npc, "combat_ignore")
---		npc:invulnerable(false) -- stalker_generic.disable_invulnerability(npc) -- pointless; set correctly in enable_generic_schemes() anyway
+		xr_combat.disable_scheme(npc_st.combat)
+		npc_st.hit = nil
+		npc_st.death = nil
+		xr_combat_ignore.disable_scheme(npc, npc_st.combat_ignore)
 
 	elseif stype == stype_mobile then
 
---		mob_combat.disable_scheme(npc, "mob_combat") -- mob_combat not used
-		xr_combat_ignore.disable_scheme(npc, "combat_ignore")
---		npc:invulnerable(false) -- stalker_generic.disable_invulnerability(npc) -- pointless; set correctly in enable_generic_schemes() anyway
+		npc_st.hit = nil
+		npc_st.mob_death = nil
+		xr_combat_ignore.disable_scheme(npc, npc_st.combat_ignore)
 
---	elseif stype == stype_item then
+	elseif stype == stype_item then
 
---		ph_on_hit.disable_scheme(npc, "ph_on_hit")
+		npc_st.ph_on_hit = nil
 
---	elseif stype == stype_heli then
+	elseif stype == stype_heli then
 
---		xr_hit.disable_scheme(npc, "hit")
+		npc_st.hit = nil
 	end
 end
 
-local function enable_generic_schemes(ini, npc, stype, section)
+local function enable_generic_schemes(ini, npc, stype, section_logic)
 
-	if not section or not ini:section_exist(section) then
+	if ini:section_exist(section_logic) then
 
 		if stype == stype_stalker then
 
-			assign_storage_and_bind(npc, ini, "danger") -- xr_danger.set_danger(npc, ini, "danger", "danger")
-			xr_combat.set_combat_checker(npc, ini, "combat")
---			stalker_generic.reset_invulnerability(npc, ini, section) -- reset_generic_schemes_on_scheme_switch() will do this
-			assign_storage_and_bind(npc, ini, "wounded") -- xr_wounded.set_wounded(npc, ini, "wounded")
-			assign_storage_and_bind(npc, ini, "abuse") -- xr_abuse.set_abuse(npc, ini, "abuse", section)
-			assign_storage_and_bind(npc, ini, "meet") -- xr_meet.set_meet(npc, ini, "meet")
---			assign_storage_and_bind(npc, ini, "death") -- xr_death.set_death(npc, ini, "death") -- pointless if no [logic]
-			assign_storage_and_bind(npc, ini, "combat_ignore") -- xr_combat_ignore.set_combat_ignore_checker(npc, ini, "combat_ignore")
+			assign_storage_and_bind(npc, ini, "danger")
+			xr_combat.set_combat_checker(npc, ini, "combat", get_string_field(ini, section_logic, "on_combat"))
+
+			local hit_section = get_string_field(ini, section_logic, "on_hit")
+			if hit_section then
+				assign_storage_and_bind(npc, ini, "hit", hit_section)
+			end
+
+			assign_storage_and_bind(npc, ini, "wounded")
+			assign_storage_and_bind(npc, ini, "abuse")
+			assign_storage_and_bind(npc, ini, "meet")
+
+			local death_section = get_string_field(ini, section_logic, "on_death")
+			if death_section then
+				assign_storage_and_bind(npc, ini, "death", death_section)
+			end
+
+			assign_storage_and_bind(npc, ini, "combat_ignore")
 
 		elseif stype == stype_mobile then
 
---			stalker_generic.reset_invulnerability(npc, ini, section) -- reset_generic_schemes_on_scheme_switch() will do this
---			assign_storage_and_bind(npc, ini, "mob_death") -- mob_death.set_scheme(npc, ini, "mob_death") -- pointless if no [logic]
-			assign_storage_and_bind(npc, ini, "combat_ignore") -- xr_combat_ignore.set_combat_ignore_checker(npc, ini, "combat_ignore")
-		end
-	else
-		if stype == stype_stalker then
-
-			assign_storage_and_bind(npc, ini, "danger") -- xr_danger.set_danger(npc, ini, "danger", "danger")
-			xr_combat.set_combat_checker(npc, ini, "combat", get_string_field(ini, section, "on_combat"))
---			stalker_generic.reset_invulnerability(npc, ini, section) -- reset_generic_schemes_on_scheme_switch() will do this
-
-			local hit_section = get_string_field(ini, section, "on_hit")
-			if hit_section then
-				assign_storage_and_bind(npc, ini, "hit", hit_section) -- xr_hit.set_hit_checker(npc, ini, "hit", hit_section)
-			end
-
-			assign_storage_and_bind(npc, ini, "wounded") -- xr_wounded.set_wounded(npc, ini, "wounded", get_string_field(ini, section, "wounded"))
-			assign_storage_and_bind(npc, ini, "abuse") -- xr_abuse.set_abuse(npc, ini, "abuse", section)
-			assign_storage_and_bind(npc, ini, "meet") -- xr_meet.set_meet(npc, ini, "meet", get_string_field(ini, section, "meet"))
-
-			local death_section = get_string_field(ini, section, "on_death")
+			local death_section = get_string_field(ini, section_logic, "on_death")
 			if death_section then
-				assign_storage_and_bind(npc, ini, "death", death_section) -- xr_death.set_death(npc, ini, "death", death_section)
+				assign_storage_and_bind(npc, ini, "mob_death", death_section)
 			end
 
-			assign_storage_and_bind(npc, ini, "combat_ignore") -- xr_combat_ignore.set_combat_ignore_checker(npc, ini, "combat_ignore")
-
-		elseif stype == stype_mobile then
---[[
-			local combat_section = get_string_field(ini, section, "on_combat")
-			if combat_section then
-				mob_combat.set_scheme(npc, ini, "mob_combat", combat_section) -- mob_combat not used
-			end
-
-			stalker_generic.reset_invulnerability(npc, ini, section) -- reset_generic_schemes_on_scheme_switch() will do this
-]]
-			local death_section = get_string_field(ini, section, "on_death")
-			if death_section then
-				assign_storage_and_bind(npc, ini, "mob_death", death_section) -- mob_death.set_scheme(npc, ini, "mob_death", death_section)
-			end
-
-			local hit_section = get_string_field(ini, section, "on_hit")
+			local hit_section = get_string_field(ini, section_logic, "on_hit")
 			if hit_section then
-				assign_storage_and_bind(npc, ini, "hit", hit_section) -- xr_hit.set_hit_checker(npc, ini, "hit", hit_section)
+				assign_storage_and_bind(npc, ini, "hit", hit_section)
 			end
 
-			assign_storage_and_bind(npc, ini, "combat_ignore") -- xr_combat_ignore.set_combat_ignore_checker(npc, ini, "combat_ignore")
+			assign_storage_and_bind(npc, ini, "combat_ignore")
 
 		elseif stype == stype_item then
 
-			local hit_section = get_string_field(ini, section, "on_hit")
+			local hit_section = get_string_field(ini, section_logic, "on_hit")
 			if hit_section then
-				assign_storage_and_bind(npc, ini, "ph_on_hit", hit_section) -- ph_on_hit.set_scheme(npc, ini, "ph_on_hit", hit_section)
+				assign_storage_and_bind(npc, ini, "ph_on_hit", hit_section)
 			end
 
 		elseif stype == stype_heli then
 
-			local hit_section = get_string_field(ini, section, "on_hit")
+			local hit_section = get_string_field(ini, section_logic, "on_hit")
 			if hit_section then
-				assign_storage_and_bind(npc, ini, "hit", hit_section) -- xr_hit.set_hit_checker(npc, ini, "hit", hit_section)
+				assign_storage_and_bind(npc, ini, "hit", hit_section)
 			end
+		end
+	else
+		if stype == stype_stalker then
+
+			assign_storage_and_bind(npc, ini, "danger")
+			xr_combat.set_combat_checker(npc, ini, "combat")
+			assign_storage_and_bind(npc, ini, "wounded")
+			assign_storage_and_bind(npc, ini, "abuse")
+			assign_storage_and_bind(npc, ini, "meet")
+			assign_storage_and_bind(npc, ini, "combat_ignore")
+
+		elseif stype == stype_mobile then
+
+			assign_storage_and_bind(npc, ini, "combat_ignore")
 		end
 	end
 end
@@ -181,7 +169,7 @@ function configure_schemes(npc, ini, ini_filename, stype, section_logic, gulag_n
 		issue_event(nil, npc_st[npc_st.active_scheme], "deactivate", npc)
 	end
 
-	disable_generic_schemes(npc, stype)
+	disable_generic_schemes(npc, npc_st, stype)
 	enable_generic_schemes(ini, npc, stype, section_logic)
 
 	if stype == stype_stalker or stype == stype_trader then -- npc:clsid() == clsid.script_trader
@@ -223,16 +211,13 @@ local function reset_generic_schemes_on_scheme_switch(npc, scheme, section, npc_
 
 		xr_meet.dialog_manager_reset(npc, stype)
 		xr_meet.reset_meet(npc, scheme, npc_st, section)
-		xr_abuse.reset_abuse(npc, scheme, npc_st, section)
 		xr_wounded.reset_wounded(npc, scheme, npc_st, section)
---		xr_death.reset_death(npc, npc_st) -- no need to run this on every section switch
 		xr_danger.reset_danger(npc, scheme, npc_st, section)
-		xr_combat_ignore.reset_combat_ignore_checker(npc, scheme, npc_st) --, section)
-		stalker_generic.reset_threshold(npc, scheme, npc_st, section)
-		stalker_generic.reset_show_spot(npc, scheme, npc_st, section)
-		stalker_generic.reset_invulnerability(npc, npc_st.ini, section)
+		xr_combat_ignore.reset_combat_ignore_checker(npc, npc_st)
+		stalker_generic.reset_show_spot(npc, npc_st, section)
+		stalker_generic.reset_invulnerability(npc, npc_st, section)
 		stalker_generic.reset_group(npc, npc_st.ini, section)
-		stalker_generic.take_items_enabled(npc, scheme, npc_st, section)
+		stalker_generic.take_items_enabled(npc, npc_st, section)
 		restrictor_manager.get_restrictor_manager(npc):reset_restrictions(npc_st, section)
 
 	elseif stype == stype_mobile then
@@ -242,14 +227,14 @@ local function reset_generic_schemes_on_scheme_switch(npc, scheme, section, npc_
 		if npc:clsid() == clsid.bloodsucker_s then
 			npc:set_manual_invisibility(scheme ~= "nil")
 		end
-		xr_combat_ignore.reset_combat_ignore_checker(npc, scheme, npc_st) --, section)
+		xr_combat_ignore.reset_combat_ignore_checker(npc, npc_st)
 		mob_panic.reset_panic(npc, scheme, npc_st, section)
-		stalker_generic.reset_invulnerability(npc, npc_st.ini, section)
+		stalker_generic.reset_invulnerability(npc, npc_st, section)
 		restrictor_manager.get_restrictor_manager(npc):reset_restrictions(npc_st, section)
 
 	elseif stype == stype_trader then
 
-		stalker_generic.reset_show_spot(npc, scheme, npc_st, section)
+		stalker_generic.reset_show_spot(npc, npc_st, section)
 
 	elseif stype == stype_item then
 
@@ -392,17 +377,21 @@ local function cfg_get_overrides(ini, section, npc_st)
 	if tmp then
 		l.combat_ignore = parse_condlist(nil, nil, nil, tmp)
 	end
+--[[
+	-- No 'combat_type' fields outside of [combat] in vanilla.
 
 	tmp = get_string_field(ini, section, "combat_type")
 	if tmp then
 		l.combat_type = parse_condlist(nil, nil, nil, tmp)
 	end
 
+	-- No 'on_combat' fields outside of [logic] in vanilla.
+
 	tmp = get_string_field(ini, section, "on_combat")
 	if tmp then
 		l.on_combat = parse_condlist(nil, nil, nil, tmp)
 	end
---[[
+
 	-- No 'soundgroup' references in the game.
 
 	if string_find(section, "kamp", 1, true) ~= nil then
@@ -508,11 +497,11 @@ function assign_storage_and_bind(npc, ini, scheme, section)
 	return st
 end
 
-function subscribe_action_for_events(npc, storage, new_action) -- TODO: 'npc' not used
-	if not storage.actions then
-		storage.actions = {}
+function subscribe_action_for_events(npc, st, new_action) -- TODO: 'npc' not used
+	if not st.actions then
+		st.actions = {}
 	end
-	storage.actions[new_action] = true
+	st.actions[new_action] = true
 end
 
 function check_action(st, event_func) --, p)
@@ -974,26 +963,7 @@ end
 function mob_captured(mob)
 	return mob:get_script()
 end
---[[
-local function save_logic(obj, packet)
 
-	local npc_st = db_storage[obj:id()]
-	local activation_time = npc_st.activation_time
-
-	if not activation_time then
-		activation_time = 0
-	end
-
-	packet:w_s32(activation_time - time_global())
-	utils.w_CTime(packet, npc_st.activation_game_time)
-end
-
-local function load_logic(obj, reader)
-	local npc_st = db_storage[obj:id()]
-	npc_st.activation_time = reader:r_s32() + time_global()
-	npc_st.activation_game_time = utils.r_CTime(reader)
-end
-]]
 local pstor_number = 0
 local pstor_string = 1
 local pstor_boolean = 2
@@ -1106,42 +1076,40 @@ function save_obj(obj, packet)
 
 	local obj_st = db_storage[obj:id()]
 
-	local TMP = obj_st.job_ini
-	if TMP then
-		packet:w_stringZ(TMP)
+	local job_ini = obj_st.job_ini
+	if job_ini then
+		packet:w_stringZ(job_ini)
 	else
 		packet:w_stringZ("")
 	end
 
-	TMP = obj_st.ini_filename
-	if TMP then
-		packet:w_stringZ(TMP)
+	local ini_filename = obj_st.ini_filename
+	if ini_filename then
+		packet:w_stringZ(ini_filename)
 	else
 		packet:w_stringZ("")
 	end
 
-	TMP = obj_st.section_logic
-	if TMP then
-		packet:w_stringZ(TMP)
+	local section_logic = obj_st.section_logic
+	if section_logic then
+		packet:w_stringZ(section_logic)
 	else
 		packet:w_stringZ("")
 	end
 
-	TMP = obj_st.active_section
-	if TMP then
-		packet:w_stringZ(TMP)
+	local active_section = obj_st.active_section
+	if active_section then
+		packet:w_stringZ(active_section)
 	else
 		packet:w_stringZ("")
 	end
 
-	TMP = obj_st.gulag_name
-	if TMP then
-		packet:w_stringZ(TMP)
+	local gulag_name = obj_st.gulag_name
+	if gulag_name then
+		packet:w_stringZ(gulag_name)
 	else
 		packet:w_stringZ("")
 	end
-
---	save_logic(obj, packet) -- now inlined, below
 
 	local activation_time = obj_st.activation_time or 0
 
@@ -1200,8 +1168,6 @@ function load_obj(obj, reader)
 	dbglog(object_name..": obj_st.loaded_section_logic = "..tostring(section_logic))
 	dbglog(object_name..": obj_st.loaded_active_section = "..tostring(active_section))
 	dbglog(object_name..": obj_st.loaded_gulag_name = "..tostring(gulag_name))
-
-	load_logic(obj, reader) -- now inlined, below
 ]]
 	obj_st.activation_time = reader:r_s32() + time_global()
 	obj_st.activation_game_time = utils.r_CTime(reader)

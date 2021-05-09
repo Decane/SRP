@@ -1442,7 +1442,8 @@ function sim_attack_point:is_finished()
 	if squad.squad_online then
 		local obj_pos = commander.position
 		local dest_def_restr = db.zone_by_name[dest_smart.def_restr]
-		if (dest_def_restr ~= nil and not dest_def_restr:inside(obj_pos) and dest_smart:name() ~= "mar_smart_terrain_5_12") or (dest_def_restr == nil and obj_pos:distance_to_sqr(dest_smart.position) > 900) then
+		if (dest_def_restr ~= nil and not dest_def_restr:inside(obj_pos))
+		or (dest_def_restr == nil and obj_pos:distance_to_sqr(dest_smart.position) > 900) then
 			return false
 		end
 --	else

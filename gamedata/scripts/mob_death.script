@@ -5,7 +5,7 @@ function mob_death:__init(storage)
 end
 
 function mob_death:death_callback(victim)
-	if db.actor and self.info then
+	if self.info then
 		xr_logic.pick_section_from_condlist(db.actor, victim, self.info)
 	end
 end

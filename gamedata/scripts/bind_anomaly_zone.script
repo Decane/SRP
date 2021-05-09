@@ -5,11 +5,11 @@
 artefact_ways_by_id = {}
 parent_zones_by_artefact_id = {}
 
-local object_binder_update = object_binder.update
-
 function bind(obj)
 	obj:bind_object(anomaly_zone_binder(obj))
 end
+
+--------------------------------------------------------------------------------
 
 class "anomaly_zone_binder" (object_binder)
 
@@ -17,32 +17,21 @@ function anomaly_zone_binder:__init(obj) super(obj)
 
 	local get_string       = utils.cfg_get_string
 	local get_number       = utils.cfg_get_number
-
 	local ini              = obj:spawn_ini()
-	local path             = get_string(ini, "anomal_zone", "artefact_ways", nil, true, "", nil)
-	local artefacts        = get_string(ini, "anomal_zone", "artefacts", nil, true, "", nil)
 
-	if path == nil then
-		abort("[bind_anomaly_zone.__init]: There is no field 'artefact_ways' in section [anomal_zone] for obj [%s]", obj:name())
-	end
-
-	if artefacts == nil then
-		abort("[bind_anomaly_zone.__init]: There is no field 'artefacts' in section [anomal_zone] for obj [%s]", obj:name())
-	end
-
-	self.artefact_count    = get_number(ini, "anomal_zone", "artefact_count", nil, false, 1)
-	self.idle_time         = get_number(ini, "anomal_zone", "idle_time", nil, false, 14400) * level.get_time_factor() -- artifacts respawn after 14400 / 60 / 60 = 4 real hours
+	self.artefact_count    = get_number(ini, "anomal_zone", "artefact_count",    nil, false, 1)
+	self.idle_time         = get_number(ini, "anomal_zone", "idle_time",         nil, false, 14400) * level.get_time_factor() -- artifacts respawn after 14400 / 60 / 60 = 4 real hours
 	self.applying_force_xz = get_number(ini, "anomal_zone", "applying_force_xz", nil, false, 200)
-	self.applying_force_y  = get_number(ini, "anomal_zone", "applying_force_y", nil, false, 400)
+	self.applying_force_y  = get_number(ini, "anomal_zone", "applying_force_y",  nil, false, 400)
 
-	self.path_table        = parse_names(path)
-	self.artefacts_table   = parse_names(artefacts)
+	self.path_table        = parse_names(get_string(ini, "anomal_zone", "artefact_ways", obj, true, "", nil))
+	self.artefacts_table   = parse_names(get_string(ini, "anomal_zone", "artefacts",     obj, true, "", nil))
 	self.spawned_count     = 0
 	self.idle_time_start   = nil
 end
 
-function anomaly_zone_binder:net_spawn(server_object)
-	if not object_binder.net_spawn(self, server_object) then
+function anomaly_zone_binder:net_spawn(se_abstract)
+	if not object_binder.net_spawn(self, se_abstract) then
 		return false
 	end
 	if self.spawned_count < self.artefact_count then
@@ -55,6 +44,12 @@ function anomaly_zone_binder:net_spawn(server_object)
 	return true
 end
 
+function anomaly_zone_binder:net_destroy() -- missing in vanilla
+	object_binder.net_destroy(self)
+end
+
+local object_binder_update = object_binder.update
+
 function anomaly_zone_binder:update(delta)
 	object_binder_update(self, delta)
 	if self.spawned_count < self.artefact_count then
@@ -63,6 +58,8 @@ function anomaly_zone_binder:update(delta)
 		end
 	end
 end
+
+--------------------------------------------------------------------------------
 
 function anomaly_zone_binder:on_artefact_take()
 	self.spawned_count = self.spawned_count - 1
@@ -85,6 +82,8 @@ function anomaly_zone_binder:spawn_artefact_randomly()
 	self.idle_time_start = nil -- set this to nil after respawning to reduce packet data burden
 end
 
+--------------------------------------------------------------------------------
+
 function anomaly_zone_binder:net_save_relevant()
 	return true
 end
@@ -105,8 +104,7 @@ function anomaly_zone_binder:save(thread)
 		end
 	end
 
---	thread:w_u16(count)
-	thread:w_u8(count) -- no anomaly zone is going to have more than 255 artifacts in it at once, so let's save a byte
+	thread:w_u8(count) -- was u16, but no anomaly zone will have more than 255 artifacts in it at once, so let's save a byte
 
 	for art_id, path_name in pairs (artefact_ways_by_id) do
 		if parent_zones_by_artefact_id[art_id] ~= nil then
@@ -130,7 +128,6 @@ function anomaly_zone_binder:load(thread)
 
 	object_binder.load(self, thread)
 
---	local count = thread:r_u16()
 	local count = thread:r_u8()
 
 	for i = 1, count do

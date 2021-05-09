@@ -682,66 +682,52 @@ end
 -- Kamp binder
 --------------------------------------------------------------------------------
 
-local prop_kamp_end                            = xr_evaluators_id.stohe_kamp_base + 1
-local prop_on_position                         = xr_evaluators_id.stohe_kamp_base + 2
+local op_alife                  = xr_actions_id.alife
+local op_go_position            = xr_actions_id.stohe_kamp_base + 1
+local op_wait                   = xr_actions_id.stohe_kamp_base + 3
 
-local op_go_position                           = xr_actions_id.stohe_kamp_base + 1
-local op_wait                                  = xr_actions_id.stohe_kamp_base + 3
+local prop_kamp_end             = xr_evaluators_id.stohe_kamp_base + 1
+local prop_on_position          = xr_evaluators_id.stohe_kamp_base + 2
 
-local xr_actions_id_alife                      = xr_actions_id.alife
+local wp_on_position_true       = world_property(prop_on_position, true)
+local wp_on_position_false      = world_property(prop_on_position, false)
+local wp_switched_section_true  = world_property(prop_kamp_end, true)
 
-local wp_prop_on_position_true                 = world_property(prop_on_position, true)
-local wp_prop_on_position_false                = world_property(prop_on_position, false)
-local wp_prop_kamp_end_true                    = world_property(prop_kamp_end, true)
+function add_to_binder(npc, ini, scheme, section, st)
 
-local wp_stalker_ids_property_alive_true       = world_property(stalker_ids.property_alive, true)
-local wp_stalker_ids_property_danger_false     = world_property(stalker_ids.property_danger, false)
-local wp_stalker_ids_property_enemy_false      = world_property(stalker_ids.property_enemy, false)
-local wp_stalker_ids_property_anomaly_false    = world_property(stalker_ids.property_anomaly, false)
-local wp_stalker_ids_smartcover_action_3_false = world_property(xr_evaluators_id.smartcover_action + 3, false)
+	local manager               = npc:motivation_action_manager()
 
-function add_to_binder(object, ini, scheme, section, storage)
+	manager:add_evaluator       (prop_kamp_end, this.evaluator_kamp_end(st))
+	manager:add_evaluator       (prop_on_position, this.evaluator_on_position(st))
 
-	local manager               = object:motivation_action_manager()
+	-------------------------
 
-	-- Evaluators
-	manager:add_evaluator       (prop_kamp_end, this.evaluator_kamp_end(storage))
-	manager:add_evaluator       (prop_on_position, this.evaluator_on_position(storage))
+	local action                = this.action_wait(st)
 
-	-- Actions
-	local action                = this.action_wait(storage)
-
-	action:add_precondition     (wp_stalker_ids_property_alive_true)
-	action:add_precondition     (wp_stalker_ids_property_danger_false)
-	action:add_precondition     (wp_stalker_ids_property_enemy_false)
-	action:add_precondition     (wp_stalker_ids_property_anomaly_false)
-	action:add_precondition     (wp_stalker_ids_smartcover_action_3_false)
-
+	xr_motivator.addPrecondAliveNoDangerNoEnemyNoAnomalyNoSmartcover(action)
 	xr_motivator.addCommonPrecondition(action)
 
-	action:add_precondition     (wp_prop_on_position_true)
-	action:add_effect           (wp_prop_kamp_end_true)
+	action:add_precondition     (wp_on_position_true)
+	action:add_effect           (wp_switched_section_true)
 	manager:add_action          (op_wait, action)
 
-	xr_logic.subscribe_action_for_events(object, storage, action)
+	xr_logic.subscribe_action_for_events(nil, st, action)
 
-	action                      = this.action_go_position(storage)
+	-------------------------
 
-	action:add_precondition     (wp_stalker_ids_property_alive_true)
-	action:add_precondition     (wp_stalker_ids_property_danger_false)
-	action:add_precondition     (wp_stalker_ids_property_enemy_false)
-	action:add_precondition     (wp_stalker_ids_property_anomaly_false)
-	action:add_precondition     (wp_stalker_ids_smartcover_action_3_false)
+	action                      = this.action_go_position(st)
 
+	xr_motivator.addPrecondAliveNoDangerNoEnemyNoAnomalyNoSmartcover(action)
 	xr_motivator.addCommonPrecondition(action)
 
-	action:add_precondition     (wp_prop_on_position_false)
-	action:add_effect           (wp_prop_on_position_true)
+	action:add_precondition     (wp_on_position_false)
+	action:add_effect           (wp_on_position_true)
 	manager:add_action          (op_go_position, action)
 
-	action                      = manager:action(xr_actions_id_alife)
+	-------------------------
 
-	action:add_precondition     (wp_prop_kamp_end_true)
+	action                      = manager:action(op_alife)
+	action:add_precondition     (wp_switched_section_true)
 end
 
 function set_scheme(npc, ini, scheme, section, gulag_name)

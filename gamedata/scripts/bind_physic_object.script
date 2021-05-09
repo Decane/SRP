@@ -1,27 +1,31 @@
-local object_binder_update = object_binder.update
-
 function init(obj) -- called 1st
 
 	local ini = obj:spawn_ini()
---[[
-	if ini and ini:section_exist("animation") then
-		abort("object '%s': animation section is deprecated, use logic + impulse combination", obj:name())
-		return
-	end
-]]
-	if (ini and ini:section_exist("logic")) or obj:clsid() == clsid.inventory_box then -- drop-boxes all have a [logic] section in vanilla, so are included without an explicit test
-		db.storage[obj:id()] = {}
+
+	-- Drop-boxes all have a [logic] section in vanilla, so are included without an explicit test:
+	if (ini and ini:section_exist("logic")) or obj:clsid() == clsid.inventory_box then
 		obj:bind_object(generic_physics_binder(obj))
 	end
 end
 
----------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 
 class "generic_physics_binder" (object_binder)
 
 function generic_physics_binder:__init(obj) super(obj) -- called 2nd
 	self.initialized = false
 	self.loaded = false
+	self.particle = nil
+	self.box_items = nil
+	if obj:clsid() == clsid.inventory_box then
+		self.is_inventory_box = true
+		self.is_drop_box = false
+	else
+		local ini = obj:spawn_ini()
+		self.is_inventory_box = false
+		self.is_drop_box = ini ~= nil and ini:section_exist("drop_box")
+	end
+	self.st = {}
 end
 
 function generic_physics_binder:reload(section) -- called 3rd
@@ -30,82 +34,35 @@ end
 
 function generic_physics_binder:reinit() -- called 4th
 	object_binder.reinit(self)
-	local sobj = self.object
-	self.st = db.storage[sobj:id()]
-	local is_inventory_box = sobj:clsid() == clsid.inventory_box
-	self.is_inventory_box = is_inventory_box
-	if not is_inventory_box then
-		local ini = sobj:spawn_ini()
-		self.is_drop_box = ini and ini:section_exist("drop_box")
-	end
+	db.storage[self.object:id()] = self.st
 end
 
-function generic_physics_binder:net_spawn(data) -- called 5th
+function generic_physics_binder:net_spawn(se_abstract) -- called 5th
 
-	if not object_binder.net_spawn(self, data) then
+	if not object_binder.net_spawn(self, se_abstract) then
 		return false
 	end
 
-	local sobj = self.object
+	local obj = self.object
 
---	if sobj:clsid() == clsid.projector then
---		db.add_sl(sobj)
---	end
+	db.add_obj(obj)
 
 	if self.is_drop_box then
-		self.box_items = xr_box.ph_item_box(sobj)
+		self.box_items = xr_box.ph_item_box(obj)
 	end
-
-	db.add_obj(sobj)
 
 	return true
 end
 
-function generic_physics_binder:update(delta) -- called 6th
-
-	object_binder_update(self, delta)
-
-	local sobj = self.object
-	local obj_st = self.st
-
-	if not self.initialized then
-		self.initialized = true
-		xr_logic.initialize_obj(sobj, obj_st, self.loaded, modules.stype_item)
-		local particle = utils.cfg_get_string(obj_st.ini, obj_st.section_logic, "particle", sobj, false, "", nil)
-		if particle ~= nil then
-			self.particle = particles_object(particle)
-			self.particle:play_at_pos(sobj:position())
-		end
-		if obj_st.active_section ~= nil or self.is_drop_box then
-			sobj:set_callback(callback.hit, generic_physics_binder.hit_callback, self)
-			sobj:set_callback(callback.death, generic_physics_binder.death_callback, self)
-			sobj:set_callback(callback.use_object, generic_physics_binder.use_callback, self)
-		else
-			if self.is_inventory_box then
-				sobj:set_callback(callback.use_object, generic_physics_binder.use_callback, self)
-			end
-		end
-	end
-
-	if obj_st.active_section ~= nil then
-		xr_logic.issue_event(nil, obj_st[obj_st.active_scheme], "update", delta)
-	end
-
-	xr_sound.update(sobj:id())
-end
-
 function generic_physics_binder:net_destroy()
 
-	local sobj = self.object
-	local sid = sobj:id()
+	self:clear_callbacks()
 
-	xr_sound.stop_sounds_by_id(sid)
-
-	sobj:set_callback(callback.hit, nil)        -- SRP
-	sobj:set_callback(callback.death, nil)      -- SRP
-	sobj:set_callback(callback.use_object, nil) -- SRP
-
+	local obj = self.object
 	local obj_st = self.st
+
+	xr_sound.stop_sounds_by_id(obj:id())
+
 	if obj_st.active_scheme then
 		xr_logic.issue_event(nil, obj_st[obj_st.active_scheme], "net_destroy")
 	end
@@ -114,47 +71,53 @@ function generic_physics_binder:net_destroy()
 		self.particle:stop()
 	end
 
---	db.del_obj(sobj) -- done below
---	db.del_sl(sobj)
-
-	db.storage[sid] = nil
+	db.del_obj(obj)
 
 	object_binder.net_destroy(self)
 end
 
-function generic_physics_binder:net_save_relevant()
-	return true
-end
+local object_binder_update = object_binder.update
 
-function generic_physics_binder:save(packet)
-	object_binder.save(self, packet)
-	set_save_marker(packet, "save", false, "physics_binder")
-	xr_logic.save_obj(self.object, packet)
-	set_save_marker(packet, "save", true, "physics_binder")
-end
+function generic_physics_binder:update(delta) -- called 6th
 
-function generic_physics_binder:load(reader)
-	self.loaded = true
-	object_binder.load(self, reader)
-	set_save_marker(reader, "load", false, "physics_binder")
-	xr_logic.load_obj(self.object, reader)
-	set_save_marker(reader, "load", true, "physics_binder")
-end
+	object_binder_update(self, delta)
 
-function generic_physics_binder:use_callback(used_obj, user)
-	if self.is_inventory_box then
-		if used_obj:name() == "gar_smart_terrain_5_6_box" then
-			local act = db.actor
-			if act:has_info("gar_quest_redemption_started") then
-				act:give_info_portion("gar_quest_redemption_done")
+	local obj = self.object
+	local obj_st = self.st
+
+	if not self.initialized then
+		self.initialized = true
+		xr_logic.initialize_obj(obj, obj_st, self.loaded, modules.stype_item)
+		local particle = utils.cfg_get_string(obj_st.ini, obj_st.section_logic, "particle", nil, false, "", nil)
+		if particle ~= nil then
+			self.particle = particles_object(particle)
+			self.particle:play_at_pos(obj:position())
+		end
+		if obj_st.active_scheme or self.is_drop_box then
+			obj:set_callback(callback.hit, generic_physics_binder.hit_callback, self)
+			obj:set_callback(callback.death, generic_physics_binder.death_callback, self)
+			obj:set_callback(callback.use_object, generic_physics_binder.use_callback, self)
+		else
+			if self.is_inventory_box then
+				obj:set_callback(callback.use_object, generic_physics_binder.use_callback, self)
 			end
 		end
---		treasure_manager.use_box(used_obj, user)
 	end
-	local obj_st = self.st
-	if obj_st.active_section then
-		xr_logic.issue_event(nil, obj_st[obj_st.active_scheme], "use_callback", used_obj, user)
+
+	if obj_st.active_scheme then
+		xr_logic.issue_event(nil, obj_st[obj_st.active_scheme], "update", delta)
 	end
+
+	xr_sound.update(obj:id())
+end
+
+--------------------------------------------------------------------------------
+
+function generic_physics_binder:clear_callbacks()
+	local obj = self.object
+	obj:set_callback(callback.hit, nil)
+	obj:set_callback(callback.death, nil)
+	obj:set_callback(callback.use_object, nil)
 end
 
 function generic_physics_binder:hit_callback(victim, amount, local_direction, hitter, bone_index)
@@ -165,32 +128,65 @@ function generic_physics_binder:hit_callback(victim, amount, local_direction, hi
 		xr_logic.issue_event(nil, obj_st.ph_on_hit, "hit_callback", victim, amount, local_direction, hitter, bone_index)
 	end
 
-	if obj_st.active_section then
+	if obj_st.active_scheme then
 		xr_logic.issue_event(nil, obj_st[obj_st.active_scheme], "hit_callback", victim, amount, local_direction, hitter, bone_index)
 	end
 end
 
 function generic_physics_binder:death_callback(victim, culprit)
 
+	self:clear_callbacks()
+
 	local obj_st = self.st
 
-	if obj_st.active_section then
+	if obj_st.active_scheme then
 		xr_logic.issue_event(nil, obj_st[obj_st.active_scheme], "death_callback", victim, culprit)
 	end
-
-	victim:set_callback(callback.hit, nil)        -- SRP
-	victim:set_callback(callback.death, nil)      -- SRP
-	victim:set_callback(callback.use_object, nil) -- SRP
 
 	if self.particle ~= nil then
 		self.particle:stop()
 	end
 
-	if self.disable_graph_point ~= nil then
-		game_graph():accessible(self.disable_graph_point, true)
-	end
-
 	if self.is_drop_box then
 		self.box_items:spawn_items()
 	end
+end
+
+function generic_physics_binder:use_callback(used_obj, user)
+
+	if self.is_inventory_box then
+		if used_obj:name() == "gar_smart_terrain_5_6_box" then
+			local actor = db.actor
+			if actor:has_info("gar_quest_redemption_started") then
+				actor:give_info_portion("gar_quest_redemption_done")
+			end
+		end
+	end
+
+	local obj_st = self.st
+
+	if obj_st.active_scheme then
+		xr_logic.issue_event(nil, obj_st[obj_st.active_scheme], "use_callback", used_obj, user)
+	end
+end
+
+--------------------------------------------------------------------------------
+
+function generic_physics_binder:net_save_relevant()
+	return true
+end
+
+function generic_physics_binder:save(packet)
+	set_save_marker(packet, "save", false, "physics_binder")
+	object_binder.save(self, packet)
+	xr_logic.save_obj(self.object, packet)
+	set_save_marker(packet, "save", true, "physics_binder")
+end
+
+function generic_physics_binder:load(reader) -- called 4.5th (only on load)
+	set_save_marker(reader, "load", false, "physics_binder")
+	object_binder.load(self, reader)
+	xr_logic.load_obj(self.object, reader)
+	set_save_marker(reader, "load", true, "physics_binder")
+	self.loaded = true
 end

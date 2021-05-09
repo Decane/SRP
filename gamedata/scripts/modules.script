@@ -5,6 +5,19 @@ stype_heli       = 3
 stype_restrictor = 4
 stype_trader     = 5
 
+do
+	local schemes = _G.schemes
+
+	local function load_scheme(filename, scheme)
+		schemes[scheme] = filename
+		-- nv130308 pre-load schemes for early validation
+		-- this prefetches the logic and reports problems before loading any save
+		if not _G[filename] then
+			dbglog("Scheme file %s.script is not valid!", tostring(filename))
+			get_console():execute("quit") -- exits more reliably during loading than abort()
+		end
+	end
+
 	------------------------------------------------------------
 	-- stype_stalker:
 	------------------------------------------------------------
@@ -98,3 +111,4 @@ stype_trader     = 5
 	load_scheme("sr_shooting",      "sr_shooting")
 --	load_scheme("sr_recoveritem",   "sr_recoveritem")  -- test disable
 	load_scheme("sr_silence",       "sr_silence")      --' Distemper 03.2008
+end

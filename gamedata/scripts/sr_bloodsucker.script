@@ -1,30 +1,33 @@
+local db_storage = db.storage
+
 class "bloodsucker_attack"
 
-function bloodsucker_attack:__init(obj, storage)
-	self.object = obj
-	self.st = storage
-	self.is_actor_inside = nil
+function bloodsucker_attack:__init(obj, st)
+	self.object          = obj
+	self.st              = st
+	self.appear_snd      = sound_object("monsters\\bloodsucker\\swamp_appear_1")
+	self.growl_snd       = sound_object("monsters\\bloodsucker\\swamp_growl_1")
+	self.hit_snd         = sound_object("monsters\\bloodsucker\\heavy_hit_1")
+	self.panic_snd       = sound_object("monsters\\bloodsucker\\human_panic_1")
+	self.sound_count     = 4
 end
 
 function bloodsucker_attack:reset_scheme()
-	self.target_obj         = nil
-	self.st.idle_end        = 0
-	self.st.signals         = {}
-	self.is_actor_inside    = false
-	self.snd_obj            = nil
-	self.final_action       = false
-	self.appear_snd         = sound_object("monsters\\bloodsucker\\swamp_appear_1")
-	self.growl_snd          = sound_object("monsters\\bloodsucker\\swamp_growl_1")
-	self.hit_snd            = sound_object("monsters\\bloodsucker\\heavy_hit_1")
-	self.panic_snd          = sound_object("monsters\\bloodsucker\\human_panic_1")
-	self.target_obj_squad   = nil
-	self.deadly_bloodsucker = false
-	self.idle_state         = false
-	self.path_name          = nil
-	self.bloodsucker_obj    = nil
-	self.bloodsucker        = nil
-	self.sound_count        = 4
-	self.played_count       = 0
+	self.victim          = nil
+	self.victim_id       = nil
+	self.victim_squad    = nil
+	self.st.path         = nil
+	self.st.signals      = {}
+	self.snd_obj         = nil
+	self.is_victim_taken = false
+	self.path_name       = nil
+	self.bloodsucker_obj = nil
+	self.bloodsucker     = nil
+	self.cur_point       = nil
+	self.current         = nil
+	self.target          = nil
+	self.dir             = nil
+	self.played_count    = 0
 end
 
 function bloodsucker_attack:net_destroy()
@@ -32,307 +35,180 @@ function bloodsucker_attack:net_destroy()
 	self.growl_snd:stop()
 	self.hit_snd:stop()
 	self.panic_snd:stop()
-	db.storage[self.object:id()].reaction_manager = nil
-end
-
-function bloodsucker_attack:enable_squad_reaction()
-	local restr_obj = self.object
-	self.attacked_squad_id = _G.sim:object(self.target_obj:id()).squad_id
-	db.storage[restr_obj:id()].reaction_manager = reaction_manager(restr_obj, self)
+	db_storage[self.object:id()].reaction_manager = nil
 end
 
 function bloodsucker_attack:disable_reaction_final()
-	local target_obj_squad = sim_board.get_sim_board().squads[self.attacked_squad_id]
-	if target_obj_squad ~= nil then
-		local st = db.storage
-		for k in pairs (target_obj_squad.squad_npc) do
-			bloodsucker_reaction.disable_bloodsucker_reaction(st[k].object)
+	local victim_squad = self.victim_squad
+	if victim_squad ~= nil then
+		for npc_id in pairs (victim_squad.squad_npc) do
+			bloodsucker_reaction.disable_bloodsucker_reaction(db_storage[npc_id].object)
 		end
 	end
-end
---[[
-function bloodsucker_attack:disable_squad_reaction()
-	self.target_obj_squad = sim_board.get_sim_board().squads[self.attacked_squad_id]
-	if self.target_obj_squad ~= nil then
-		for k, v in pairs (self.target_obj_squad.squad_npc) do
-			--db.storage[k].object:add_restrictions(self.object:name(), "")
-		end
-	end
+	self:net_destroy()
+	self:reset_scheme()
 end
 
-function bloodsucker_attack:reset_restrictions()
+local function death_hit(sucker, victim)
+	local h     = hit()
+	h.power     = 1000
+	h.direction = victim:direction()
+	h.draftsman = sucker
+	h.impulse   = 0
+	h.type      = hit.wound
+	victim:hit(h)
 end
-]]
+
 function bloodsucker_attack:update(delta)
 
 	local restr_obj = self.object
 	local restr_id = restr_obj:id()
-	local self_st = self.st
+	local st = self.st
 	local actor = db.actor
-	local st = db.storage
 
-	-- If this restrictor object's logic switched to another section, stop scheme:
+	-- If this restrictor's logic switches to another section, stop scheme:
 
-	if xr_logic.try_switch_to_another_section(restr_obj, self_st, actor) then
-		self.growl_snd:stop()
-		self.hit_snd:stop()
-		self.panic_snd:stop()
-		st[restr_id].reaction_manager = nil
+	if xr_logic.try_switch_to_another_section(restr_obj, st, actor) then
 		self:disable_reaction_final()
-		self:reset_scheme()
 		return true
 	end
 
-	-- If squad entered marsh creature zone, enable their reaction to it:
+	-- (1) If victim not picked and NPC in marsh creature zone and player nearby zone, make NPC the victim and enable his reaction and calculate target positions of NPC's squad members:
 
-	if st[restr_id].reaction_manager ~= nil then
-		st[restr_id].reaction_manager:update()
+	if self.victim == nil then
+		local victim = xr_motivator.bloodsucker_zone_enter[restr_id]
+		if victim and restr_obj:position():distance_to_sqr(actor:position()) <= 50*50 then
+			local victim_id = victim:id()
+			self.victim_squad = db_storage[victim_id].squad_obj
+			if not self.victim_squad then
+				return
+			end
+			self.victim = victim
+			self.victim_id = victim_id
+			self:reset_path()
+			self:set_positions()
+			db_storage[restr_id].reaction_manager = reaction_manager(restr_id, self)
+		else
+			return
+		end
 	end
 
-	-- If online marsh creature dead and idle state not set, set it into the near future:
+	-- (2) Given victim picked, enable victim's squad members' reaction once victim's reaction has finished:
 
-	if self.bloodsucker_obj and not self.bloodsucker_obj:alive() and not self.idle_state then
+	db_storage[restr_id].reaction_manager:update()
 
-		self_st.idle_end = game.time() + self_st.idle
-		self.idle_state = true
+	-- (3) Given victim picked, if no server entity marsh creature, play scary sounds, fire into bushes, and create server entity marsh creature:
 
-		self.growl_snd:stop()
-		self.hit_snd:stop()
-		self.panic_snd:stop()
+	if self.bloodsucker == nil then
 
-		-- If marsh creature targeted NPC, not player, disable squad reaction to it:
+		local is_spawned = false
+		local target_pos = vector():set(self.current):mad(self.dir, st.sound_slide_vel * delta / 1000)
 
-		if self.target_obj:id() ~= 0 then -- 0 = actor ID
---			self:reset_restrictions()
-			self:disable_reaction_final()
-			if self.target_obj ~= nil and self.target_obj:alive() then
-				self.target_obj:wounded(false)
---				self:reset_restrictions()
-				bloodsucker_reaction.disable_bloodsucker_reaction(self.target_obj)
-				self:disable_reaction_final()
-				st[restr_id].reaction_manager = nil
+		if self.current:distance_to(target_pos) >= self.current:distance_to(self.target) then
+			if self.played_count >= self.sound_count then
+				self:spawn_sucker()
+				is_spawned = true
+			else
+				self:reset_path()
+			end
+			self:set_positions()
+			if self.played_count == 3 then
+				db_storage[restr_id].reaction_manager:set_fire_state()
+			end
+			self.played_count = self.played_count + 1
+		else
+			self.current = target_pos
+		end
+
+		if is_spawned then
+			if self.snd_obj and self.snd_obj:playing() then
+				self.snd_obj:stop()
+			end
+		else
+			self.snd_obj = xr_sound.set_sound_play(restr_id, st.snd_obj)
+			if self.snd_obj and self.snd_obj:playing() then
+				self.snd_obj:set_position(self.current)
 			end
 		end
 
 		return
 	end
 
-	-- If idle state time passed, stop scheme and empty table of entrees in marsh creature zone:
+	-- (6a) If victim taken and marsh creature not near vanishing spot and panic sounds playing, keep updating their position to track victim:
+	-- (6b) If victim taken and marsh creature near vanishing spot or panic sounds over, delete marsh creature and victim and signal scene_end:
 
-	if self.idle_state then
-		if self_st.idle_end <= game.time() then
-			self:reset_scheme()
-			xr_motivator.bloodsucker_zone_enter = {}
+	if self.is_victim_taken then
+
+		if self.panic_snd:playing() and self.bloodsucker_obj:position():distance_to(self.current) > 1 then
+			self.panic_snd:set_position(self.victim:position())
+		else
+			xr_logic.mob_release(self.bloodsucker_obj)
+			db.del_obj(self.bloodsucker_obj)
+			bind_stalker.delayed_alife_release_objects[self.bloodsucker.id] = nil
+			_G.sim:release(self.bloodsucker, true)
+--[[
+			local se_npc = _G.sim:object(self.victim_id)
+			if se_npc.squad_id == nil then
+				_G.sim:release(se_npc, true)
+			else
+				sim_board.get_sim_board().squads[se_npc.squad_id]:remove_npc(se_npc.id)
+			end
+]]
+			xr_motivator.bloodsucker_zone_enter[restr_id] = nil
+--			self:disable_reaction_final() -- only necessary if next line doesn't cause section switch
+			st.signals["scene_end"] = true -- always causes section switch on next update in vanilla
 		end
+
 		return
 	end
 
-	-- If no victim set and an NPC in marsh creature zone and player nearby zone, make that NPC the victim and start ruffling feathers:
+	-- (5) Given victim not taken, if marsh creature defined and near victim, play kill/growl sequence:
 
-	if self.target_obj == nil then
-		if xr_motivator.bloodsucker_zone_enter[restr_id] ~= nil and restr_obj:position():distance_to_sqr(actor:position()) <= 50*50 then
-			self.target_obj = xr_motivator.bloodsucker_zone_enter[restr_id]
-			self.target_obj_id = self.target_obj:id()
-			self:on_enter()
-			self.is_actor_inside = true
-			self:enable_squad_reaction()
-
-	-- If no victim set and player in marsh creature zone and _________, make player the victim and start ruffling feathers:
-
-		elseif restr_obj:inside(actor:position()) and self.played_count > 0 then
-			self.target_obj = actor
-			self:on_enter()
-			self.is_actor_inside = true
-		end
-	end
-
-	-- If player is victim, ____________ and continue no further:
-
-	if self.target_obj ~= nil then
-		if self.target_obj:id() == 0 then -- 0 = actor ID
-			self:actor_update(delta)
-			return
-		end
-	end
-
-	-- If online marsh creature exists and ___________ and creature is within 2 meters of actor but NPC is victim, have creature kill actor in cool animation and continue no further:
-
-	if self.bloodsucker_obj and self.attack_actor and self.bloodsucker_obj:position():distance_to(actor:position()) <= 2 then
-		death_hit(self.bloodsucker_obj, actor)
-		set_inactivate_input_time(15)
-		level.add_cam_effector("camera_effects\\fusker.anm", 999, false, "")
-		xr_sound.set_sound_play(self.bloodsucker_obj:id(), "bloodsucker_growl")
-		self.attack_actor = false
-		return
-	end
-
-	-- If online marsh creature exists and not ready for final action and creature within 3 meters of victim NPC and _____________, play agroprom NPC kill/growl sequence, set ready for final action, and continue no further:
-
-	if self.bloodsucker_obj and not self.final_action and (self.bloodsucker_obj:position():distance_to(self.target_obj:position()) <= 3) then
-		if not self.bloodsucker_obj:action() then
+	if self.bloodsucker_obj then
+		if self.bloodsucker_obj:position():distance_to(self.victim:position()) <= 3 and not self.bloodsucker_obj:action() then
 			self.bloodsucker_obj:set_vis_state(1)
 			xr_logic.mob_release(self.bloodsucker_obj)
-			death_hit(self.bloodsucker_obj, self.target_obj)
---			bind_stalker.add_to_delayed_release(self.target_obj_id)
-			local pos1 = self.bloodsucker_obj:position()
-			pos1.y = pos1.y + 1
-			self.growl_snd:play_at_pos(self.bloodsucker_obj, pos1, 1, sound_object.s3d)
-			self.hit_snd:play_at_pos(self.bloodsucker_obj, pos1, 0, sound_object.s3d)
-			self.panic_snd:play_at_pos(self.target_obj, pos1, 2, sound_object.s3d)
+			death_hit(self.bloodsucker_obj, self.victim)
+			local sucker_pos = vector():set(self.bloodsucker_obj:position())
+			sucker_pos.y = sucker_pos.y + 1
+			self.growl_snd:play_at_pos(self.bloodsucker_obj, sucker_pos, 1, sound_object.s3d)
+			self.hit_snd:play_at_pos(self.bloodsucker_obj, sucker_pos, 0, sound_object.s3d)
+			self.panic_snd:play_at_pos(self.victim, sucker_pos, 2, sound_object.s3d)
 			self:reset_path()
 			self:set_positions()
-			self.bloodsucker_obj:set_capture_anim(self.target_obj, "bip01_head", self.current, 1)
-			self.final_action = true
+			self.bloodsucker_obj:set_capture_anim(self.victim, "bip01_head", self.current, 1)
+			self.is_victim_taken = true
 		end
 		return
 	end
 
-	-- If panic sound playing, keep updating its position to track the victim:
+	-- (4) Given victim not taken and marsh creature not defined, define marsh creature (once online) and send it toward victim:
 
-	if self.panic_snd and self.panic_snd:playing() then
-		self.panic_snd:set_position(self.target_obj:position())
+	if db_storage[self.bloodsucker.id] then
+		local sucker = db_storage[self.bloodsucker.id].object
+		if sucker then
+			bind_stalker.delayed_alife_release_objects[self.bloodsucker.id] = true
+			sucker:set_vis_state(-1)
+			sucker:set_collision_off(true)
+			xr_logic.mob_capture(sucker, true)
+			action(sucker, move(move.run_fwd, self.victim, 2), cond(cond.move_end))
+			if self.victim:alive() then
+				self.victim:wounded(true) -- makes victim stay still when sucker appears
+			end
+			self.bloodsucker_obj = sucker
+		end
 	end
-
-	-- If ready for final action and online marsh creature within 4 meters of ___________, delete marsh creature and victim and signal scene_end:
-
-	if self.final_action and self.bloodsucker_obj:position():distance_to(self.current) <= 4 then
-
-		if st[self.bloodsucker.id] ~= nil then
-			xr_logic.mob_release(self.bloodsucker_obj)
-			db.del_obj(self.bloodsucker_obj)
-		end
-
-		self.panic_snd:stop()
-		bind_stalker.del_to_delayed_release(self.bloodsucker.id)
-		local sim = _G.sim
-		local se_npc = sim:object(self.target_obj_id)
-		sim:release(self.bloodsucker, true)
-		if se_npc.squad_id == nil then
-			sim:release(se_npc, true)
-		else
-			sim_board.get_sim_board().squads[se_npc.squad_id]:remove_npc(se_npc.id)
-		end
---		bind_stalker.add_to_delayed_release(self.target_obj_id)
-		self.target_obj_id = nil
---		self:reset_restrictions()
-		self.target_obj = nil
-		xr_motivator.bloodsucker_zone_enter = {}
-		self.bloodsucker = nil
-		self.bloodsucker_obj = nil
-		self.final_action = false
-		self.is_actor_inside = false
-		self:reset_path()
-		self_st.signals["scene_end"] = true
-	end
-
-	-- If player in marsh creature zone and no server entity marsh creature, set positions and play scary sounds:
-
-	if self.is_actor_inside == true and self.bloodsucker == nil then
-
-		local target_pos = vector():set(self.current)
-		target_pos:mad(self.dir, self_st.sound_slide_vel * delta / 1000)
-		if target_pos:distance_to(self.current) >= self.current:distance_to(self.target) then
-			self.cur_point = self:next_point()
-			self:set_positions()
-		else
-			self.current = vector():set(target_pos)
-		end
-
-		self.snd_obj = xr_sound.set_sound_play(restr_id, self_st.snd_obj)
-		if self.snd_obj and self.snd_obj:playing() then
-			self.snd_obj:set_position(self.current)
-		end
-
-	-- If no online marsh creature registered but server entity exists and not ready for final action and marsh creature in db.storage, then register online marsh creature and do some action ______:
-
-	elseif self.bloodsucker_obj == nil and self.bloodsucker ~= nil and not self.final_action and st[self.bloodsucker.id] ~= nil then
-
-		self.bloodsucker_obj = st[self.bloodsucker.id].object
-		bind_stalker.add_to_delayed_release(self.bloodsucker.id)
-		self.bloodsucker_obj:set_vis_state(-1)
-		self.bloodsucker_obj:set_collision_off(true)
-		xr_logic.mob_capture(self.bloodsucker_obj, true)
-		local attack_actor = math.random(0,1)
-		if attack_actor >= 0.5 and self.played_count > self.sound_count + 1 and restr_obj:position():distance_to_sqr(actor:position()) <= 20*20 then
-			action(self.bloodsucker_obj, move(move.run_fwd, actor, 2), cond(cond.move_end))
-			self.attack_actor = true
-		end
-		action(self.bloodsucker_obj, move(move.run_fwd, self.target_obj, 2), cond(cond.move_end))
-		if self.target_obj ~= nil then
-			self.target_obj:wounded(true)
-		end
---		self:disable_squad_reaction()
-	end
-end
-
-function bloodsucker_attack:actor_update(delta)
-	if self.bloodsucker_obj and not self.final_action and not self.bloodsucker_obj:action() then
-		if not self.bloodsucker_obj:action() then
-			-- self.bloodsucker_obj:set_vis_state(1)
-			--printf("boloto_attack_capture")
-			death_hit(self.bloodsucker_obj,self.target_obj)
-			set_inactivate_input_time(15)
-			level.add_cam_effector("camera_effects\\fusker.anm", 999, false, "")
-			xr_sound.set_sound_play(self.bloodsucker_obj:id(), "bloodsucker_growl")
-			self:reset_path()
-			action(self.bloodsucker_obj, move(move.run_fwd, self.st.path:point(self.st.path:count()-1)),cond(cond.move_end))
-			self.final_action = true
-		end
-		return
-	end
-
-	if self.final_action and (db.storage[self.bloodsucker.id] == nil or self.bloodsucker_obj:position():distance_to(self.st.path:point(self.st.path:count()-1)) <= 1) then
-		if db.storage[self.bloodsucker.id] ~= nil then
-			xr_logic.mob_release(self.bloodsucker_obj)
-			db.del_obj(self.bloodsucker_obj)
-		end
-		_G.sim:release(self.bloodsucker,true)
-		self.target_obj = nil
-		xr_motivator.bloodsucker_zone_enter = {}
-		self.bloodsucker = nil
-		self.bloodsucker_obj = nil
-		self.final_action = false
-		self.is_actor_inside = false
-		self:reset_path()
-	end
-
-	if self.is_actor_inside == true and self.bloodsucker == nil then
-		local target_pos = vector():set(self.current)
-		target_pos:mad(self.dir, self.st.sound_slide_vel * delta / 1000)
-		if target_pos:distance_to(self.current) >= self.current:distance_to(self.target) then
-			self.cur_point	= self:next_point()
-			self:set_positions()
-		else
-			self.current = vector():set(target_pos)
-		end
-		self.snd_obj = xr_sound.set_sound_play(self.object:id(), self.st.snd_obj)
-		if self.snd_obj and self.snd_obj:playing() then
-			self.snd_obj:set_position(self.current)
-		end
-	elseif self.bloodsucker_obj == nil and self.bloodsucker ~= nil and not self.final_action and db.storage[self.bloodsucker.id] ~= nil then
-		self.bloodsucker_obj = db.storage[self.bloodsucker.id].object
-		bind_stalker.add_to_delayed_release(self.bloodsucker.id)
-		self.bloodsucker_obj:set_vis_state(-1)
-		self.bloodsucker_obj:set_collision_off(true)
-		xr_logic.mob_capture(self.bloodsucker_obj, true)
-		action(self.bloodsucker_obj, move(move.run_fwd, self.target_obj,2),cond(cond.move_end))
-	end
-end
-
-function bloodsucker_attack:on_enter()
-	self:reset_path()
-	self:set_positions()
 end
 
 function bloodsucker_attack:reset_path()
-	self.cur_point	= 0
+	self.cur_point = 0
 	local path_name_new = self.path_name
 	local path_count = #self.st.path_table
 	while self.path_name == path_name_new do
 		path_name_new = self.st.path_table[math.random(1, path_count)]
 	end
 	self.path_name = path_name_new
-	self.st.path = patrol(self.path_name)
+	self.st.path = patrol(path_name_new)
 end
 
 function bloodsucker_attack:next_point()
@@ -343,176 +219,128 @@ function bloodsucker_attack:next_point()
 	end
 end
 
+function bloodsucker_attack:spawn_sucker()
+	local path = self.st.path
+	local path_index = self:next_point()
+	local spawn_point = path:point(path_index)
+	local spawn_lvid = path:level_vertex_id(path_index)
+	local spawn_gvid = path:game_vertex_id(path_index)
+	self.bloodsucker = _G.sim:create("bloodsucker_jumper", spawn_point, spawn_lvid, spawn_gvid)
+	self.bloodsucker.sim_forced_online = true
+	self.appear_snd:play_at_pos(db.actor, spawn_point, 0, sound_object.s3d)
+	self.cur_point = path_index
+end
+
 function bloodsucker_attack:set_positions()
-
-	if (self:next_point() == 0) then
-		if self.bloodsucker == nil and self.played_count >= self.sound_count then
-			if self.target_obj:id() == 0 then -- 0 = actor ID
-				self.st.monster = "bloodsucker_fast"
-			else
-				if self.deadly_bloodsucker == true then
-					self.st.monster = "bloodsucker_jumper_deadly"
-				else
-					self.st.monster = "bloodsucker_jumper"
-				end
-			end
-			self.bloodsucker = _G.sim:create(self.st.monster, self.current, self.object:level_vertex_id(), self.object:game_vertex_id())
-			self.bloodsucker.sim_forced_online = true
-			self.appear_snd:play_at_pos(db.actor, self.current, 0, sound_object.s3d)
-			if self.snd_obj and self.snd_obj:playing() then
-				self.snd_obj:stop()
-			end
-
-			self.deadly_bloodsucker = true
-			--self.played_count = 0
-		end
-		if self.bloodsucker == nil then
-			self:reset_path()
-		end
-		if self.played_count == 3 and db.storage[self.object:id()].reaction_manager ~= nil then
-			db.storage[self.object:id()].reaction_manager:set_fire_state()
-		end
-		self.played_count = self.played_count + 1
-	end
-
-	self.current	= self.st.path:point(self.cur_point)
-	self.target		= self.st.path:point(self:next_point())
-	self.dir		= vector():sub(self.target, self.current):normalize()
+	self.current = self.st.path:point(self.cur_point)
+	self.target  = self.st.path:point(self:next_point())
+	self.dir     = vector():sub(self.target, self.current):normalize()
 end
 
----------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 
-function add_to_binder(npc, ini, scheme, section, storage)
-	local new_action = bloodsucker_attack(npc, storage)
-	xr_logic.subscribe_action_for_events(npc, storage, new_action)
+function add_to_binder(npc, ini, scheme, section, st)
+	xr_logic.subscribe_action_for_events(npc, st, bloodsucker_attack(npc, st))
 end
 
-function set_scheme(obj, ini, scheme, section, gulag_name)
+function set_scheme(obj, ini, scheme, section)
 	local st           = xr_logic.assign_storage_and_bind(obj, ini, scheme, section)
 	st.logic           = xr_logic.cfg_get_switch_conditions(ini, section, obj)
 	st.snd_obj         = utils.cfg_get_string(ini, section, "snd", obj, false, "", nil)
-	st.delay           = utils.cfg_get_number(ini, section, "delay", obj, false, 0)
-	st.idle            = utils.cfg_get_number(ini, section, "idle", obj, false, 30) * 10000 -- секунды->мс
-	local path         = utils.cfg_get_string(ini, section, "sound_path", obj, false, "", nil)
-	st.path_table      = parse_names(path)
---	st.monster         = utils.cfg_get_string(ini, section, "monster_section", obj, false, "", "bloodsucker_jumper")
-	st.sound_slide_vel = utils.cfg_get_number(ini, section, "slide_velocity",	obj, false, 5)
+	st.path_table      = parse_names(utils.cfg_get_string(ini, section, "sound_path", obj, true, ""))
+	st.sound_slide_vel = utils.cfg_get_number(ini, section, "slide_velocity", obj, false, 5)
 end
 
-function death_hit(sucker, npc)
-
-	local draftsman  = sucker
-	local hitted_obj = npc
-	local power      = 0
-
-	if hitted_obj:id() == 0 then -- 0 = actor ID
-		power = 0.1
-	else
-		power = 1000
-	end
-	if draftsman == nil or hitted_obj == nil then
-		return
-	end
-
-	local h     = hit()
-	h.power     = power
-	h.direction = hitted_obj:direction()
-	h.draftsman = draftsman
-	h.impulse   = 0
-	h.type      = hit.wound
-
-	hitted_obj:hit(h)
-end
+--------------------------------------------------------------------------------
 
 class "reaction_manager"
 
-function reaction_manager:__init (obj, sr_blood)
+function reaction_manager:__init(restr_id, sr_blood)
 
-	self.target_npc				= sr_blood.target_obj
-	self.target_npc_id			= self.target_npc:id()
-	self.obj					= obj
-	self.npc_squad				= sim_board.get_sim_board().squads[_G.sim:object(self.target_npc:id()).squad_id]
-	self.squad_npc_state		= {}
-	self.squad					= {}
-	self.squad_objs				= {}
-	self.scene_manager			= sr_blood
-	self.npc_position			= {}
-	self.target_npc_direction	= self.target_npc:direction()
+	self.target_npc_id     = sr_blood.victim_id
+	self.squad_npc_state   = {}
+	self.squad             = {}
+	self.squad_objs        = {}
+	self.scene_manager     = sr_blood
+	self.npc_position      = {}
 
-	local yaw					= yaw(vector():set(1, 0, 0), self.target_npc_direction)
+	local target_npc       = sr_blood.victim
+	local yaw              = yaw(vector():set(1, 0, 0), target_npc:direction())
+	local positions        =
+	{
+		{dir = vector_rotate_y(vector():set(1,  0,  1), yaw), vertex = nil, position = nil},
+		{dir = vector_rotate_y(vector():set(-1, 0,  1), yaw), vertex = nil, position = nil},
+		{dir = vector_rotate_y(vector():set(-1, 0, -1), yaw), vertex = nil, position = nil},
+		{dir = vector_rotate_y(vector():set(1,  0, -1), yaw), vertex = nil, position = nil},
+	}
 
-	self.position = {
-	{dir = vector_rotate_y(vector():set(1, 0, 1),yaw),used = nil, vertex = nil, position = nil},
-	{dir = vector_rotate_y(vector():set(-1, 0, 1),yaw),used = nil, vertex = nil, position = nil},
-	{dir = vector_rotate_y(vector():set(-1, 0, -1),yaw),used = nil, vertex = nil, position = nil},
-	{dir = vector_rotate_y(vector():set(1, 0, -1),yaw),used = nil, vertex = nil, position = nil},
-					}
-
-	self:calculate_positions()
-
-	for k, v in pairs (self.npc_squad.squad_npc) do
-		if self.target_npc:id() ~= k then
-			self.squad[k] = db.storage[k].object
-			self.squad_objs[k] = db.storage[k].object
+	local function calculate_positions(positions, base_point)
+		for k, v in pairs (positions) do
+			local base_vertex_id = level.vertex_in_direction(base_point, v.dir, 4)
+			local random_position = level.vertex_position(base_vertex_id)
+			v.vertex = base_vertex_id
+			v.position = random_position
 		end
 	end
 
-	self:set_npc_positions()
+	calculate_positions(positions, target_npc:level_vertex_id())
 
-	for k, v in pairs (self.npc_squad.squad_npc) do
-		if self.target_npc:id() ~= k then
-			self.squad_npc_state[k] = "walk_to_position"
+	local squad = sr_blood.victim_squad -- guaranteed valid by bloodsucker_attack:update()
+
+	for npc_id in pairs (squad.squad_npc) do
+		if self.target_npc_id ~= npc_id then
+			local npc = db_storage[npc_id].object
+			self.squad[npc_id] = npc
+			self.squad_objs[npc_id] = npc
+		end
+	end
+
+	self:set_npc_positions(positions)
+
+	for npc_id in pairs (squad.squad_npc) do
+		if self.target_npc_id ~= npc_id then
+			self.squad_npc_state[npc_id] = "walk_to_position"
 		else
-			self.squad_npc_state[k] = "stand_search"
-			bloodsucker_reaction.enabled_bloodsucker_reaction(db.storage[k].object, self.current)
+			self.squad_npc_state[npc_id] = "stand_search"
+			bloodsucker_reaction.enabled_bloodsucker_reaction(target_npc)
 		end
-		db.storage[k].bloodsucker_zone_id = self.obj:id()
-	end
-
-	self.random_actions = {"stand_scare", "stand_search","stand_commander","stand_fire","walk_to_position"}
-end
-
-function reaction_manager:calculate_positions()
-	local base_point = self.target_npc:level_vertex_id()
-	for k, v in pairs (self.position) do
-		local direction_vector = v.dir
-		self.base_vertex_id = level.vertex_in_direction(base_point, direction_vector, 4)
-		self.random_position = level.vertex_position(self.base_vertex_id)
-		v.vertex = self.base_vertex_id
-		v.position = self.random_position
+		db_storage[npc_id].bloodsucker_zone_id = restr_id
 	end
 end
 
-function reaction_manager:set_npc_positions()
-	for k, v in pairs (self.position) do
-		local nearest_npc = self:find_nearest_npc_on_position(v.position)
-		if nearest_npc ~= nil then
-			self.npc_position[nearest_npc:id()] = {vertex = v.vertex, position = v.position}
-			self.squad[nearest_npc:id()] = nil
-		end
-	end
-end
+function reaction_manager:set_npc_positions(positions)
 
-function reaction_manager:find_nearest_npc_on_position(pos)
-	local nearest_npc = nil
-	local dist = 1000
-	for k, v in pairs (self.squad) do
-		if pos:distance_to(v:position()) < dist then
-			dist = pos:distance_to(v:position())
-			nearest_npc = v
+	local function find_nearest_npc_on_position(squad, pos)
+		local nearest_npc_id = nil
+		local min_dist = 1000
+		for npc_id, npc in pairs (squad) do
+			local dist_to_pos = pos:distance_to(npc:position())
+			if dist_to_pos < min_dist then
+				min_dist = dist_to_pos
+				nearest_npc_id = npc_id
+			end
+		end
+		return nearest_npc_id
+	end
+
+	for k, v in pairs (positions) do
+		local nearest_npc_id = find_nearest_npc_on_position(self.squad, v.position)
+		if nearest_npc_id ~= nil then
+			self.npc_position[nearest_npc_id] = {vertex = v.vertex, position = v.position}
+			self.squad[nearest_npc_id] = nil
 		end
 	end
-	return nearest_npc
 end
 
 function reaction_manager:set_fire_state()
 	local nearest_npc_id = nil
 	local min_dist = 10000
 	local pos = self.scene_manager.current
-	for k, v in pairs (self.squad_objs) do
-		if pos:distance_to(v:position()) < min_dist then
-			min_dist = pos:distance_to(v:position())
-			nearest_npc_id = k
+	for npc_id, npc in pairs (self.squad_objs) do
+		local dist_to_pos = pos:distance_to(npc:position())
+		if dist_to_pos < min_dist then
+			min_dist = dist_to_pos
+			nearest_npc_id = npc_id
 		end
 	end
 	if nearest_npc_id ~= nil then
@@ -521,22 +349,14 @@ function reaction_manager:set_fire_state()
 end
 
 function reaction_manager:update()
-	if self.anim_end == true then
-		--printf("sr_bloodsucker: enabled reaction for stalker ")
-		for k, v in pairs (self.squad_objs) do
-			--printf("sr_bloodsucker: enabled reaction for stalker %s", v:name())
-			bloodsucker_reaction.enabled_bloodsucker_reaction(v, self.current)
+	if self.anim_end then
+		for k, npc in pairs (self.squad_objs) do
+			bloodsucker_reaction.enabled_bloodsucker_reaction(npc)
 		end
 		self.anim_end = false
 	end
-	--printf("reaction_manager:update()")
-end
-
-function reaction_manager:set_anim_end()
-	self.anim_end = true
-	--printf("reaction_manager:anim_end!!!!!!!!!")
 end
 
 function set_anim_end(npc)
-	db.storage[db.storage[npc:id()].bloodsucker_zone_id].reaction_manager:set_anim_end()
+	db_storage[db_storage[npc:id()].bloodsucker_zone_id].reaction_manager.anim_end = true
 end

@@ -1,119 +1,59 @@
-function set_combat_type(npc, actor, t)
-
-	if t == nil then
-		return
-	end
-
---	db.storage[npc:id()].enemy = npc:best_enemy()
-
-	local script_combat_type = nil
-
-	if t.combat_type ~= nil then
-		script_combat_type = xr_logic.pick_section_from_condlist(actor, npc, t.combat_type)
-		if script_combat_type == "nil" then
-			script_combat_type = nil
-		end
-	end
-
---	db.storage[npc:id()].script_combat_type = script_combat_type
-
-	t.script_combat_type = script_combat_type
-end
-
-----------------------------------------------------------------------------------------------------------------------
-
 class "evaluator_check_combat" (property_evaluator)
 
-function evaluator_check_combat:__init(storage) super()
-	self.st = storage
+function evaluator_check_combat:__init(st) super()
+	self.st = st
 end
 
 function evaluator_check_combat:evaluate()
-	local st = self.st
-	if st.enabled and self.object:best_enemy() then
-		return db.actor ~= nil and st.script_combat_type ~= nil
-	end
-	return false
+	return self.st.script_combat_type ~= nil and self.object:best_enemy() ~= nil and db.actor ~= nil
 end
 
-----------------------------------------------------------------------------------------------------------------------
---[[
-class "evaluator_enemy" (property_evaluator)
-
-function evaluator_enemy:__init() super()
-end
-
-function evaluator_enemy:evaluate()
-	return self.object:best_enemy() ~= nil
-end
-]]
-----------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 -- binder
-----------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 
 local stalker_ids_action_combat_planner    = stalker_ids.action_combat_planner
 local xr_evaluators_id_script_combat       = xr_evaluators_id.script_combat
 local wp_evaluators_id_script_combat_false = world_property(xr_evaluators_id_script_combat, false)
 
-function add_to_binder(npc, ini, scheme, section, storage)
+function add_to_binder(npc, ini, scheme, section, st)
 
-	local manager                       = npc:motivation_action_manager()
-	manager:add_evaluator               (xr_evaluators_id_script_combat, this.evaluator_check_combat(storage))
+	local manager             = npc:motivation_action_manager()
+	manager:add_evaluator     (xr_evaluators_id_script_combat, this.evaluator_check_combat(st))
 
-	local action                        = manager:action(stalker_ids_action_combat_planner)
-	action:add_precondition             (wp_evaluators_id_script_combat_false)
---[[
-	No point binding the xr_combat_camper scheme if combat_type is nil, as its evaluate()
-	methods will always return false in that case.
+	local action              = manager:action(stalker_ids_action_combat_planner)
+	action:add_precondition   (wp_evaluators_id_script_combat_false)
 
-	Moving the xr_combat_camper.add_to_binder() call into an elseif-clause also means
-	'combat_type = camper' will never be respected if found in zombified stalker [combat]
-	logic. That's OK for vanilla but will break mods that try to use it.
-
-	Note: xr_combat_camper.script is loaded but not used at all in vanilla. In the SRP,
-	it is neither loaded nor used.
-]]
-	if npc:character_community() == "zombied" then
-		xr_combat_zombied.add_to_binder(npc, nil, storage, manager)
-	elseif storage.combat_type ~= nil then
-		xr_combat_camper.add_to_binder(npc, nil, storage, manager)
-	end
+	xr_combat_zombied.add_to_binder(npc, nil, st, manager)
 end
 
 function set_combat_checker(npc, ini, scheme, section)
+--[[
+	The 'section' here is e.g. 'combat@1' and can only come from on_combat
+	under [logic] if initialized at all, e.g.
 
---	local is_zombied = npc:section() == "stalker_zombied" -- multiple zombified stalker sections in the game
+	[logic@work1]
+	active = walker@1
+	on_combat = combat@1
+	...
+
+	[combat@1]
+	on_info = {+some_info} some_section %=some_func%
+	combat_type = zombied
+]]
 	local is_zombied = npc:character_community() == "zombied"
 
 	if section or is_zombied then
-
 		local st = xr_logic.assign_storage_and_bind(npc, ini, scheme, section)
 		st.logic = xr_logic.cfg_get_switch_conditions(ini, section, npc)
+		st.script_combat_type = utils.cfg_get_string(ini, section, "combat_type", nil, false, "", is_zombied and "zombied" or nil)
 		st.enabled = true
-
-		local combat_type = xr_logic.cfg_get_condlist(ini, section, "combat_type") --, npc)
---[[
-		if combat_type == "monolith" then
-			combat_type = nil
-		end
-]]
-		if combat_type then
-			combat_type = combat_type.condlist
-		elseif is_zombied then
-			combat_type = xr_logic.parse_condlist(nil, nil, nil, "zombied")
-		end
-
-		st.combat_type = combat_type
-
-		if combat_type then
-			set_combat_type(npc, db.actor, st)
-		end
 	end
 end
 
-function disable_scheme(npc, scheme)
-	local st = db.storage[npc:id()][scheme]
+function disable_scheme(st)
 	if st then
+		st.script_combat_type = nil
 		st.enabled = false
 	end
 end

@@ -161,7 +161,7 @@ function add_to_binder(npc, ini, scheme, section, storage)
 	storage.action = this.action_process_enemy(npc, storage)
 end
 
-function reset_combat_ignore_checker(npc, scheme, npc_st) --, section)
+function reset_combat_ignore_checker(npc, npc_st)
 	local storage = npc_st.combat_ignore
 	npc:set_enemy_callback(storage.action.enemy_callback, storage.action)
 	xr_logic.subscribe_action_for_events(npc, storage, storage.action)
@@ -169,9 +169,8 @@ function reset_combat_ignore_checker(npc, scheme, npc_st) --, section)
 	storage.enabled = true
 end
 
-function disable_scheme(npc, scheme)
+function disable_scheme(npc, st)
 	npc:set_enemy_callback()
-	local st = db.storage[npc:id()][scheme]
 	if st and st.actions then
 		st.actions[st.action] = nil
 	end
