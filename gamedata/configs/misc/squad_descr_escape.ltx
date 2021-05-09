@@ -189,8 +189,7 @@ attack_power = 400
 [esc_dogs_lair_guard_5_12]
 faction = monster
 npc = dog_normal, dog_normal, dog_normal
-;target_smart = {+esc_take_habar_complete} nil, esc_smart_terrain_5_12		; These dogs must not be set free upon +esc_take_habar_complete since then they won't attack Drifter.
-target_smart = esc_smart_terrain_5_12
+target_smart = {+esc_stalker_novice_fail} nil, esc_smart_terrain_5_12 ; These dogs must not be set free upon +esc_take_habar_complete since then they won't attack Drifter.
 
 ;[esc_dogs_lair_guard_3_4]
 ;faction = monster

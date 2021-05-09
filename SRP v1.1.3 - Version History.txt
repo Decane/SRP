@@ -108,6 +108,7 @@ v1.1.3
 + (Optional) Added a feature to disable enemy map spots on the mini-map, too, instead of only on the world map as done by the 'No Enemy Map Spots' and 'Show Only Ally Map Spots' features. - Decane
 ~ Optimized and fine-tuned the DX10/10.1 wet surfaces shader: (i) slightly reduced its glossiness; (ii) restored the efficacy of the r3_dynamic_wet_surfaces_* console vars on the distance at which the shader's effects are visible (regressed in SRP v1.0.4); (iii) reduced water splash size to be more realistic. - Decane
 ~ Re-enabled the ending credits after the final cutscene and made freeplay require explicitly returning to the game from the main menu in order to make it clearer to first-time players that the game has officially ended. - Decane
+~ The bandits now try to capture the stalkers' main respawn points after winning their mutual faction war to prevent the stalkers from securing reinforcements. - Decane
 ~ Made the maximum length of each attribute progress bar in the "Faction War" tab of the PDA reflect something more sensible than the highest level of the relevant attribute among all factions, as in the unmodded game: - Decane
   ~ The maximum length of the faction strength bar now corresponds to the sum of the strengths of the two opposing factions displayed, effectively making the bar indicate relative faction strength.
   ~ The maximum length of the resources bar now corresponds to the resource level at which the player's faction spawns NPCs from its highest-tier supply probability distribution.

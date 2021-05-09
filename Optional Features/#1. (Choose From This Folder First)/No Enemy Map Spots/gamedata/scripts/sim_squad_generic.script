@@ -652,16 +652,14 @@ function sim_squad_generic:get_next_action()
 
 	self.attacking_by_quest = nil
 
-	local attack_threshold = self.squad_power + self.squad_attack_power
+	local attack_threshold
 	local task = tm:get_tasks_by_smart(next_point.id)
 
-	if task ~= nil then
-		if task.support_attack == true and task.community == self.player_id then
---			if task.target == next_point.id then -- guaranteed
-				self.attacking_by_quest = task.entity_id
-				attack_threshold = 999
---			end
-		end
+	if task and task.support_attack and task.community == squad_faction then
+		self.attacking_by_quest = task.entity_id
+		attack_threshold = 999
+	else
+		attack_threshold = self.squad_power + (board.players[squad_faction].community_player and not self.squad_online and 100 or self.squad_attack_power)
 	end
 
 	if next_point.value == 0 then -- should never happen with the SRP
