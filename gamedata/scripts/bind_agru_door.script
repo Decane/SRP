@@ -1,16 +1,15 @@
 function bind(obj)
-	obj:bind_object(bridge_binder(obj))
+	obj:bind_object(agru_door_binder(obj))
 end
 
 --------------------------------------------------------------------------------
 
-class "bridge_binder" (object_binder)
+class "agru_door_binder" (object_binder)
 
-function bridge_binder:__init(obj) super(obj)
-	self.move_snd = sound_object("device\\bridge\\bridge_move")
-	self.down_snd = sound_object("device\\bridge\\bridge_down")
-	self.start_snd = sound_object("device\\bridge\\bridge_start")
-	self.stop_snd = sound_object("device\\bridge\\bridge_stop")
+function agru_door_binder:__init(obj) super(obj)
+	self.move_snd = sound_object("device\\bridge\\motor_run")
+	self.start_snd = sound_object("device\\bridge\\motor_start")
+	self.stop_snd = sound_object("device\\bridge\\motor_stop")
 	self.idle = 50000
 	self.is_idle = true
 	self.is_play_fwd = false
@@ -21,28 +20,27 @@ function bridge_binder:__init(obj) super(obj)
 	db.storage[obj:id()] = {}
 end
 
-function bridge_binder:net_spawn(se_abstract)
+function agru_door_binder:net_spawn(se_abstract)
 	if not object_binder.net_spawn(self, se_abstract) then
 		return false
 	end
-	db.add_bridge(self.object, self)
+	db.add_anim_obj(self.object, self)
 	self.object:set_callback(callback.script_animation, self.animation_end_callback, self)
 	return true
 end
 
-function bridge_binder:net_destroy()
+function agru_door_binder:net_destroy()
 	self.object:set_callback(callback.script_animation, nil)
 	self.move_snd:stop()
-	self.down_snd:stop()
 	self.start_snd:stop()
 	self.stop_snd:stop()
-	db.del_bridge(self.object) -- missing in vanilla
+	db.del_anim_obj(self.object)
 	object_binder.net_destroy(self)
 end
 
 local object_binder_update = object_binder.update
 
-function bridge_binder:update(delta)
+function agru_door_binder:update(delta)
 
 	object_binder_update(self, delta)
 
@@ -74,37 +72,36 @@ end
 
 --------------------------------------------------------------------------------
 
-function bridge_binder:anim_forward()
+function agru_door_binder:anim_forward()
 	self:anim_start(true)
 end
 
-function bridge_binder:anim_backward()
+function agru_door_binder:anim_backward()
 	self:anim_start(false)
 end
 
-function bridge_binder:anim_start(is_forward)
+function agru_door_binder:anim_start(is_forward)
 	self.ph_obj:stop_anim()
 	self.move_snd:stop()
 	local obj_pos = self.object:position()
 	self.start_snd:play_at_pos(self.object, obj_pos, 0, sound_object.s3d)
-	self.move_snd:play_at_pos(self.object, obj_pos, 5, sound_object.s3d + sound_object.looped)
+	self.move_snd:play_at_pos(self.object, obj_pos, 2, sound_object.s3d + sound_object.looped)
 	self.is_play_fwd = is_forward
 	self.is_idle = false
 end
 
-function bridge_binder:anim_stop()
+function agru_door_binder:anim_stop()
 	self.ph_obj:stop_anim()
 	self.move_snd:stop()
 	self.stop_snd:play_at_pos(self.object, self.object:position(), 0, sound_object.s3d)
 	self.is_idle = true
 end
 
-function bridge_binder:animation_end_callback(is_end)
+function agru_door_binder:animation_end_callback(is_end)
 	if is_end then
-		db.actor:give_info_portion("red_bridge_down_done")
 		self.move_snd:stop()
 		if not self.is_idle then
-			self.down_snd:play_at_pos(self.object, self.object:position(), 0, sound_object.s3d)
+			self.stop_snd:play_at_pos(self.object, self.object:position(), 0, sound_object.s3d)
 			self.is_idle = true
 		end
 	end
@@ -112,28 +109,28 @@ end
 
 --------------------------------------------------------------------------------
 
-function bridge_binder:net_save_relevant()
+function agru_door_binder:net_save_relevant()
 	return true
 end
 
-function bridge_binder:save(packet)
-	set_save_marker(packet, "save", false, "bridge_binder")
+function agru_door_binder:save(packet)
+	set_save_marker(packet, "save", false, "agru_door_binder")
 	object_binder.save(self, packet)
 	xr_logic.save_obj(self.object, packet)
 	packet:w_bool(self.is_idle)
 	packet:w_bool(self.is_play_fwd)
 	packet:w_u32(self.idle_end)
 	packet:w_float(self.ph_obj:anim_time_get())
-	set_save_marker(packet, "save", true, "bridge_binder")
+	set_save_marker(packet, "save", true, "agru_door_binder")
 end
 
-function bridge_binder:load(packet)
-	set_save_marker(packet, "load", false, "bridge_binder")
+function agru_door_binder:load(packet)
+	set_save_marker(packet, "load", false, "agru_door_binder")
 	object_binder.load(self, packet)
 	xr_logic.load_obj(self.object, packet)
 	self.is_idle = packet:r_bool()
 	self.is_play_fwd = packet:r_bool()
 	self.idle_end = packet:r_u32()
 	self.anim_time = packet:r_float()
-	set_save_marker(packet, "load", true, "bridge_binder")
+	set_save_marker(packet, "load", true, "agru_door_binder")
 end
