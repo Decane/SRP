@@ -1,0 +1,125 @@
+--[[
+
+Weather transitions are only ever initiated by the engine on the hour. Thus, if we call
+level.set_weather(weather_name, false) at 13:01, it will take 59 minutes for the transition to
+weather_name to begin, and then 1 more hour before the transition is complete at 15:00.
+
+In vanilla, dynamic weather transitions are requested right after the hour. In the SRP, they are
+requested on the first actor binder update after 59 minutes past the hour. That way, they will be
+initiated by the engine within one game minute of being requested by level.set_weather().
+
+]]
+
+local weather_manager = nil
+
+class "WeatherManager"
+
+function WeatherManager:__init()
+	self.current_weather     = "[default]"
+	self.target_weather      = "[default]"
+	self.need_hourly_update  = false
+	self.need_loaded_weather = false
+	self.graphs              = {}
+	self.graphs_ini          = ini_file("environment\\dynamic_weather_graphs.ltx") or abort("[WeatherManager:__init]: Invalid dynamic_weather_graphs.ltx")
+	local ini                = ini_file("game_maps_single.ltx") or abort("[WeatherManager:__init]: Invalid game_maps_single.ltx")
+	local weathers           = utils.cfg_get_string(ini, level.name(), "weathers", nil, false, "", "[default]")
+	self.weather_condlist    = xr_logic.parse_condlist(nil, nil, nil, weathers)
+end
+
+function WeatherManager:reset()
+	self:select_weather(true)
+end
+
+function WeatherManager:update()
+	if level.get_time_minutes() < 59 then
+		self.need_hourly_update = true
+	elseif self.need_hourly_update then
+		self:select_weather(false)
+		self.need_hourly_update = false
+	end
+end
+
+local function get_next_state(graph)
+	local sum = 0
+	for _, prob in pairs (graph) do
+		sum = sum + prob
+	end
+	local rnd = math.random() * sum
+	local next_state
+	for state, prob in pairs (graph) do
+		next_state = state
+		rnd = rnd - prob
+		if rnd <= 0 then
+			break
+		end
+	end
+	return next_state
+end
+
+function WeatherManager:select_weather(now)
+
+	if self.need_loaded_weather then
+		self.need_loaded_weather = false
+		return
+	end
+
+	local weather_name = xr_logic.pick_section_from_condlist(db.actor, db.actor, self.weather_condlist)
+	local graph = self:get_graph_by_name(weather_name)
+	local weather_section = graph == nil and weather_name or "default_"..get_next_state(graph)
+
+	level.set_weather(weather_section, now)
+
+	self.current_weather = now and weather_section or self.target_weather
+	self.target_weather = weather_section
+end
+
+function WeatherManager:set_state_from_string(state_string)
+	local loaded_weather
+	if string.find(state_string, "=", nil, true) then
+		loaded_weather = "default_"..string.match(state_string, "=([^,]+)")
+	else
+		loaded_weather = state_string
+	end
+	level.set_weather(loaded_weather, true)
+	self.current_weather = loaded_weather
+	self.target_weather = loaded_weather
+	self.need_loaded_weather = true
+end
+
+function WeatherManager:get_state_as_string()
+	if level.get_time_minutes() >= 30 and self.need_hourly_update then
+		return self.target_weather
+	end
+	return self.current_weather
+end
+
+function WeatherManager:get_graph_by_name(name)
+	if not self.graphs[name] then
+		self.graphs[name] = xr_s.parse_ini_section_to_array(self.graphs_ini, name)
+	end
+	return self.graphs[name]
+end
+
+function WeatherManager:save(F)
+	set_save_marker(F, "save", false, "WeatherManager")
+	F:w_stringZ(self:get_state_as_string())
+	F:w_u32(0) -- for save compatibility
+	set_save_marker(F, "save", true, "WeatherManager")
+end
+
+function WeatherManager:load(F)
+	set_save_marker(F, "load", false, "WeatherManager")
+	local state_string = F:r_stringZ()
+	if state_string ~= "" then
+		self:set_state_from_string(state_string)
+	end
+	F:r_u32() -- for save compatibility
+	set_save_marker(F, "load", true, "WeatherManager")
+end
+
+function get_weather_manager()
+	if weather_manager == nil then
+		weather_manager = WeatherManager()
+	end
+	return weather_manager
+end

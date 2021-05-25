@@ -201,6 +201,7 @@ Gameplay fixes:
 + Fixed the mechanic specialization tooltip displaying 'none' for Aydar, Yar, and Thunderov, despite all of them having a specialization.
 + Fixed the issue where squad info tooltips would fail to update properly and would, consequently, sometimes display the wrong target location.
 + Fixed several bugs pertaining to the displaying of squad map spots, including the issue where its color would react sluggishly to relationship changes to the player.
++ Partially fixed the issue where the weather would sometimes inexplicably change after loading.
 + Fixed PSI emission hit and effector intensity doubling on save/reload.
 + Fixed the issue where crows could get stuck floating in the air upon being shot.
 + Fixed the "Life support system" upgrade for the Freedom Exoskeleton making the player bleed out faster rather than slower as intended.
