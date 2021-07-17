@@ -74,33 +74,33 @@ Issues addressed:
 
 Crash fixes:
 
-+ Fixed instability and savegame corruption in Limansk.
-+ Fixed occasional savegame corruption during the Fang basement mugging scene in the Garbage.
-+ Fixed two task entity identifier leaks which could eventually destabilize the game.
-+ Fixed a crash in Agroprom if Orest strays from his spot by the loner base window.
++ [*] Fixed instability and savegame corruption in Limansk.
++ [*] Fixed occasional savegame corruption during the Fang basement mugging scene in the Garbage.
++ [*] Fixed two task entity identifier leaks which could eventually destabilize the game.
++ [*] Fixed a crash in Agroprom if Orest strays from his spot by the loner base window.
 + Fixed a crash in the Red Forest if the trader in the mine strays from his spot at the desk.
-+ Fixed a crash in the Garbage if the player receives a task with Wild Napr as its target while the Flea Market is in combat.
-+ Fixed a crash upon entering the Garbage if the player took Yoga's task to kill Stringov, accepted Stringov's bribe, left Stringov alive, finished the task while Yoga was offline, and did not loot Stringov's stash.
++ [*] Fixed a crash in the Garbage if the player receives a task with Wild Napr as its target while the Flea Market is in combat.
++ [*] Fixed a crash upon entering the Garbage if the player took Yoga's task to kill Stringov, accepted Stringov's bribe, left Stringov alive, finished the task while Yoga was offline, and did not loot Stringov's stash.
 + Fixed a crash in the Garbage if a bandit robber squad suddenly leaves for another camp during a hold-up.
 + Fixed a crash in the Garbage if the robbery scheme tries to assign the robber leader role to a mutant due to incorrect detection of squads belonging to a robbery camp.
 + Fixed potential crashing due to NPCs in some circumstances switching offline while their dialogue/trade/upgrade window is open.
 + Fixed potential crashing due to smart terrain overloading.
 + Fixed potential crashing during the marsh creature scene in Agroprom and in the Swamps.
-+ Fixed several potential crashes caused by the game attempting to alter the attitude of a non-existing squad.
-+ Fixed an occasional crash upon the game evaluating whether to assign the player a 'help' task.
++ [*] Fixed several potential crashes caused by the game attempting to alter the attitude of a non-existing squad.
++ [*] Fixed an occasional crash upon the game evaluating whether to assign the player a 'help' task.
 + Fixed several potential crashes caused by missing script logic sections.
 + Fixed several potential crashes caused by buggy dialog trees.
-+ Fixed a potential Army Warehouses waypoint crash when mutants attack the military base.
-+ Fixed a potential Cordon waypoint crash when an NPC enters the 'Bonfire in forest'.
++ [*] Fixed a potential Army Warehouses waypoint crash when mutants attack the military base.
++ [*] Fixed a potential Cordon waypoint crash when an NPC enters the 'Bonfire in forest'.
 + Fixed a crash upon the game trying to assign a 'capture' task to a non-existing squad.
-+ Fixed a crash upon attempting to load or delete an already deleted savegame.
-+ Fixed a rare crash upon a squad capturing a smart terrain.
-+ Fixed two rare crashes upon reloading a savegame.
++ [*] Fixed a crash upon attempting to load or delete an already deleted savegame.
++ [*] Fixed a rare crash upon a squad capturing a smart terrain.
++ [*] Fixed two rare crashes upon reloading a savegame.
 + Fixed a rare crash caused by a missing mesh.
 
 Quest fixes:
 
-+ Fixed Clear Sky's "Find a way to the Chernobyl NPP" task not completing.
++ [*] Fixed Clear Sky's "Find a way to the Chernobyl NPP" task not completing.
 + Fixed the issue where any active 'defend' tasks would be cancelled upon loading a savegame.
 + Fixed the issue where the player could simultaneously pursue contradictory tasks for Yoga and Wild Napr.
 + Fixed Orest's tasks in Agroprom becoming available only on chance if the player kills the defensive bandit squad in the train tunnel before accepting Orest's request to do so.
@@ -111,7 +111,7 @@ Quest fixes:
 + Fixed the issue where failing or cancelling a 'return item' task at the Army Warehouses would make the task available again, yielding an exploit whereby the player could gain an indefinite supply of the requested item(s).
 + Fixed the Yantar "Help: Scientists' camp" task being received and immediately cancelled when the player attacks the scientists' camp.
 + Fixed the Yantar "Follow the stalker onto the hangar roof" task being completed rather than cancelled if the player does not get into position before the cooling device has been repaired.
-+ Fixed Freedom's "Eliminate the potential threat at the gas station" task being cancelled when the player completes its objective.
++ [*] Fixed Freedom's "Eliminate the potential threat at the gas station" task being cancelled when the player completes its objective.
 + Fixed Freedom's "Deliver ammo to the outpost" task being completed rather than cancelled when Chekhov informs the player that the outpost has been attacked.
 + Fixed Freedom's "Respond to the SOS signal" task being received and immediately failed whenever the player goes near the dead squad if the player initially fails the task.
 + Fixed Freedom's "Respond to the SOS signal" task being received and immediately completed after the player talks to the outpost commander if the player has already discovered the squad's fate.
@@ -121,20 +121,20 @@ Quest fixes:
 + Fixed the Dark Valley task to "Talk to the outpost commander" being received and immediately completed upon the player entering the Dark Valley if the player has already spoken to the outpost commander before receiving the task to find Fang.
 + Fixed Yar's 'Bring the component to the technician' task lacking a deadline despite the task briefing implying it needs to be completed before sunrise.
 + Fixed the issue where the player could delay reception of the Agroprom "Talk to the outpost commander" task (and cancellation of the "Find the stalker group’s stash" task) by bypassing its space restrictor.
-+ Fixed the Limansk "Find the generator" task failing to complete when the player deactivates the generator if the player rushes to the apartment building and climbs onto the roof before the squad leader has finished the dialog which assigns the task.
-+ Fixed the Limansk "Find the generator" task being received and immediately completed if the player initially bypasses its assigning space restrictor in the institute building but returns to it after deactivating the generator.
-+ Fixed the Limansk "Return to the group commander" task failing to cancel when the player deactivates the generator if the player has not by then returned to speak with the squad commander.
++ [*] Fixed the Limansk "Find the generator" task failing to complete when the player deactivates the generator if the player rushes to the apartment building and climbs onto the roof before the squad leader has finished the dialog which assigns the task.
++ [*] Fixed the Limansk "Find the generator" task being received and immediately completed if the player initially bypasses its assigning space restrictor in the institute building but returns to it after deactivating the generator.
++ [*] Fixed the Limansk "Return to the group commander" task failing to cancel when the player deactivates the generator if the player has not by then returned to speak with the squad commander.
 + Fixed the Limansk "Return to the group commander" task becoming available multiple times if the player moves outside of the squad commander's immediate proximity while he is speaking.
 + Fixed the Limansk "Destroy the machine gun nest" task being assigned to the player even if it has already been destroyed by the time the task would be contemporary.
 + Fixed an onslaught of tasks being suddenly received and completed in the Abandoned Hospital if the player kills the sniper earlier than intended.
 + Fixed the issue where the player could break the storyline at Agroprom by killing the Duty outpost commander while he is speaking or by leaving the map before he has finished.
 + Fixed the "Help the stalkers" task in Agroprom being cancelled immediately after being received if the loner faction is hostile to the player.
 + Fixed the storyline breaking if the player kills every stalker in the Cordon stalker base before extracting the location of Sidorovich's loot from Khaletskiy, even after paying Sidorovich to set things right with the stalkers.
-+ Fixed the storyline temporarily breaking if the player suppresses the Limansk military machine gun nest during the interval between receiving and completing the task to speak to the Clear Sky squad commander.
-+ Fixed the storyline breaking if the player speaks to Forester before responding to the SOS signal in the Red Forest.
++ [*] Fixed the storyline temporarily breaking if the player suppresses the Limansk military machine gun nest during the interval between receiving and completing the task to speak to the Clear Sky squad commander.
++ [*] Fixed the storyline breaking if the player speaks to Forester before responding to the SOS signal in the Red Forest.
 + Fixed the issue where the dogs that spawn to attack Vasyan might fail to do so due to nearby NPC interference, hindering storyline progress.
 + Fixed the issue where the skirmish between the loners and military at the Cordon bus stop could begin prematurely, preventing the player from receiving the task to defend the loner patrol.
-+ Fixed the issue where the dogs spawned for Wolf's "Help the stalker" task would not attack Drifter if the player picks up Sidorovich's loot before taking the task.
++ [*] Fixed the issue where the dogs spawned for Wolf's "Help the stalker" task would not attack Drifter if the player picks up Sidorovich's loot before taking the task.
 + Fixed the issue where the player would in some circumstances fail to properly receive credit for killing the boars during the tutorial mission in the Swamp.
 + Fixed the issue where 'return item' tasks would sometimes be unavailable to the player when they should be available.
 + Fixed the issue where 'clear the road' tasks would sometimes get haphazardly cancelled or fail to be assigned when intended.
@@ -165,58 +165,58 @@ Gameplay fixes:
 + Fixed the issue where some factions would spawn well-equipped NPCs even before their resource level has increased by the amount intended as a prerequisite for doing so.
 + Fixed the issue where, upon leaving the Swamp for the first time, the player's relation to the Clear Sky faction would reset in its entirety instead of only in respect of that component of it which was yielded just by being a member of the faction.
 + Fixed a glitch which would allow the player to use a guide's services even if the player couldn't afford it, potentially leading to a situation where the player has negative money.
-+ Fixed the issue where the Freedom base gate would open upon completion of the "Deliver ammo to the outpost" task instead of only after the player has found the active PDA on the dead blockpost commander's corpse, enabling the player to speak to Chekhov prematurely and break the storyline.
-+ Fixed the issue where returning to the Swamps for the first time would not unlock the level changers to the Cordon if Clear Sky has regressed from total victory against the renegades, leaving the player locked into the Swamps without explanation until Clear Sky advances back to its final faction war tier.
++ [*] Fixed the issue where the Freedom base gate would open upon completion of the "Deliver ammo to the outpost" task instead of only after the player has found the active PDA on the dead blockpost commander's corpse, enabling the player to speak to Chekhov prematurely and break the storyline.
++ [*] Fixed the issue where returning to the Swamps for the first time would not unlock the level changers to the Cordon if Clear Sky has regressed from total victory against the renegades, leaving the player locked into the Swamps without explanation until Clear Sky advances back to its final faction war tier.
 + Fixed the issue where the player's weapon would sometimes be intermittently holstered during a firefight at a faction base despite being an enemy to the current residents of the base.
 + Fixed the issue where the bandit base gate would get closed and locked when the base is assaulted even if not captured by bandits.
 + Fixed the issue where bandits would try to mug the player even if the player has joined their ranks.
 + Fixed the issue where the player could not drag and drop objects with the SEVA suit equipped.
 + Fixed the issue where important characters would not disappear when they are supposed to during a raid on their base either by the player or another faction.
 + Fixed the issue where Senka would occasionally rush out of the bandit base and get killed by enemies.
-+ Fixed the script bugs causing the sudden unexplained deaths of Drifter and Hound.
++ [*] Fixed the script bugs causing the sudden unexplained deaths of Drifter and Hound.
 + Made some important characters invulnerable to prevent their accidental demise.
 + Fixed some groups of zombified stalkers using cover as if they were ordinary stalkers.
 + Fixed the bridge to Limansk in the Red Forest not aligning properly when lowered, which in rare cases would cause NPCs to never reach the other side.
-+ Fixed the issue where the stalker squad overlooking the Vehicle Station in the Cordon would be blocked from raiding it with the player in exchange for payment until Valerian has tasked the player with assaulting it.
++ [*] Fixed the issue where the stalker squad overlooking the Vehicle Station in the Cordon would be blocked from raiding it with the player in exchange for payment until Valerian has tasked the player with assaulting it.
 + Fixed the Dark Valley mercenary base tunnel detonating (i) prematurely if the player wanders behind the deserted factory before receiving the task to purge the base; (ii) after it should have already gone out of commission if the player enters the relevant space restrictor for the first time only after the reward dialog with Chekhov.
 + Fixed the issues where the Dark Valley entrance hold-up (i) could occur prematurely if the player enters the Dark Valley before being tasked with chasing Fang there and (ii) would happen even after the player has reached Freedom's base if the player did not speak to the outpost commander before doing so.
 + Fixed the issue where the player's 'stashes found' statistic would rise even when emptying a stash box of items placed inside it by the player.
 + Fixed the exploit whereby the player could obtain multiple sets of stash coordinates from a corpse by re-checking it after leaving and re-entering the map wherein the corpse is located.
-+ Fixed the Red Forest bridge lowering sequence becoming prematurely unlocked.
++ [*] Fixed the Red Forest bridge lowering sequence becoming prematurely unlocked.
 + Fixed the issue where the stalker squad headed toward the Devilish Encampment in the Red Forest could, in rare circumstances, spawn right in front of the player.
 + Fixed the issue where the Witch Circle squad in the Red Forest would not necessarily turn hostile if the player kills the ambush squad traitor while he is still yelling for help.
 + Fixed the issue with the first Clear Sky 'return item' task where the Makarov PM on the soldier's corpse is not actually "modified" despite the task description clearly stating that it is.
-+ Fixed the issue where submitting the item requested in a 'return item' task would not complete the task if the player possesses multiple units of the item when submitting it.
-+ Fixed ten stash coordinates being unattainable due to programming mistakes. Most notably, Drifter now offers coordinates to a stash containing the third Cordon flash drive as a reward to the player for saving him from dogs.
-+ Fixed faction reward tooltips failing to update to reflect new rewards after resuming progress from a savegame in which the player already has an outstanding reward from the relevant faction.
-+ Fixed all issues where submitting a flash drive with upgrade schematics would unlock the wrong upgrade.
-+ Fixed a script typo preventing the Lost Party's PDA from being transferred to Sakharov upon talking to him following completion of the task to retrieve it.
++ [*] Fixed the issue where submitting the item requested in a 'return item' task would not complete the task if the player possesses multiple units of the item when submitting it.
++ [*] Fixed ten stash coordinates being unattainable due to programming mistakes. Most notably, Drifter now offers coordinates to a stash containing the third Cordon flash drive as a reward to the player for saving him from dogs.
++ [*] Fixed faction reward tooltips failing to update to reflect new rewards after resuming progress from a savegame in which the player already has an outstanding reward from the relevant faction.
++ [*] Fixed all issues where submitting a flash drive with upgrade schematics would unlock the wrong upgrade.
++ [*] Fixed a script typo preventing the Lost Party's PDA from being transferred to Sakharov upon talking to him following completion of the task to retrieve it.
 + Fixed the issue where several varieties of weapon would not be properly identified as such when the player's inventory is checked for dialog availability purposes.
-+ Fixed the issue where ammunition would not aggregate into full boxes in the inventory, making its transference to a container tedious and providing a profitable exploit for 'bring ammo' tasks.
-+ Fixed the issue where non-scripted squads loaded from a savegame (as opposed to spawning into the Zone in the current game session) would not spawn inventory box items.
-+ Fixed the wrong location-based multiplier being used to spawn faction equipment chest supplies for scripted squads loaded from a savegame (as opposed to spawning into the Zone in the current game session).
-+ Fixed the issue where supply boxes on smart terrains controlled by online squads would generate more supplies with every game reload.
++ [-] Fixed the issue where ammunition would not aggregate into full boxes in the inventory, making its transference to a container tedious and providing a profitable exploit for 'bring ammo' tasks.
++ [*] Fixed the issue where non-scripted squads loaded from a savegame (as opposed to spawning into the Zone in the current game session) would not spawn inventory box items.
++ [*] Fixed the wrong location-based multiplier being used to spawn faction equipment chest supplies for scripted squads loaded from a savegame (as opposed to spawning into the Zone in the current game session).
++ [*] Fixed the issue where supply boxes on smart terrains controlled by online squads would generate more supplies with every game reload.
 + Fixed the issue where NPCs would drop the wrong type of ammo for some weapons.
-+ Fixed mutants not behaving aggressively on patrol paths linking them to attack-targets unless aggravated by an external force (e.g. the player).
++ [*] Fixed mutants not behaving aggressively on patrol paths linking them to attack-targets unless aggravated by an external force (e.g. the player).
 + Fixed the issues where (i) Chekhov, Lingov, and Sakharov would not be marked as important characters on the map and (ii) the Duty outpost commander at Agroprom would be flagged as an important character even after he has become functionally generic.
-+ Fixed the mechanic specialization tooltip displaying 'none' for Aydar, Yar, and Thunderov, despite all of them having a specialization.
++ [*] Fixed the mechanic specialization tooltip displaying 'none' for Aydar, Yar, and Thunderov, despite all of them having a specialization.
 + Fixed the issue where squad info tooltips would fail to update properly and would, consequently, sometimes display the wrong target location.
 + Fixed several bugs pertaining to the displaying of squad map spots, including the issue where its color would react sluggishly to relationship changes to the player.
 + Mitigated the issue where the weather would sometimes inexplicably change after loading.
-+ Fixed PSI emission hit and effector intensity doubling on save/reload.
++ [*] Fixed PSI emission hit and effector intensity doubling on save/reload.
 + Fixed the issue where crows could get stuck floating in the air upon being shot.
-+ Fixed the "Life support system" upgrade for the Freedom Exoskeleton making the player bleed out faster rather than slower as intended.
++ [*] Fixed the "Life support system" upgrade for the Freedom Exoskeleton making the player bleed out faster rather than slower as intended.
 + Fixed a few instances of a mechanic not being able to upgrade a pre-upgraded variant of a weapon even if they could upgrade the base weapon.
-+ Added the missing 'doesn't use shot' text to the threaded barrel upgrade tooltip for the Maverick 88.
++ [*] Added the missing 'doesn't use shot' text to the threaded barrel upgrade tooltip for the Maverick 88.
 + Fixed the "Electronic stabilizer" upgrade for the SPAS-12 and Maverick 88 wrongly decrementing their ammo capacity by 2.
-+ Fixed the "Relief backpack" upgrade for various armors wrongly incrementing the carry weight tooltip value by only 5kg instead of the 15kg actually unlocked by the upgrade.
++ [*] Fixed the "Relief backpack" upgrade for various armors wrongly incrementing the carry weight tooltip value by only 5kg instead of the 15kg actually unlocked by the upgrade.
 + Corrected the behavior of shot megaphones.
 + Fixed medicaments becoming more rather than less expensive at the Flea Market after liberating the concentration camp.
-+ Replaced the generic masked face of the player's unarmored character model with Scar's face, as in the leather jacket armored character model.
++ [*] Replaced the generic masked face of the player's unarmored character model with Scar's face, as in the leather jacket armored character model.
 + Fixed the player's character model reverting back to the default rookie jacket model upon loading a savegame / changing maps.
 + Corrected the mesh, name, icon, and description of the several varieties of 7.62x54 mmR ammunition.
 + Extended GSC's implementation of rank-dependent NPC money from just Duty, Freedom, and the bandits, to all the game's factions.
-+ Removed the out-of-place AK-74 from Scar's starting inventory which was introduced there by patch v1.5.09.
++ [*] Removed the out-of-place AK-74 from Scar's starting inventory which was introduced there by patch v1.5.09.
 + Deleted the duplicate supply box spawn at the Trailhead in the Swamp.
 + Moved the eastern Cordon-to-Garbage level changer in order to make the player less likely to accidentally walk into it.
 + Made both the inventory box in the Old Church at the Great Swamp and the downward-facing safe at the Yantar factory less tedious to access. Also spawned a wooden box underneath the former in order to prevent it from seeming to levitate.
@@ -224,7 +224,7 @@ Gameplay fixes:
 + Made a few additional way-points available to NPCs that were not so due to bugs.
 + Made it possible to refuse payment to Garbage bandit robber squads via dialog.
 + Improved support for playing the game in a non-linear fashion.
-+ Fixed the Abandoned Hospital not having a high-resolution map in the PDA.
++ [*] Fixed the Abandoned Hospital not having a high-resolution map in the PDA.
 + Fixed a multitude of info portion and texture related console errors.
 + Fixed armor descriptions pertaining to artifact containers and upgrade possibilities.
 + Assigned unique names to some quest weapons and armors that were missing them.
@@ -232,8 +232,8 @@ Gameplay fixes:
 
 Dialog fixes:
 
-+ Fixed the exploit with the Forester 'Compass' artifact submission dialog where the player could repeatedly break the dialog before being told the space anomaly coordinates and then re-enter it to receive the reward (a VSS "Vintorez") again and again an endless amount of times.
-+ Fixed the following issues with the dialogue of the stalker squad overlooking the Vehicle Station at the Cordon: (i) the dialogue option to hire the squad would be available even without sufficient player funds, (ii) no money would actually be taken from the player when hiring the squad, (iii) the dialogue option to hire the squad would remain available even after the squad has already been hired, and (iv) the player could hire the squad even after already having dealt with the military presence at the Vehicle Station without the stalker squad's assistance.
++ [*] Fixed the exploit with the Forester 'Compass' artifact submission dialog where the player could repeatedly break the dialog before being told the space anomaly coordinates and then re-enter it to receive the reward (a VSS "Vintorez") again and again an endless amount of times.
++ [*] Fixed the following issues with the dialogue of the stalker squad overlooking the Vehicle Station at the Cordon: (i) the dialogue option to hire the squad would be available even without sufficient player funds, (ii) no money would actually be taken from the player when hiring the squad, (iii) the dialogue option to hire the squad would remain available even after the squad has already been hired, and (iv) the player could hire the squad even after already having dealt with the military presence at the Vehicle Station without the stalker squad's assistance.
 + Fixed the Uncle Yar dialog succeeding the completion of the night bloodsucker task where the player could reply to Yar's greeting only with a prompt "bye", making it impossible to e.g. submit flash drives to him.
 + Fixed the issues with the Professor Sakharov dialog where (i) he would ask the player to go see Lefty even after the player has restarted the cooling device, (ii) the player could ask for information about zombie attacks even after perpetually terminating them, and (iii) the player could ask about Lefty even before learning of him.
 + Fixed the issue where stationary squad commanders would claim hostiles are nearby when greeting the player even if only neutral/friendly factions occupy neighboring smart terrains.
@@ -256,22 +256,22 @@ Graphical fixes:
 + Fixed bullet tracers not being displayed in DX10/10.1 mode.
 + Made camo nets and fences visible on ATI/AMD based graphics cards.
 + Fixed the smoothing of the bridge to Limansk.
-+ Replaced the inventory icon of the PM, PB, RPG-7, AKS-74U, and the exoskeleton to match their in-game appearance.
-+ The correct HUD arm texture is now displayed for the Sunrise Suit, SEVA Suit, and the Bandit Jacket.
++ [-] Replaced the inventory icon of the PM, PB, RPG-7, AKS-74U, and the exoskeleton to match their in-game appearance.
++ [*] The correct HUD arm texture is now displayed for the Sunrise Suit, SEVA Suit, and the Bandit Jacket.
 + Fixed the issue where a squad commander icon would sometimes overlap with a guide icon, trader icon, or important character icon on the map.
-+ Fixed the HUD bleeding icon being misaligned with its background in widescreen mode.
++ [*] Fixed the HUD bleeding icon being misaligned with its background in widescreen mode.
 + Fixed the misaligned border on secondary task map spots.
 + Fixed the incorrect 'important character' PDA map legend icon.
 + Fixed some NPCs having the wrong PDA message avatar.
 + Disabled the annoying, redundant flashing diskette icon appearing on screen every now and then.
-+ Fixed the alignment of the off-center 'Game Over' text and accompanying flashing prompt in widescreen mode.
++ [*] Fixed the alignment of the off-center 'Game Over' text and accompanying flashing prompt in widescreen mode.
 + Fixed a few misaligned UI elements in the options menu.
 + Fixed all badly aligned weapon upgrade trees.
 
 Audio fixes:
 
 + Fixed the issue where dynamic music would sometimes persist even after a battle is over and erratically fade in/out during a battle due to intermittent visibility loss.
-+ Fixed the audio of an NPC's instrument-playing animation continuing to play even when the animation is interrupted by the NPC getting up intermittently.
++ [*] Fixed the audio of an NPC's instrument-playing animation continuing to play even when the animation is interrupted by the NPC getting up intermittently.
 + Fixed the parting audio of an NPC playing prematurely upon entering the trade or upgrade screen with them.
 + Fixed the final portion of General Krylov's briefing dialog with the player being cut off following his walkie-talkie conversation with Sergeant Cheersov.
 + Fixed the issue where the player could rush out of Sakharov's bunker to meet Lefty before Sakharov has finished his first walkie-talkie conversation with him, thereby triggering a second transmission on top of the first one.
@@ -291,12 +291,12 @@ Audio fixes:
 
 Other changes:
 
-+ Restored some content left out of the game due to bugs and/or negligence (see changelog for details).
-+ Added a squad state indicator text to squad info tooltips on the world map.
-+ Added the target camp owner name to 'capture' task dialog descriptions.
-+ Added the target camp name to 'capture' task phase titles.
-+ Enabled freeplay mode after finishing the main storyline.
-+ Implemented level- and freeplay-specific autosaves.
++ [-] Restored some content left out of the game due to bugs and/or negligence (see changelog for details).
++ [-] Added a squad state indicator text to squad info tooltips on the world map.
++ [-] Added the target camp owner name to 'capture' task dialog descriptions.
++ [-] Added the target camp name to 'capture' task phase titles.
++ [-] Enabled freeplay mode after finishing the main storyline.
++ [-] Implemented level- and freeplay-specific autosaves.
 + Various optimizations.
 
 
@@ -412,20 +412,20 @@ Bugs still in the game:
 • Ambient music sometimes cuts off or fails to loop until the player creates or loads a savegame.
 • It is sometimes possible to talk to hostile NPCs.
 • The reload animation for shotguns sometimes glitches and shows the wrong number of shells being loaded into the shotgun.
-• The player's nightvision gets disabled when a new suit of armor enters the player's inventory.
-• The player's character model reverts back to the default leather jacket model upon picking up another suit.
+• [*] The player's nightvision gets disabled when a new suit of armor enters the player's inventory.
+• [*] The player's character model reverts back to the default leather jacket model upon picking up another suit.
 • Attempting to quit the game from the main menu can sometimes freeze the game on some hardware in DX10/10.1 mode.
-• Controller psy-aura sounds playing before a savegame is loaded persist into that savegame. Restart the game before loading to work around this.
+• [*] Controller psy-aura sounds playing before a savegame is loaded persist into that savegame. Restart the game before loading to work around this.
 • Entries made to the PDA message log persist into a subsequently loaded savegame until overwritten by a new entry. Restart the game before loading to work around this.
 • A squad NPC will issue squad audio prompts even if he is the sole member of the squad.
 • Grenades sometimes become non-equippable. To work around this, drop one and pick it up again.
 • Scar's avatar in the inventory screen may occasionally turn a red hue for no obvious reason. Restart the game to fix this.
 • Forester's animation transitions are sometimes jerky.
-• The trader in the Red Forest mine often levitates in the air beside his stool in a sitting position rather than being positioned on the stool itself. This is an SRP v1.0.4 regression.
+• [-] The trader in the Red Forest mine often levitates in the air beside his stool in a sitting position rather than being positioned on the stool itself. This is an SRP v1.0.4 regression.
 • Upon entering the Dark Valley to find Fang and receiving the task to speak to the outpost commander, the mission marker on the map will always point to the north-western entrance of the Dark Valley, even if the player entered through the south-west and should therefore speak to the south-western commander.
 • The emission timer text is wonky - the tooltip might display 5 hr. even when the map spot says that 21 minutes remain until an emission.
 • Weapon attachment icons on primary weapons are misaligned in the inventory slot in widescreen mode.
-• Graphical artifacts may appear when it rains. Restart the game to work around this.
+• [*] Graphical artifacts may appear when it rains. Restart the game to work around this.
 • There are minor geometry glitches on some levels, e.g. floating reeds, trees, terrain objects, etc.
 • The wet surfaces effect still does not work exactly as it should: when it is raining, (i) static stripes may appear on some surfaces (e.g. posters) fastened to an interior wall; (ii) rain may appear to pour down some interior walls; and (iii) grass / shrubbery may take on a metallic hue under some lighting conditions.
 • Volumetric smoke may not appear properly or at all on some DX10-capable hardware.
