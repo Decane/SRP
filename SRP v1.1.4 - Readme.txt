@@ -83,6 +83,7 @@ Crash fixes:
 + Fixed a crash upon entering the Garbage if the player took Yoga's task to kill Stringov, accepted Stringov's bribe, left Stringov alive, finished the task while Yoga was offline, and did not loot Stringov's stash.
 + Fixed a crash in the Garbage if a bandit robber squad suddenly leaves for another camp during a hold-up.
 + Fixed a crash in the Garbage if the robbery scheme tries to assign the robber leader role to a mutant due to incorrect detection of squads belonging to a robbery camp.
++ Fixed potential crashing due to NPCs in some circumstances switching offline while their dialogue/trade/upgrade window is open.
 + Fixed potential crashing due to smart terrain overloading.
 + Fixed potential crashing during the marsh creature scene in Agroprom and in the Swamps.
 + Fixed several potential crashes caused by the game attempting to alter the attitude of a non-existing squad.
@@ -201,7 +202,7 @@ Gameplay fixes:
 + Fixed the mechanic specialization tooltip displaying 'none' for Aydar, Yar, and Thunderov, despite all of them having a specialization.
 + Fixed the issue where squad info tooltips would fail to update properly and would, consequently, sometimes display the wrong target location.
 + Fixed several bugs pertaining to the displaying of squad map spots, including the issue where its color would react sluggishly to relationship changes to the player.
-+ Partially fixed the issue where the weather would sometimes inexplicably change after loading.
++ Mitigated the issue where the weather would sometimes inexplicably change after loading.
 + Fixed PSI emission hit and effector intensity doubling on save/reload.
 + Fixed the issue where crows could get stuck floating in the air upon being shot.
 + Fixed the "Life support system" upgrade for the Freedom Exoskeleton making the player bleed out faster rather than slower as intended.

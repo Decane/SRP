@@ -52,7 +52,7 @@ function se_stalker:can_switch_online()
 	if self.online == false then
 		return xr_logic.pick_section_from_condlist(db.actor, self, self.spawner) ~= nil and cse_alife_human_stalker.can_switch_online(self)
 	else
-		return xr_logic.pick_section_from_condlist(db.actor, self, self.spawner) ~= nil
+		return xr_logic.pick_section_from_condlist(db.actor, self, self.spawner) ~= nil or not pda.dialog_closed
 	end
 end
 
