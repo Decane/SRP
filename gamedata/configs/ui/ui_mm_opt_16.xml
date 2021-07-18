@@ -456,7 +456,7 @@
 		</cap_texture_lod>
 
 		<track_texture_lod x="162" y="10" width="200" height="21" invert="1" step="1" is_integer="1">
-			<options_item entry="texture_lod" group="mm_opt_video_adv" depend="vid"/>
+			<options_item entry="texture_lod" group="mm_opt_video_adv" depend="restart"/>
 		</track_texture_lod>
 
 		<cap_aniso x="17" y="10" width="119" height="21">
