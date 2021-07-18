@@ -4,16 +4,16 @@
 	<!-- Dialogs -->
 
 	<string id="st_tm_guide_4">
-		<text>Никуда во время выброса, ты что сумасшедший?</text>
+		<text>Никуда во время выброса, с ума сошёл?</text>
 	</string>
 	<string id="st_tm_guide_22">
 		<text>Никуда, я передумал.</text>
 	</string>
 	<string id="st_tm_guide_213">
-		<text>Упс, я не могу себе этого позволить.</text>
+		<text>Кажется, я не могу себе этого позволить.</text>
 	</string>
 	<string id="st_tm_guide_214">
-		<text>Подумай хорошенько, возможно, сейчас не самое подходящее время для путешествий.</text>
+		<text>С другой стороны, наверное, сейчас не лучшее время для путешествий.</text>
 	</string>
 	<string id="gar_bandit_robbery_112">
 		<text>Я так не думаю.</text>
@@ -22,7 +22,7 @@
 		<text>Не сегодня.</text>
 	</string>
 	<string id="hello_mil_killer_112">
-		<text>Ищу информацию о ситуации здесь. Ты можешь мне что-нибудь рассказать?</text>
+		<text>Ищу информацию о том, что здесь происходит. Есть что сказать?</text>
 	</string>
 
 	<!-- Prompts -->
@@ -31,13 +31,13 @@
 		<text>Вы должны дождаться завершения передачи.</text>
 	</string>
 	<string id="tips_wait_emission_finish">
-		<text>Ты должен дождаться завершения выброса.</text>
+		<text>Путешествовать во время выброса небезопасно.</text>
 	</string>
 	<string id="no_sleep_during_emission">
-		<text>Ты не можешь спать во время выброса!</text>
+		<text>Вы не можете спать во время выброса.</text>
 	</string>
 	<string id="nothing_to_repair">
-		<text>Нечего ремонтировать!</text>
+		<text>Нечего ремонтировать.</text>
 	</string>
 	<string id="st_stash_emptied">
 		<text>Тайник опустошён:</text>
@@ -46,7 +46,7 @@
 	<!-- NPCs -->
 
 	<string id="yan_levshas_crew">
-		<text>Участник команды Левша</text>
+		<text>Член отряда Левши</text>
 	</string>
 
 	<!-- Equipment -->
@@ -89,7 +89,7 @@
 	<!-- Locations -->
 
 	<string id="agroprom_underground">
-		<text>Подземелья «Агропрома»</text>
+		<text>Подземелье «Агропрома»</text>
 	</string>
 
 	<!-- Optionals -->
