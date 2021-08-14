@@ -1738,6 +1738,14 @@ no_mutant = true
 
 ------------------------------------
 
+[9872]
+
+squad_capacity = 1
+
+• The 'Camp amidst rocks' has only 6 general stalker jobs, so permitting 2 squads' worth of NPCs can cause the game to crash, per https://github.com/Decane/SRP/issues/133.
+
+------------------------------------
+
 [9874]
 
 ;att_restr = mil_space_restrictors_7_12_sr_attack

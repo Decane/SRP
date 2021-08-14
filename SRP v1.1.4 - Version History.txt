@@ -9,6 +9,7 @@ v1.1.4
 
 + Fixed the issue where an NPC could switch offline while their dialogue/trade/upgrade window is open, crashing the game. - Decane
 + Fixed the game crashing if a stalker squad at a smart terrain has it as a scripted target and is joined by another squad that doesn't and the general job capacity of that smart terrain is saturated by the two squads. - Decane
++ Fixed a rare crash caused by too many stalkers trying to enter the 'Camp amidst rocks' at the Army Warehouses: smart_terrain.script:483: Insufficient smart_terrain jobs mil_smart_terrain_2_1 (new game required for effect). - Decane
 + Mitigated the issue where the weather would sometimes inexplicably change after loading. - Decane
 + Fixed an SRP v1.1.3 regression that caused some NPCs to keep repeating their goodbye phrase ad nauseum until the player faces away from them after closing their dialogue window. - Decane
 + Fixed an SRP v1.0.4 regression that caused several dialogue options to be erroneously unavailable when speaking to generic mercenary NPCs, including Hog's subordinates at the Army Warehouses and Leshiy's subordinates at the Red Forest. - Decane
