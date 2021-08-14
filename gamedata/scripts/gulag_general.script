@@ -1,6 +1,7 @@
 -- DC141130: Optimizations. Fixed (i) squads sometimes moving to their targets sluggishly and (ii) the excessively low guide job priority.
 -- DC170601: Fixed both instances of "agressive" to "aggressive". Deleted the superfluous (but harmless) second argument (":3") from the single call to is_obj_on_job(). Further optimizations.
 -- DC191228: Worked around online squads sometimes failing to capture smart terrains at non-terminal way-points by re-attempting the capture at terminal way-points as a fallback.
+-- DC210814: Fixed crashing due to insufficient smart terrain jobs if a stalker squad at a smart terrain has it as a scripted target and is joined by another squad that doesn't and the general job capacity of that smart terrain is saturated by the two squads.
 
 local function _precond_func_exclusive(se_obj, smart, precond_params)
 	return xr_logic.pick_section_from_condlist(db.actor, se_obj, precond_params.condlist) ~= nil
@@ -11,7 +12,7 @@ local function _precond_func_commander(se_obj, smart)
 		return false
 	end
 	local squad = smart.board.squads[se_obj.squad_id]
-	return (squad ~= nil) and (squad.commander_id == se_obj.id) and task_manager.is_more_suitable(squad)
+	return squad ~= nil and squad.commander_id == se_obj.id -- DC210814
 end
 
 local function _precond_func_guard(se_obj, smart, precond_params, npc_info)
