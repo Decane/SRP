@@ -18,7 +18,6 @@ local game_difficulty_by_num =
 	[3] = "gd_master"
 }
 
-local clsid_wpn_ammo            = clsid.wpn_ammo
 local object_binder_update      = object_binder.update
 local xr_sound_update           = xr_sound.update
 local dyn_music_update          = xrs_dyn_music.on_actor_update
@@ -28,6 +27,7 @@ local actor                     = nil
 local weather_manager           = nil
 local last_level_name           = nil
 local next_update_time          = -10000
+local need_actor_model_update   = true
 local first_update_done         = false
 local weapon_needs_hiding       = false
 local weapon_hidden             = false
@@ -141,6 +141,13 @@ function actor_binder:on_trade(item, sell_bye, money)
 	end
 end
 --------------------------------------------------------------------------------
+local function update_actor_model(outfit_id)
+	local actor_outfit = actor:item_in_slot(6)
+	if actor_outfit and actor_outfit:id() ~= outfit_id then -- 2nd conjunct prevents loop
+		actor:transfer_item(actor_outfit, actor)
+	end
+end
+--------------------------------------------------------------------------------
 function actor_binder:on_item_take(obj)
 	if device().precache_frame > 1 then return end -- per NatVac: don't check existing inventory during synchronizing
 	if isArtefact(obj) then
@@ -160,15 +167,14 @@ function actor_binder:on_item_take(obj)
 			end
 		end
 	end
-	if obj:clsid() == clsid_wpn_ammo then
+	if obj:clsid() == clsid.wpn_ammo then
 		dunin_ammo.on_take(obj)
---[[
-	elseif obj:clsid() == clsid.equ_stalker_s then -- per NatVac: hack to undo reversion to default rookie jacket player model on picking up new armor
-		local actor_outfit = actor:item_in_slot(6) -- update: can't use this, introduces bug where picking up new armor unequips equipped artifacts
-		if actor_outfit and obj:id() ~= actor_outfit:id() then
-			actor:transfer_item(actor_outfit, actor)
+	elseif obj:clsid() == clsid.equ_stalker_s then
+		if level.main_input_receiver() then
+			need_actor_model_update = true
+		else
+			update_actor_model(obj:id())
 		end
-]]
 	end
 end
 --------------------------------------------------------------------------------
@@ -365,12 +371,6 @@ function actor_binder:update(delta)
 
 		level_tasks.add_lchanger_location()
 
-		-- Per NatVac: hack to undo reversion to default rookie jacket player model on game load
-		local actor_outfit = actor:item_in_slot(6)
-		if actor_outfit then
-			actor:transfer_item(actor_outfit, actor)
-		end
-
 		for k, task in pairs (tm.task_info) do
 			if task.type == "bring_item" then
 				if task.state ~= "finished" then
@@ -394,19 +394,12 @@ function actor_binder:update(delta)
 
 		first_update_done = true
 	end
---[[
-	local play_combat = xrs_dyn_music.play_combat
 
-	if play_combat == 0 then
-		xrs_dyn_music.interactive_music(0)
-	elseif play_combat == 1 then
-		xrs_dyn_music.interactive_music(20)
-	elseif play_combat == 2 then
-		xrs_dyn_music.interactive_music(10)
+	if need_actor_model_update and not level.main_input_receiver() then
+		update_actor_model()
+		need_actor_model_update = false
 	end
 
-	xr_s.on_actor_update(delta)
-]]
 	dyn_music_update()
 
 	if guiders.teleported_to_another_level then

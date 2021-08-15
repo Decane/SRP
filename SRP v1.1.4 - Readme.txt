@@ -213,7 +213,7 @@ Gameplay fixes:
 + Corrected the behavior of shot megaphones.
 + Fixed medicaments becoming more rather than less expensive at the Flea Market after liberating the concentration camp.
 + Replaced the generic masked face of the player's unarmored character model with Scar's face, as in the leather jacket armored character model.
-+ Fixed the player's character model reverting back to the default rookie jacket model upon loading a savegame / changing maps.
++ Mitigated or fixed the player's character model reverting back to the default rookie jacket model upon picking up another suit or loading a savegame / changing maps, respectively.
 + Corrected the mesh, name, icon, and description of the several varieties of 7.62x54 mmR ammunition.
 + Extended GSC's implementation of rank-dependent NPC money from just Duty, Freedom, and the bandits, to all the game's factions.
 + Removed the out-of-place AK-74 from Scar's starting inventory which was introduced there by patch v1.5.09.
@@ -413,7 +413,7 @@ Bugs still in the game:
 • It is sometimes possible to talk to hostile NPCs.
 • The reload animation for shotguns sometimes glitches and shows the wrong number of shells being loaded into the shotgun.
 • The player's nightvision gets disabled when a new suit of armor enters the player's inventory.
-• The player's character model reverts back to the default leather jacket model upon picking up another suit.
+• The player's character model briefly reverts back to the default leather jacket model upon picking up another suit. It returns to the correct model again a few frames later.
 • Attempting to quit the game from the main menu can sometimes freeze the game on some hardware in DX10/10.1 mode.
 • Controller psy-aura sounds playing before a savegame is loaded persist into that savegame. Restart the game before loading to work around this.
 • Entries made to the PDA message log persist into a subsequently loaded savegame until overwritten by a new entry. Restart the game before loading to work around this.
@@ -489,12 +489,12 @@ Credits:
 
  • Content contributions:
 
-AMK Team, angrydog, Angus McFisticuffs, Anonymous, antifrost, Armada, Atempad, b1ub4k,
-barin, BobBQ, burger, Canzah, castl, CeeJay.dk, Control volume, Danila_STALKER,
+AMK Team, angrydog, Angus McFisticuffs, Anonymous, antifrost, Armada, Artos, Atempad,
+b1ub4k, barin, BobBQ, burger, Canzah, castl, CeeJay.dk, Control volume, Danila_STALKER,
 dDefinder, Decane, DerHeiligeApfel, DEXXX, Fangion, Gosuke, GSC Game World, IG2007,
 InnerGround, jjwalker (Cameron Sneed), Kill_the_Strelok, Lobstris, MacroN, Marked_2,
 MrSeyker, notanumber (nandersen), NatVac, OGSM Team, olegj5, pavlov, PhoenixHeart, PYP,
-Red7204, RoboMook, SetaKat (fluffy22), smoq2, smrtphoneusr, SurDno, Tariq, Vandal,
+Red7204, RoboMook, SetaKat (fluffy22), Shoker, smoq2, smrtphoneusr, SurDno, Tariq, Vandal,
 vlad54rus, Xetrill
 
  • Useful feedback and testing:
