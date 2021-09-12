@@ -211,6 +211,7 @@ Gameplay fixes:
 + Fixed the "Electronic stabilizer" upgrade for the SPAS-12 and Maverick 88 wrongly decrementing their ammo capacity by 2.
 + Fixed the "Relief backpack" upgrade for various armors wrongly incrementing the carry weight tooltip value by only 5kg instead of the 15kg actually unlocked by the upgrade.
 + Corrected the behavior of shot megaphones.
++ Fixed the issue where the player would be rejected from playing the shooting minigame if their money precisely matches the entry fee instead of exceeding it.
 + Fixed medicaments becoming more rather than less expensive at the Flea Market after liberating the concentration camp.
 + Replaced the generic masked face of the player's unarmored character model with Scar's face, as in the leather jacket armored character model.
 + Mitigated or fixed the player's character model reverting back to the default rookie jacket model upon picking up another suit or loading a savegame / changing maps, respectively.
