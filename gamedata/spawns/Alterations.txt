@@ -920,6 +920,12 @@ cond = {!npc_stay_offline(val_smart_terrain_7_3) !npc_stay_offline(val_smart_ter
 
 ------------------------------------
 
+[4709] <deleted>
+
+• Superfluous space restrictor: 'val_space_restrictor_squad_2_2_exist'. Not referenced anywhere in the game code. Binds val_space_restrictor_squad_2_2_exist.ltx whose sole function is to uselessly duplicate the functionality of val_space_restrictor_2_2_freedom.ltx.
+
+------------------------------------
+
 [4710] <deleted>
 
 • Superfluous space restrictor: 'val_space_restrictor_enter_killer_base'. Not referenced anywhere in the game code. Binds val_check_for_killer_base_attack.ltx whose sole function is to supply the info portion 'val_killer_base_under_attack' upon the player entering the space restrictor, but this info portion is never actually used for anything.
