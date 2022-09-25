@@ -14,6 +14,7 @@ v1.1.4
 + Mitigated the issue where the weather would sometimes inexplicably change after loading. - Decane
 + Mitigated the issue where the player's character model would revert back to the default rookie jacket model upon picking up another suit of armor. - Artos, Shoker
 + Fixed the issue where the player would be rejected from playing the shooting minigame if their money precisely matches the entry fee instead of exceeding it. - Decane
++ Fixed an SRP v1.1.3 (or v1.0.2 with the optional 'No NPC Weapon Tossing Upon Death' feature) regression that prevented killed NPCs from ever dropping a grenade. - Decane
 + Fixed an SRP v1.1.3 regression that caused some NPCs to keep repeating their goodbye phrase ad nauseum until the player faces away from them after closing their dialogue window. - Decane
 + Fixed an SRP v1.0.4 regression that caused several dialogue options to be erroneously unavailable when speaking to generic mercenary NPCs, including Hog's subordinates at the Army Warehouses and Leshiy's subordinates at the Red Forest. - Decane
 + Fixed an SRP v1.0.3 regression that caused Yoga's walkie-talkie transmissions to the player to sound as if Yoga were speaking to the player in person rather than over walkie-talkie. - Decane

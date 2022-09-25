@@ -216,6 +216,12 @@ function keep_item(npc, item)
 			return
 		end
 	end
+	slot_item = npc:item_in_slot(3)
+	if slot_item ~= nil then
+		if slot_item:id() == item:id() then
+			return
+		end
+	end
 	if not npc:marked_dropped(item) then
 --		local sim = alife()
 		sim:release(sim:object(item:id()), true)
