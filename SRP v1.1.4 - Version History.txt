@@ -20,6 +20,7 @@ v1.1.4
 + Fixed an SRP v1.0.3 regression that caused Yoga's walkie-talkie transmissions to the player to sound as if Yoga were speaking to the player in person rather than over walkie-talkie. - Decane
 + Worked around an SRP v1.0.3 regression that caused bullet tracers to be visible through geometry when playing in DX10/10.1 mode with anti-aliasing enabled through the game's graphics settings. Note: This was achieved by reintroducing the bug from the unmodded game of tracers not being visible at all in DX10/10.1 mode.
 + Fixed an SRP v0.5 regression that caused DX9 sun shafts quality to be hard-coded to low.
++ Added a 'Move to Backpack'/'Attach to Belt' option to the menu that appears when right-clicking a detector in the inventory. - Lebedev88
 + (Optional) Added a feature to disable weapon sway while strafing.
 
 -----------------------------------------------------------------------------

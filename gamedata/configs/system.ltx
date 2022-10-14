@@ -204,12 +204,13 @@ stop_burn_size  = 0.0001    ;размер ожега после которого остановить партиклv
 min_burn_time = 10000   ;минимальное времљ отvгрvша партиклов (даже если рана уже зажила)
 
 [hud_cursor]
-cross_length		= 0.007
-min_radius		= 0
-max_radius		= 0.03
-radius_lerp_speed	= 0.08
-cross_color		= 0.7, 0.7, 0.7, 1
-disp_scale		= 0.0001
+;все размерv в процентах от длинv экрана
+cross_length    = 0.015         ;длина "палочки" прицела
+min_radius      = 0.0         ;минимальнvй радиус прицела (при нулевой дисперсии)
+max_radius      = 1.0         ;максимальнvй радиус
+radius_lerp_speed = 0.08          ;скорость интерполљции положений прицела
+cross_color     = 0.7,0.7,0.7,0.5   ;цвет прицела
+disp_scale      = 0.08          ;масштаб прицела (относительно радиан)
 
 [hud_hitmark]
 hit_mark_texture 	= ui\ui_hud_hit_mark; ui\ui_empty
