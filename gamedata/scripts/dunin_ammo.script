@@ -1,5 +1,5 @@
 local ammo_data_table = {}
-local repack_needed = false
+local updates_before_repack = nil
 local actor = db.actor
 local sim = _G.sim
 
@@ -51,14 +51,18 @@ local function repack_ammo(section, box_size)
 end
 
 function on_update()
-	if repack_needed then
-		for section, ammo_data in pairs (ammo_data_table) do
-			if ammo_data.repack_needed then
-				repack_ammo(section, ammo_data.box_size)
-				ammo_data.repack_needed = false
+	if updates_before_repack then
+		if updates_before_repack > 0 then
+			updates_before_repack = updates_before_repack - 1
+		else
+			for section, ammo_data in pairs (ammo_data_table) do
+				if ammo_data.repack_needed then
+					repack_ammo(section, ammo_data.box_size)
+					ammo_data.repack_needed = false
+				end
 			end
+			updates_before_repack = nil
 		end
-		repack_needed = false
 	end
 end
 
@@ -88,7 +92,7 @@ function on_take(ammo)
 		if not ammo_data.repack_needed then
 			if box_size ~= get_ammo_count(ammo:id()) then
 				ammo_data.repack_needed = true
-				repack_needed = true
+				updates_before_repack = 150 -- hack per https://github.com/Decane/SRP/issues/150
 			end
 		end
 	end

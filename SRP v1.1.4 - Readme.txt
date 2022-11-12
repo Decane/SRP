@@ -490,7 +490,7 @@ Credits:
 
  • Content contributions:
 
-AMK Team, angrydog, Angus McFisticuffs, Anonymous, antifrost, Armada, Artos, Atempad,
+Alex Rinic, AMK Team, angrydog, Angus McFisticuffs, Anonymous, antifrost, Armada, Artos, Atempad,
 b1ub4k, barin, BobBQ, burger, Canzah, castl, CeeJay.dk, Control volume, Danila_STALKER,
 dDefinder, Decane, DerHeiligeApfel, DEXXX, Fangion, Gosuke, GSC Game World, IG2007,
 InnerGround, jjwalker (Cameron Sneed), Kill_the_Strelok, Lebedev88, Lobstris, MacroN, Marked_2,
