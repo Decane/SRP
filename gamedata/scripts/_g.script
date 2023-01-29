@@ -25,9 +25,8 @@ function dbglog(fmt, ...)
 end
 
 function dbgmsg(fmt, ...)
-	local act = db.actor
-	if act then
-		act:give_game_news("Debug message:", string.format(fmt, ...), "ui_iconsTotal_monster_part", 0, 10000, 1)
+	if db.actor then
+		db.actor:give_game_news("Debug message:", string.format(fmt, ...), "ui_iconsTotal_monster_part", 0, 10000, 1)
 	end
 end
 
@@ -130,15 +129,10 @@ function if_then_else(cond, if_true, if_false)
 	return if_false
 end
 
-function random_number(min_value, max_value)
-	math.randomseed(device():time_global())
-	return min_value and max_value and math.random(min_value, max_value) or math.random()
-end
-
 function parse_names(s)
 	local t = {}
 	local c = 0
-	for name in string.gfind(s, "([%w_\\]+)%p*") do
+	for name in string.gfind(s, "[\\%w_.-]+") do -- char class missing '.' and '-' in vanilla
 		c = c + 1
 		t[c] = name
 	end
@@ -147,7 +141,7 @@ end
 
 function parse_names_to_hash(s)
 	local t = {}
-	for name in string.gfind(s, "([%w_-]+)") do
+	for name in string.gfind(s, "[\\%w_.-]+") do
 		t[name] = true
 	end
 	return t
@@ -156,9 +150,9 @@ end
 function parse_nums(s)
 	local t = {}
 	local c = 0
-	for entry in string.gfind(s, "([%-%d%.]+)%,*") do
+	for num in string.gfind(s, "[%d.-]+") do
 		c = c + 1
-		t[c] = tonumber(entry)
+		t[c] = tonumber(num)
 	end
 	return t
 end
@@ -172,18 +166,15 @@ function get_clsid(npc)
 end
 
 function yaw(v1, v2)
-	local sqrt = math.sqrt
-	return math.acos((v1.x * v2.x + v1.z * v2.z) / (sqrt(v1.x * v1.x + v1.z * v1.z) * sqrt(v2.x * v2.x + v2.z * v2.z)))
+	return math.acos((v1.x * v2.x + v1.z * v2.z) / (math.sqrt(v1.x * v1.x + v1.z * v1.z) * math.sqrt(v2.x * v2.x + v2.z * v2.z)))
 end
 
 function yaw_degree(v1, v2)
-	local sqrt = math.sqrt
-	return math.acos((v1.x * v2.x + v1.z * v2.z) / (sqrt(v1.x * v1.x + v1.z * v1.z) * sqrt(v2.x * v2.x + v2.z * v2.z))) * 57.2957
+	return math.acos((v1.x * v2.x + v1.z * v2.z) / (math.sqrt(v1.x * v1.x + v1.z * v1.z) * math.sqrt(v2.x * v2.x + v2.z * v2.z))) * 57.2957
 end
 
 local function yaw_degree3d(v1, v2)
-	local sqrt = math.sqrt
-	return math.acos((v1.x * v2.x + v1.y * v2.y + v1.z * v2.z) / (sqrt(v1.x * v1.x + v1.y * v1.y + v1.z * v1.z) * sqrt(v2.x * v2.x + v2.y * v2.y + v2.z * v2.z))) * 57.2957
+	return math.acos((v1.x * v2.x + v1.y * v2.y + v1.z * v2.z) / (math.sqrt(v1.x * v1.x + v1.y * v1.y + v1.z * v1.z) * math.sqrt(v2.x * v2.x + v2.y * v2.y + v2.z * v2.z))) * 57.2957
 end
 
 function vector_cross(v1, v2)
@@ -194,31 +185,27 @@ function vector_rotate_y(v, angle)
 	angle = angle * 0.017453292519943295769236907684886
 	local c = math.cos(angle)
 	local s = math.sin(angle)
-	local v_x = v.x
-	local v_z = v.z
-	return vector():set(v_x * c - v_z * s, v.y, v_x * s + v_z * c)
+	return vector():set(v.x * c - v.z * s, v.y, v.x * s + v.z * c)
 end
 
-function stop_play_sound(obj)
-	if obj:alive() == true then
-		obj:set_sound_mask(-1)
-		obj:set_sound_mask(0)
+function stop_play_sound(npc)
+	if npc:alive() then
+		npc:set_sound_mask(-1)
+		npc:set_sound_mask(0)
 	end
 end
 
 -------------------------------------------------------------------------------------------
 
 function switch_online(id)
-	if id == -1 then return end
-	if sim then
+	if sim and id ~= -1 then
 		sim:set_switch_online(id, true)
 		sim:set_switch_offline(id, false)
 	end
 end
 
 function switch_offline(npc)
-	if npc == nil or npc:alive() == false then return end
-	if sim then
+	if sim and npc and npc:alive() then
 		local npc_id = npc:id()
 		sim:set_switch_online(npc_id, false)
 		sim:set_switch_offline(npc_id, true)
@@ -378,15 +365,10 @@ function start_game_callback()
 	}
 
 	smart_names.init_smart_names_table()
-	task_manager.clear_task_manager()
 	treasure_manager.load_treasures()
 	sound_theme.load_sound()
-	xr_sound.start_game_callback()
 	dialog_manager.fill_phrase_table()
 	xr_s.init()                              --' Distemper 03.2008 --
---	sim_objects.clear()
-	sim_board.clear()
-	sr_light.clean_up()
 	death_manager.init_drop_settings() -- SRP
 	release_body_manager.init() -- SRP
 end
@@ -402,8 +384,6 @@ ammo_section =
 	["ammo_5.45x39_ap"]     = true,
 	["ammo_5.56x45_ss190"]  = true,
 	["ammo_5.56x45_ap"]     = true,
---	["ammo_5.7x28_fmj"]     = true,
---	["ammo_5.7x28_ap"]      = true,
 	["ammo_7.62x54_7h1"]    = true,
 	["ammo_7.62x54_ap"]     = true,
 	["ammo_7.62x54_7h14"]   = true,
@@ -435,37 +415,33 @@ end
 
 local save_markers = {}
 
-function set_save_marker(p, mode, check, prefix)
-
-	local result = "_" .. prefix
-
-	if check == true then
-		if save_markers[result] == nil then
-			abort("[_G.set_save_marker]: Missing save marker '%s'.", result)
+function set_save_marker(packet, mode, check, packet_name)
+	if check then
+		if save_markers[packet_name] == nil then
+			abort("[_G.set_save_marker]: Missing save marker for packet '%s'", packet_name)
 		end
 		if mode == "save" then
-			local dif = p:w_tell() - save_markers[result]
-			if dif >= 10240 then
-				abort("[_G.set_save_marker]: You are saving too much, dif = %s", dif)
+			local bytes_saved = packet:w_tell() - save_markers[packet_name]
+			if bytes_saved >= 10240 then
+				abort("[_G.set_save_marker]: Saved too much (%d bytes) to packet '%s'", bytes_saved, packet_name)
 			end
-			p:w_u16(dif)
+			packet:w_u16(bytes_saved)
 		else
-			local c_dif = p:r_tell() - save_markers[result]
-			local dif = p:r_u16()
-			if dif ~= c_dif then
-				abort("[_G.set_save_marker]: Save marker mismatch '%s' %.0f ~= %.0f.", result, dif, c_dif)
-			 end
-		end
-		return
-	end
-
-	if mode == "save" then
-		save_markers[result] = p:w_tell()
-		if p:w_tell() > 16000 then
-			abort("[_G.set_save_marker]: You are saving too much, p:w_tell() = %s", p:w_tell())
+			local bytes_loaded = packet:r_tell() - save_markers[packet_name]
+			local bytes_saved = packet:r_u16()
+			if bytes_saved ~= bytes_loaded then
+				abort("[_G.set_save_marker]: Loaded only %d of %d bytes saved to packet '%s' (save is corrupt)", bytes_loaded, bytes_saved, packet_name)
+			end
 		end
 	else
-		save_markers[result] = p:r_tell()
+		if mode == "save" then
+			save_markers[packet_name] = packet:w_tell()
+			if packet:w_tell() > 16000 then
+				abort("[_G.set_save_marker]: Packet '%s' is too full (%d bytes), refusing to save more", packet_name, packet:w_tell())
+			end
+		else
+			save_markers[packet_name] = packet:r_tell()
+		end
 	end
 end
 

@@ -1,0 +1,691 @@
+theme = {}
+
+local sounds_base = stalker_ids.sound_script + 10000
+
+local function id()
+	sounds_base = sounds_base + 1
+	return sounds_base - 1
+end
+
+----------------------------------------------------------------------------------------------------
+
+class "npc_sound"
+
+function npc_sound:__init(ini, section)
+	self.class_id             = "npc_sound"
+	self.prefix               = utils.cfg_get_bool(ini, section, "npc_prefix", nil, false, false)
+	self.path                 = utils.cfg_get_string(ini, section, "path", nil, true, "")
+	self.shuffle              = utils.cfg_get_string(ini, section, "shuffle", nil, false, "", "rnd")
+	self.group_snd            = utils.cfg_get_bool(ini, section, "group_snd", nil, false, false)
+	self.play_always          = utils.cfg_get_bool(ini, section, "play_always", nil, false, false)
+	self.section              = section
+	self.npc                  = {}
+	self.played_id            = nil
+	self.stop_time            = nil
+	self.idle_time            = nil
+	local interval            = parse_names(utils.cfg_get_string(ini, section, "idle", nil, false, "", "3,5"))
+	self.min_idle             = tonumber(interval[1])
+	self.max_idle             = tonumber(interval[2])
+	self.pda_snd_obj          = nil
+	self.can_play_group_sound = true
+	self.can_play_sound       = {}
+	self.sound_path           = {}
+	self.avail_communities    = parse_names_to_hash(utils.cfg_get_string(ini, section, "avail_communities", nil, false, "", "csky, stalker, ecolog, bandit, dolg, freedom, army, zombied, monolith, killer"))
+end
+
+function npc_sound:reset(npc_id)
+	self.stop_time = nil
+	self.played_id = nil
+	self.can_play_group_sound = true
+	self.can_play_sound[npc_id] = true
+	local npc = db.storage[npc_id] and db.storage[npc_id].object
+	if npc ~= nil then
+		npc:set_sound_mask(-1)
+		npc:set_sound_mask(0)
+	end
+	if self.pda_snd_obj ~= nil then
+		self.pda_snd_obj:stop()
+		self.pda_snd_obj = nil
+	end
+end
+
+function npc_sound:is_playing(npc_id)
+	local npc = db.storage[npc_id] and db.storage[npc_id].object
+	if npc == nil then
+		return false
+	end
+	return npc:active_sound_count() ~= 0
+end
+
+function npc_sound:init_npc(npc)
+
+	local npc_id = npc:id()
+	local npc_data = {}
+	local npc_sound_paths = {}
+
+--	dbglog("Processing NPC [%s] with sound prefix [%s]", npc_id, npc:sound_prefix())
+
+	self.npc[npc_id] = npc_data
+	self.sound_path[npc_id] = npc_sound_paths
+
+	local character_prefix
+
+	if self.prefix == false then
+		character_prefix = npc:sound_prefix()
+		npc:sound_prefix("characters_voice\\")
+	end
+
+	npc_data.id = id()
+	npc_data.max = npc:add_sound(self.path, 64, snd_type.talk, 2, 1, npc_data.id) - 1
+
+	if npc_data.max < 0 then
+		abort("[npc_sound:init_npc]: Couldn't find sound(s) '%s' with prefix '%s'.", self.path, npc:sound_prefix())
+	end
+
+	local fs = getFS()
+
+	if fs:exist("$game_sounds$", npc:sound_prefix()..self.path..".ogg") then
+		npc_sound_paths[1] = npc:sound_prefix()..self.path
+--		dbglog("Adding sound ["..npc_sound_paths[1].."]")
+--		if fs:exist("$game_sounds$", npc_sound_paths[1].."_pda.ogg") then
+--			dbglog("[npc_sound]: %s_pda.ogg exists!", npc_sound_paths[1])
+--		end
+	else
+		local num = 1
+		while fs:exist("$game_sounds$", npc:sound_prefix()..self.path..num..".ogg") do
+			npc_sound_paths[num] = npc:sound_prefix()..self.path..num
+--			dbglog("Adding sound ["..npc_sound_paths[num].."] to table idx = "..num)
+--			if fs:exist("$game_sounds$", npc_sound_paths[num].."_pda.ogg") then
+--				dbglog("[npc_sound]: %s_pda.ogg exists!", npc_sound_paths[num])
+--			end
+			num = num + 1
+		end
+	end
+
+	if self.prefix == false then
+		npc:sound_prefix(character_prefix)
+	end
+
+	if self.group_snd then
+		self.can_play_group_sound = true
+	else
+		if self.can_play_sound[npc_id] ~= false then
+			self.can_play_sound[npc_id] = true
+		end
+	end
+end
+
+function npc_sound:callback(npc_id) -- executed on first obj binder update() after sound stops playing
+
+	self.stop_time = time_global()
+	self.idle_time = math.random(self.min_idle, self.max_idle) * 1000
+
+	if self.group_snd then
+		self.can_play_group_sound = true
+	else
+		self.can_play_sound[npc_id] = true
+	end
+
+	local npc_st = db.storage[npc_id]
+
+	if npc_st.active_scheme == nil then
+		return
+	end
+
+	if npc_st[npc_st.active_scheme].signals == nil then
+		return
+	end
+
+	local npc_data = self.npc[npc_id]
+
+	if npc_data == nil then
+		return
+	end
+
+	if self.played_id == npc_data.max and self.shuffle ~= "rnd" then -- last sound and not randomized
+		npc_st[npc_st.active_scheme].signals["theme_end"] = true
+		npc_st[npc_st.active_scheme].signals["sound_end"] = true
+	else
+		npc_st[npc_st.active_scheme].signals["sound_end"] = true
+	end
+end
+
+function npc_sound:play(npc_id, faction, point)
+
+	if self.group_snd then
+		if not self.can_play_group_sound then
+			return false
+		end
+	else
+		if not self.can_play_sound[npc_id] then
+			return false
+		end
+	end
+
+	local npc = db.storage[npc_id] and db.storage[npc_id].object
+
+	if npc == nil then
+		return false
+	end
+
+	if self.stop_time ~= nil and time_global() - self.stop_time < self.idle_time then
+		return false
+	end
+
+	self.stop_time = nil
+
+	local npc_data = self.npc[npc_id]
+
+	if npc_data == nil then
+		return false
+	end
+
+	self.played_id = self:select_next_sound(npc_data)
+
+	if self.played_id == -1 then
+		return false
+	end
+
+	npc:play_sound(npc_data.id, 0.06, 0.05, 1, 0, self.played_id)
+
+	local table_id = self.played_id + 1
+	local snd = self.sound_path[npc_id][table_id]
+
+	if getFS():exist("$game_sounds$", snd.."_pda.ogg")
+	and npc:position():distance_to_sqr(db.actor:position()) >= 100 then
+		self.pda_snd_obj = sound_object(snd.."_pda")
+		self.pda_snd_obj:play_at_pos(db.actor, vector():set(0,0,0), 0, sound_object.s2d)
+		self.pda_snd_obj.volume = 0.8
+	end
+
+	local snd_st = string.gsub(snd, "\\", "_")
+
+	if self.group_snd then
+		self.can_play_group_sound = false
+	else
+		self.can_play_sound[npc_id] = false
+	end
+
+	if game.translate_string(snd_st) ~= snd_st then
+		if not faction then
+			faction = npc:character_community()
+		end
+		if not point then
+			point = npc:profile_name().."_name"
+			if game.translate_string(point) == point then
+				point = nil
+			end
+		end
+		news_manager.send_sound(npc, faction, point, snd, snd_st)
+	else
+		news_manager.send_sound(npc, faction, point, snd)
+	end
+
+	return true
+end
+
+function npc_sound:select_next_sound(npc_data) -- TODO: Replace with local func before next new game requirement
+	if self.shuffle == "rnd" then
+		if npc_data.max == 0 then
+			return 0
+		end
+		if self.played_id == nil then
+			return math.random(0, npc_data.max)
+		end
+		local played_id = math.random(0, npc_data.max - 1)
+		if played_id >= self.played_id then
+			return played_id + 1
+		end
+		return played_id
+	elseif self.shuffle == "seq" then
+		if self.played_id == -1 then
+			return -1
+		end
+		if self.played_id == nil then
+			return 0
+		end
+		if self.played_id < npc_data.max then
+			return self.played_id + 1
+		end
+		return -1
+	elseif self.shuffle == "loop" then
+		if self.played_id == nil then
+			return 0
+		end
+		if self.played_id < npc_data.max then
+			return self.played_id + 1
+		end
+		return 0
+	end
+end
+
+function npc_sound:stop()
+	if self.pda_snd_obj ~= nil and self.pda_snd_obj:playing() then
+		self.pda_snd_obj:stop()
+		self.pda_snd_obj = nil
+	end
+end
+
+function npc_sound:save(thread)
+	thread:w_stringZ(tostring(self.played_id))
+	if self.group_snd then
+		thread:w_bool(self.can_play_group_sound)
+	end
+end
+
+function npc_sound:load(thread)
+	local id = thread:r_stringZ()
+	self.played_id = tonumber(id) -- nil if id == "nil"
+	if self.group_snd then
+		self.can_play_group_sound = thread:r_bool()
+	end
+end
+
+function npc_sound:save_npc(thread, npc_id)
+	if not self.group_snd then
+		thread:w_bool(self.can_play_sound[npc_id] == true)
+	end
+end
+
+function npc_sound:load_npc(thread, npc_id)
+	if not self.group_snd then
+		self.can_play_sound[npc_id] = thread:r_bool()
+	end
+end
+
+----------------------------------------------------------------------------------------------------
+
+local function select_next_sound(self)
+	local sound_table_size = #self.sound
+	if self.shuffle == "rnd" then
+		if sound_table_size == 1 then
+			return 1
+		end
+		if self.played_id == nil then
+			return math.random(1, sound_table_size)
+		end
+		local played_id = math.random(1, sound_table_size - 1)
+		if played_id >= self.played_id then
+			return played_id + 1
+		end
+		return played_id
+	elseif self.shuffle == "seq" then
+		if self.played_id == -1 then
+			return -1
+		end
+		if self.played_id == nil then
+			return 1
+		end
+		if self.played_id < sound_table_size then
+			return self.played_id + 1
+		end
+		return -1
+	elseif self.shuffle == "loop" then
+		if self.played_id == nil then
+			return 1
+		end
+		if self.played_id < sound_table_size then
+			return self.played_id + 1
+		end
+		return 1
+	end
+end
+
+----------------------------------------------------------------------------------------------------
+
+class "actor_sound"
+
+function actor_sound:__init(ini, section)
+
+	self.class_id       = "actor_sound"
+	self.shuffle        = utils.cfg_get_string(ini, section, "shuffle", nil, false, "", "rnd")
+	self.play_always    = utils.cfg_get_bool(ini, section, "play_always", nil, false, false)
+	self.section        = section
+	self.played_id      = nil
+	self.stop_time      = nil
+	self.idle_time      = nil
+	local interval      = parse_names(utils.cfg_get_string(ini, section, "idle", nil, false, "", "3,5"))
+	self.min_idle       = tonumber(interval[1])
+	self.max_idle       = tonumber(interval[2])
+	self.sound          = {}
+	self.snd_obj        = nil
+	self.can_play_sound = true
+
+	local fs            = getFS()
+	local path          = utils.cfg_get_string(ini, section, "path", nil, true, "")
+	local prefix        = utils.cfg_get_bool(ini, section, "npc_prefix", nil, false, false)
+
+	if prefix then
+		path = "characters_voice\\"..path
+	end
+
+	if fs:exist("$game_sounds$", path..".ogg") then
+		self.sound[1] = path
+--		if fs:exist("$game_sounds$", path.."_pda.ogg") then
+--			dbglog("[actor_sound]: %s_pda.ogg exists!", path)
+--		end
+	else
+		local num = 1
+		while fs:exist("$game_sounds$", path..num..".ogg") do
+--			if fs:exist("$game_sounds$", path..num.."_pda.ogg") then
+--				dbglog("[actor_sound]: %s_pda.ogg exists!", path..num)
+--			end
+			self.sound[num] = path..num
+			num = num + 1
+		end
+	end
+
+	if #self.sound == 0 then
+		abort("[actor_sound:__init]: There is no sound collection with path '%s'.", path)
+	end
+end
+
+function actor_sound:callback(obj_id) -- executed on first obj binder update() after sound stops playing
+
+	self.stop_time      = time_global()
+	self.idle_time      = math.random(self.min_idle, self.max_idle) * 1000
+	self.snd_obj        = nil
+	self.can_play_sound = true
+
+	local obj_st = db.storage[obj_id]
+
+	if obj_st.active_scheme == nil then
+		return
+	end
+
+	if obj_st[obj_st.active_scheme].signals == nil then
+		return
+	end
+
+	if self.played_id == #self.sound and self.shuffle ~= "rnd" then -- last sound and not randomized
+		obj_st[obj_st.active_scheme].signals["theme_end"] = true
+		obj_st[obj_st.active_scheme].signals["sound_end"] = true
+	else
+		obj_st[obj_st.active_scheme].signals["sound_end"] = true
+	end
+end
+
+function actor_sound:is_playing()
+	return self.snd_obj ~= nil and self.snd_obj:playing()
+end
+
+function actor_sound:play(_, faction, point)
+
+	if not self.can_play_sound then
+		return false
+	end
+
+	if self.stop_time ~= nil and time_global() - self.stop_time < self.idle_time then
+		return false
+	end
+
+	self.stop_time = nil
+	self.played_id = select_next_sound(self)
+
+	if self.played_id == -1 then
+		return false
+	end
+
+	local snd = self.sound[self.played_id]
+--	local snd_actual = getFS():exist("$game_sounds$", snd.."_pda.ogg") and snd.."_pda" or snd
+
+	self.snd_obj = sound_object(snd)
+	self.snd_obj:play_at_pos(db.actor, vector():set(0,0,0), 0, sound_object.s2d)
+	self.snd_obj.volume = 0.8
+
+	self.can_play_sound = false
+
+	news_manager.send_sound(nil, faction, point, snd)
+
+	return true
+end
+
+function actor_sound:stop()
+	if self.snd_obj ~= nil then
+		self.snd_obj:stop()
+	end
+end
+
+function actor_sound:save(thread)
+	thread:w_stringZ(tostring(self.played_id))
+end
+
+function actor_sound:load(thread)
+	local id = thread:r_stringZ()
+	self.played_id = tonumber(id) -- nil if id == "nil"
+end
+
+function actor_sound:save_npc() end
+function actor_sound:load_npc() end
+
+----------------------------------------------------------------------------------------------------
+
+class "object_sound"
+
+function object_sound:__init(ini, section)
+
+	self.class_id       = "object_sound"
+	self.shuffle        = utils.cfg_get_string(ini, section, "shuffle", nil, false, "", "rnd")
+	self.section        = section
+	self.played_id      = nil
+	self.stop_time      = nil
+	self.idle_time      = nil
+	local interval      = parse_names(utils.cfg_get_string(ini, section, "idle", nil, false, "", "3,5"))
+	self.min_idle       = tonumber(interval[1])
+	self.max_idle       = tonumber(interval[2])
+	self.sound          = {}
+	self.snd_obj        = nil
+	self.pda_snd_obj    = nil
+	self.can_play_sound = true
+
+	local fs            = getFS()
+	local path          = utils.cfg_get_string(ini, section, "path", nil, true, "")
+
+	if fs:exist("$game_sounds$", path..".ogg") then
+		self.sound[1] = path
+--		if fs:exist("$game_sounds$", path.."_pda.ogg") then
+--			dbglog("[object_sound]: %s_pda.ogg exists!", path)
+--		end
+	else
+		local num = 1
+		while fs:exist("$game_sounds$", path..num..".ogg") do
+--			if fs:exist("$game_sounds$", path..num.."_pda.ogg") then
+--				dbglog("[object_sound]: %s_pda.ogg exists!", path..num)
+--			end
+			self.sound[num] = path..num
+			num = num + 1
+		end
+	end
+
+	if #self.sound == 0 then
+		abort("[object_sound:__init]: There is no sound collection with path '%s'.", path)
+	end
+end
+
+function object_sound:callback(obj_id) -- executed on first obj binder update() after sound stops playing
+
+	self.stop_time      = time_global()
+	self.idle_time      = math.random(self.min_idle, self.max_idle) * 1000
+	self.snd_obj        = nil
+	self.can_play_sound = true
+
+	local obj_st = db.storage[obj_id]
+
+	if obj_st.active_scheme == nil then
+		return
+	end
+
+	if obj_st[obj_st.active_scheme].signals == nil then
+		return
+	end
+
+	if self.played_id == #self.sound and self.shuffle ~= "rnd" then -- last sound and not randomized
+		obj_st[obj_st.active_scheme].signals["theme_end"] = true
+		obj_st[obj_st.active_scheme].signals["sound_end"] = true
+	else
+		obj_st[obj_st.active_scheme].signals["sound_end"] = true
+	end
+end
+
+function object_sound:is_playing()
+	return self.snd_obj ~= nil and self.snd_obj:playing()
+end
+
+function object_sound:play(obj_id, faction, point)
+
+	if not self.can_play_sound then
+		return false
+	end
+
+	local obj = db.storage[obj_id] and db.storage[obj_id].object
+
+	if obj == nil then
+		return false
+	end
+
+	if self.stop_time ~= nil and time_global() - self.stop_time < self.idle_time then
+		return false
+	end
+
+	self.stop_time = nil
+	self.played_id = select_next_sound(self)
+
+	if self.played_id == -1 then
+		return false
+	end
+
+	local snd = self.sound[self.played_id]
+
+	if getFS():exist("$game_sounds$", snd.."_pda.ogg")
+	and obj:position():distance_to_sqr(db.actor:position()) >= 5 then
+		self.pda_snd_obj = sound_object(snd.."_pda")
+		self.pda_snd_obj:play_at_pos(db.actor, vector():set(0,0,0), 0, sound_object.s2d)
+		self.pda_snd_obj.volume = 0.8
+	end
+
+	self.snd_obj = sound_object(snd)
+	self.snd_obj:play_at_pos(obj, obj:position(), 0, sound_object.s3d)
+
+	self.can_play_sound = false
+
+	news_manager.send_sound(nil, faction, point, snd)
+
+	return true
+end
+
+function object_sound:stop()
+	if self.snd_obj ~= nil then
+		self.snd_obj:stop()
+	end
+	if self.pda_snd_obj ~= nil and self.pda_snd_obj:playing() then
+		self.pda_snd_obj:stop()
+		self.pda_snd_obj = nil
+	end
+end
+
+function object_sound:save(thread)
+	thread:w_stringZ(tostring(self.played_id))
+end
+
+function object_sound:load(thread)
+	local id = thread:r_stringZ()
+	self.played_id = tonumber(id) -- nil if id == "nil"
+end
+
+function object_sound:save_npc() end
+function object_sound:load_npc() end
+
+----------------------------------------------------------------------------------------------------
+
+class "looped_sound"
+
+function looped_sound:__init(ini, section)
+	self.class_id = "looped_sound"
+	self.snd_obj = nil
+	self.section = section
+	local path = utils.cfg_get_string(ini, section, "path", nil, true, "")
+	if getFS():exist("$game_sounds$", path..".ogg") then
+		self.sound_path = path
+	else
+		abort("[looped_sound:__init]: There is no looped sound with path '%s'.", path)
+	end
+end
+
+function looped_sound:is_playing()
+	return self.snd_obj ~= nil and self.snd_obj:playing()
+end
+
+function looped_sound:stop()
+	if self.snd_obj ~= nil then
+		self.snd_obj:stop()
+	end
+end
+
+function looped_sound:set_volume(level)
+	self.snd_obj.volume = level
+end
+
+function looped_sound:play(obj_id)
+	local obj = db.storage[obj_id].object
+	if obj == nil then
+		return false
+	end
+	self.snd_obj = sound_object(self.sound_path)
+	self.snd_obj:play_at_pos(obj, obj:position(), 0, sound_object.s3d + sound_object.looped)
+	return true
+end
+
+function looped_sound:save() end
+function looped_sound:load() end
+
+function looped_sound:save_npc() end
+function looped_sound:load_npc() end
+
+----------------------------------------------------------------------------------------------------
+
+function load_sound()
+
+	local ini = ini_file("misc\\script_sound.ltx")
+
+	if not ini:section_exist("list") then
+		abort("[sound_theme.load_sound]: There is no section [list] in script_sound.ltx or any of its includes.")
+	end
+
+	local get_string = utils.cfg_get_string
+
+	for i = 0, ini:line_count("list") - 1 do
+		local _, section = ini:r_line("list", i, "", "")
+		local type = get_string(ini, section, "type", nil, true, "")
+		if type == "npc" then
+			theme[section] = npc_sound(ini, section)
+		elseif type == "actor" then
+			theme[section] = actor_sound(ini, section)
+		elseif type == "3d" then
+			theme[section] = object_sound(ini, section)
+		elseif type == "looped" then
+			theme[section] = looped_sound(ini, section)
+		else
+			abort("[sound_theme.load_sound]: Invalid sound type '%s' in section [%s] in script_sound.ltx or one of its includes.", type, section)
+		end
+	end
+--[[
+	dbglog("All sounds in the game:")
+
+	local flist = getFS():file_list_open("$game_sounds$", FS.FS_ListFiles + FS.FS_ClampExt)
+
+	for it = 0, flist:Size() - 1 do
+		dbglog(flist:GetAt(it))
+	end
+
+	flist:Free()
+]]
+end
+
+function init_npc_sound(npc)
+	local npc_faction = npc:character_community()
+	for _, sound in pairs (theme) do
+		if sound.init_npc and sound.avail_communities[npc_faction] then
+			sound:init_npc(npc)
+		end
+	end
+end

@@ -95,11 +95,9 @@ function relocate_money(npc, num, type)
 	local actor = db.actor
 	if type == "in" then
 		actor:give_money(num)
---		game_stats.money_quest_update(num)
 		xr_statistic.inc_recieved_money_counter(num)
 	elseif npc and type == "out" then
 		actor:transfer_money(num, npc)
---		game_stats.money_quest_update(-num)
 		xr_statistic.inc_spent_money_counter(num)
 	end
 	news_manager.relocate_money(actor, type, num)
@@ -177,7 +175,7 @@ end
 -- Transfer functions
 ----------------------------------------------------------------------------------
 
-function relocate_item_section_to_actor(first_speaker, second_speaker, section, amount)
+function relocate_item_section_to_actor(_, _, section, amount)
 
 	if not amount then
 		amount = 1

@@ -10,9 +10,6 @@
 -- 11 = Talk dialog hide
 
 local last_mode = 0
--- xr_meet_dialog_closed = false
--- xr_meet_trade_closed = false
--- xr_meet_upgrade_closed = false
 
 function actor_menu_mode(mode)
 	if (mode == 0) then
@@ -45,55 +42,30 @@ function actor_menu_mode(mode)
 	end
 end
 
-function inventory_wnd_opened() -- used
---	dbglog("[actor_menu.inventory_wnd_opened]: Called!")
-end
-
-function inventory_wnd_closed() -- used
---	dbglog("[actor_menu.inventory_wnd_closed]: Called!")
-end
+function inventory_wnd_opened() end -- used
+function inventory_wnd_closed() end -- used
 
 function trade_wnd_opened() -- used
---	dbglog("[actor_menu.trade_wnd_opened]: Called!")
---	xr_meet_dialog_closed = false
 	pda.dialog_closed = false -- hack to undo pda.dialog_wnd_closed() having set pda.dialog_closed = true
 	pda.trade_closed = false
 end
 
 function trade_wnd_closed() -- used
---	dbglog("[actor_menu.trade_wnd_closed]: Called!")
---	xr_meet_trade_closed = true
 	pda.trade_closed = true
 	pda.dialog_closed = true
 end
 
 function upgrade_wnd_opened() -- used
---	dbglog("[actor_menu.upgrade_wnd_opened]: Called!")
---	xr_meet_dialog_closed = false
 	pda.dialog_closed = false -- hack to undo pda.dialog_wnd_closed() having set pda.dialog_closed = true
 	pda.upgrade_closed = false
 end
 
 function upgrade_wnd_closed() -- used
---	dbglog("[actor_menu.upgrade_wnd_closed]: Called!")
---	xr_meet_upgrade_closed = true
 	pda.upgrade_closed = true
 	pda.dialog_closed = true
 end
 
-function dead_body_search_wnd_opened() -- used
---	dbglog("[actor_menu.dead_body_search_wnd_opened]: Called!")
-end
-
-function dead_body_search_wnd_closed() -- used
---	dbglog("[actor_menu.dead_body_search_wnd_closed]: Called!")
-end
-
-function dialog_wnd_showed() -- not used; pda.dialog_wnd_showed() is
---	dbglog("[actor_menu.dialog_wnd_showed]: Called!")
-end
-
-function dialog_wnd_closed() -- not used; pda.dialog_wnd_closed() is
---	dbglog("[actor_menu.dialog_wnd_closed]: Called!")
---	xr_meet_dialog_closed = true
-end
+function dead_body_search_wnd_opened() end -- used
+function dead_body_search_wnd_closed() end -- used
+function dialog_wnd_showed() end -- not used; pda.dialog_wnd_showed() is
+function dialog_wnd_closed() end -- not used; pda.dialog_wnd_closed() is

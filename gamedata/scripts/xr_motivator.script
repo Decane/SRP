@@ -31,10 +31,9 @@ local function init_corpse_known_info(npc)
 	end
 	if char_ini and char_ini:section_exist("known_info") then
 		for i = 0, char_ini:line_count("known_info") - 1 do
-			local found, info = char_ini:r_line("known_info", i, "", "")
+			local _, info = char_ini:r_line("known_info", i, "", "")
 			npc:give_info_portion(info)
 		end
---		dbglog("Dead NPC with ID "..npc:id().." has known info.")
 	end
 end
 
@@ -110,7 +109,10 @@ function motivator_binder:finish_net_spawn()
 
 	npc_st.squad_obj = sim_board.get_sim_board().squads[se_npc.squad_id]
 
+	self.e_index = db.heli_enemy_count
+
 	db.add_obj(npc)
+	db.add_enemy(npc)
 
 	npc:set_patrol_extrapolate_callback(motivator_binder.extrapolate_callback, self)
 	npc:set_callback(callback.hit, motivator_binder.hit_callback, self)
@@ -118,18 +120,15 @@ function motivator_binder:finish_net_spawn()
 	npc:apply_loophole_direction_distance(1)
 
 	local goodwill = db.goodwill.relations[npc_id]
+	local sympathy = db.goodwill.sympathy[npc_id]
+
 	if goodwill then
 		npc:set_goodwill(goodwill, db.actor)
 	end
 
-	local sympathy = db.goodwill.sympathy[npc_id]
 	if sympathy then
 		npc:set_sympathy(sympathy)
 	end
-
-	db.add_enemy(npc)
-
-	self.e_index = db.heli_enemy_count - 1
 
 	sound_theme.init_npc_sound(npc)
 
@@ -144,11 +143,10 @@ function motivator_binder:finish_net_spawn()
 	local char_ini = npc_st.ini
 	if char_ini:section_exist("known_info") then
 		for i = 0, char_ini:line_count("known_info") - 1 do
-			local found, info = char_ini:r_line("known_info", i, "", "")
+			local _, info = char_ini:r_line("known_info", i, "", "")
 			npc:give_info_portion(info)
 		end
 		se_npc.has_known_info = true
---		dbglog("NPC with ID "..npc_id.." has known info.")
 	end
 
 	bloodsucker_reaction.add_bloodsucker_reactions(npc)

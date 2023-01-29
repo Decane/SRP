@@ -4,9 +4,9 @@ IMPORTANT: Different args are passed to the funcs in this file depending on when
 were called. So the same func may sometimes be passed a client NPC and sometimes a server
 NPC, for example. Some example logic fields and the params they entail:
 
-"sim_avail":          (db.actor_proxy, nil,    p)
-"suitable":           (db.actor,       se_npc, p)
-"combat_ignore_cond": (enemy,          npc,    p)
+"sim_avail":          (nil,      nil,    p)
+"suitable":           (db.actor, se_npc, p)
+"combat_ignore_cond": (enemy,    npc,    p)
 
 ]]
 
@@ -20,40 +20,31 @@ function is_enemy_actor(enemy)
 	return enemy:id() == 0 -- actor ID
 end
 
-function fighting_dist_ge(enemy, npc, p) -- if p[1] == nil, crashes the game
+function fighting_dist_ge(enemy, npc, p)
 	local d = p[1]
 	return enemy:position():distance_to_sqr(npc:position()) >= d * d
 end
 
-function fighting_dist_le(enemy, npc, p) -- if p[1] == nil, crashes the game
+function fighting_dist_le(enemy, npc, p)
 	local d = p[1]
 	return enemy:position():distance_to_sqr(npc:position()) <= d * d
 end
 
-function enemy_in_zone(enemy, npc, p) -- if p[1] == nil, crash the game
-	local zone = db.zone_by_name[p[1]]
-	if zone == nil then
-		abort("[xr_conditions.enemy_in_zone]: No zone corresponds to parameter %s for NPC %s.", tostring(p[1]), npc:name())
-	end
-	return utils.npc_in_zone(enemy, zone)
+function enemy_in_zone(enemy, _, p)
+	return utils.npc_in_zone(enemy, db.zone_by_name[p[1]])
 end
 
-function check_fighting(enemy, npc, p) -- if p[1] == nil, returns false
+function check_fighting(enemy, _, p)
 
---	local enemy_id = db.storage[npc:id()].enemy_id
---	local enemy = db.storage[enemy_id] and db.storage[enemy_id].object
-
-	if not enemy or not enemy:alive() then
+	if not enemy:alive() then
 		return false
 	end
 
 	local enemy_sid = enemy:story_id()
-	for i, v in pairs (p) do
---		if type(v) == "number" then
-			if enemy_sid == v then
-				return true
-			end
---		end
+	for _, story_id in pairs (p) do
+		if enemy_sid == story_id then
+			return true
+		end
 	end
 
 	return false
@@ -67,16 +58,12 @@ function black_screen()
 	return device().precache_frame > 1
 end
 
-function check_npc_name(actor, npc, p) -- if p[1] == nil, now crashes the game instead of returning false
+function check_npc_name(_, npc, p) -- npc may be a server or client entity here
 --[[
 	local npc_name = npc:name()
 
-	if npc_name == nil then
-		return false
-	end
-
-	for k, v in pairs (p) do
-		if string.find(npc_name, v, 1, true) ~= nil then
+	for _, name in pairs (p) do
+		if string.find(npc_name, name, 1, true) ~= nil then
 			return true
 		end
 	end
@@ -86,44 +73,9 @@ function check_npc_name(actor, npc, p) -- if p[1] == nil, now crashes the game i
 	return string.find(npc:name(), p[1], 1, true) ~= nil
 end
 
-function is_playing_sound(actor, npc)
+function is_playing_sound(_, npc)
 	return xr_sound.sound_table[npc:id()] ~= nil
 end
-
---[=[
-function check_enemy_name(actor, npc, p)
-
-	local enemy_id = db.storage[npc:id()].enemy_id
-	local enemy = db.storage[enemy_id] and db.storage[enemy_id].object
---[[
-	if not enemy or not enemy:alive() then
-		return false
-	end
-
-	local name = enemy:name()
-	for i, v in pairs (p) do
-		if string.find(name, v, 1, true) ~= nil then
-			return true
-		end
-	end
-
-	return false
-]]
-	return enemy ~= nil and enemy:alive() and string.find(name, p[1], 1, true) ~= nil
-end
-
-function is_actor_sleeping(actor)
-	return actor:is_actor_sleeping()
-end
-
-function actor_alive(actor)
-	return actor:alive()
-end
-
-function actor_dead(actor)
-	return not actor:alive()
-end
-]=]
 
 --'------------------------------------------------------
 --' Visibility functions
@@ -134,37 +86,24 @@ function actor_see_npc(actor, npc)
 end
 
 function see_actor(actor, npc)
-	return npc:alive() and npc:see(actor)
+	return npc:see(actor)
 end
-
---[[
-function see_npc(actor, npc, p)
-	local npc1 = level_object_by_sid(p[1])
-	return npc and npc1 and npc:see(npc1)
-end
-
-function npc_in_actor_frustum(actor, npc)
-	return npc_in_actor_frustrum(npc)
-end
-]]
 
 --'------------------------------------------------------
 --' Miscellaneous
 --'------------------------------------------------------
 
-function dist_to_actor_le(actor, npc, p) -- if p[1] == nil, now crashes the game instead of returning false
+function dist_to_actor_le(actor, npc, p)
 	local d = p[1]
---	return d and npc:position():distance_to_sqr(actor:position()) <= d * d
 	return npc:position():distance_to_sqr(actor:position()) <= d * d
 end
 
-function dist_to_actor_ge(actor, npc, p) -- if p[1] == nil, now crashes the game instead of returning false
+function dist_to_actor_ge(actor, npc, p)
 	local d = p[1]
---	return d and npc:position():distance_to_sqr(actor:position()) >= d * d
 	return npc:position():distance_to_sqr(actor:position()) >= d * d
 end
 
-function is_obj_on_job(actor, npc, p) -- if p[1] == nil, returns false
+function is_obj_on_job(_, npc, p)
 
 	local smart = xr_gulag.get_npc_smart(npc)
 	if smart == nil then
@@ -172,7 +111,7 @@ function is_obj_on_job(actor, npc, p) -- if p[1] == nil, returns false
 	end
 
 	local job_sect = p[1]
-	for k, v in pairs (smart.npc_info) do
+	for _, v in pairs (smart.npc_info) do
 		if smart.job_data[v.job_id].section == job_sect then
 			return true
 		end
@@ -181,409 +120,97 @@ function is_obj_on_job(actor, npc, p) -- if p[1] == nil, returns false
 	return false
 end
 
-function distance_to_obj_on_job_le(actor, npc, p) -- if p[1] == nil, returns false; if p[2] == nil, crashes the game
+function distance_to_obj_on_job_le(_, npc, p)
 
 	local smart = xr_gulag.get_npc_smart(npc)
-	if smart == nil then -- SRP
-		return false -- SRP
-	end -- SRP
+	if smart == nil then
+		return false
+	end
 
 	local job_sect = p[1]
-
-	for k, v in pairs (smart.npc_info) do
+	for _, v in pairs (smart.npc_info) do
 		if smart.job_data[v.job_id].section == job_sect then
-			local p2 = p[2]
-			return npc:position():distance_to_sqr(v.se_obj.position) <= p2 * p2
+			local d = p[2]
+			return npc:position():distance_to_sqr(v.se_obj.position) <= d * d
 		end
 	end
 
 	return false
 end
 
-function actor_in_zone(actor, npc, p) -- if p[1] == nil and/or db.zone_by_name[p[1]] == nil, returns false
-	local zone = db.zone_by_name[p[1]]
-	return utils.npc_in_zone(actor, zone)
+function actor_in_zone(actor, _, p)
+	return utils.npc_in_zone(actor, db.zone_by_name[p[1]])
 end
 
-function in_zone(actor, npc, p) -- if p[1] == nil and/or db.zone_by_name[p[1]] == nil, returns false
-	local zone = db.zone_by_name[p[1]]
-	return utils.npc_in_zone(npc, zone)
+function in_zone(_, npc, p)
+	return utils.npc_in_zone(npc, db.zone_by_name[p[1]])
 end
 
-function in_zone_by_model_center(actor, npc, p) -- if p[1] == nil and/or db.zone_by_name[p[1]] == nil, crashes the game
-	local zone = db.zone_by_name[p[1]]
-	return zone:inside(npc:center())
+function npc_in_zone(_, npc, p)
+	return utils.npc_in_zone(npc, db.zone_by_name[p[1]])
 end
 
-function npc_in_zone(actor, npc, p) -- if p[1] == nil and/or db.zone_by_name[p[1]] == nil, returns false
-	local zone = db.zone_by_name[p[1]]
-	return utils.npc_in_zone(npc, zone)
+function actor_out_zone(actor, _, p)
+	return not utils.npc_in_zone(actor, db.zone_by_name[p[1]])
 end
 
-function actor_out_zone(actor, npc, p) -- if p[1] == nil and/or db.zone_by_name[p[1]] == nil, returns false
-	local zone = db.zone_by_name[p[1]]
-	return zone ~= nil and not utils.npc_in_zone(actor, zone)
-end
-
-function health_le(actor, npc, p) -- if p[1] == nil, now crashes the game instead of returning false
---	return p[1] and npc.health < p[1]
+function health_le(_, npc, p)
 	return npc.health < p[1]
 end
 
-function heli_health_le(actor, obj, p) -- if p[1] == nil, now crashes the game instead of returning false
---	return p[1] and obj:get_helicopter():GetfHealth() < p[1]
+function heli_health_le(_, obj, p)
 	return obj:get_helicopter():GetfHealth() < p[1]
 end
 
-function npc_community(actor, npc, p) -- if p[1] == nil, crash the game
-
-	local faction_name = p[1]
-	if faction_name == nil then
-		abort("[xr_conditions.npc_community]: Parameter missing.")
-	end
-
-	local npc_obj
-	if npc.id ~= nil then
-		npc_obj = db.storage[npc.id] and db.storage[npc.id].object
-		if npc_obj == nil then
-			return npc:community() == faction_name
-		end
-	else
-		npc_obj = npc
-	end
-
-	return npc_obj:character_community() == faction_name
+function npc_community(_, se_npc, p) -- use only in "suitable" field of NPC logic
+	return se_npc:community() == p[1]
 end
 
-function best_pistol(actor, npc)
+function best_pistol(_, npc)
 	return npc:item_in_slot(1) ~= nil
 end
 
-function is_alive(actor, npc, p) -- if p[1] == nil and/or sim:story_object(p[1]) == nil, returns false
---	local npc1 = level_object_by_sid(p[1]) -- don't use this, else when NPC goes offline, this evalutes to nil and func. returns false even though NPC is still alive
-	local npc1 = sim:story_object(p[1])
-	return npc1 and npc1:alive()
+function is_alive(_, _, p)
+	-- Can't use level_object_by_sid(), else when NPC goes offline, it evalutes
+	-- to nil and func returns false even though NPC is still alive.
+	local story_npc = sim:story_object(p[1]) -- level_object_by_sid(p[1])
+	return story_npc ~= nil and story_npc:alive()
 end
 
-function is_dead_all(actor, npc, p) -- if p[1] == nil and/or sim:story_object(p[1]) == nil, returns true
-	for i, v in pairs (p) do
---		local npc1 = level_object_by_sid(v)
-		local npc1 = sim:story_object(v)
-		if npc1 and npc1:alive() then
+function is_dead_all(_, _, p)
+	for _, npc_id in pairs (p) do
+		local story_npc = sim:story_object(npc_id) -- level_object_by_sid(npc_id)
+		if story_npc and story_npc:alive() then
 			return false
 		end
 	end
 	return true
 end
 
-function actor_has_item(actor, npc, p) -- if p[1] == nil, now crashes the game instead of returning false
---	return p[1] ~= nil and actor:object(p[1]) ~= nil
+function actor_has_item(actor, _, p)
 	return actor:object(p[1]) ~= nil
 end
-
---[[
-function is_wounded(actor, npc)
-	return xr_wounded.is_wounded(npc)
-end
-
--- duplicate:
-
-function distance_to_obj_ge(actor, npc, p)
-	local npc1, dist = level_object_by_sid(p[1]), p[2]
-	return npc1 and npc:position():distance_to_sqr(npc1:position()) >= dist * dist
-end
-
-function obj_in_zone(actor, zone, p)
-	for i, v in pairs (p) do
---		local npc1 = level_object_by_sid(v)
-		local npc1 = sim:story_object(v)
-		if npc1 then
---			if zone:inside(npc1:position()) then
-			if zone:inside(npc1.position) then
-				return true
-			end
-		end
-	end
-	return false
-end
-
-function one_obj_in_zone(actor, zone, p)
---	local obj1 = level_object_by_sid(p[1])
-	local obj1 = sim:story_object(p[1])
-	if not obj1 then
-		return p[2] ~= "false"
-	end
---	return zone:inside(obj1:position())
-	return zone:inside(obj1.position)
-end
-
-function actor_health_le(actor, npc, p)
---	return p[1] and actor.health < p[1]
-	return actor.health < p[1]
-end
-
-function heli_see_npc(actor, obj, p)
-	local heli = level_object_by_sid(p[1])
-	return heli ~= nil and obj:get_helicopter():isVisible(heli)
-end
-
--- duplicate:
-
-function heli_see_actor(actor, obj)
-	return actor ~= nil and obj:get_helicopter():isVisible(actor)
-end
-
-function enemy_group(actor, npc, p)
-	local enemy_id = db.storage[npc:id()].enemy_id
-	local enemy = db.storage[enemy_id] and db.storage[enemy_id].object
-	local g = enemy:group()
-	for i, v in pairs (p) do
-		if v == g then
-			return true
-		end
-	end
-	return false
-end
-
-function enemy_gulag(actor, npc, p)
-
-	local enemy_id = db.storage[npc:id()].enemy_id
-	local enemy = db.storage[enemy_id] and db.storage[enemy_id].object
-	if enemy == nil or not enemy:alive() or enemy:id() == 0 then -- 0 = actor ID
-		return false
-	end
-
-	local g = xr_gulag.get_npc_smart(enemy)
-	if g == nil then
-		return false
-	end
-
-	local n = g.name
-	for i, v in pairs (p) do
-		if n == v then
-			return true
-		end
-	end
-
-	return false
-end
-
-function gulag_state(actor, npc, p)
-	return xr_gulag.getGulagState(p[1]) == p[2]
-end
-
-function npc_rank(actor, npc, p)
-	local rank = p[1]
-	if rank == nil then
-		abort("[xr_conditions.npc_rank]: Parameter missing.")
-	end
-	return ranks.get_obj_rank_name(npc) == rank
-end
-
-function npc_profile(actor, npc, p)
-	local profile = p[1]
-	if profile == nil then
-		abort("[xr_conditions.npc_profile]: Parameter missing.")
-	end
-	return npc:profile_name() == profile
-end
-
-function hitted_by(actor, npc, p)
-
-	local t = db.storage[npc:id()].hit
-	if not t then
-		return false
-	end
-
-	for i, v in pairs (p) do
---		local npc1 = level_object_by_sid(v)
-		local npc1 = sim:story_object(v)
---		if npc1 and t.who == npc1:id() then
-		if npc1 and t.who == npc1.id then
-			return true
-		end
-	end
-
-	return false
-end
-
-function killed_by(actor, npc, p)
-
-	local t = db.storage[npc:id()].death
-	if not t then
-		return false
-	end
-
-	for i, v in pairs (p) do
---		local npc1 = level_object_by_sid(v)
-		local npc1 = sim:story_object(v)
---		if npc1 and t.killer == npc1:id() then
-		if npc1 and t.killer == npc1.id then
-			return true
-		end
-	end
-
-	return false
-end
-
-function is_alive_all(actor, npc, p)
-	for i, v in pairs (p) do
---		local npc1 = level_object_by_sid(v)
-		local npc1 = sim:story_object(v)
-		if npc1 and not npc1:alive() then
-			return false
-		end
-	end
-	return true
-end
-
-function is_alive_one(actor, npc, p)
-	for i, v in pairs (p) do
-		local npc1 = sim:story_object(v)
-		if npc1 and IsStalker(npc1) and npc1:alive() then
-			return true
-		end
-	end
-	return false
-end
-
-function is_dead_one(actor, npc, p)
-	for i, v in pairs (p) do
---		local npc1 = level_object_by_sid(v)
-		local npc1 = sim:story_object(v)
-		if not npc1 or not npc1:alive() then
-			return true
-		end
-	end
-	return false
-end
-
-function is_dead(actor, npc, p)
---	local npc1 = level_object_by_sid(p[1])
-	local npc1 = sim:story_object(p[1])
-	return not npc1 or not npc1:alive()
-end
-
-function gulag_empty(actor, npc, p)
-	local gulag = p[1]
-	return not gulag or xr_gulag.getGulagPopulationComed(gulag) == 0
-end
-
-function gulag_population_le(actor, npc, p)
-	local gulag, pop = p[1], p[2]
-	return not gulag or not pop or xr_gulag.getGulagPopulation(gulag) <= pop
-end
-
-function gulag_population_ge(actor, npc, p)
-	local gulag, pop = p[1], p[2]
-	return not gulag or not pop or xr_gulag.getGulagPopulation(gulag) >= pop
-end
-
-function gulag_population_comed_le(actor, npc, p)
-	local gulag, pop = p[1], p[2]
-	return not gulag or not pop or xr_gulag.getGulagPopulationComed(gulag) <= pop
-end
-
-function gulag_population_comed_ge(actor, npc, p)
-	local gulag, pop = p[1], p[2]
-	return not gulag or not pop or xr_gulag.getGulagPopulationComed(gulag) >= pop
-end
-
-function gulag_population_active(actor, npc, p)
-
-	local gulag = xr_gulag.get_gulag_by_name(p[1])
-	if gulag == nil then
-		return 0
-	end
-
-	local val = 0
-	for k, v in pairs (gulag.Object) do
-		if v == true or (v:alive() and not (xr_wounded.is_heavy_wounded_by_id(k) or xr_wounded.is_psy_wounded_by_id(k))) then
-			if gulag.Object_begin_job[k] == true then
-				val = val + 1
-			end
-		end
-	end
-
-	return val
-end
-
-function gulag_inactive(actor, npc, p)
-
-	local gulag = xr_gulag.get_gulag_by_name(p[1])
-	if gulag == nil then
-		return false
-	end
-
-	local val = 0
-	for k, v in pairs (gulag.Object) do
-		if v == true or (v:alive() and not (xr_wounded.is_heavy_wounded_by_id(k) or xr_wounded.is_psy_wounded_by_id(k))) then
-			if gulag.Object_begin_job[k] == true then
-				val = val + 1
-			end
-		end
-	end
-
-	return val == 0
-end
-
-function gulag_population_active_le(actor, npc, p)
-
-	local gulag = xr_gulag.get_gulag_by_name(p[1])
-	if gulag == nil then
-		return false
-	end
-
-	local val = 0
-	for k, v in pairs (gulag.Object) do
-		if v == true or (v:alive() and not (xr_wounded.is_heavy_wounded_by_id(k) or xr_wounded.is_psy_wounded_by_id(k))) then
-			if gulag.Object_begin_job[k] == true then
-				val = val + 1
-			end
-		end
-	end
-
-	return val <= p[2]
-end
-
-function gulag_casualities_ge(actor, npc, p)
-	local casualties, number = p[1], p[2]
-	return casualties ~= nil and number ~= nil and xr_gulag.getCasualities(casualties) >= number
-end
-
-function signal(actor, npc, p)
-	local sig = p[1]
-	local st = db.storage[npc:id()]
-	local sigs = st[st.active_scheme].signals
-	return sig ~= nil and sigs ~= nil and sigs[sig] == true
-end
-
-function odd_time_interval(actor, npc, p)
-	return odd(game.time() / p[1])
-end
-]]
 
 --'------------------------------------------------------
 --' Counter
 --'------------------------------------------------------
 
-function counter_greater(actor, npc, p) -- if p[1]/p[2] == nil, returns false; if counter doesn't exist, compares against 0
+function counter_greater(actor, _, p)
 	local counter_name, num = p[1], p[2]
 	return counter_name and num and xr_logic.pstor_retrieve(actor, counter_name, 0) > num
 end
 
-function counter_equal(actor, npc, p) -- if p[1]/p[2] == nil, returns false; if counter doesn't exist, compares against 0
+function counter_equal(actor, _, p)
 	local counter_name, num = p[1], p[2]
 	return counter_name and num and xr_logic.pstor_retrieve(actor, counter_name, 0) == num
 end
 
-function counter_exists(actor, npc, p) -- if p[1] == nil, returns false
+function counter_exists(actor, _, p)
 	local counter_name = p[1]
 	-- xr_logic.pstor_retrieve(actor, counter_name, 0) never evaluates to nil because of 0
 	-- default value, which is never nil. So in vanilla, this function always returns
-	-- true. Set default value of counter to nil so that func. returns false if counter
+	-- true. Set default value of counter to nil so that func returns false if counter
 	-- doesn't exist.
---	return counter_name and xr_logic.pstor_retrieve(actor, counter_name, 0) ~= nil
 	return counter_name and xr_logic.pstor_retrieve(actor, counter_name, nil) ~= nil
 end
 
@@ -591,33 +218,20 @@ end
 --' Kamp
 --'------------------------------------------------------
 
-function _kamp_talk(actor, npc)
---[[
-	local npc_id = npc:id()
-	if xr_kamp.kamp_stalkers[npc_id] then
-		return xr_kamp.kamp_stalkers[npc_id]
-	end
-	return false
-]]
+function _kamp_talk(_, npc)
 	return xr_kamp.kamp_stalkers[npc:id()] == true
 end
-
---[[
-function _used(actor, npc)
-	return npc:is_talking()
-end
-]]
 
 --'------------------------------------------------------
 --'
 --'------------------------------------------------------
 
-function has_enemy_in_current_loopholes_fov(actor, npc)
+function has_enemy_in_current_loopholes_fov(_, npc)
 	local enemy = npc:best_enemy()
 	return npc:in_smart_cover() and enemy ~= nil and npc:in_current_loophole_fov(enemy:position())
 end
 
-function smart_cover_suitable(actor, npc, p) -- if p[1] == nil, returns false
+function smart_cover_suitable(_, npc, p)
 	local smrt_cover = bind_smart_cover.registered_smartcovers[p[1]]
 	return smrt_cover ~= nil and npc:suitable_smart_cover(smrt_cover)
 end
@@ -626,230 +240,97 @@ function talking(actor)
 	return actor:is_talking()
 end
 
-function npc_talking(actor, npc)
+function npc_talking(_, npc)
 	return npc:is_talking()
 end
 
 function actor_enemy(actor, npc)
---	local t = db.storage[npc:id()].death
-	return npc:relation(actor) == game_object.enemy -- or (t ~= nil and t.killer == actor:id())
+	return npc:relation(actor) == game_object.enemy
 end
 
-function is_faction_enemy_to_actor(actor, npc, p) -- if p[1] == nil, now crashes the game instead of returning false
+function is_faction_enemy_to_actor(actor, _, p)
 	local faction = p[1]
---	return faction ~= nil and relation_registry.community_goodwill(faction, db.actor:id()) <= -1000
 	return (relation_registry.community_goodwill(faction, 0) + relation_registry.community_relation(faction, actor:character_community())) <= -1000
 end
 
-function is_faction_friend_to_actor(actor, npc, p) -- if p[1] == nil, now crashes the game instead of returning false
+function is_faction_friend_to_actor(actor, _, p)
 	local faction = p[1]
---	return faction ~= nil and relation_registry.community_goodwill(faction, db.actor:id()) >= 1000
 	return (relation_registry.community_goodwill(faction, 0) + relation_registry.community_relation(faction, actor:character_community())) >= 1000
 end
 
-function is_squad_enemy_to_actor(actor, npc, p) -- if p[1] == nil, returns false
+function is_squad_enemy_to_actor(_, _, p)
 	return game_relations.check_all_squad_members(p[1], "enemy")
 end
 
-function trade_exchanged(actor, npc)
+function trade_exchanged(_, npc)
 	return db.storage[npc:id()].trade.exchanged
 end
 
-function trading(actor, npc)
+function trading(_, npc)
 	return db.storage[npc:id()].trade.trading
 end
 
-function hit_by_actor(actor, npc)
+function hit_by_actor(_, npc)
 	local t = db.storage[npc:id()].hit
 	return t ~= nil and t.who == 0 -- actor ID
 end
 
 function actor_has_weapon(actor)
-	local obj = actor:active_item()
-	return obj ~= nil and isWeapon(obj) == true
+	local active_item = actor:active_item()
+	return active_item ~= nil and isWeapon(active_item)
 end
 
-function heavy_wounded(actor, npc)
+function heavy_wounded(_, npc)
 	return xr_wounded.is_heavy_wounded_by_id(npc:id())
 end
 
-function time_period(actor, npc, p) -- if p[1]/p[2] == nil, now crashes the game instead of returning false
+function time_period(_, _, p)
 	local tshift, period = p[1], p[2]
---	return db.actor ~= nil and tshift ~= nil and period ~= nil and tshift > period and level.get_time_minutes() % tshift <= period
 	return tshift > period and level.get_time_minutes() % tshift <= period
 end
 
 function is_day()
-	local tid = level.get_time_hours()
---	return db.actor ~= nil and tid >= 6 and tid < 21
-	return tid >= 6 and tid < 21
+	local hour = level.get_time_hours()
+	return hour >= 6 and hour < 21
 end
 
 function is_dark_night()
-	local tid = level.get_time_hours()
---	return db.actor ~= nil and (tid < 3 or tid > 22)
-	return tid < 3 or tid > 22
+	local hour = level.get_time_hours()
+	return hour < 3 or hour > 22
 end
-
---[[
-function has_enemy(actor, npc)
-	return npc:best_enemy() ~= nil
-end
-
-function see_enemy(actor, npc)
-	local enemy = npc:best_enemy()
-	return enemy ~= nil and npc:see(enemy)
-end
-
-function heli_see_actor(actor, obj)
-	return obj:get_helicopter():isVisible(actor)
-end
-
-function actor_friend(actor, npc)
-	return npc:relation(actor) == game_object.friend
-end
-
-function actor_neutral(actor, npc)
-	return npc:relation(actor) == game_object.neutral
-end
-
-function is_factions_enemies(actor, npc, p)
-	local faction = p[1]
-	return faction and game_relations.is_factions_enemies(actor:character_community(), faction)
-end
-
-function is_factions_friends(actor, npc, p)
-	local faction = p[1]
-	return faction and game_relations.is_factions_friends(actor:character_community(), faction)
-end
-
-function is_factions_neutrals(actor, npc, p)
-	return not (is_factions_enemies(actor, npc, p) or is_factions_friends(actor, npc, p))
-end
-
-function is_faction_neutral_to_actor(actor, npc, p)
-	return not (is_faction_enemy_to_actor(actor, npc, p) or is_faction_friend_to_actor(actor, npc, p))
-end
-
-function is_squad_friend_to_actor(actor, npc, p)
-	local squad_name = p[1]
-	return squad_name and game_relations.check_all_squad_members(squad_name, "friend")
-end
-
-function is_squad_neutral_to_actor(actor, npc, p)
-	return not (is_squad_enemy_to_actor(actor, npc, p) or is_squad_friend_to_actor(actor, npc, p))
-end
-
-function fighting_actor(actor, npc)
-	local enemy_id = db.storage[npc:id()].enemy_id
-	local enemy = db.storage[enemy_id] and db.storage[enemy_id].object
-	return enemy and enemy:id() == 0 -- actor ID
-end
-
-function killed_by_actor(actor, npc)
-	local t = db.storage[npc:id()].death
-	return t ~= nil and t.killer == 0 -- actor ID
-end
-
-function is_arsenal_guard_rest_time(actor)
-	local tid = level.get_time_hours()
-	return db.actor ~= nil and tid > 3 and tid < 22
-end
-
-function bar_no_sniper_time(actor)
-	return db.actor ~= nil and level.get_time_hours() >= 5
-end
-
-function mob_has_enemy(actor, npc)
-	return npc ~= nil and npc:get_enemy() ~= nil
-end
-
-function mob_actor_nearest()
-	return false
-end
-
-function mob_was_hit(actor, npc)
-	local h = npc:get_monster_hit_info()
-	return h.who and h.time ~= 0
-end
-]]
-
---'------------------------------------------------------
---' Unused SoC functions
---'------------------------------------------------------
-
---[[
-local trade_by_level = {
-	l01_escape = "escape",
-	l02_garbage = "garbage",
-	l03_agroprom = "garbage",
-	l03u_agr_underground = "garbage",
-	l04_darkvalley = "garbage",
-	k01_darkscap = "garbage",
-	l04u_labx18 = "garbage",
-	l05_bar = "bar",
-	l06_Rostok = "bar",
-	l07_military = "bar",
-	l08_yantar = "yantar",
-	l08u_brainlab = "yantar",
-	l09_deadcity = "yantar",
-	l10_radar = "radar",
-	l10u_bunker = "radar",
-	l11_pripyat = "radar"
-	}
-
-function npc_trade_by_level(actor, npc, p)
-	local trade = trade_by_level[level.name()]
-	return trade ~= nil and trade == p[1]
-end
-
-function treasure_exist()
-	return true
-end
-
-function can_send_tutorial(actor)
---	local actor = db.actor
-	return not actor:is_talking() and not game.has_active_tutorial() and not actor:has_info("ui_inventory") and not actor:has_info("ui_pda")
-end
-
-function talking_or_tutor(actor)
-	return actor:is_talking() or has_alife_info("esc_trader_experienced") or has_alife_info("esc_trader_newbie")
-end
-]]
 
 --'------------------------------------------------------
 --' Actor state functions
 --'------------------------------------------------------
 
 -- The actor community functions are potentially called by pick_section_from_condlist()
--- with args passed from sim_board.is_point_avail(), in which case 'actor' is not db.actor
--- but db.actor_proxy, which does not support character_community(). Hence explicit tests
--- for db.actor validity are necessary here.
+-- with args passed from sim_board.is_point_avail(), in which case 'actor' is nil.
+-- Hence explicit tests for db.actor validity are necessary here.
 
 function actor_in_dolg()
-	local act = db.actor
-	return act ~= nil and act:character_community() == "actor_dolg"
+	local actor = db.actor
+	return actor ~= nil and actor:character_community() == "actor_dolg"
 end
 
 function actor_in_freedom()
-	local act = db.actor
-	return act ~= nil and act:character_community() == "actor_freedom"
+	local actor = db.actor
+	return actor ~= nil and actor:character_community() == "actor_freedom"
 end
 
 function actor_in_stalker()
-	local act = db.actor
-	return act ~= nil and act:character_community() == "actor_stalker"
+	local actor = db.actor
+	return actor ~= nil and actor:character_community() == "actor_stalker"
 end
 
 function actor_in_bandit()
-	local act = db.actor
-	return act ~= nil and act:character_community() == "actor_bandit"
+	local actor = db.actor
+	return actor ~= nil and actor:character_community() == "actor_bandit"
 end
 
-function actor_on_level(actor, npc, p) -- if p[1] == nil, returns false
-	local level_name = level.name()
-	for k, v in pairs (p) do
-		if v == level_name then
+function actor_on_level(_, _, p)
+	local actor_level = level.name()
+	for _, level_name in pairs (p) do
+		if level_name == actor_level then
 			return true
 		end
 	end
@@ -877,7 +358,7 @@ end
 --' Cover support
 --'------------------------------------------------------
 
-function cover_attack(actor, npc)
+function cover_attack(_, npc)
 	local squad = db.storage[npc:id()].squad_obj
 	return squad ~= nil and squad:cover_attack()
 end
@@ -886,19 +367,35 @@ end
 --' Squad support
 --'------------------------------------------------------
 
-function squad_in_zone(actor, npc, p) -- returns true if even a single squad member is in zone, false if no squad member is in zone
+function squad_in_zone_all(_, _, p)
 
-	local squad_name, zone_name = p[1], p[2]
-	if squad_name == nil or zone_name == nil then
-		abort("[xr_conditions.squad_in_zone]: Parameter(s) missing.")
-	end
-
-	local squad = sim_board.get_sim_board().squads[squad_name]
+	local squad = sim_board.get_sim_board().squads[p[1]]
 	if squad == nil then
 		return false
 	end
 
-	local zone = db.zone_by_name[zone_name]
+	local zone = db.zone_by_name[p[2]]
+	if zone == nil then
+		return false
+	end
+
+	for npc_id in pairs (squad.squad_npc) do
+		if not zone:inside(sim:object(npc_id).position) then
+			return false
+		end
+	end
+
+	return true
+end
+
+function squad_in_zone(_, _, p)
+
+	local squad = sim_board.get_sim_board().squads[p[1]]
+	if squad == nil then
+		return false
+	end
+
+	local zone = db.zone_by_name[p[2]]
 	if zone == nil then
 		return false
 	end
@@ -912,9 +409,9 @@ function squad_in_zone(actor, npc, p) -- returns true if even a single squad mem
 	return false
 end
 
-function attacking_smart_captured(actor, obj)
+function attacking_smart_captured(_, npc)
 
-	local squad = db.storage[obj:id()].squad_obj
+	local squad = db.storage[npc:id()].squad_obj
 	if squad == nil then
 		return false
 	end
@@ -932,26 +429,15 @@ function attacking_smart_captured(actor, obj)
 	return smrt_faction_name ~= squad.player_id and smrt_faction_name ~= "none"
 end
 
-function npc_to_smart_dist(actor, obj, p) -- if p[1]/p[2] == nil, crash the game
-
-	local smart_name, dist = p[1], p[2]
-	if smart_name == nil or dist == nil then
-		abort("[xr_conditions.npc_to_smart_dist]: Parameter(s) missing.")
-	end
-
-	local smart = sim_board.get_sim_board():get_smart_by_name(smart_name)
---	local dist = tonumber(dist) -- already coerced to number by xr_logic.parse_func_params()
-
-	return game_graph():vertex(obj:game_vertex_id()):level_id() == smart.level_id and obj:position():distance_to_sqr(smart.position) <= dist * dist
+function npc_to_smart_dist(_, npc, p)
+	local d = p[2]
+	local smart = sim_board.get_sim_board().smarts_by_names[p[1]]
+	return game_graph():vertex(npc:game_vertex_id()):level_id() == smart.level_id and npc:position():distance_to_sqr(smart.position) <= d * d
 end
 
-function current_squad_stage(actor, obj, p) -- if p[1] == nil, crash the game
+function current_squad_stage(_, npc, p)
 
-	if p[1] == nil then
-		abort("[xr_conditions.current_squad_stage]: Parameter missing.")
-	end
-
-	local squad = db.storage[obj:id()].squad_obj
+	local squad = db.storage[npc:id()].squad_obj
 	if squad == nil then
 		return false
 	end
@@ -971,23 +457,17 @@ function current_squad_stage(actor, obj, p) -- if p[1] == nil, crash the game
 	return false
 end
 
-function target_smart_name(actor, smart, p) -- if p[1] == nil, crash the game
-	local smart_name = p[1]
-	if smart_name == nil then
-		abort("[xr_conditions.target_smart_name]: Parameter missing.")
-	end
-	return smart:name() == smart_name
+function target_smart_name(_, smart, p)
+	return smart:name() == p[1]
 end
 
-function target_resource_smart(actor, smart)
+function target_resource_smart(_, smart)
 	local sim_type = smart.sim_type
 	return sim_type == "resource" or sim_type == "territory"
 end
 
-function target_path_smart(actor, smart)
---	local faction = nil
---	local board = sim_board.get_sim_board()
-	for k, faction in pairs (sim_board.get_sim_board().players) do
+function target_path_smart(_, smart)
+	for _, faction in pairs (sim_board.get_sim_board().players) do
 		if faction.community_player == true then
 			if faction.brain.interfirience_points ~= nil then
 				if faction.brain.interfirience_points[smart.id] ~= nil then
@@ -1000,95 +480,63 @@ function target_path_smart(actor, smart)
 	return false
 end
 
-function smart_captured_by_faction(actor, obj, p) -- if p[1]/p[2] == nil and/or p[1] doesn't denote a smart, crash the game
-
-	local smart_name, faction_name = p[1], p[2]
-	if smart_name == nil or faction_name == nil then
-		abort("[xr_conditions.smart_captured_by_faction]: Parameter(s) missing.")
-	end
-
-	local smrt = sim_board.get_sim_board().smarts_by_names[smart_name]
-	if smrt == nil then
-		abort("[xr_conditions.smart_captured_by_faction]: Smart %s does not exist.", tostring(smart_name))
-	end
-
-	return smrt.player_name == faction_name
+function smart_captured_by_faction(_, _, p)
+	return sim_board.get_sim_board().smarts_by_names[p[1]].player_name == p[2]
 end
 
-function spawn_smart_captured_by_faction(actor, smart, p) -- if p[1] == nil, crash the game
-	local faction_name = p[1]
-	if faction_name == nil then
-		abort("[xr_conditions.spawn_smart_captured_by_faction]: Parameter missing.")
-	end
-	return smart.player_name == faction_name
+function spawn_smart_captured_by_faction(_, smart, p)
+	return smart.player_name == p[1]
 end
 
-function smart_squad_population(actor, smart, p) -- checks if the p[1] faction's squad population in smart p[2] is *less than* p[3]
-	local board = sim_board.get_sim_board() -- if p[1]/p[2]/p[3] == nil, crashes the game
+function smart_squad_population(_, _, p) -- checks if faction p[1]'s squad pop. on smart p[2] < p[3]
+	local board = sim_board.get_sim_board()
 	local point = board.smarts_by_names[p[2]]
 	local squad_quan = board:get_smart_squad_quantity(point, board.players[p[1]]) + board:get_smart_population(point)
-	return squad_quan < p[3] -- tonumber(p[3]) -- already coerced to number by xr_logic.parse_func_params()
+	return squad_quan < p[3]
 end
 
-function is_smart_captured(actor, obj, p) -- if p[1] doesn't denote a smart, crash the game
-	local smrt = sim_board.get_sim_board().smarts_by_names[p[1]]
-	if smrt == nil then
-		abort("[xr_conditions.is_smart_captured]: Smart %s does not exist.", tostring(p[1]))
-	end
-	return smrt.player_name ~= "none"
+function is_smart_captured(_, _, p)
+	return sim_board.get_sim_board().smarts_by_names[p[1]].player_name ~= "none"
 end
 
-function squad_exist(actor, npc, p) -- if p[1] == nil, crash the game
-	local squad_name = p[1]
-	if squad_name == nil then
-		abort("[xr_conditions.squad_exist]: Parameter missing.")
-	end
-	return sim_board.get_sim_board().squads[squad_name] ~= nil
+function squad_exist(_, _, p)
+	return sim_board.get_sim_board().squads[p[1]] ~= nil
 end
 
-function is_smart_defending(actor, npc, p) -- if p[1] doesn't denote a smart, crash the game
-	local smart = sim_board.get_sim_board().smarts_by_names[p[1]]
-	if smart == nil then
-		abort("[xr_conditions.is_smart_defending]: Smart %s does not exist.", tostring(p[1]))
-	end
-	return smart.combat_manager:point_under_attack()
+function is_smart_defending(_, _, p)
+	return sim_board.get_sim_board().smarts_by_names[p[1]].combat_manager:point_under_attack()
 end
 
-function is_gulag_attacking_target(actor, se_npc, p)
+function is_gulag_attacking_target(_, se_npc, p) -- use only in "suitable" field of NPC logic
 	return xr_gulag.obj_attacking_smart(se_npc) == p[1]
 end
 
-function check_dist_to_obj_on_job_le(actor, npc, p) -- if p[1]/p[2]/sim:object(p[1])/gulag:idNPCOnJob(p[2]) == nil, returns false; if p[3] == nil, crashes the game
+function check_dist_to_obj_on_job_le(_, npc, p)
 
 	local gulag = sim:object(p[1])
 	if gulag == nil then
 		return false
 	end
 
-	local npc_id = gulag:idNPCOnJob(p[2])
-	if npc_id == nil then
+	local job_npc_id = gulag:idNPCOnJob(p[2])
+	if job_npc_id == nil then
 		return false
 	end
 
-	local obj = db.storage[npc_id] and db.storage[npc_id].object
-	return obj and npc:position():distance_to(obj:position()) <= p[3]
+	local job_npc = db.storage[job_npc_id] and db.storage[job_npc_id].object
+	return job_npc and npc:position():distance_to(job_npc:position()) <= p[3]
 end
 
-function check_npc_squad(actor, npc, p) -- if p[1] == nil, crash the game; if p[1] doesn't denote a squad, returns false
+function check_npc_squad(_, npc, p) -- npc may be a server or client entity here
 
-	local squad_name = p[1]
-	if squad_name == nil then
-		abort("[xr_conditions.check_npc_squad]: Parameter missing.")
-	end
-
-	local squad = sim_board.get_sim_board().squads[squad_name]
+	local squad = sim_board.get_sim_board().squads[p[1]]
 	if squad == nil then
 		return false
 	end
 
-	local npc_id = sim:object(npc:name()).id -- npc may be a server or client entity here
-	for k in pairs (squad.squad_npc) do
-		if npc_id == k then
+	local npc_id = sim:object(npc:name()).id
+	for id in pairs (squad.squad_npc) do
+		if npc_id == id then
 			return true
 		end
 	end
@@ -1096,52 +544,11 @@ function check_npc_squad(actor, npc, p) -- if p[1] == nil, crash the game; if p[
 	return false
 end
 
---[[
-function target_squad_name(actor, squad, p)
-	local squad_name = p[1]
-	if squad_name == nil then
-		abort("[xr_conditions.target_squad_name]: Parameter missing.")
-	end
-	return squad.squad_id == squad_name
-end
-]]
-
---'------------------------------------------------------
---' Functions for Yantar
---'------------------------------------------------------
-
-function squad_in_zone_all(actor, npc, p) -- returns false if any squad npc is not in zone, true if all are in zone, but also (in vanilla) true if squad == nil (oddly enough)
-
-	local squad_name, zone_name = p[1], p[2]
-	if squad_name == nil or zone_name == nil then
-		abort("[xr_conditions.squad_in_zone_all]: Parameter(s) missing.")
-	end
-
-	local squad = sim_board.get_sim_board().squads[squad_name]
-	if squad == nil then
---		return true -- why true?
-		return false
-	end
-
-	local zone = db.zone_by_name[zone_name]
-	if zone == nil then
-		return false
-	end
-
-	for npc_id in pairs (squad.squad_npc) do
-		if not zone:inside(sim:object(npc_id).position) then
-			return false
-		end
-	end
-
-	return true
-end
-
 --'------------------------------------------------------
 --' Functions for Stancia
 --'------------------------------------------------------
 
-function stc_check_actor_position(actor, npc, p)
+function stc_check_actor_position(actor, _, p)
 	local act_pos = actor:position()
 	for i = p[1], 5 do
 		local zone = db.zone_by_name["stc_strelok_cover_"..i.."_finish"]
@@ -1152,10 +559,10 @@ function stc_check_actor_position(actor, npc, p)
 	return false
 end
 
-function stc_npc_in_zone(actor, npc, p)
-	local npc1 = level_object_by_sid(p[1])
+function stc_npc_in_zone(_, _, p)
+	local story_npc = level_object_by_sid(p[1])
 	local zone = db.zone_by_name[p[2]]
-	return npc1 ~= nil and zone:inside(npc1:position())
+	return story_npc ~= nil and zone:inside(story_npc:position())
 end
 
 function is_surge_complete()
@@ -1165,12 +572,6 @@ end
 function is_surge_activated()
 	return xr_surge_hide.surge_activated == true
 end
-
---[[
-function stc_strelok_exist()
-	return level_object_by_sid(1400) ~= nil
-end
-]]
 
 --'------------------------------------------------------
 --' functions for faction expansion levels
@@ -1193,12 +594,6 @@ function is_csky_at_expansion_3_or_higher()
 	return exp ~= "expansion_0" and exp ~= "expansion_1" and exp ~= "expansion_2"
 end
 
---[[
-function is_stalker_at_expansion_0()
-	return sim_faction.get_current_expansion("stalker") == "expansion_0"
-end
-]]
-
 function is_stalker_at_expansion_1()
 	return sim_faction.get_current_expansion("stalker") == "expansion_1"
 end
@@ -1217,12 +612,6 @@ function is_stalker_at_expansion_4_or_higher()
 	return exp ~= "expansion_0" and exp ~= "expansion_1" and exp ~= "expansion_2" and exp ~= "expansion_3"
 end
 
---[[
-function is_bandit_at_expansion_0()
-	return sim_faction.get_current_expansion("bandit") == "expansion_0"
-end
-]]
-
 function is_bandit_at_expansion_1()
 	return sim_faction.get_current_expansion("bandit") == "expansion_1"
 end
@@ -1235,12 +624,6 @@ function is_bandit_at_expansion_3_or_higher()
 	local exp = sim_faction.get_current_expansion("bandit")
 	return exp ~= "expansion_0" and exp ~= "expansion_1" and exp ~= "expansion_2"
 end
-
---[[
-function is_freedom_at_expansion_0()
-	return sim_faction.get_current_expansion("freedom") == "expansion_0"
-end
-]]
 
 function is_freedom_at_expansion_1()
 	return sim_faction.get_current_expansion("freedom") == "expansion_1"
@@ -1255,12 +638,6 @@ function is_freedom_at_expansion_3_or_higher()
 	return exp ~= "expansion_0" and exp ~= "expansion_1" and exp ~= "expansion_2"
 end
 
---[[
-function is_dolg_at_expansion_0()
-	return sim_faction.get_current_expansion("dolg") == "expansion_0"
-end
-]]
-
 function is_dolg_at_expansion_1()
 	return sim_faction.get_current_expansion("dolg") == "expansion_1"
 end
@@ -1274,7 +651,7 @@ function is_dolg_at_expansion_3_or_higher()
 	return exp ~= "expansion_0" and exp ~= "expansion_1" and exp ~= "expansion_2"
 end
 
-function is_faction_resource_greater(actor, npc, p) -- if p[1]/p[2] == nil, crashes the game
+function is_faction_resource_greater(_, _, p)
 	return sim_faction.get_current_resource(p[1]) >= p[2]
 end
 
@@ -1286,7 +663,7 @@ function is_shooting_finished()
 	return minigame_dialogs.is_shooting_finished()
 end
 
-function check_crowkiller_state(actor, npc, p)
+function check_crowkiller_state(_, _, p)
 	local state, m = p[1], minigames_manager.get_minigames_manager()
 	local crowkiller = m:get_current_crowkiller()
 	return state ~= nil and crowkiller ~= "" and m:get_minigame_state(crowkiller) == state
@@ -1298,7 +675,7 @@ function crowkiller_winned()
 	return crowkiller ~= "" and m:get_minigame_state(crowkiller) == "finished" and m:get_minigame_param(crowkiller, "win")
 end
 
-function crowkiller_game_type(actor, npc, p)
+function crowkiller_game_type(_, _, p)
 	local type, m = p[1], minigames_manager.get_minigames_manager()
 	local crowkiller = m:get_current_crowkiller()
 	return (type == "highscore" or type == "training" or type == "money") and m:get_minigame_param(crowkiller, "game_type") == type
@@ -1308,60 +685,46 @@ end
 --' Relation functions
 --'------------------------------------------------------
 
-function gulag_enemy_actor(actor, npc, p) -- returns false if p[1] == nil because of game_relations.get_gulag_relation_actor
+function gulag_enemy_actor(_, _, p)
 	return game_relations.get_gulag_relation_actor(p[1], "enemy")
 end
 
-function gulag_friend_actor(actor, npc, p) -- returns false if p[1] == nil because of game_relations.get_gulag_relation_actor
+function gulag_friend_actor(_, _, p)
 	return game_relations.get_gulag_relation_actor(p[1], "friend")
 end
 
-function gulag_neutral_actor(actor, npc, p) -- returns false if p[1] == nil because of game_relations.get_gulag_relation_actor
+function gulag_neutral_actor(_, _, p)
 	return game_relations.get_gulag_relation_actor(p[1], "neutral")
 end
 
-function quest_npc_enemy_actor(actor, npc, p) -- if p[1] == nil, crash the game
-	local npc_id = p[1]
-	if npc_id == nil then
-		abort("[xr_conditions.quest_npc_enemy_actor]: Parameter missing.")
-	end
-	local obj = level_object_by_sid(npc_id)
-	return actor and obj and IsStalker(obj) and obj:general_goodwill(actor) <= -1000
+function quest_npc_enemy_actor(actor, _, p)
+	local npc = level_object_by_sid(p[1])
+	return actor and npc and npc:general_goodwill(actor) <= -1000
 end
 
 --'------------------------------------------------------
 --' Miscellaneous
 --'------------------------------------------------------
 
-function signal_rocket_flying(actor, npc, p) -- if p[1] == nil and/or p[1] doesn't denote a signal rocket, crash the game
-	local dbsig = db.signal_light[p[1]]
-	if dbsig == nil then
-		abort("[xr_conditions.signal_rocket_flying]: No signal rocket corresponds to parameter %s.", tostring(p[1]))
-	end
-	return dbsig:is_flying()
+function signal_rocket_flying(_, _, p)
+	return db.signal_light[p[1]]:is_flying()
 end
 
-function is_current_action_robbery(actor, npc)
+function is_current_action_robbery(_, npc)
 	local manager = npc:motivation_action_manager()
 	return manager and manager:initialized() and manager:current_action_id() == xr_actions_id.actor_reaction + 1
 end
 
-function get_task_by_smart(actor, npc, p) -- if p[1] doesn't denote a smart, crash the game
+function get_task_by_smart(_, _, p)
 	local smart = sim_board.get_sim_board().smarts_by_names[p[1]]
-	if smart == nil then
-		abort("[xr_conditions.get_task_by_smart]: Smart %s does not exist.", tostring(p[1]))
-	end
-	return task_manager.get_task_manager():get_tasks_by_smart(smart.id) ~= nil
+	return task_manager.get_task_manager().tasks_by_smarts[smart.id] ~= nil
 end
 
-function is_smart_in_combat(actor, npc, p) -- if p[1] == nil, crash the game
-	if p[1] == nil then
-		abort("[xr_conditions.is_smart_in_combat]: Parameter missing.")
-	end
+function is_smart_in_combat(_, _, p)
 	local board = sim_board.get_sim_board()
-	for k, smart_name in pairs (p) do
-		local smart = board:get_smart_by_name(smart_name)
-		for kk, squad in pairs (board.smarts[smart.id].squads) do
+	for _, smart_name in pairs (p) do
+		local smart = board.smarts_by_names[smart_name]
+		for _, squad in pairs (board.smarts[smart.id].squads) do
 			local squad_stage = smart.combat_manager:get_squad_stage(squad)
 			if squad_stage == "combat" or squad_stage == "defence" then
 				return true
@@ -1371,16 +734,11 @@ function is_smart_in_combat(actor, npc, p) -- if p[1] == nil, crash the game
 	return false
 end
 
-function npc_stay_offline(actor, npc, p) -- if p[1] == nil, crash the game
-	local smart_name = p[1]
-	if smart_name == nil then
-		abort("[xr_conditions.npc_stay_offline]: Parameter missing.")
-	end
---	return db.actor and npc and (is_smart_in_combat(actor, npc, p) or game_relations.get_gulag_relation_actor(p[1], "enemy"))
-	return is_smart_in_combat(nil, nil, p) or get_task_by_smart(nil, nil, p) or game_relations.some_smart_members_hostile(smart_name)
+function npc_stay_offline(_, _, p)
+	return is_smart_in_combat(nil, nil, p) or get_task_by_smart(nil, nil, p) or game_relations.some_smart_members_hostile(p[1])
 end
 
-function distance_to_obj_ge(actor, npc, p) -- if p[1]/obj == nil, return false; if p[2] == nil, now crashes the game instead of returning
+function distance_to_obj_ge(actor, _, p)
 	local obj = level_object_by_sid(p[1])
 	if actor == nil or obj == nil then
 		return false
@@ -1388,7 +746,7 @@ function distance_to_obj_ge(actor, npc, p) -- if p[1]/obj == nil, return false; 
 	return distance_between(obj, actor) >= p[2]
 end
 
-function distance_to_obj_le(actor, npc, p) -- if p[1]/obj == nil, return false; if p[2] == nil, now crashes the game instead of returning
+function distance_to_obj_le(actor, _, p)
 	local obj = level_object_by_sid(p[1])
 	if actor == nil or obj == nil then
 		return false
@@ -1396,44 +754,23 @@ function distance_to_obj_le(actor, npc, p) -- if p[1]/obj == nil, return false; 
 	return distance_between(obj, actor) <= p[2]
 end
 
---[[
-function is_squad_reached_position(actor, npc, p)
-	local squad = sim_board.squads[squad_id] -- squad_id = nil, needs to come from p[1]
-	for npc_id in pairs (squad.squad_npc) do
-		local npc_storage = db.storage[npc_id]
-		if npc_storage ~= nil and xr_logic.check_action(npc_storage[npc_storage.active_scheme], "position_riched") == false then
-			return false
-		end
-	end
-	return true
-end
-]]
+--------------------------------------------------------------------------------
+-- SRP functions:
+--------------------------------------------------------------------------------
 
-----------------------------------------------------------------------------------------------
---	SRP functions:
-----------------------------------------------------------------------------------------------
-
-function npc_is_in_attacking_squad(actor, se_npc) -- use only in "suitable" field of NPC logic
+function npc_is_in_attacking_squad(_, se_npc) -- use only in "suitable" field of NPC logic
 	local squad = sim_board.get_sim_board().squads[se_npc.squad_id]
 	return squad and squad.current_action and squad.current_action.name == "attack_point"
 end
 
-function actor_dist_to_zone_le(actor, npc, p)
-	local zone = db.zone_by_name[p[1]]
-	if zone == nil then
-		abort("[xr_conditions.actor_dist_to_zone_le]: There is no zone '%s'.", tostring(p[1]))
-	end
-	local dist = p[2]
-	return actor:position():distance_to_sqr(zone:position()) <= dist * dist
+function actor_dist_to_zone_le(actor, _, p)
+	local d = p[2]
+	return actor:position():distance_to_sqr(db.zone_by_name[p[1]]:position()) <= d * d
 end
 
-function npc_dist_to_zone_le(actor, npc, p)
-	local zone = db.zone_by_name[p[1]]
-	if zone == nil then
-		abort("[xr_conditions.npc_dist_to_zone_le]: There is no zone '%s'.", tostring(p[1]))
-	end
-	local dist = p[2]
-	return npc:position():distance_to_sqr(zone:position()) <= dist * dist
+function npc_dist_to_zone_le(_, npc, p)
+	local d = p[2]
+	return npc:position():distance_to_sqr(db.zone_by_name[p[1]]:position()) <= d * d
 end
 
 function actor_is_talking()

@@ -44,24 +44,25 @@ metal_small_close_start
 metal_small_close_stop
 pda_alarm
 pda_news
+;pda_sos ; SRP
 pda_tips
 pda_task
 heli_damaged
 heli_down
 heli_hit
-;alife_arrive
-;alife_defended
 alife_attack_done
 alife_defence_done
 alife_point_captured
 alife_defence_vs_mutant
 alife_defence_vs_bandit
 alife_defence_vs_army
-alife_defence_vs_stalker	; SRP
-alife_defence_vs_zombied	; SRP
-alife_defence_vs_dolg		; SRP
-alife_defence_vs_freedom	; SRP
-alife_battlecry			; SRP
+alife_defence_vs_stalker ; SRP
+alife_defence_vs_zombied ; SRP
+alife_defence_vs_dolg    ; SRP
+alife_defence_vs_freedom ; SRP
+;alife_defence_vs_csky   ; SRP
+alife_battlecry          ; SRP
+;alife_enemy_spotted     ; SRP
 alife_prepare_attack
 alife_prepare_actor
 alife_prepare_self
@@ -70,11 +71,6 @@ alife_wait_actor_signal
 alife_defence_wait_help
 alife_defence_actor_come
 alife_defence_actor_help
-;alife_general_help_stalker
-;alife_general_help_csky
-;alife_general_help_bandit
-;alife_general_help_dolg
-;alife_general_help_freedom
 alife_start_attack
 alife_see_counter
 alife_bloodsucker
@@ -147,36 +143,37 @@ path = ambient\blowout_wave_3
 
 ;[use_abuse]
 ;type = npc
-;avail_communities = csky, stalker, bandit, dolg, freedom, army, monolith
+;avail_communities = csky, stalker, bandit, dolg, freedom, army, monolith ; also supported: killer
 ;npc_prefix = true
 ;path = talk\use\abuse_
 ;shuffle = rnd
-;idle = 7,13,100
-;group_snd = false
+;idle = 7,13
 
 [state]
 type = npc
 npc_prefix = true
 path = states\idle\idle_
 shuffle = rnd
-idle = 7,13,100
+idle = 7,13
 group_snd = true
 
-;[state_1]
+;[example]
 ;type = npc|actor|3d
-;actor_stereo = true|false
-;npc_prefix = true|false
-;path = states\idle\idle_
-;shuffle = rnd|seq|loop
-;idle = 3,5,100 ;min,max,rnd
+;avail_communities = <list> ; type = npc
+;npc_prefix = true|false    ; type = npc|actor
+;path = states\idle\idle_   ; type = npc|actor|3d|looped
+;shuffle = rnd|seq|loop     ; type = npc|actor|3d
+;idle = 3,5 ;min,max        ; type = npc|actor|3d
+;group_snd = true|false     ; type = npc
+;play_always = true|false   ; type = npc|actor|3d
 
-[wait]
+[wait] ; TODO: unused duplicate of [state]
 type = npc
-avail_communities = csky, stalker, bandit, dolg, freedom, army, monolith
+avail_communities = none ; vanilla: csky, stalker, bandit, dolg, freedom, army, monolith
 npc_prefix = true
 path = states\idle\idle_
 shuffle = rnd
-idle = 7,10,100
+idle = 7,10
 
 ;[threat_weap]
 ;type = npc
@@ -184,7 +181,7 @@ idle = 7,10,100
 ;npc_prefix = true
 ;path = threat\drop_weapon\dropweapon_
 ;shuffle = seq
-;idle = 7,10,100
+;idle = 7,10
 
 ;[threat_back]
 ;type = npc
@@ -192,102 +189,88 @@ idle = 7,10,100
 ;npc_prefix = true
 ;path = threat\back_off\backoff_
 ;shuffle = seq
-;idle = 3,5,100
+;idle = 3,5
 
 [bloodsucker_swarm]
 type = 3d
 path = monsters\bloodsucker\swamp_run_
 shuffle = rnd
-idle = 1,1,100
+idle = 1,1
 
 ;[commander_to_squad]
 ;type = npc
-;npc_prefix = false
 ;path = scenario\marsh\bloodsucker\comander_to_squad_
 ;shuffle = rnd
-;idle = 1,1,100
+;idle = 1,1
 
 [squad_fear]
 type = npc
-npc_prefix = false
 path = scenario\marsh\bloodsucker\squad_fear_
 shuffle = rnd
-idle = 1,1,100
+idle = 1,1
 
 [fear_fire]
 type = npc
-npc_prefix = false
 path = scenario\marsh\bloodsucker\fear_fire_
 shuffle = rnd
-idle = 1,1,100
+idle = 1,1
 
 [boar_swarm]
 type = 3d
 path = monsters\boar\boar_swamp_run_
 shuffle = rnd
-idle = 0,0,100
+idle = 0,0
 
 [boar_swamp_runaway]
 type = 3d
 path = monsters\boar\boar_swamp_runaway_
 shuffle = rnd
-idle = 0,0,100
+idle = 0,0
 
 [bloodsucker_growl]
 type = 3d
 path = monsters\bloodsucker\attack_hit_
 shuffle = rnd
-idle = 0,0,100
+idle = 0,0
 
-[bloodsucker_hit]
+[bloodsucker_hit] ; TODO: unused
 type = 3d
 path = monsters\bloodsucker\heavy_hit_
 shuffle = rnd
-idle = 0,0,100
-
-;[alife_arrive]
-;type = actor
-;actor_stereo = false
-;npc_prefix = false
-;path = characters_voice\human_01\stalker\alife\defence\actor_come_
-;shuffle = rnd
-;idle = 1,1,100
-
-;[alife_defended]
-;type = actor
-;actor_stereo = false
-;npc_prefix = false
-;path = characters_voice\human_01\stalker\alife\defence\actor_help_
-;shuffle = rnd
-;idle = 3,5,100
+idle = 0,0
 
 [alife_attack_done]
 type = npc
 avail_communities = csky, stalker, bandit, dolg, freedom
-actor_stereo = false
 npc_prefix = true
 path = alife\attack\end_fight_
 shuffle = rnd
-idle = 0,0,100
+idle = 0,0
 
 [alife_defence_done]
 type = npc
 avail_communities = csky, stalker, bandit, dolg, freedom
-actor_stereo = false
 npc_prefix = true
 path = alife\defence\end_defence_
 shuffle = rnd
-idle = 0,0,100
+idle = 0,0
 
 [alife_point_captured]
 type = npc
 avail_communities = csky, stalker, bandit, dolg, freedom
-actor_stereo = false
 npc_prefix = true
 path = alife\attack\smart_captured_
 shuffle = rnd
-idle = 0,0,100
+idle = 0,0
 play_always = true
+
+;[alife_enemy_spotted]
+;type = npc
+;avail_communities = csky, stalker, bandit, dolg, freedom
+;npc_prefix = true
+;path = alife\attack\found_enemy_
+;shuffle = rnd
+;idle = 0,0
 
 [alife_prepare_attack]
 type = npc
@@ -295,16 +278,15 @@ avail_communities = csky, stalker, bandit, dolg, freedom, army
 npc_prefix = true
 path = alife\attack\attack_ready_
 shuffle = rnd
-idle = 0,0,100
+idle = 0,0
 
 [alife_prepare_actor]
 type = npc
 avail_communities = csky, stalker, bandit, dolg, freedom
-actor_stereo = false
 npc_prefix = true
 path = alife\attack\wait_signal_
 shuffle = rnd
-idle = 0,0,100
+idle = 0,0
 
 [alife_prepare_self]
 type = npc
@@ -312,7 +294,7 @@ avail_communities = csky, stalker, bandit, dolg, freedom
 npc_prefix = true
 path = alife\attack\prepare_attack_
 shuffle = rnd
-idle = 0,0,100
+idle = 0,0
 
 [alife_we_spoted_now]
 type = npc
@@ -320,16 +302,15 @@ avail_communities = csky, stalker, bandit, dolg, freedom
 npc_prefix = true
 path = alife\attack\we_spotted_
 shuffle = rnd
-idle = 0,0,100
+idle = 0,0
 
 [alife_wait_actor_signal]
 type = npc
 avail_communities = csky, stalker, bandit, dolg, freedom
-actor_stereo = false
 npc_prefix = true
 path = alife\attack\wait_again_
 shuffle = rnd
-idle = 7,10,100
+idle = 7,10
 
 [alife_defence_wait_help]
 type = npc
@@ -337,7 +318,7 @@ avail_communities = csky, stalker, bandit, dolg, freedom
 npc_prefix = true
 path = alife\defence\wait_help_
 shuffle = rnd
-idle = 7,10,100
+idle = 7,10
 group_snd = true
 
 [alife_defence_actor_come]
@@ -346,7 +327,7 @@ avail_communities = csky, stalker, bandit, dolg, freedom
 npc_prefix = true
 path = alife\defence\actor_come_
 shuffle = rnd
-idle = 0,0,100
+idle = 0,0
 play_always = true
 
 [alife_defence_actor_help]
@@ -355,7 +336,7 @@ avail_communities = csky, stalker, bandit, dolg, freedom
 npc_prefix = true
 path = alife\defence\actor_help_
 shuffle = rnd
-idle = 0,0,100
+idle = 0,0
 play_always = true
 
 [alife_defence_vs_mutant]
@@ -364,7 +345,7 @@ avail_communities = csky, stalker, bandit, dolg, freedom
 npc_prefix = true
 path = alife\defence\request_help_vs_mutant_
 shuffle = rnd
-idle = 5,5,100
+idle = 5,5
 group_snd = true
 
 [alife_defence_vs_bandit]
@@ -373,7 +354,7 @@ avail_communities = csky, stalker, dolg, freedom
 npc_prefix = true
 path = alife\defence\request_help_vs_bandit_
 shuffle = rnd
-idle = 5,5,100
+idle = 5,5
 group_snd = true
 
 [alife_defence_vs_army]
@@ -382,16 +363,16 @@ avail_communities = csky, stalker, bandit, dolg, freedom
 npc_prefix = true
 path = alife\defence\request_help_vs_military_
 shuffle = rnd
-idle = 5,5,100
+idle = 5,5
 group_snd = true
 
 [alife_defence_vs_stalker]
 type = npc
-avail_communities = bandit
+avail_communities = bandit ; also supported: csky, dolg, freedom
 npc_prefix = true
 path = alife\defence\request_help_vs_stalker_
 shuffle = rnd
-idle = 5,5,100
+idle = 5,5
 group_snd = true
 
 [alife_defence_vs_zombied]
@@ -400,26 +381,35 @@ avail_communities = csky, stalker, bandit, dolg, freedom
 npc_prefix = true
 path = alife\defence\request_help_vs_zombied_
 shuffle = rnd
-idle = 5,5,100
+idle = 5,5
 group_snd = true
 
 [alife_defence_vs_dolg]
 type = npc
-avail_communities = bandit, freedom
+avail_communities = bandit, freedom ; also supported: csky, stalker
 npc_prefix = true
 path = alife\defence\request_help_vs_dolg_
 shuffle = rnd
-idle = 5,5,100
+idle = 5,5
 group_snd = true
 
 [alife_defence_vs_freedom]
 type = npc
-avail_communities = bandit, dolg
+avail_communities = bandit, dolg ; also supported: csky, stalker
 npc_prefix = true
 path = alife\defence\request_help_vs_freedom_
 shuffle = rnd
-idle = 5,5,100
+idle = 5,5
 group_snd = true
+
+;[alife_defence_vs_csky]
+;type = npc
+;avail_communities = bandit, dolg, freedom, stalker
+;npc_prefix = true
+;path = alife\defence\request_help_vs_csky_
+;shuffle = rnd
+;idle = 5,5
+;group_snd = true
 
 [alife_battlecry]
 type = npc
@@ -427,7 +417,7 @@ npc_prefix = true
 avail_communities = csky, stalker, bandit, dolg, freedom
 path = alife\attack\actor_in_battle_
 shuffle = rnd
-idle = 0,0,100
+idle = 0,0
 
 [alife_start_attack]
 type = npc
@@ -435,7 +425,7 @@ npc_prefix = true
 avail_communities = csky, stalker, bandit, dolg, freedom, army
 path = alife\attack\start_fight_
 shuffle = rnd
-idle = 0,0,100
+idle = 0,0
 
 [alife_see_counter]
 type = npc
@@ -443,222 +433,210 @@ avail_communities = csky, stalker, bandit, dolg, freedom
 npc_prefix = true
 path = alife\attack\see_counter_
 shuffle = rnd
-idle = 0,0,100
+idle = 0,0
 
 [alife_bloodsucker]
 type = npc
-npc_prefix = false
 path = scenario\marsh\bloodsucker\fear_
 shuffle = rnd
-idle = 10,15,100
+idle = 10,15
 
 [patrol_sneak]
 type = npc
-actor_stereo = false
-npc_prefix = false
 path = human_01\stalker\alife\patrol\sneak_
 shuffle = rnd
-idle = 1,1,100
+idle = 1,1
 
 [patrol_run]
 type = npc
-actor_stereo = false
-npc_prefix = false
 path = human_01\stalker\alife\patrol\run_
 shuffle = rnd
-idle = 1,1,100
+idle = 1,1
 
 [patrol_walk]
 type = npc
-actor_stereo = false
-npc_prefix = false
 path = human_01\stalker\alife\patrol\walk_
 shuffle = rnd
-idle = 1,1,100
+idle = 1,1
 
 [fight_attack]
 type = npc
-actor_stereo = false
 npc_prefix = true
 path = fight\attack\script_attack_
 shuffle = rnd
-idle = 1,1,100
+idle = 1,1
 
 [post_combat_wait]
 type = npc
-actor_stereo = false
 npc_prefix = true
 group_snd = true
 path = fight\post_combat_wait\wait_
 avail_communities = csky, stalker, bandit, dolg, freedom, army
 shuffle = rnd
-idle = 3,5,100
+idle = 3,5
 
 [post_combat_wait_long]
 type = npc
-actor_stereo = false
 npc_prefix = true
 group_snd = true
 path = fight\post_combat_wait\wait_
 avail_communities = csky, stalker, bandit, dolg, freedom, army
 shuffle = rnd
-idle = 7,10,100
+idle = 7,10
 
 [post_combat_relax]
 type = npc
-actor_stereo = false
 npc_prefix = true
 group_snd = true
 path = fight\post_combat_wait\relax_
 avail_communities = csky, stalker, bandit, dolg, freedom, army
 shuffle = rnd
-idle = 1,1,100
+idle = 1,1
 
 ;[pl_test]
 ;type = npc
 ;npc_prefix = true
 ;path = fight\attack\attack_
 ;shuffle = rnd
-;idle = 1,1,100
+;idle = 1,1
 
 [trader_door_open_start]
 type = 3d
 path = device\door_start
 shuffle = rnd
-idle = 1,1,100
+idle = 1,1
 
 [trader_door_close_start]
 type = 3d
 path = device\door_closing
 shuffle = rnd
-idle = 1,1,100
+idle = 1,1
 
 [trader_door_close_stop]
 type = 3d
 path = device\door_stop
 shuffle = rnd
-idle = 1,1,100
+idle = 1,1
 
 [trader_door_locked]
 type = 3d
 path = device\door_locked
 shuffle = rnd
-idle = 1,1,100
+idle = 1,1
 
 ;[trader_door_unlock]
 ;type = 3d
 ;path = device\door_servomotor
 ;shuffle = rnd
-;idle = 1,1,100
+;idle = 1,1
 
 [wood_small_open]
 type = 3d
 path = device\wood_small_open
 shuffle = rnd
-idle = 1,1,100
+idle = 1,1
 
 [wood_small_close_start]
 type = 3d
 path = device\wood_small_close_start
 shuffle = rnd
-idle = 1,1,100
+idle = 1,1
 
 [wood_small_close_stop]
 type = 3d
 path = device\wood_small_close_stop
 shuffle = rnd
-idle = 1,1,100
+idle = 1,1
 
 [wood_large_open]
 type = 3d
 path = device\wood_large_open
 shuffle = rnd
-idle = 1,1,100
+idle = 1,1
 
 [wood_large_close_start]
 type = 3d
 path = device\wood_large_close_start
 shuffle = rnd
-idle = 1,1,100
+idle = 1,1
 
 [wood_large_close_stop]
 type = 3d
 path = device\wood_large_close_stop
 shuffle = rnd
-idle = 1,1,100
+idle = 1,1
 
 [metal_small_open]
 type = 3d
 path = device\metal_small_open
 shuffle = rnd
-idle = 1,1,100
+idle = 1,1
 
 [metal_small_close_start]
 type = 3d
 path = device\metal_small_close_start
 shuffle = rnd
-idle = 1,1,100
+idle = 1,1
 
 [metal_small_close_stop]
 type = 3d
 path = device\metal_small_close_stop
 shuffle = rnd
-idle = 1,1,100
+idle = 1,1
 
 [pda_alarm]
 type = actor
-npc_prefix = false
 path = device\pda\pda_alarm
 shuffle = rnd
-idle = 0,0,100
+idle = 0,0
 
 [pda_news]
 type = actor
-npc_prefix = false
 path = device\pda\pda_news
 shuffle = rnd
-idle = 1,1,100
+idle = 1,1
+
+;[pda_sos]
+;type = actor
+;path = device\pda\pda_sos
+;shuffle = rnd
+;idle = 1,1
 
 [pda_tips]
 type = actor
-npc_prefix = false
 path = device\pda\pda_tip
 shuffle = rnd
-idle = 1,1,100
+idle = 1,1
 
 [pda_task]
 type = actor
-npc_prefix = false
 path = device\pda\pda_objective
 shuffle = rnd
-idle = 1,1,100
+idle = 1,1
 
 [heli_damaged]
 type = actor
-npc_prefix = false
 path = vehicles\helicopter\damage_
 shuffle = rnd
-idle = 1,1,100
+idle = 1,1
 
 [heli_down]
 type = actor
-npc_prefix = false
 path = vehicles\helicopter\death_
 shuffle = rnd
-idle = 1,1,100
+idle = 1,1
 
 [heli_hit]
 type = actor
-npc_prefix = false
 path = vehicles\helicopter\hit_
 shuffle = rnd
-idle = 3,4,40
+idle = 3,4
 
 [alarm]
 type = 3d
 path = ambient\siren1
 shuffle = loop
-idle = 0,0,100
+idle = 0,0
 
 [meet_general_start]
 type = npc
@@ -666,7 +644,7 @@ avail_communities = csky, stalker, bandit, dolg, freedom
 npc_prefix = true
 path = states\meet\meet_general_start_
 shuffle = rnd
-idle = 2,2,100
+idle = 2,2
 
 [meet_general_wait]
 type = npc
@@ -674,7 +652,7 @@ avail_communities = csky, stalker, bandit, dolg, freedom
 npc_prefix = true
 path = states\meet\meet_general_wait_
 shuffle = rnd
-idle = 5,7,100
+idle = 5,7
 
 [meet_general_stop]
 type = npc
@@ -682,7 +660,7 @@ avail_communities = csky, stalker, bandit, dolg, freedom
 npc_prefix = true
 path = states\meet\meet_general_stop_
 shuffle = rnd
-idle = 1,1,100
+idle = 1,1
 
 [meet_comander_start]
 type = npc
@@ -690,7 +668,7 @@ avail_communities = csky, stalker, bandit, dolg, freedom
 npc_prefix = true
 path = states\meet\meet_comander_start_
 shuffle = rnd
-idle = 2,2,100
+idle = 2,2
 
 [meet_comander_wait]
 type = npc
@@ -698,7 +676,7 @@ avail_communities = csky, stalker, bandit, dolg, freedom
 npc_prefix = true
 path = states\meet\meet_comander_wait_
 shuffle = rnd
-idle = 5,7,100
+idle = 5,7
 
 [meet_comander_stop]
 type = npc
@@ -706,7 +684,7 @@ avail_communities = csky, stalker, bandit, dolg, freedom
 npc_prefix = true
 path = states\meet\meet_comander_stop_
 shuffle = rnd
-idle = 1,1,100
+idle = 1,1
 
 [meet_weapon_start]
 type = npc
@@ -714,7 +692,7 @@ avail_communities = csky, stalker, bandit, dolg, freedom
 npc_prefix = true
 path = states\meet\meet_weapon_start_
 shuffle = rnd
-idle = 2,2,100
+idle = 2,2
 
 [meet_weapon_wait]
 type = npc
@@ -722,28 +700,28 @@ avail_communities = csky, stalker, bandit, dolg, freedom
 npc_prefix = true
 path = states\meet\meet_weapon_wait_
 shuffle = rnd
-idle = 5,7,100
+idle = 5,7
 
 ;[arena_introduce]
 ;type = actor
 ;path = characters_voice\scenario\polygon\polygon_fight_
 ;shuffle = seq
-;idle = 15,16,100
+;idle = 15,16
 
 [shooting_target_up]
 type = 3d
 path = ambient\special\target_up
 shuffle = rnd
-idle = 0,0,100
+idle = 0,0
 
 [shooting_target_down]
 type = 3d
 path = ambient\special\target_down
 shuffle = rnd
-idle = 0,0,100
+idle = 0,0
 
 [shooting_target_hit]
 type = 3d
 path = ambient\special\target_hit_
 shuffle = rnd
-idle = 0,0,100
+idle = 0,0

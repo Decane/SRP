@@ -1,0 +1,39 @@
+function bind(obj)
+	obj:bind_object(artefact_binder(obj))
+end
+
+--------------------------------------------------------------------------------
+
+class "artefact_binder" (object_binder)
+
+function artefact_binder:__init(obj) super(obj)
+	db.storage[self.object:id()] = {}
+end
+
+function artefact_binder:net_spawn(se_abstract)
+
+	if not object_binder.net_spawn(self, se_abstract) then
+		return false
+	end
+
+	local obj = self.object
+
+	db.add_obj(obj)
+
+	local path_name = bind_anomaly_zone.artefact_ways_by_id[obj:id()]
+
+	if path_name ~= nil then
+		local art_zone = bind_anomaly_zone.parent_zones_by_artefact_id[obj:id()]
+		local force_xz = art_zone.applying_force_xz
+		local force_y  = art_zone.applying_force_y
+		local artefact = obj:get_artefact()
+		artefact:FollowByPath(path_name, 0, vector():set(force_xz, force_y, force_xz))
+	end
+
+	return true
+end
+
+function artefact_binder:net_destroy()
+	db.del_obj(self.object)
+	object_binder.net_destroy(self)
+end

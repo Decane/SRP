@@ -1,9 +1,5 @@
 local money_for_digger = 2000
---[[
-function reward_for_killer_pseudodogs()
-	dialogs.relocate_item_section_to_actor(nil, nil, "kolbasa")
-end
-]]
+
 function reward_for_old_pda()
 	local give_actor = dialogs.relocate_item_section_to_actor
 	give_actor(nil, nil, "ammo_9x19_pbp", 2)
@@ -22,18 +18,14 @@ function reward_before_attack()
 	dialogs.relocate_item_section_to_actor(nil, nil, "ammo_12x76_dart", 5)
 end
 
-function has_money_for_digger(first_speaker)
-	return first_speaker:money() >= money_for_digger
+function has_money_for_digger()
+	return db.actor:money() >= money_for_digger
 end
 
-function hasnt_money_for_digger(first_speaker)
-	return has_money_for_digger(first_speaker) == false
+function hasnt_money_for_digger()
+	return not has_money_for_digger()
 end
---[[
-function give_money_to_digger(first_speaker, second_speaker)
-	dialogs.relocate_money(second_speaker, money_for_digger, "out")
-end
-]]
+
 function is_digger_fighters_alive()
 	return xr_conditions.squad_exist(nil, nil, {"gar_digger_fighters"})
 end
@@ -43,51 +35,38 @@ function is_digger_fighters_dead()
 end
 
 function is_dark_night()
-	local tid = level.get_time_hours()
-	return tid < 3 or tid > 22
+	local hour = level.get_time_hours()
+	return hour < 3 or hour > 22
 end
 
 function isnt_dark_night()
-	return is_dark_night() == false
-end
---[[
-function is_day()
-	local tid = level.get_time_hours()
-	return tid >= 6 and tid < 21
+	return not is_dark_night()
 end
 
-function isnt_day()
-	return is_day() == false
-end
-]]
 function give_old_pda(first_speaker, second_speaker)
 	dialogs.relocate_item_section_from_actor(first_speaker, second_speaker, "device_pda_old")
 end
 
-function if_actor_has_old_pda(first_speaker)
-	return first_speaker:object("device_pda_old") ~= nil
+function if_actor_has_old_pda()
+	return db.actor:object("device_pda_old") ~= nil
 end
 
-function if_actor_hasnt_old_pda(first_speaker)
-	return not if_actor_has_old_pda(first_speaker)
+function if_actor_hasnt_old_pda()
+	return not if_actor_has_old_pda()
 end
 
 function give_traitor_pda(first_speaker, second_speaker)
 	dialogs.relocate_item_section_from_actor(first_speaker, second_speaker, "device_pda_garbage_traitor")
 end
 
-function if_actor_has_traitor_pda(first_speaker, second_speaker)
-	return second_speaker:object("device_pda_garbage_traitor") ~= nil
+function if_actor_has_traitor_pda()
+	return db.actor:object("device_pda_garbage_traitor") ~= nil
 end
 
-function if_actor_hasnt_traitor_pda(first_speaker, second_speaker)
-	return not if_actor_has_traitor_pda(first_speaker, second_speaker)
+function if_actor_hasnt_traitor_pda()
+	return not if_actor_has_traitor_pda()
 end
---[[
-function always_false()
-	return false
-end
-]]
+
 function bandit_join_reward()
 	if not has_alife_info("gar_joined_bandits") then
 		local give_actor = dialogs.relocate_item_section_to_actor

@@ -1,16 +1,7 @@
 <?xml version="1.0" encoding="windows-1251" ?>
 <string_table>
-	<string id="Btn_Cancel">
-		<text>Cancel</text>
-	</string>
-	<string id="Btn_No">
-		<text>No</text>
-	</string>
 	<string id="Btn_OK">
 		<text>OK</text>
-	</string>
-	<string id="Btn_Yes">
-		<text>Yes</text>
 	</string>
 	<string id="bad">
 		<text>Bad</text>
@@ -45,17 +36,11 @@
 	<string id="mm_mp_pda_hunt">
 		<text>PDA bonus</text>
 	</string>
-	<string id="mp_only_one_voting">
-		<text>Only one active vote allowed</text>
-	</string>
 	<string id="neutral">
 		<text>Neutral</text>
 	</string>
 	<string id="novice">
 		<text>Rookie</text>
-	</string>
-	<string id="st_audio">
-		<text>Sound</text>
 	</string>
 	<string id="st_bolt">
 		<text>Bolt</text>
@@ -69,23 +54,14 @@
 	<string id="st_client_synchronising">
 		<text>CLIENT: Synchronizing</text>
 	</string>
-	<string id="st_controll">
-		<text>Controls</text>
-	</string>
 	<string id="st_creating_new_game">
 		<text>Creating new game</text>
 	</string>
 	<string id="st_drink">
 		<text>Drink This</text>
 	</string>
-	<string id="st_game">
-		<text>Game</text>
-	</string>
 	<string id="st_item_used">
 		<text>Used</text>
-	</string>
-	<string id="st_items">
-		<text>Items</text>
 	</string>
 	<string id="st_level">
 		<text>Level</text>
@@ -146,9 +122,6 @@
 	</string>
 	<string id="st_validating_cdkey">
 		<text>Validating CD Key</text>
-	</string>
-	<string id="st_video">
-		<text>Video</text>
 	</string>
 	<string id="terrible">
 		<text>Terrible</text>
@@ -237,9 +210,6 @@
 	<string id="ui_st_months">
 		<text>months</text>
 	</string>
-	<string id="ui_st_opponent_items">
-		<text>Backpack</text>
-	</string>
 	<string id="ui_st_params">
 		<text>Parameters</text>
 	</string>
@@ -314,8 +284,5 @@
 	</string>
 	<string id="lim_bandit_ambush_spot">
 		<text>Bandit ambush</text>
-	</string>
-	<string id="ui_st_kicked_by_battleye">
-		<text>was kicked by BattlEye:</text>
 	</string>
 </string_table>

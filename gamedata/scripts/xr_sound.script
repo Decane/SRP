@@ -1,0 +1,183 @@
+sound_table = {}
+looped_sound = {}
+
+local active_sounds = sound_table
+local active_loops = looped_sound
+
+function set_sound_play(obj_id, section, faction, point)
+
+	if section == nil then
+		return nil
+	end
+
+	local sound = sound_theme.theme[section]
+
+	if sound == nil then
+		return nil
+	end
+
+	if sound.class_id == "looped_sound" then
+		abort("[xr_sound.set_sound_play]: You are trying to play a sound [%s] whose type is 'looped'.", section)
+	end
+
+	local active_sound = active_sounds[obj_id]
+
+	if active_sound then
+		if not sound.play_always then
+			return active_sound.snd_obj
+		end
+		if active_sound.reset ~= nil then
+			active_sound:reset(obj_id) -- TODO: Don't reset before knowing you can play!
+		end
+	end
+
+	if sound:play(obj_id, faction, point) then
+		active_sounds[obj_id] = sound
+		return sound.snd_obj
+	end
+
+	return active_sound and active_sound.snd_obj
+end
+
+function update(obj_id)
+	local active_sound = active_sounds[obj_id]
+	if active_sound and not active_sound:is_playing(obj_id) then
+		active_sound:callback(obj_id)
+		active_sounds[obj_id] = nil
+	end
+end
+
+function play_sound_looped(obj_id, section)
+	local sound = sound_theme.theme[section]
+	if sound == nil then
+		abort("[xr_sound.play_sound_looped]: Invalid sound [%s] for object [%s].", tostring(section), obj_id)
+	end
+	if sound.class_id ~= "looped_sound" then
+		abort("[xr_sound.play_sound_looped]: You are trying to loop a sound [%s] whose type is not 'looped'.", section)
+	end
+	if sound:play(obj_id) then
+		if active_loops[obj_id] == nil then
+			active_loops[obj_id] = {}
+		end
+		active_loops[obj_id][section] = sound
+	end
+end
+
+function stop_sound_looped(obj_id, section)
+	local active_obj_loops = active_loops[obj_id]
+	if active_obj_loops == nil then
+		return
+	end
+	if section then
+		local active_loop = active_obj_loops[section]
+		if active_loop and active_loop:is_playing() then
+			active_loop:stop()
+			active_obj_loops[section] = nil
+		end
+	else
+		for _, active_loop in pairs (active_obj_loops) do
+			if active_loop:is_playing() then
+				active_loop:stop()
+			end
+		end
+		active_loops[obj_id] = nil
+	end
+end
+
+function set_volume_sound_looped(obj_id, section, level)
+	local active_obj_loops = active_loops[obj_id]
+	if active_obj_loops == nil then
+		return
+	end
+	local active_loop = active_obj_loops[section]
+	if active_loop and active_loop:is_playing() then
+		active_loop:set_volume(level)
+	end
+end
+
+function actor_save(thread)
+	set_save_marker(thread, "save", false, "sound_actor_save")
+	for _, sound in pairs (sound_theme.theme) do
+		sound:save(thread)
+	end
+	local n = 0
+	for obj_id in pairs (active_sounds) do
+		n = n + 1
+	end
+	thread:w_u16(n)
+	for obj_id, active_sound in pairs (active_sounds) do
+		thread:w_u16(obj_id)
+		thread:w_stringZ(active_sound.section)
+	end
+	n = 0
+	for obj_id in pairs (active_loops) do
+		n = n + 1
+	end
+	thread:w_u16(n)
+	for obj_id, active_obj_loops in pairs (active_loops) do
+		thread:w_u16(obj_id)
+		n = 0
+		for section in pairs (active_obj_loops) do
+			n = n + 1
+		end
+		thread:w_u16(n)
+		for section in pairs (active_obj_loops) do
+			thread:w_stringZ(section)
+		end
+	end
+	set_save_marker(thread, "save", true, "sound_actor_save")
+end
+
+function actor_load(thread)
+	set_save_marker(thread, "load", false, "sound_actor_save")
+	local theme_table = sound_theme.theme
+	for _, sound in pairs (theme_table) do
+		sound:load(thread)
+	end
+	for i = 1, thread:r_u16() do
+		local obj_id = thread:r_u16()
+		local section = thread:r_stringZ()
+		active_sounds[obj_id] = theme_table[section]
+	end
+	for i = 1, thread:r_u16() do
+		local obj_id = thread:r_u16()
+		local active_obj_loops = {}
+		active_loops[obj_id] = active_obj_loops
+		for i = 1, thread:r_u16() do
+			local section = thread:r_stringZ()
+			active_obj_loops[section] = theme_table[section]
+		end
+	end
+	set_save_marker(thread, "load", true, "sound_actor_save")
+end
+
+function save_npc(thread, npc_id)
+	set_save_marker(thread, "save", false, "sound_npc_save")
+	for _, sound in pairs (sound_theme.theme) do
+		sound:save_npc(thread, npc_id)
+	end
+	set_save_marker(thread, "save", true, "sound_npc_save")
+end
+
+function load_npc(thread, npc_id)
+	set_save_marker(thread, "load", false, "sound_npc_save")
+	for _, sound in pairs (sound_theme.theme) do
+		sound:load_npc(thread, npc_id)
+	end
+	set_save_marker(thread, "load", true, "sound_npc_save")
+end
+
+function stop_sounds_by_id(obj_id)
+	local active_sound = active_sounds[obj_id]
+	if active_sound then
+		active_sound:stop()
+	end
+	local active_obj_loops = active_loops[obj_id]
+	if active_obj_loops then
+		for _, active_loop in pairs (active_obj_loops) do
+			if active_loop:is_playing() then
+				active_loop:stop()
+			end
+		end
+	end
+end

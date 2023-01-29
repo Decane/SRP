@@ -1,19 +1,12 @@
-local sim = _G.sim
-
+local sim           = _G.sim
 local get_game_time = game.get_game_time
 local trans         = game.translate_string
-
-local math_ceil     = math.ceil
-local math_floor    = math.floor
-local math_random   = math.random
-
-local table_insert  = table.insert
 
 local task_types =
 {
 	storyline     = 0,
 	additional    = 1,
-	insignificant = 2
+	insignificant = 2,
 }
 
 local valid_values =
@@ -21,7 +14,7 @@ local valid_values =
 	complete        = true,
 	fail            = true,
 	reversed        = true,
-	reversed_silent = true
+	reversed_silent = true,
 }
 
 local status_by_id =
@@ -31,7 +24,7 @@ local status_by_id =
 	[2] = "completed",
 	[3] = "fail",
 	[4] = "reversed",
-	[5] = "reversed_silent"
+	[5] = "reversed_silent",
 }
 
 local id_by_status =
@@ -41,7 +34,7 @@ local id_by_status =
 	completed       = 2,
 	fail            = 3,
 	reversed        = 4,
-	reversed_silent = 5
+	reversed_silent = 5,
 }
 
 local id_by_community =
@@ -66,7 +59,7 @@ local id_by_community =
 	actor_freedom = 18,
 	actor_dolg    = 19,
 	trader        = 20,
-	["nil"]       = 21
+	["nil"]       = 21,
 }
 
 local community_by_id =
@@ -91,7 +84,16 @@ local community_by_id =
 	[18] = "actor_freedom",
 	[19] = "actor_dolg",
 	[20] = "trader",
-	[21] = "nil"
+	[21] = "nil",
+}
+
+local community_names =
+{
+	bandit  = "ui_st_name_bandit",
+	csky    = "ui_st_name_csky",
+	dolg    = "ui_st_name_dolg",
+	freedom = "ui_st_name_freedom",
+	stalker = "ui_st_name_stalker",
 }
 
 ------------------------------------------------------------------------------------------------
@@ -100,7 +102,7 @@ class "CGeneralTask"
 
 ------------------------------------------------------------------------------------------------
 
-function CGeneralTask:__init(task_ini, id, type)
+function CGeneralTask:__init(task_ini, section, type)
 
 	local get_string                       = utils.cfg_get_string
 	local get_bool                         = utils.cfg_get_bool
@@ -109,47 +111,45 @@ function CGeneralTask:__init(task_ini, id, type)
 
 	self.task_ini                          = task_ini
 	self.type                              = type
-	self.task_type                         = task_types[get_string(task_ini, id, "task_type", nil, false, "", "additional")]
-	self.base_id                           = id
-	self.id                                = id
-	self.name                              = get_string(task_ini, id, "name", nil, false, "", tostring(id))
+	self.task_type                         = task_types[get_string(task_ini, section, "task_type", nil, false, "", "additional")]
+	self.section                           = section
+	self.name                              = get_string(task_ini, section, "name", nil, false, "", tostring(section))
 	self.icon                              = "ui_pda2_mtask_overlay"
-	self.spot                              = get_string(task_ini, id, "spot", nil, false, "", nil)
-	self.faction_target                    = get_string(task_ini, id, "faction", nil, false, "", nil)
-	self.base_prior                        = get_number(task_ini, id, "prior", nil, false, 0)
-	self.prior                             = self.base_prior
-	self.text                              = trans(get_string(task_ini, id, "text", nil, false, "", "NO_TEXT")) -- SRP: wrapped in trans()
-	self.description                       = get_string(task_ini, id, "description", nil, false, "", "NO_TEXT")
+	self.spot                              = get_string(task_ini, section, "spot", nil, false, "", nil)
+	self.faction_target                    = get_string(task_ini, section, "faction", nil, false, "", nil)
+	self.prior                             = get_number(task_ini, section, "prior", nil, false, 0)
+	self.text                              = trans(get_string(task_ini, section, "text", nil, false, "", "NO_TEXT")) -- SRP: wrapped in trans()
+	self.description                       = get_string(task_ini, section, "description", nil, false, "", "NO_TEXT")
 	self.board                             = sim_board.get_sim_board()
-	self.auto_name                         = get_bool(task_ini, id, "auto_name", nil, false, true)
-	self.auto_faction                      = get_bool(task_ini, id, "auto_faction", nil, false, false)
+	self.auto_name                         = get_bool(task_ini, section, "auto_name", nil, false, true)
+	self.auto_faction                      = get_bool(task_ini, section, "auto_faction", nil, false, false)
 	self.entity_id                         = nil
-	self.support_attack                    = get_bool(task_ini, id, "support_attack", nil, false, true)
-	self.play_regard                       = get_string(task_ini, id, "play_regard", nil, false, "", "")
+	self.support_attack                    = get_bool(task_ini, section, "support_attack", nil, false, true)
+	self.play_regard                       = get_string(task_ini, section, "play_regard", nil, false, "", "")
 
 	local i = 0
 	local T = {}
-	local section = "condlist_0"
+	local param = "condlist_0"
 
 	self.condlist = T
 
-	while task_ini:line_exist(id, section) do
-		T[i] = parse_condlist(nil, nil, nil, task_ini:r_string(id, section))
+	while task_ini:line_exist(section, param) do
+		T[i] = parse_condlist(nil, nil, nil, task_ini:r_string(section, param))
 		i = i + 1
-		section = "condlist_"..i
+		param = "condlist_"..i
 	end
 
-	self.on_init                           = parse_condlist(nil, nil, nil, get_string(task_ini, id, "on_init", nil, false, "", ""))
-	self.on_complete                       = parse_condlist(nil, nil, nil, get_string(task_ini, id, "on_complete", nil, false, "", ""))
-	self.on_reversed                       = parse_condlist(nil, nil, nil, get_string(task_ini, id, "on_reversed", nil, false, "", ""))
-	self.on_fail                           = parse_condlist(nil, nil, nil, get_string(task_ini, id, "on_fail", nil, false, "", ""))
+	self.on_init                           = parse_condlist(nil, nil, nil, get_string(task_ini, section, "on_init", nil, false, "", ""))
+	self.on_complete                       = parse_condlist(nil, nil, nil, get_string(task_ini, section, "on_complete", nil, false, "", ""))
+	self.on_reversed                       = parse_condlist(nil, nil, nil, get_string(task_ini, section, "on_reversed", nil, false, "", ""))
+	self.on_fail                           = parse_condlist(nil, nil, nil, get_string(task_ini, section, "on_fail", nil, false, "", ""))
 
-	self.reward_money                      = parse_condlist(nil, nil, nil, get_string(task_ini, id, "reward_money", nil, false, "", ""))
-	self.reward_item                       = parse_condlist(nil, nil, nil, get_string(task_ini, id, "reward_item", nil, false, "", ""))
-	self.immediate_reward                  = get_bool(task_ini, id, "immediate_reward", nil, false, false)
+	self.reward_money                      = parse_condlist(nil, nil, nil, get_string(task_ini, section, "reward_money", nil, false, "", ""))
+	self.reward_item                       = parse_condlist(nil, nil, nil, get_string(task_ini, section, "reward_item", nil, false, "", ""))
+	self.immediate_reward                  = get_bool(task_ini, section, "immediate_reward", nil, false, false)
 
-	self.community_relation_delta_fail     = get_number(task_ini, id, "community_relation_delta_fail", nil, false, 0)
-	self.community_relation_delta_complete = get_number(task_ini, id, "community_relation_delta_complete", nil, false, 0)
+	self.community_relation_delta_fail     = get_number(task_ini, section, "community_relation_delta_fail", nil, false, 0)
+	self.community_relation_delta_complete = get_number(task_ini, section, "community_relation_delta_complete", nil, false, 0)
 
 	self.status                            = "normal"
 	self.actor_helped                      = false
@@ -161,21 +161,7 @@ function CGeneralTask:give_task(community)
 	self.actor_come = false
 	self.actor_ignore = false
 	self.community = community
-
-	local str = community
-	if str == "bandit" then
-		str = "ui_st_name_bandit"
-	elseif str == "csky" then
-		str = "ui_st_name_csky"
-	elseif str == "dolg" then
-		str = "ui_st_name_dolg"
-	elseif str == "freedom" then
-		str = "ui_st_name_freedom"
-	elseif str == "stalker" then
-		str = "ui_st_name_stalker"
-	end
-
-	self.community_name = trans(str)
+	self.community_name = trans(community_names[community] or community)
 
 	local t = CGameTask()
 	local type = self.type
@@ -184,9 +170,6 @@ function CGeneralTask:give_task(community)
 		local title = ""
 		if (type == "eliminate_smart") or (type == "capture_smart") or (type == "defend_smart") or (type == "defend_smart_delay") then
 			local sname = smart_names.get_smart_terrain_name(self.board.smarts[self.target].smrt)
---			if sname == nil then -- sname is always a string
---				sname = self.board.smarts[self.target].smrt:name()
---			end
 			title = trans(self.name)..": "..sname
 		elseif (type == "recover_item") then
 			local item_inv_name = trans(system_ini():r_string(self.requested_item, "inv_name"))
@@ -225,14 +208,11 @@ function CGeneralTask:give_task(community)
 	t:add_complete_func("task_manager.task_complete")
 	t:add_fail_func("task_manager.task_fail")
 
-	local act = db.actor
+	local actor = db.actor
 
-	xr_logic.pick_section_from_condlist(act, act, self.on_init)
+	xr_logic.pick_section_from_condlist(actor, actor, self.on_init)
 
-	local time = 0
-	if self.wait_time ~= nil then
-		time = self.wait_time
-	end
+	local time = self.wait_time or 0
 
 	if self.spot == nil then
 		if (type == "storyline") then
@@ -273,9 +253,12 @@ function CGeneralTask:give_task(community)
 	self.status = "selected"
 	self.inited_time = get_game_time()
 	task_manager.get_task_manager().task_info[tostring(self.entity_id)] = self
-	act:give_task(t, time * 10, false, time)
+	actor:give_task(t, time * 10, false, time)
 	self.t = t
-	xr_statistic.inc_recieved_quests_counter()
+
+	if not self.is_task_update then
+		xr_statistic.inc_recieved_quests_counter()
+	end
 end
 
 function CGeneralTask:check_task(tm)
@@ -292,16 +275,16 @@ function CGeneralTask:check_task(tm)
 
 	self.check_time = global_time + 50
 
-	local act = db.actor
+	local actor = db.actor
 
-	for k, condlist in pairs (self.condlist) do
-		local status = xr_logic.pick_section_from_condlist(act, act, condlist)
+	for _, condlist in pairs (self.condlist) do
+		local status = xr_logic.pick_section_from_condlist(actor, actor, condlist)
 		if status ~= nil then
-			if valid_values[status] ~= true then
+			if not valid_values[status] then
 				abort("[task_objects.CGeneralTask:check_task]: Invalid task status '%s' for task '%s'.", tostring(status), tostring(self.name))
 			end
 			self.last_check_task = status
-			return
+			break
 		end
 	end
 end
@@ -317,19 +300,16 @@ end
 
 function CGeneralTask:init_reward()
 
-	local act = db.actor
-
-	xr_logic.pick_section_from_condlist(act, act, self.on_complete)
-
 	if self.community == nil then -- moved this below on_complete effect check to ensure effects happen even if task given by no faction
 		return
 	end
 
 	local tm = task_manager.get_task_manager()
 	local is_reward = false
+	local actor = db.actor
 
-	local money = xr_logic.pick_section_from_condlist(act, act, self.reward_money)
-	local items = xr_logic.pick_section_from_condlist(act, act, self.reward_item)
+	local money = xr_logic.pick_section_from_condlist(actor, actor, self.reward_money)
+	local items = xr_logic.pick_section_from_condlist(actor, actor, self.reward_item)
 
 	if not self.immediate_reward then
 
@@ -343,7 +323,7 @@ function CGeneralTask:init_reward()
 				abort("[task_objects.CGeneralTask:init_reward]: init_reward:task_id = "..tostring(self.id))
 			end
 
-			table_insert(tm.rewards[self.community], {money = tonumber(money)})
+			table.insert(tm.rewards[self.community], {money = tonumber(money)})
 
 			is_reward = true
 		end
@@ -351,14 +331,12 @@ function CGeneralTask:init_reward()
 		if items ~= nil then
 
 			for k, v in pairs (utils.parse_names(items)) do
-				table_insert(tm.rewards[self.community], {item = v})
+				table.insert(tm.rewards[self.community], {item = v})
 			end
 
 			is_reward = true
 		end
 	else
---		local npc = inventory_upgrades.victim
-
 		if money ~= nil then
 
 			if type(money) == "table" then
@@ -386,7 +364,7 @@ function CGeneralTask:init_reward()
 		end
 	end
 
-	if is_reward == false then
+	if not is_reward then
 		return
 	end
 
@@ -405,25 +383,7 @@ function CGeneralTask:init_reward()
 	reward_task:change_description(tm)
 end
 
-function CGeneralTask:reverse_task()
-	self.last_check_task = "reversed"
-end
-
-function CGeneralTask:deactivate_task(_task)
-
-	if self.last_check_task == "fail" then
-		local act = db.actor
-		xr_logic.pick_section_from_condlist(act, act, self.on_fail) -- missing by default but referenced in tm_military.ltx
-		news_manager.send_task(act, "fail", _task)
-	elseif self.last_check_task == "reversed" then
-		local act = db.actor
-		xr_logic.pick_section_from_condlist(act, act, self.on_reversed)
-		news_manager.send_task(act, "reversed", _task)
---	elseif self.last_check_task == "reversed_silent" then
---		local act = db.actor
---		xr_logic.pick_section_from_condlist(act, act, self.on_reversed)
-	end
-
+function CGeneralTask:deactivate_task()
 	self.last_check_task = nil
 	self.status = "normal"
 end
@@ -432,29 +392,17 @@ function CGeneralTask:save(package)
 
 	set_save_marker(package, "save", false, "CGeneralTask")
 
-	if self.entity_id == nil then
-		package:w_u16(-1)
-	else
-		package:w_u16(self.entity_id)
-	end
-
+	package:w_u16(self.entity_id or -1)
 	package:w_u8(self.prior)
 	package:w_u8(id_by_status[self.status])
 	package:w_bool(self.actor_helped)
---[[
-	if self.community ~= nil then
-		package:w_stringZ(self.community)
-	else
-		package:w_stringZ("nil")
-	end
-]]
+
 	if self.community ~= nil then
 		local community_id = id_by_community[tostring(self.community)]
-		if community_id ~= nil then
-			package:w_u8(community_id)
-		else
+		if community_id == nil then
 			abort("[task_objects.CGeneralTask:save]: No registered faction identifier exists for faction with name: '%s'. If a save file was created, it is corrupt.", tostring(self.community))
 		end
+		package:w_u8(community_id)
 	else
 		package:w_u8(0)
 	end
@@ -482,52 +430,18 @@ function CGeneralTask:load(reader)
 	self.prior = reader:r_u8()
 	self.status = status_by_id[reader:r_u8()]
 	self.actor_helped = reader:r_bool()
---[[
-	local str = reader:r_stringZ()
 
-	if str ~= "nil" then
-		self.community = str
+	local faction_id = reader:r_u8()
+	local community = faction_id == 0 and "nil" or community_by_id[faction_id]
+
+	if community == nil then
+		abort("[task_objects.CGeneralTask:load]: Tried to load an unregistered faction identifier: '%s'. Your save file is corrupt.", tostring(faction_id))
 	end
 
-	if str == "bandit" then
-		str = "ui_st_name_bandit"
-	elseif str == "csky" then
-		str = "ui_st_name_csky"
-	elseif str == "dolg" then
-		str = "ui_st_name_dolg"
-	elseif str == "freedom" then
-		str = "ui_st_name_freedom"
-	elseif str == "stalker" then
-		str = "ui_st_name_stalker"
-	end
-]]
-	local str = reader:r_u8()
-
-	if str ~= 0 then
-		self.community = community_by_id[str]
-	else
-		self.community = "nil"
-	end
-
-	local str = self.community
-
-	if str == "csky" then
-		str = "ui_st_name_csky"
-	elseif str == "stalker" then
-		str = "ui_st_name_stalker"
-	elseif str == "freedom" then
-		str = "ui_st_name_freedom"
-	elseif str == "dolg" then
-		str = "ui_st_name_dolg"
-	elseif str == "bandit" then
-		str = "ui_st_name_bandit"
-	end
-
-	self.community_name = trans(str)
-
+	self.community = community
+	self.community_name = trans(community_names[community] or community)
 	self.actor_come = reader:r_bool()
 --	self.actor_ignore = reader:r_bool()
-
 	self.inited_time = utils.r_CTime(reader)
 
 	set_save_marker(reader, "load", true, "CGeneralTask")
@@ -539,39 +453,26 @@ class "CEliminateSmartTask" (task_objects.CGeneralTask)
 
 ------------------------------------------------------------------------------------------------
 
-function CEliminateSmartTask:__init(task_ini, id, type) super (task_ini, id, type) -- called 0th (on load), 0th and 3rd (otherwise)
-	self.target_cond = xr_logic.parse_condlist(nil, nil, nil, utils.cfg_get_string(task_ini, id, "target_cond", nil, false, "", "true"))
---	self.src_obj = nil
---	self.faction = nil
+function CEliminateSmartTask:__init(task_ini, section, type) super(task_ini, section, type) -- called 0th (on load), 0th and 3rd (otherwise)
+	self.target_cond = xr_logic.parse_condlist(nil, nil, nil, utils.cfg_get_string(task_ini, section, "target_cond", nil, false, "", "true"))
 end
 
 function CEliminateSmartTask:check_target(smart, faction) -- called 1st (not on load)
-
-	local TGT = self.faction_target
-
-	if TGT ~= nil then
-		if TGT ~= faction then
-			return false
-		end
+	if self.faction_target and self.faction_target ~= faction then
+		return false
 	end
-
 	return xr_logic.pick_section_from_condlist(db.actor, smart, self.target_cond) == "true"
 end
 
-function CEliminateSmartTask:get_inited_task(smart, faction, entity_id) -- called 2nd (not on load)
-	local task = CEliminateSmartTask(self.task_ini, self.base_id, self.type) -- calls CGeneralTask:__init() and CEliminateSmartTask:__init()
-	task:init_task(smart, faction)
+function CEliminateSmartTask:get_inited_task(smart, entity_id) -- called 2nd (not on load)
+	local task = CEliminateSmartTask(self.task_ini, self.section, self.type) -- calls CGeneralTask:__init() and CEliminateSmartTask:__init()
+	task:init_task(smart)
 	task.entity_id = entity_id
 	return task
 end
 
-function CEliminateSmartTask:init_task(smart, faction) -- called 4th (not on load)
-	self.target = smart.id
-	-- self.target_obj = smart -- smart to eliminate
-	self.id	= self.id .. "_" .. smart.id
-	self.community = faction
-	-- self.name = smart:name()
-	self.prior = self.base_prior
+function CEliminateSmartTask:init_task(smart) -- called 4th (not on load)
+	self.target = smart.id -- smart to eliminate
 end
 
 function CEliminateSmartTask:give_task(community) -- called 5th (not on load)
@@ -596,127 +497,45 @@ function CEliminateSmartTask:check_task(tm) -- called 6th
 
 	if target_owner == "none" or target_owner == self.community then
 		if self.actor_helped then
-			self.last_check_task = "complete"
---[[
-			local act = db.actor	-- there are no such sounds defined, so this code won't do anything
-			if act then
-				if self.play_regard == "" then
-					xr_sound.set_sound_play(act:id(), "alife_general_help_"..self.community, self.community, self.target)
-				elseif self.play_regard ~= "nil" then
-					xr_sound.set_sound_play(act:id(), self.play_regard, self.community, self.target)
+			if self.play_regard == "" then
+				for _, ally_squad in pairs (self.board.smarts[self.target].squads) do
+					ally_squad:issue_order("defend_actor_help")
+					break
 				end
 			end
-]]
+			self.last_check_task = "complete"
 		else
 			self.last_check_task = "reversed"
 		end
 	end
 end
 
-function CEliminateSmartTask:reverse_task()
-	self.last_check_task = "reversed"
-end
+function CEliminateSmartTask:deactivate_task() -- called 7th
 
-function CEliminateSmartTask:deactivate_task(_task) -- called 7th
-
-	task_objects.CGeneralTask.deactivate_task(self, _task)
---[[
-	task_manager.get_task_manager():unregister_faction_task(self.community, self)
-
-	if self.src_obj ~= nil then
-		local squad_obj = self.board.squads[self.src_obj]
-		if squad_obj ~= nil then
-			for k, v in pairs (squad_obj.random_tasks) do
-				if v == self.entity_id then
-					squad_obj.random_tasks[k] = nil
-				end
-			end
-		end
+	if self.last_check_task ~= "reversed_silent" then
+		self.board.smarts[self.target].smrt.combat_manager.combat_quest = "nil" -- SRP
 	end
 
-	local faction = self.faction
-]]
+	task_objects.CGeneralTask.deactivate_task(self)
+
 	local faction = self.board.players[self.community]
+
 	if faction ~= nil then
-		if faction.random_tasks ~= nil then
-			faction.random_tasks[self.target] = nil
-		end
+		faction.random_tasks[self.target] = nil
 	end
 end
 
 function CEliminateSmartTask:save(package)
-
 	set_save_marker(package, "save", false, "CEliminateSmartTask")
-
 	task_objects.CGeneralTask.save(self, package)
-
 	package:w_u16(self.target)
---[[
-	package:w_stringZ(tostring(self.src_obj))
-
-	if self.faction ~= nil then
-		package:w_stringZ(tostring(self.faction.player_name))
-	else
-		package:w_stringZ("nil")
-	end
-
-	local faction = self.faction
-	if faction ~= nil then
-		local community_id = id_by_community[tostring(faction.player_name)]
-		if community_id ~= nil then
-			package:w_u8(community_id)
-		else
-			abort("[task_objects.CEliminateSmartTask:save]: No registered faction identifier exists for task-giver faction with name: '%s'. If a save file was created, it is corrupt.", tostring(faction.player_name))
-		end
-	else
-		package:w_u8(0)
-	end
-]]
 	set_save_marker(package, "save", true, "CEliminateSmartTask")
 end
 
 function CEliminateSmartTask:load(reader) -- called 0.5th (only on load)
-
 	set_save_marker(reader, "load", false, "CEliminateSmartTask")
-
 	task_objects.CGeneralTask.load(self, reader)
-
 	self.target = reader:r_u16()
-
-	self.id	= self.id.."_"..self.target
---[[
-	self.src_obj = reader:r_stringZ()
-
-	if self.src_obj == "nil" then
-		self.src_obj = nil
-	end
-
-	local faction = reader:r_stringZ()
-	if faction ~= "nil" then
-		local board = sim_board.get_sim_board()
-		if board.players[faction] ~= nil then
-			self.faction = board.players[faction]
-		else
-			self.faction = {}
-			self.faction.player_name = faction
-		end
-	end
-
-	local faction_id = reader:r_u8()
-	if faction_id ~= 0 and faction_id ~= 21 then
-		local faction_name = community_by_id[faction_id]
-		if faction_name == nil then
-			abort("[task_objects.CEliminateSmartTask:load]: Tried to load an unregistered faction name identifier: '%s'. Your save file is corrupt.", tostring(faction_id))
-		end
-		local faction = self.board.players[faction_name]
-		if faction ~= nil then
-			self.faction = faction
-		else
-			self.faction = {}
-			self.faction.player_name = faction_name
-		end
-	end
-]]
 	set_save_marker(reader, "load", true, "CEliminateSmartTask")
 end
 
@@ -726,40 +545,28 @@ class "CCaptureSmartTask" (task_objects.CGeneralTask)
 
 ------------------------------------------------------------------------------------------------
 
-function CCaptureSmartTask:__init(task_ini, id, type) super (task_ini, id, type) -- called 0th (on load), 0th and 3rd (otherwise)
-	self.target_cond = xr_logic.parse_condlist(nil, nil, nil, utils.cfg_get_string(task_ini, id, "target_cond", nil, false, "", "true"))
-	self.counter_attack = utils.cfg_get_bool(task_ini, id, "counter_attack", nil, false, true)
+function CCaptureSmartTask:__init(task_ini, section, type) super(task_ini, section, type) -- called 0th (on load), 0th and 3rd (otherwise)
+	self.target_cond = xr_logic.parse_condlist(nil, nil, nil, utils.cfg_get_string(task_ini, section, "target_cond", nil, false, "", "true"))
+	self.counter_attack = utils.cfg_get_bool(task_ini, section, "counter_attack", nil, false, true)
 	self.src_obj = nil
---	self.faction = nil
 end
 
 function CCaptureSmartTask:check_target(smart, faction) -- called 1st (not on load)
-
-	local TGT = self.faction_target
-
-	if TGT ~= nil then
-		if TGT ~= faction then
-			return false
-		end
+	if self.faction_target and self.faction_target ~= faction then
+		return false
 	end
-
 	return xr_logic.pick_section_from_condlist(db.actor, smart, self.target_cond) == "true"
 end
 
-function CCaptureSmartTask:get_inited_task(smart, faction, entity_id) -- called 2nd (not on load)
-	local task = CCaptureSmartTask(self.task_ini, self.base_id, self.type) -- calls CGeneralTask:__init() and CCaptureSmartTask:__init()
-	task:init_task(smart, faction)
+function CCaptureSmartTask:get_inited_task(smart, entity_id) -- called 2nd (not on load)
+	local task = CCaptureSmartTask(self.task_ini, self.section, self.type) -- calls CGeneralTask:__init() and CCaptureSmartTask:__init()
+	task:init_task(smart)
 	task.entity_id = entity_id
 	return task
 end
 
-function CCaptureSmartTask:init_task(smart, faction) -- called 4th (not on load)
-	self.target = smart.id
-	-- self.target_obj = smart -- smart to capture
-	self.id	= self.id .. "_" .. smart.id
-	self.community = faction
-	-- self.name = smart:name()
-	self.prior = self.base_prior
+function CCaptureSmartTask:init_task(smart) -- called 4th (not on load)
+	self.target = smart.id -- smart to capture
 end
 
 function CCaptureSmartTask:give_task(community) -- called 5th (not on load)
@@ -767,13 +574,20 @@ function CCaptureSmartTask:give_task(community) -- called 5th (not on load)
 	if self.src_obj ~= nil then
 		local squad = self.board.squads[self.src_obj]
 		if squad ~= nil then
-			squad:give_squad_task(self.target)
+			local current_task = task_manager.get_task_manager().tasks_by_smarts[self.target]
+			if current_task ~= nil then
+				if current_task.type == "eliminate_smart" then
+					self.is_task_update = true
+					current_task.last_check_task = "reversed_silent"
+				else
+					current_task.last_check_task = "reversed"
+				end
+			end
+			squad:clear_current_action()
 		end
 	end
 
 	task_objects.CGeneralTask.give_task(self, community)
-
-	bind_stalker.task_update = false
 
 	self.state = "capture"
 	self.ally_squad_id = nil -- SRP fix
@@ -788,9 +602,6 @@ end
 function CCaptureSmartTask:check_task(tm) -- called 6th
 
 	if self.last_check_task ~= nil then
-		if self.last_check_task == "fail" then
-			self.board.smarts[self.target].smrt.combat_manager.combat_quest = "nil"
-		end
 		return
 	end
 
@@ -805,42 +616,28 @@ function CCaptureSmartTask:check_task(tm) -- called 6th
 	self:check_title(self.state == "counter_attack")
 
 	local target_obj = self.board.smarts[self.target].smrt
---[[
-	if self.last_check_task == "fail" then
-		target_obj.combat_manager.combat_quest = "nil"
-		return
-	end
-]]
+
 	if target_obj.player_name == self.community then
 		if self.state == "counter_attack" then
 			if not target_obj.combat_manager:point_under_attack() then
 				if self.actor_helped then
-
-					self.last_check_task = "complete"
-					target_obj.combat_manager.combat_quest = "nil"
-
-					for k, ally_squad in pairs (self.board.smarts[target_obj.id].squads) do
-						if self.play_regard == "" then
-							xr_sound.set_sound_play(ally_squad.commander_id, "alife_defence_actor_help", self.community, self.target)
-						elseif self.play_regard ~= "nil" then
-							xr_sound.set_sound_play(ally_squad.commander_id, self.play_regard, self.community, self.target)
+					if self.play_regard == "" then
+						for _, ally_squad in pairs (self.board.smarts[target_obj.id].squads) do
+							ally_squad:issue_order("defend_actor_help")
+							break
 						end
-						break
 					end
-					return
+					self.last_check_task = "complete"
 				else
-					self.last_check_task = "reversed"
-					target_obj.combat_manager.combat_quest = "nil"
 --[[
-					for k, ally_squad in pairs (self.board.smarts[target_obj.id].squads) do
-						if self.play_regard == "" then
+					if self.play_regard == "" then
+						for _, ally_squad in pairs (self.board.smarts[target_obj.id].squads) do
 							xr_sound.set_sound_play(ally_squad.commander_id, "alife_point_captured", self.community, self.target)
-						elseif self.play_regard ~= "nil" then
-							xr_sound.set_sound_play(ally_squad.commander_id, self.play_regard, self.community, self.target)
+							break
 						end
-						break
 					end
 ]]
+					self.last_check_task = "reversed"
 				end
 			end
 		else
@@ -849,7 +646,7 @@ function CCaptureSmartTask:check_task(tm) -- called 6th
 					if self.board.players[self.counter_attack_community].brain.use_counter_attack == true then
 
 						if self.ally_squad_id == nil then -- SRP fix
-							for k, ally_squad in pairs (self.board.smarts[target_obj.id].squads) do
+							for _, ally_squad in pairs (self.board.smarts[target_obj.id].squads) do
 								self.ally_squad_id = ally_squad.squad_id -- SRP fix
 								break
 							end
@@ -898,31 +695,23 @@ function CCaptureSmartTask:check_task(tm) -- called 6th
 			end
 
 			if self.actor_helped then
-
-				self.last_check_task = "complete"
-				target_obj.combat_manager.combat_quest = "nil"
-
-				for k, ally_squad in pairs (self.board.smarts[target_obj.id].squads) do
-					if self.play_regard == "" then
-						xr_sound.set_sound_play(ally_squad.commander_id, "alife_defence_actor_help", self.community, self.target)
-					elseif self.play_regard ~= "nil" then
-						xr_sound.set_sound_play(ally_squad.commander_id, self.play_regard, self.community, self.target)
+				if self.play_regard == "" then
+					for _, ally_squad in pairs (self.board.smarts[target_obj.id].squads) do
+						ally_squad:issue_order("defend_actor_help")
+						break
 					end
-					break
 				end
+				self.last_check_task = "complete"
 			else
-				self.last_check_task = "reversed"
-				target_obj.combat_manager.combat_quest = "nil"
 --[[
-				for k, ally_squad in pairs (self.board.smarts[target_obj.id].squads) do
-					if self.play_regard == "" then
+				if self.play_regard == "" then
+					for _, ally_squad in pairs (self.board.smarts[target_obj.id].squads) do
 						xr_sound.set_sound_play(ally_squad.commander_id, "alife_point_captured", self.community, self.target)
-					elseif self.play_regard ~= "nil" then
-						xr_sound.set_sound_play(ally_squad.commander_id, self.play_regard, self.community, self.target)
+						break
 					end
-					break
 				end
 ]]
+				self.last_check_task = "reversed"
 			end
 		end
 	end
@@ -962,18 +751,13 @@ function CCaptureSmartTask:check_title(is_counterattack)
 	end
 end
 
-function CCaptureSmartTask:reverse_task()
-	self.last_check_task = "reversed"
-	self.board.smarts[self.target].smrt.combat_manager.combat_quest = "nil"
-end
+function CCaptureSmartTask:deactivate_task() -- called 7th
 
-function CCaptureSmartTask:deactivate_task(_task) -- called 7th
+	if self.last_check_task ~= "reversed_silent" then
+		self.board.smarts[self.target].smrt.combat_manager.combat_quest = "nil" -- SRP
+	end
 
-	task_objects.CGeneralTask.deactivate_task(self, _task)
-	local mgr = self.board.smarts[self.target].smrt.combat_manager -- SRP
-	mgr.combat_quest = "nil"                                       -- SRP
-	mgr.task = nil                                                 -- SRP
---	task_manager.get_task_manager():unregister_faction_task(self.community, self)
+	task_objects.CGeneralTask.deactivate_task(self)
 
 	if self.src_obj ~= nil then
 		local squad_obj = self.board.squads[self.src_obj]
@@ -985,16 +769,11 @@ function CCaptureSmartTask:deactivate_task(_task) -- called 7th
 			end
 		end
 	end
---[[
-	if self.faction ~= nil then
-		self.faction.random_tasks = {} -- ??? WTF ???
-	end
-]]
+
 	local faction = self.board.players[self.community]
+
 	if faction ~= nil then
-		if faction.random_tasks ~= nil then
-			faction.random_tasks[self.target] = nil
-		end
+		faction.random_tasks[self.target] = nil
 	end
 end
 
@@ -1005,74 +784,36 @@ function CCaptureSmartTask:save(package)
 	task_objects.CGeneralTask.save(self, package)
 
 	package:w_u16(self.target)
---[[
-	if self.state == nil then
-		package:w_stringZ("nil")
-	else
-		package:w_stringZ(self.state)
-	end
 
-	if self.counter_attack_community == nil then
-		package:w_stringZ("nil")
-	else
-		package:w_stringZ(self.counter_attack_community)
-	end
-]]
-	local self_state = self.state
-	if self_state == nil then
+	local state = self.state
+
+	if state == nil then
 		package:w_u8(0)
-	elseif self_state == "capture" then
+	elseif state == "capture" then
 		package:w_u8(1)
-	elseif self_state == "counter_attack" then
+	elseif state == "counter_attack" then
 		package:w_u8(2)
 	else
-		abort("[task_objects.CCaptureSmartTask:save]: Tried to save an identifier for an invalid task state: '%s'. If a save file was created, it is corrupt.", tostring(self_state))
+		abort("[task_objects.CCaptureSmartTask:save]: Tried to save an identifier for an invalid task state: '%s'. If a save file was created, it is corrupt.", tostring(state))
 	end
 
 	local counter_community = self.counter_attack_community
+
 	if counter_community == nil then
 		package:w_u8(0)
 	else
 		local community_id = id_by_community[tostring(counter_community)]
-		if community_id ~= nil then
-			package:w_u8(community_id)
-		else
+		if community_id == nil then
 			abort("[task_objects.CCaptureSmartTask:save]: No registered faction identifier exists for counter-attack faction with name: '%s'. If a save file was created, it is corrupt.", tostring(counter_community))
 		end
+		package:w_u8(community_id)
 	end
---[[
-	if self.counter_sound_started ~= nil then
-		package:w_bool(self.counter_sound_started)
-	else
-		package:w_bool(false)
-	end
-]]
+
 	package:w_bool(self.counter_sound_started == true)
-
 	package:w_stringZ(tostring(self.ally_squad_id)) -- SRP fix
-
 	package:w_stringZ(tostring(self.counter_squad))
-
 	package:w_stringZ(tostring(self.src_obj))
---[[
-	if self.faction ~= nil then
-		package:w_stringZ(tostring(self.faction.player_name))
-	else
-		package:w_stringZ("nil")
-	end
 
-	local faction = self.faction
-	if faction ~= nil then
-		local community_id = id_by_community[tostring(faction.player_name)]
-		if community_id ~= nil then
-			package:w_u8(community_id)
-		else
-			abort("[task_objects.CCaptureSmartTask:save]: No registered faction identifier exists for task-giver faction with name: '%s'. If a save file was created, it is corrupt.", tostring(faction.player_name))
-		end
-	else
-		package:w_u8(0)
-	end
-]]
 	utils.w_CTime(package, self.last_called_time) -- SRP fix
 
 	set_save_marker(package, "save", true, "CCaptureSmartTask")
@@ -1086,41 +827,26 @@ function CCaptureSmartTask:load(reader) -- called 0.5th (only on load)
 
 	self.target = reader:r_u16()
 
-	self.id	= self.id.."_"..self.target
---[[
-	local string = reader:r_stringZ()
-	if string == "nil" then
-		self.state = nil
-	else
-		self.state = string
-	end
+	local state_id = reader:r_u8()
 
-	string = reader:r_stringZ()
-	if string == "nil" then
-		self.counter_attack_community = nil
-	else
-		self.counter_attack_community = string
-	end
-]]
-	local self_state_id = reader:r_u8()
-	if self_state_id == 0 then
+	if state_id == 0 then
 		self.state = nil
-	elseif self_state_id == 1 then
+	elseif state_id == 1 then
 		self.state = "capture"
-	elseif self_state_id == 2 then
+	elseif state_id == 2 then
 		self.state = "counter_attack"
 	else
-		abort("[task_objects.CCaptureSmartTask:load]: Tried to load an invalid task state identifier: '%s'. Your save file is corrupt.", tostring(self_state_id))
+		abort("[task_objects.CCaptureSmartTask:load]: Tried to load an invalid task state identifier: '%s'. Your save file is corrupt.", tostring(state_id))
 	end
 
 	local counter_id = reader:r_u8()
+
 	if counter_id ~= 0 then
-		local community_name = community_by_id[counter_id]
-		if community_name ~= nil then
-			self.counter_attack_community = community_name
-		else
+		local community = community_by_id[counter_id]
+		if community == nil then
 			abort("[task_objects.CCaptureSmartTask:load]: Tried to load an unregistered counter-attack faction identifier: '%s'. Your save file is corrupt.", tostring(counter_id))
 		end
+		self.counter_attack_community = community
 	end
 
 	self.counter_sound_started = reader:r_bool()
@@ -1139,35 +865,7 @@ function CCaptureSmartTask:load(reader) -- called 0.5th (only on load)
 	if self.src_obj == "nil" then
 		self.src_obj = nil
 	end
---[[
-	local faction = reader:r_stringZ()
 
-	if faction ~= "nil" then
-		local board = sim_board.get_sim_board()
-		if board.players[faction] ~= nil then
-			self.faction = board.players[faction]
-		else
-			self.faction = {}
-			self.faction.player_name = faction
-		end
-	end
-
-	local faction_id = reader:r_u8()
-
-	if faction_id ~= 0 and faction_id ~= 21 then
-		local faction_name = community_by_id[faction_id]
-		if faction_name == nil then
-			abort("[task_objects.CCaptureSmartTask:load]: Tried to load an unregistered faction name identifier: '%s'. Your save file is corrupt.", tostring(faction_id))
-		end
-		local faction = self.board.players[faction_name]
-		if faction ~= nil then
-			self.faction = faction
-		else
-			self.faction = {}
-			self.faction.player_name = faction_name
-		end
-	end
-]]
 	self.last_called_time = utils.r_CTime(reader) -- SRP fix
 
 	set_save_marker(reader, "load", true, "CCaptureSmartTask")
@@ -1179,46 +877,28 @@ class "CDefendSmartTask" (task_objects.CGeneralTask) -- 'Help' task
 
 ------------------------------------------------------------------------------------------------
 
-function CDefendSmartTask:__init(task_ini, id, type) super (task_ini, id, type) -- called 0th (on load), 0th and 3rd (otherwise)
-	self.target_cond = xr_logic.parse_condlist(nil, nil, nil, utils.cfg_get_string(task_ini, id, "target_cond", nil, false, "", "true"))
-	local time = utils.cfg_get_number(task_ini, id, "wait_time", nil, false, 15)
+function CDefendSmartTask:__init(task_ini, section, type) super(task_ini, section, type) -- called 0th (on load), 0th and 3rd (otherwise)
+	self.target_cond = xr_logic.parse_condlist(nil, nil, nil, utils.cfg_get_string(task_ini, section, "target_cond", nil, false, "", "true"))
+	local time = utils.cfg_get_number(task_ini, section, "wait_time", nil, false, 15)
 	self.wait_time = (time ~= -1) and (60 * time) or nil
---[[
-	if time == -1 then
-		self.wait_time = nil
-	else
-		self.wait_time = 60 * time
-	end
-]]
 end
 
 function CDefendSmartTask:check_target(smart, faction) -- called 1st (not on load)
-
-	local TGT = self.faction_target
-
-	if TGT ~= nil then
-		if TGT ~= faction then
-			return false
-		end
+	if self.faction_target and self.faction_target ~= faction then
+		return false
 	end
-
 	return xr_logic.pick_section_from_condlist(db.actor, smart, self.target_cond) == "true"
 end
 
-function CDefendSmartTask:get_inited_task(smart, faction, entity_id) -- called 2nd (not on load)
-	local task = CDefendSmartTask(self.task_ini, self.base_id, self.type) -- calls CGeneralTask:__init() and CDefendSmartTask:__init()
-	task:init_task(smart, faction)
+function CDefendSmartTask:get_inited_task(smart, entity_id) -- called 2nd (not on load)
+	local task = CDefendSmartTask(self.task_ini, self.section, self.type) -- calls CGeneralTask:__init() and CDefendSmartTask:__init()
+	task:init_task(smart)
 	task.entity_id = entity_id
 	return task
 end
 
-function CDefendSmartTask:init_task(smart, faction) -- called 4th (not on load)
-	self.target = smart.id
-	-- self.target_obj = smart -- smart to defend
-	self.community = faction
-	-- self.name = smart:name()
-	-- self.id = self.id .. "_" .. smart.id
-	self.prior = self.base_prior
+function CDefendSmartTask:init_task(smart) -- called 4th (not on load)
+	self.target = smart.id -- smart to defend
 end
 
 function CDefendSmartTask:give_task(community) -- called 5th (not on load)
@@ -1226,13 +906,9 @@ function CDefendSmartTask:give_task(community) -- called 5th (not on load)
 	task_objects.CGeneralTask.give_task(self, community)
 
 	local enemy_squad = self.board.squads[self.src_squad_id]
-	if enemy_squad == nil then
-		self.last_called_time = get_game_time()
-		return
-	end
 
-	if self.play_regard == "" then
-		for k, defender_squad in pairs (self.board.smarts[self.target].squads) do
+	if enemy_squad and self.play_regard == "" then
+		for _, defender_squad in pairs (self.board.smarts[self.target].squads) do
 			defender_squad:issue_order("defend_sos_"..enemy_squad.player_id)
 			break
 		end
@@ -1257,35 +933,31 @@ function CDefendSmartTask:check_task(tm) -- called 6th
 
 	local target_obj = self.board.smarts[self.target].smrt
 
---	if target_obj.player_name == "none" then
 	if target_obj.player_name ~= self.community then
 		if self.actor_come or get_game_time():diffSec(self.inited_time) > self.wait_time then
 			self.last_check_task = "fail"
 		else
 			self.last_check_task = "reversed"
 		end
-		target_obj.combat_manager.combat_quest = "nil"
 		return
 	end
 
 	if not target_obj.combat_manager:point_under_attack() then
 		if self.actor_helped then
 			if self.play_regard == "" then
-				for k, defender_squad in pairs (self.board.smarts[self.target].squads) do
+				for _, defender_squad in pairs (self.board.smarts[self.target].squads) do
 					defender_squad:issue_order("defend_actor_help")
 					break
 				end
 			end
 			self.last_check_task = "complete"
-			target_obj.combat_manager.combat_quest = "nil"
 		else
 			self.last_check_task = "reversed"
-			target_obj.combat_manager.combat_quest = "nil"
 		end
 		return
 	end
 
-	if self.actor_come ~= true then
+	if not self.actor_come then
 		if self.actor_helped then
 			self:actor_comed(target_obj.combat_manager)
 		else
@@ -1295,7 +967,7 @@ function CDefendSmartTask:check_task(tm) -- called 6th
 				self.last_called_time = game_time
 			elseif game_time:diffSec(self.last_called_time) > 50 then
 				if self.play_regard == "" then
-					for k, defender_squad in pairs (self.board.smarts[self.target].squads) do
+					for _, defender_squad in pairs (self.board.smarts[self.target].squads) do
 						defender_squad:issue_order("defend_wait")
 						break
 					end
@@ -1307,26 +979,26 @@ function CDefendSmartTask:check_task(tm) -- called 6th
 end
 
 function CDefendSmartTask:actor_comed(target_obj_combat_manager)
-	if self.actor_come ~= true then
+	if not self.actor_come then
 		self.actor_come = true
 		if self.play_regard == "" then
---			if get_game_time():diffSec(self.inited_time) >= 30 then -- thank for coming iff actor showed up at least 3 real seconds after the task was initiated (currently disabled)
-				for k, defender_squad in pairs (self.board.smarts[self.target].squads) do
-					defender_squad:issue_order("defend_actor_come")
-					break
-				end
---			end
+			for _, defender_squad in pairs (self.board.smarts[self.target].squads) do
+				defender_squad:issue_order("defend_actor_come")
+				break
+			end
 		end
 		target_obj_combat_manager:request_squad_stage(nil, "combat")
 	end
 end
 
 function CDefendSmartTask:actor_ignored(target_obj_combat_manager)
-	if self.actor_ignore ~= true then
+	if not self.actor_ignore then
 		self.actor_ignore = true
 --[[
+		-- GSC didn't include ignore sounds so this code won't do anything:
+
 		if self.play_regard == "" then
-			for k, defender_squad in pairs (self.board.smarts[self.target].squads) do -- GSC didn't include ignore sounds so this code won't do anything
+			for _, defender_squad in pairs (self.board.smarts[self.target].squads) do
 				defender_squad:issue_order("defend_actor_ignore")
 				break
 			end
@@ -1336,17 +1008,11 @@ function CDefendSmartTask:actor_ignored(target_obj_combat_manager)
 	end
 end
 
-function CDefendSmartTask:reverse_task()
-	self.last_check_task = "reversed"
-	self.board.smarts[self.target].smrt.combat_manager.combat_quest = "nil"
-end
-
-function CDefendSmartTask:deactivate_task(_task) -- called 7th
-	task_objects.CGeneralTask.deactivate_task(self, _task)
+function CDefendSmartTask:deactivate_task() -- called 7th
+	task_objects.CGeneralTask.deactivate_task(self)
 	local mgr = self.board.smarts[self.target].smrt.combat_manager
 	mgr.combat_quest = "nil"
 	mgr.task = nil
---	task_manager.get_task_manager():unregister_faction_task(self.community, self)
 end
 
 function CDefendSmartTask:save(package)
@@ -1371,67 +1037,41 @@ class "CDefendSmartTaskDelay" (task_objects.CGeneralTask) -- 'Defend the camp' t
 
 ------------------------------------------------------------------------------------------------
 
-function CDefendSmartTaskDelay:__init(task_ini, id, type) super (task_ini, id, type) -- called 0th (on load), 0th and 3rd (otherwise)
-	self.target_cond = xr_logic.parse_condlist(nil, nil, nil, utils.cfg_get_string(task_ini, id, "target_cond", nil, false, "", "true"))
-	local time = utils.cfg_get_number(task_ini, id, "wait_time", nil, false, 15)
+function CDefendSmartTaskDelay:__init(task_ini, section, type) super(task_ini, section, type) -- called 0th (on load), 0th and 3rd (otherwise)
+	self.target_cond = xr_logic.parse_condlist(nil, nil, nil, utils.cfg_get_string(task_ini, section, "target_cond", nil, false, "", "true"))
+	local time = utils.cfg_get_number(task_ini, section, "wait_time", nil, false, 15)
 	self.wait_time = (time ~= -1) and (60 * time) or nil
---[[
-	if time == -1 then
-		self.wait_time = nil
-	else
-		self.wait_time = 60 * time
-	end
-]]
 end
 
 function CDefendSmartTaskDelay:check_target(smart, faction) -- called 1st (not on load)
-
-	local TGT = self.faction_target
-
-	if TGT ~= nil then
-		if TGT ~= faction then
-			return false
-		end
+	if self.faction_target and self.faction_target ~= faction then
+		return false
 	end
-
 	return xr_logic.pick_section_from_condlist(db.actor, smart, self.target_cond) == "true"
 end
 
-function CDefendSmartTaskDelay:get_inited_task(smart, faction, entity_id) -- called 2nd (not on load)
-	local task = CDefendSmartTaskDelay(self.task_ini, self.base_id, self.type) -- calls CGeneralTask:__init() and CDefendSmartTaskDelay:__init()
-	task:init_task(smart, faction)
+function CDefendSmartTaskDelay:get_inited_task(smart, entity_id) -- called 2nd (not on load)
+	local task = CDefendSmartTaskDelay(self.task_ini, self.section, self.type) -- calls CGeneralTask:__init() and CDefendSmartTaskDelay:__init()
+	task:init_task(smart)
 	task.entity_id = entity_id
 	return task
 end
 
-function CDefendSmartTaskDelay:init_task(smart, faction) -- called 4th (not on load)
-	self.target = smart.id
-	-- self.target_obj = smart -- smart to defend
-	self.community = faction
-	-- self.name = smart:name()
-	-- self.id = self.id .. "_" .. smart.id
-	self.prior = self.base_prior
+function CDefendSmartTaskDelay:init_task(smart) -- called 4th (not on load)
+	self.target = smart.id -- smart to defend
 end
 
 function CDefendSmartTaskDelay:give_task(community) -- called 5th (not on load)
 
 	task_objects.CGeneralTask.give_task(self, community)
 
-	-- SRP:
 	local enemy_squad = self.board.squads[self.src_squad_id]
-	if enemy_squad == nil then
-		self.last_called_time = get_game_time()
-		return
-	end
 
-	if self.play_regard == "" then
---		if sim_combat.actor_come_to_point(self.board.smarts[self.target]) == false then -- shout for help on delayed defend tasks iff actor not already on smart when task initiated (currently disabled)
-			for k, defender_squad in pairs (self.board.smarts[self.target].squads) do
-				defender_squad:issue_order("defend_sos_"..enemy_squad.player_id)
-				break
-			end
---			self.last_called_time = get_game_time()
---		end
+	if enemy_squad and self.play_regard == "" then
+		for _, defender_squad in pairs (self.board.smarts[self.target].squads) do
+			defender_squad:issue_order("defend_sos_"..enemy_squad.player_id)
+			break
+		end
 	end
 
 	self.last_called_time = get_game_time()
@@ -1459,11 +1099,6 @@ function CDefendSmartTaskDelay:check_task(tm) -- called 6th
 		else
 			self.last_check_task = "reversed"
 		end
-		target_obj.combat_manager.combat_quest = "nil"
-		local enemy_squad = self.board.squads[self.src_squad_id]
-		if enemy_squad then
-			enemy_squad.delayed_attack_task = nil
-		end
 		return
 	end
 
@@ -1472,35 +1107,31 @@ function CDefendSmartTaskDelay:check_task(tm) -- called 6th
 	if enemy_squad == nil then
 		if self.actor_helped then
 			if self.play_regard == "" then
-				for k, defender_squad in pairs (self.board.smarts[self.target].squads) do
+				for _, defender_squad in pairs (self.board.smarts[self.target].squads) do
 					defender_squad:issue_order("defend_actor_help")
 					break
 				end
 			end
 			self.last_check_task = "complete"
-			target_obj.combat_manager.combat_quest = "nil"
 		else
 			self.last_check_task = "reversed"
-			target_obj.combat_manager.combat_quest = "nil"
 		end
 		return
 	end
 
-	if self.actor_come ~= true then
+	if not self.actor_come then
 		if sim_combat.actor_come_to_point(target_obj) == true then
 			self.actor_come = true
 			if self.play_regard == "" then
---				if get_game_time():diffSec(self.inited_time) >= 30 then -- thank for coming iff actor showed up at least 3 real seconds after the task was initiated (currently disabled)
-					for k, defender_squad in pairs (self.board.smarts[self.target].squads) do
-						defender_squad:issue_order("defend_actor_come")
-						break
-					end
---				end
+				for _, defender_squad in pairs (self.board.smarts[self.target].squads) do
+					defender_squad:issue_order("defend_actor_come")
+					break
+				end
 			end
 		else
 			if get_game_time():diffSec(self.last_called_time) > 50 then
 				if self.play_regard == "" then
-					for k, defender_squad in pairs (self.board.smarts[self.target].squads) do
+					for _, defender_squad in pairs (self.board.smarts[self.target].squads) do
 						defender_squad:issue_order("defend_wait")
 						break
 					end
@@ -1520,51 +1151,15 @@ function CDefendSmartTaskDelay:check_task(tm) -- called 6th
 			end
 		end
 	end
---[[
-	if self.attack_launched ~= true then
-		if self.actor_come or get_game_time():diffSec(self.inited_time) > self.wait_time then
-			local source_smart_squads = self.board.smarts[enemy_squad.smart_id].squads
-			local attacking_num = 0
-			local enemy_player = enemy_squad.player_id
-			for k, enemy_squad in pairs (source_smart_squads) do
-				if attacking_num < target_obj.squad_capacity then
-					if enemy_squad.player_id == enemy_player then
-						local enemy_script_target = enemy_squad:get_script_target()
-						if not enemy_script_target or enemy_script_target == target_obj.id then -- SRP fix
-							if enemy_squad.current_action ~= nil then
-								if enemy_squad.current_action.name == "stay_point" then
-									enemy_squad.current_action = sim_squad_generic.sim_attack_point(enemy_squad, target_obj.id, true)
-									enemy_squad.current_action:make()
-									attacking_num = attacking_num + 1
-								end
-							end
-						end
-					end
-				else
-					break
-				end
-			end
-			self.attack_launched = true
-		end
-	end
-]]
 end
 
-function CDefendSmartTaskDelay:reverse_task()
-	self.last_check_task = "reversed"
-	self.board.smarts[self.target].smrt.combat_manager.combat_quest = "nil"
+function CDefendSmartTaskDelay:deactivate_task() -- called 7th
+	task_objects.CGeneralTask.deactivate_task(self)
+	self.board.smarts[self.target].smrt.combat_manager.combat_quest = "nil" -- SRP
 	local enemy_squad = self.board.squads[self.src_squad_id]
 	if enemy_squad then
 		enemy_squad.delayed_attack_task = nil
 	end
-end
-
-function CDefendSmartTaskDelay:deactivate_task(_task) -- called 7th
-	task_objects.CGeneralTask.deactivate_task(self, _task)
-	local mgr = self.board.smarts[self.target].smrt.combat_manager -- SRP
-	mgr.combat_quest = "nil"                                       -- SRP
-	mgr.task = nil                                                 -- SRP
---	task_manager.get_task_manager():unregister_faction_task(self.community, self)
 end
 
 function CDefendSmartTaskDelay:save(package)
@@ -1591,24 +1186,18 @@ class "CGetRewardTask" (task_objects.CGeneralTask)
 
 ------------------------------------------------------------------------------------------------
 
-function CGetRewardTask:__init(task_ini, id, type) super (task_ini, id, type) -- called 0th (on load), 0th and 3rd (otherwise)
+function CGetRewardTask:__init(task_ini, section, type) super(task_ini, section, type) -- called 0th (on load), 0th and 3rd (otherwise)
 end
 
 function CGetRewardTask:check_target(npc_id, faction) -- called 1st (not on load)
-
-	local TGT = self.faction_target
-
-	if TGT ~= nil then
-		if TGT ~= faction then
-			return false
-		end
+	if self.faction_target and self.faction_target ~= faction then
+		return false
 	end
-
 	return true
 end
 
-function CGetRewardTask:get_inited_task(npc_id, faction, entity_id) -- called 2nd (not on load)
-	local task = CGetRewardTask(self.task_ini, self.base_id, self.type) -- calls CGeneralTask:__init() and CGetRewardTask:__init()
+function CGetRewardTask:get_inited_task(npc_id, entity_id) -- called 2nd (not on load)
+	local task = CGetRewardTask(self.task_ini, self.section, self.type) -- calls CGeneralTask:__init() and CGetRewardTask:__init()
 	task:init_task(npc_id)
 	task.entity_id = entity_id
 	return task
@@ -1616,7 +1205,6 @@ end
 
 function CGetRewardTask:init_task(npc_id) -- called 4th (not on load)
 	self.target = npc_id
-	self.id	= self.id .. "_" .. npc_id
 end
 
 function CGetRewardTask:change_description(tm) -- called 5th
@@ -1639,7 +1227,6 @@ function CGetRewardTask:change_description(tm) -- called 5th
 	local s = ""
 
 	if amount_money ~= 0 then
---		dbglog("money total: "..amount_money)
 		s = s.."\\n>"..tostring(amount_money).." RU"
 	end
 
@@ -1707,33 +1294,31 @@ function CGetRewardTask:check_task(tm) -- called 6th
 		self.last_check_task = "complete"
 	end
 
-	local npc = sim:object(self.target)
+	local rewarder = sim:object(self.target)
 
-	if not npc or not npc:alive() then
+	if not rewarder or not rewarder:alive() then
 		self.last_check_task = "reversed"
 		tm.rewards[self.community] = nil
 		return
 	end
 
-	npc = db.storage[self.target]
-	npc = npc and npc.object
+	rewarder = db.storage[self.target]
+	rewarder = rewarder and rewarder.object
 
-	if npc then
-		if npc:general_goodwill(actor) <= -1000 then
-			self.last_check_task = "reversed"
-			tm.rewards[self.community] = nil
-			return
-		end
+	if rewarder and rewarder:general_goodwill(actor) <= -1000 then
+		self.last_check_task = "reversed"
+		tm.rewards[self.community] = nil
+		return
 	end
 
-	for k, condlist in pairs (self.condlist) do
+	for _, condlist in pairs (self.condlist) do
 		local status = xr_logic.pick_section_from_condlist(actor, actor, condlist)
 		if status ~= nil then
-			if valid_values[status] ~= true then
+			if not valid_values[status] then
 				abort("[task_objects.CGetRewardTask:check_task]: Invalid task status '%s' for task '%s'.", tostring(status), tostring(self.name))
 			end
 			self.last_check_task = status
-			return
+			break
 		end
 	end
 end
@@ -1741,8 +1326,8 @@ end
 function CGetRewardTask:init_reward() -- called 7th
 end
 
-function CGetRewardTask:deactivate_task(_task) -- called 8th
-	task_objects.CGeneralTask.deactivate_task(self, _task)
+function CGetRewardTask:deactivate_task() -- called 8th
+	task_objects.CGeneralTask.deactivate_task(self)
 end
 
 function CGetRewardTask:save(package)
@@ -1756,7 +1341,6 @@ function CGetRewardTask:load(reader) -- called 0.5th (only on load)
 	set_save_marker(reader, "load", false, "CGetRewardTask")
 	task_objects.CGeneralTask.load(self, reader)
 	self.target = reader:r_u16()
-	self.id	= self.id.."_"..self.target
 	set_save_marker(reader, "load", true, "CGetRewardTask")
 end
 
@@ -1766,49 +1350,32 @@ class "CStorylineTask" (task_objects.CGeneralTask)
 
 ------------------------------------------------------------------------------------------------
 
-function CStorylineTask:__init(task_ini, id, type) super (task_ini, id, type)
-	-- self.target_story_ids = utils.cfg_get_number(task_ini, id, "target_story_ids", nil, true)
-	self.target_story_ids = utils.cfg_get_string(task_ini, id, "target_story_ids", nil, true, "")
+function CStorylineTask:__init(task_ini, section, type) super(task_ini, section, type)
+	self.target_story_ids = utils.cfg_get_string(task_ini, section, "target_story_ids", nil, true, "")
 end
 
-function CStorylineTask:check_target(obj)
-	return self.base_id == obj
+function CStorylineTask:check_target(task_name)
+	return self.section == task_name
 end
 
-function CStorylineTask:get_inited_task(obj, faction, entity_id)
+function CStorylineTask:get_inited_task(obj, entity_id)
 
 	local sid = tonumber(self.target_story_ids)
+
 	if sid then
 		self.target = id_by_sid(sid)
-		if not self.target then
-			abort("[task_objects.CStorylineTask:get_inited_task]: Storyline task target with story ID '%s' does not exist.", tostring(self.target_story_ids))
-		end
 	else
 		local gulag = nil
 		local param1, param2 = utils.parse_target(self.target_story_ids)
 		if param2 then
 			gulag = xr_gulag.get_gulag_by_name(param2)
 		end
-
-		if gulag ~= nil then
-			self.target = gulag:idNPCOnJob(param1)
-		else
+		if gulag == nil then
 			abort("[task_objects.CStorylineTask:get_inited_task]: Target job is nil.")
 		end
-	end
-	--[[
-	if self.target_story_ids ~= nil then
-		self.target = alife():story_object(self.target_story_ids)
-	else
-		abort("Target story id is nil.")
+		self.target = gulag:idNPCOnJob(param1)
 	end
 
-	if self.target == nil then
-		abort("Target for storyline task doesnt exist. Story id [%s]", tostring(self.target_story_ids))
-	end
-
-	self.target = self.target.id
-	]]
 	if self.target == nil then
 		abort("[task_objects.CStorylineTask:get_inited_task]: Storyline task target with story ID '%s' does not exist.", tostring(self.target_story_ids))
 	end
@@ -1838,35 +1405,28 @@ class "CBringItemTask" (task_objects.CGeneralTask)
 
 ------------------------------------------------------------------------------------------------
 
-function CBringItemTask:__init(task_ini, id, type) super (task_ini, id, type) -- called 0th (on load), 0th and 3rd (otherwise)
-	self.target_cond = xr_logic.parse_condlist(nil, nil, nil, utils.cfg_get_string(task_ini, id, "target_cond", nil, false, "", "true"))
+function CBringItemTask:__init(task_ini, section, type) super(task_ini, section, type) -- called 0th (on load), 0th and 3rd (otherwise)
+	self.target_cond = xr_logic.parse_condlist(nil, nil, nil, utils.cfg_get_string(task_ini, section, "target_cond", nil, false, "", "true"))
 end
 
 function CBringItemTask:check_target(squad_id, faction) -- called 1st (not on load)
 
-	local TGT = self.faction_target
-
-	if TGT ~= nil then
-		if TGT ~= faction then
-			return false
-		end
+	if self.faction_target and self.faction_target ~= faction then
+		return false
 	end
 
---	local obj_st = db.storage[commander_id]
---	local squad = obj_st.squad_obj
 	local squad = self.board.squads[squad_id]
 
 	if squad == nil then
 		return false
 	end
 
---	local t = xr_logic.pick_section_from_condlist(db.actor, obj_st.object, self.target_cond)
 	local t = xr_logic.pick_section_from_condlist(db.actor, db.storage[squad.commander_id].object, self.target_cond)
 
 	if t == "true" then
 		local inited_time = squad.bring_item_inited_time
 		if inited_time then
-			if math_floor(get_game_time():diffSec(inited_time)) < 86400 then -- 60*60*24 = seconds in one day
+			if math.floor(get_game_time():diffSec(inited_time)) < 86400 then -- 60*60*24 = seconds in one day
 				return false
 			end
 		end
@@ -1876,8 +1436,8 @@ function CBringItemTask:check_target(squad_id, faction) -- called 1st (not on lo
 	return false
 end
 
-function CBringItemTask:get_inited_task(squad_id, faction, entity_id) -- called 2nd (not on load)
-	local task = CBringItemTask(self.task_ini, self.base_id, self.type) -- calls CGeneralTask:__init() and CBringItemTask:__init()
+function CBringItemTask:get_inited_task(squad_id, entity_id) -- called 2nd (not on load)
+	local task = CBringItemTask(self.task_ini, self.section, self.type) -- calls CGeneralTask:__init() and CBringItemTask:__init()
 	task:init_task(squad_id)
 	task.entity_id = entity_id
 	return task
@@ -1885,7 +1445,7 @@ end
 
 function CBringItemTask:init_task(squad_id) -- called 4th (not on load)
 	local community = "actor"
-	local sss = utils.cfg_get_string(self.task_ini, self.base_id, "requested_items", nil, false, "")
+	local sss = utils.cfg_get_string(self.task_ini, self.section, "requested_items", nil, false, "")
 	if sss ~= nil then
 		local actor_array = {}
 		self.items_array = {["actor"] = actor_array}
@@ -1912,7 +1472,6 @@ function CBringItemTask:init_task(squad_id) -- called 4th (not on load)
 		if not quest_ini:section_exist(level_name) then
 			level_name = "default"
 		end
---		community = db.storage[commander_id].object:character_community()
 		community = self.board.squads[squad_id].player_id
 		if not quest_ini:section_exist(community) then
 			abort("[task_objects.CBringItemTask:init_task]: No section for community '%s' in misc\\bring_item_task.ltx.", tostring(community))
@@ -1920,7 +1479,7 @@ function CBringItemTask:init_task(squad_id) -- called 4th (not on load)
 		local faction_table = {}
 		self.items_array = {[community] = faction_table}
 		for i = 0, quest_ini:line_count(community) - 1 do
-			local result, item_name, chance_and_counts = quest_ini:r_line(community, i, "", "")
+			local _, item_name, chance_and_counts = quest_ini:r_line(community, i, "", "")
 			local t = parse_nums(chance_and_counts)
 			if t[1] == nil or t[2] == nil then
 				abort("[task_objects.CBringItemTask:init_task]: Invalid parameter list '%s' in misc\\bring_item_task.ltx for community '%s' at line '%s'.", tostring(chance_and_counts), tostring(community), tostring(item_name))
@@ -1951,18 +1510,13 @@ function CBringItemTask:init_task(squad_id) -- called 4th (not on load)
 	self.ri_counter = 0
 	self.requested_items = {}
 	self:generate_requested_items(community)
---	self.target = commander_id
 	self.target = self.board.squads[squad_id].commander_id
---	self.squad_id = alife():object(commander_id).squad_id
 	self.squad_id = squad_id
---	self.npc = nil
---	self.tmp_counter = 0
 	self.state = "started"
-	-- db.actor:iterate_inventory(set_inventory_item_count, self.requested_items) -- iterate on give task
-	self:set_task_text_for_bring_item()
 end
 
 function CBringItemTask:generate_requested_items(community)
+	local math_random = math.random
 	local sections_count = math_random(1, 4)
 	local cur_sections_count = 0
 	while (cur_sections_count == 0) do
@@ -2014,13 +1568,9 @@ end
 
 function CBringItemTask:give_task(community) -- called 5th (not on load)
 	task_objects.CGeneralTask.give_task(self, community)
---	local squad = db.storage[self.target].squad_obj
---	local squad = self.board.squads[self.squad_id]
---	if squad then
---		squad.bring_item_inited_time = self.inited_time
---	end
 	self.squad.bring_item_inited_time = self.inited_time -- self.squad set by task_dialogs.give_squad_capture_task()
 	db.actor:iterate_inventory(set_inventory_item_count, self.requested_items)
+	self:set_task_text_for_bring_item()
 end
 
 function CBringItemTask:check_task(tm) -- called 6th
@@ -2045,9 +1595,9 @@ function CBringItemTask:check_task(tm) -- called 6th
 
 	local commander_id = self.squad.commander_id -- self.squad set by task_dialogs.give_squad_capture_task() or CBringItemTask:load(), guaranteed valid
 --[[
-	-- If tasker squad commander doesn't exist or is dead, cancel.
-	-- Update: This is implicitly checked in sim_board:remove_squad().
-	local commander = alife():object(commander_id)
+	-- This is implicitly checked in sim_board:remove_squad():
+
+	local commander = sim:object(commander_id)
 	if not commander or not commander:alive() then
 		self.last_check_task = "reversed"
 		return
@@ -2056,12 +1606,9 @@ function CBringItemTask:check_task(tm) -- called 6th
 	local commander = db.storage[commander_id]
 	commander = commander and commander.object
 
-	-- If tasker squad commander is hostile, cancel:
-	if commander then
-		if commander:general_goodwill(actor) <= -1000 then
-			self.last_check_task = "reversed"
-			return
-		end
+	if commander and commander:general_goodwill(actor) <= -1000 then
+		self.last_check_task = "reversed"
+		return
 	end
 
 	if self:has_requested_items(actor) then
@@ -2114,7 +1661,6 @@ function CBringItemTask:on_item_take(item)
 	if cnt_table then
 		cnt_table.num = cnt_table.num + 1
 	end
---	db.actor:iterate_inventory(set_inventory_item_count, self.requested_items)
 	self:set_task_text_for_bring_item()
 end
 
@@ -2123,7 +1669,6 @@ function CBringItemTask:on_item_drop(item)
 	if cnt_table then
 		cnt_table.num = cnt_table.num - 1
 	end
---	db.actor:iterate_inventory(set_inventory_item_count, self.requested_items)
 	self:set_task_text_for_bring_item()
 end
 
@@ -2151,9 +1696,8 @@ function CBringItemTask:transfer_items_looking_for(npc)
 	self.last_check_task = "complete"
 end
 
-function CBringItemTask:deactivate_task(_task) -- called 7th
-	task_objects.CGeneralTask.deactivate_task(self, _task)
---	task_manager.get_task_manager():unregister_faction_task(self.community, self)
+function CBringItemTask:deactivate_task() -- called 7th
+	task_objects.CGeneralTask.deactivate_task(self)
 	local squad = self.squad
 	if squad then
 		squad.random_tasks[4] = nil
@@ -2165,32 +1709,9 @@ function CBringItemTask:save(package)
 	set_save_marker(package, "save", false, "CBringItemTask")
 
 	task_objects.CGeneralTask.save(self, package)
---[[
-	local self_state = self.state
 
-	if self_state == "started" then
-		package:w_u8(1)
-	elseif self_state == "have_item" then
-		package:w_u8(2)
-	elseif self_state == "finished" then
-		package:w_u8(3)
-	else
-		abort("[task_objects.CBringItemTask:save]: Tried to save an identifier for an invalid task state: '%s'. If a save file was created, it is corrupt.", tostring(self_state))
-	end
-]]
 	package:w_u8(self.ri_counter)
---[[
-	if self.target then
-		package:w_u16(self.target)
-	else
-		package:w_u16(-1)
-	end
-]]
-	if self.squad_id == nil then
-		package:w_stringZ("nil")
-	else
-		package:w_stringZ(self.squad_id)
-	end
+	package:w_stringZ(self.squad_id or "nil")
 
 	local n = 0
 	for item_name in pairs (self.requested_items) do
@@ -2212,30 +1733,11 @@ function CBringItemTask:load(reader) -- called 0.5th (only on load)
 	set_save_marker(reader, "load", false, "CBringItemTask")
 
 	task_objects.CGeneralTask.load(self, reader)
---[[
-	local state = reader:r_u8()
 
-	if state == 1 then
-		self.state = "started"
-	elseif state == 2 then
-		self.state = "have_item"
-	elseif state == 3 then
-		self.state = "finished"
-	else
-		abort("[task_objects.CBringItemTask:load]: Tried to load an invalid task state identifier: '%s'. Your save file is corrupt.", tostring(state))
-	end
-
-	self.npc = nil
-]]
 	self.ri_counter = reader:r_u8()
---[[
-	local n = reader:r_u16()
 
-	if n ~= 65535 then
-		self.target = n
-	end
-]]
 	local n = reader:r_stringZ()
+
 	if n ~= "nil" then
 		self.squad_id = n
 	end
@@ -2267,22 +1769,17 @@ class "CRecoverItemTask" (task_objects.CGeneralTask)
 
 ------------------------------------------------------------------------------------------------
 
-function CRecoverItemTask:__init(task_ini, id, type) super (task_ini, id, type) -- called 0th (on load), 0th and 3rd (otherwise)
-	self.target_cond = xr_logic.parse_condlist(nil, nil, nil, utils.cfg_get_string(task_ini, id, "target_cond", nil, false, "", "false"))
-	local target_npc_or_box_name = utils.cfg_get_string(task_ini, id, "target_npc_or_box_name", nil, true, "")
-	self.target_npc_or_box_table = utils.parse_names(target_npc_or_box_name)
-	self.requested_item = task_ini:r_string(id, "requested_items")
+function CRecoverItemTask:__init(task_ini, section, type) super(task_ini, section, type) -- called 0th (on load), 0th and 3rd (otherwise)
+	self.target_cond = xr_logic.parse_condlist(nil, nil, nil, utils.cfg_get_string(task_ini, section, "target_cond", nil, false, "", "false"))
+	self.target_npc_or_box_table = utils.parse_names(utils.cfg_get_string(task_ini, section, "target_npc_or_box_name", nil, true, ""))
+	self.requested_item = task_ini:r_string(section, "requested_items")
 	self.requested_item_inv_name = trans(system_ini():r_string(self.requested_item, "inv_name")) -- SRP
 end
 
 function CRecoverItemTask:check_target(squad_id, faction) -- called 1st (not on load)
 
-	local TGT = self.faction_target
-
-	if TGT ~= nil then
-		if TGT ~= faction then
-			return false
-		end
+	if self.faction_target and self.faction_target ~= faction then
+		return false
 	end
 
 	local squad = self.board.squads[squad_id]
@@ -2296,7 +1793,7 @@ function CRecoverItemTask:check_target(squad_id, faction) -- called 1st (not on 
 	if t == "true" then
 		local inited_time = squad.recover_item_inited_time
 		if inited_time then
-			if math_floor(get_game_time():diffSec(inited_time)) < 86400 then -- 60*60*24 = seconds in one day
+			if math.floor(get_game_time():diffSec(inited_time)) < 86400 then -- 60*60*24 = seconds in one day
 				return false
 			end
 		end
@@ -2306,8 +1803,8 @@ function CRecoverItemTask:check_target(squad_id, faction) -- called 1st (not on 
 	return false
 end
 
-function CRecoverItemTask:get_inited_task(squad_id, faction, entity_id) -- called 2nd (not on load)
-	local task = CRecoverItemTask(self.task_ini, self.base_id, self.type) -- calls CGeneralTask:__init() and CRecoverItemTask:__init()
+function CRecoverItemTask:get_inited_task(squad_id, entity_id) -- called 2nd (not on load)
+	local task = CRecoverItemTask(self.task_ini, self.section, self.type) -- calls CGeneralTask:__init() and CRecoverItemTask:__init()
 	task:init_task(squad_id)
 	task.entity_id = entity_id
 	return task
@@ -2315,38 +1812,29 @@ end
 
 function CRecoverItemTask:init_task(squad_id) -- called 4th (not on load)
 	self.squad_id = squad_id
---	self.description = ""
---	self.npc = nil
 	self.target = nil
 	self.target_obj_id = nil
---	self.presence_requested_item = false
 	self.state = "started"
 end
 
 function CRecoverItemTask:give_task(community) -- called 5th (not on load)
 	self:spawn_recoveritem()
 	task_objects.CGeneralTask.give_task(self, community)
---	local squad = self.board.squads[self.squad_id]
---	if squad then
---		squad.recover_item_inited_time = self.inited_time
---	end
 	self.squad.recover_item_inited_time = self.inited_time -- self.squad set by task_dialogs.give_squad_capture_task()
 end
 
 function CRecoverItemTask:spawn_recoveritem()
---	local sim = alife()
-	local index = random_number(1, #self.target_npc_or_box_table)
+	local index = math.random(1, #self.target_npc_or_box_table)
 	local target_npc_or_box = sim:object(self.target_npc_or_box_table[index])
-	if target_npc_or_box then
-		local container_id = target_npc_or_box.id
-		local container_pos = target_npc_or_box.position
-		local container_lvx = target_npc_or_box.m_level_vertex_id
-		local container_gvx = target_npc_or_box.m_game_vertex_id
-		self.target_obj_id = sim:create(self.requested_item, container_pos, container_lvx, container_gvx, container_id).id
-		self.target = container_id
-	else
+	if not target_npc_or_box then
 		abort("[task_objects.CRecoverItemTask:spawn_recoveritem]: There is no such target npc or box: '%s'.", tostring(self.target_npc_or_box_table[index]))
 	end
+	local container_id = target_npc_or_box.id
+	local container_pos = target_npc_or_box.position
+	local container_lvx = target_npc_or_box.m_level_vertex_id
+	local container_gvx = target_npc_or_box.m_game_vertex_id
+	self.target_obj_id = sim:create(self.requested_item, container_pos, container_lvx, container_gvx, container_id).id
+	self.target = container_id
 end
 
 function CRecoverItemTask:check_task(tm) -- called 6th
@@ -2371,9 +1859,9 @@ function CRecoverItemTask:check_task(tm) -- called 6th
 
 	local commander_id = self.squad.commander_id -- self.squad set by task_dialogs.give_squad_capture_task() or CRecoverItemTask:load(), guaranteed valid
 --[[
-	-- If tasker squad commander doesn't exist or is dead, cancel.
-	-- Update: This is implicitly checked in sim_board:remove_squad().
-	local commander = alife():object(commander_id)
+	-- This is implicitly checked in sim_board:remove_squad():
+
+	local commander = sim:object(commander_id)
 	if not commander or not commander:alive() then
 		self.last_check_task = "reversed"
 		return
@@ -2382,12 +1870,9 @@ function CRecoverItemTask:check_task(tm) -- called 6th
 	local commander = db.storage[commander_id]
 	commander = commander and commander.object
 
-	-- If tasker squad commander is hostile, cancel:
-	if commander then
-		if commander:general_goodwill(actor) <= -1000 then
-			self.last_check_task = "reversed"
-			return
-		end
+	if commander and commander:general_goodwill(actor) <= -1000 then
+		self.last_check_task = "reversed"
+		return
 	end
 
 	if self:has_requested_item(actor) then
@@ -2438,25 +1923,15 @@ function CRecoverItemTask:has_requested_item(actor)
 
 	return has_requested_item
 end
---[[
-local function transfer_recover_item(task, item)
-	if item:section() == task.requested_item then
-		db.actor:transfer_item(item, task.npc)
-		return
-	end
-end
-]]
+
 function CRecoverItemTask:transfer_items_looking_for(npc) -- called 7th
---	self.npc = npc
---	db.actor:iterate_inventory(transfer_recover_item, self)
 	dialogs.relocate_item_section(npc, self.requested_item, "out")
 	self.state = "finished"
 	self.last_check_task = "complete"
 end
 
-function CRecoverItemTask:deactivate_task(_task) -- called 8th
-	task_objects.CGeneralTask.deactivate_task(self, _task)
---	task_manager.get_task_manager():unregister_faction_task(self.community, self)
+function CRecoverItemTask:deactivate_task() -- called 8th
+	task_objects.CGeneralTask.deactivate_task(self)
 	local squad = self.squad
 	if squad then
 		squad.random_tasks[3] = nil
@@ -2464,39 +1939,10 @@ function CRecoverItemTask:deactivate_task(_task) -- called 8th
 end
 
 function CRecoverItemTask:save(package)
-
 	set_save_marker(package, "save", false, "CRecoverItemTask")
-
 	task_objects.CGeneralTask.save(self, package)
---[[
-	local self_state = self.state
-
-	if self_state == "started" then
-		package:w_u8(1)
-	elseif self_state == "have_item" then
-		package:w_u8(2)
-	elseif self_state == "finished" then
-		package:w_u8(3)
-	else
-		abort("[task_objects.CRecoverItemTask:save]: Tried to save an identifier for an invalid task state: '%s'. If a save file was created, it is corrupt.", tostring(self_state))
-	end
-]]
-	if self.squad_id == nil then
-		package:w_stringZ("nil")
-	else
-		package:w_stringZ(self.squad_id)
-	end
-
-	if self.target_obj_id == nil then
-		package:w_u16(-1)
-	else
-		package:w_u16(self.target_obj_id)
-	end
-
---	package:w_bool(self.presence_requested_item)
-
---	package:w_stringZ(self.requested_item) -- read in CRecoverItemTask:__init()
-
+	package:w_stringZ(self.squad_id or "nil")
+	package:w_u16(self.target_obj_id or -1)
 	set_save_marker(package, "save", true, "CRecoverItemTask")
 end
 
@@ -2505,19 +1951,7 @@ function CRecoverItemTask:load(reader) -- called 0.5th (only on load)
 	set_save_marker(reader, "load", false, "CRecoverItemTask")
 
 	task_objects.CGeneralTask.load(self, reader)
---[[
-	local state = reader:r_u8()
 
-	if state == 1 then
-		self.state = "started"
-	elseif state == 2 then
-		self.state = "have_item"
-	elseif state == 3 then
-		self.state = "finished"
-	else
-		abort("[task_objects.CRecoverItemTask:load]: Tried to load an invalid task state identifier: '%s'. Your save file is corrupt.", tostring(state))
-	end
-]]
 	local n = reader:r_stringZ()
 	if n ~= "nil" then
 		self.squad_id = n
@@ -2537,12 +1971,6 @@ function CRecoverItemTask:load(reader) -- called 0.5th (only on load)
 		self.target_obj_id = n
 	end
 
---	self.npc = nil
-
---	self.presence_requested_item = reader:r_bool()
-
---	self.requested_item = reader:r_stringZ() -- read in CRecoverItemTask:__init()
-
 	set_save_marker(reader, "load", true, "CRecoverItemTask")
 end
 
@@ -2552,17 +1980,17 @@ class "CHideFromSurgeTask" (task_objects.CGeneralTask)
 
 ------------------------------------------------------------------------------------------------
 
-function CHideFromSurgeTask:__init(task_ini, id, type) super (task_ini, id, type)
-	self.target_cond = xr_logic.parse_condlist(nil, nil, nil, utils.cfg_get_string(task_ini, id, "target_cond", nil, false, "", "true"))
+function CHideFromSurgeTask:__init(task_ini, section, type) super(task_ini, section, type)
+	self.target_cond = xr_logic.parse_condlist(nil, nil, nil, utils.cfg_get_string(task_ini, section, "target_cond", nil, false, "", "true"))
 end
 
 function CHideFromSurgeTask:check_target()
-	local act = db.actor
-	return xr_logic.pick_section_from_condlist(act, act, self.target_cond) == "true"
+	local actor = db.actor
+	return xr_logic.pick_section_from_condlist(actor, actor, self.target_cond) == "true"
 end
 
-function CHideFromSurgeTask:get_inited_task(nearest_hide_zone_id, faction, entity_id)
-	local task = CHideFromSurgeTask(self.task_ini, self.base_id, self.type)
+function CHideFromSurgeTask:get_inited_task(nearest_hide_zone_id, entity_id)
+	local task = CHideFromSurgeTask(self.task_ini, self.section, self.type)
 	task:init_task(nearest_hide_zone_id)
 	task.entity_id = entity_id
 	return task
@@ -2577,7 +2005,6 @@ function CHideFromSurgeTask:init_task(nearest_hide_zone_id)
 	self.blowout_rumble_level = 0
 	self.hide_tbl = {}
 	local board = self.board
---	local sim = alife()
 	local n = 0
 	for k, v in pairs (board.smarts) do
 		if v.smrt.actor_hides ~= nil then
@@ -2662,7 +2089,7 @@ function CHideFromSurgeTask:check_task(tm)
 		t:change_map_location(self.spot, self.target)
 	end
 
-	local diff_sec = math_ceil(get_game_time():diffSec(self.inited_time) / level.get_time_factor())
+	local diff_sec = math.ceil(get_game_time():diffSec(self.inited_time) / level.get_time_factor())
 	local surge_time = self.wait_time / 10 - 40
 
 	if diff_sec >= surge_time then
@@ -2788,28 +2215,11 @@ function CHideFromSurgeTask:kill_unhided_npc()
 	h.impulse = 0
 	h.direction = vector():set(0, 0, 1)
 	h.draftsman = db.actor
-	for k, crow in pairs (bind_crow.crow_storage) do
-		if crow then
-			if crow:alive() then
-				crow:hit(h)
-			end
+	for _, crow in pairs (bind_crow.crow_storage) do
+		if crow and crow:alive() then
+			crow:hit(h)
 		end
 	end
-	--[[
-	local npc
-	for k, v in pairs (db.storage) do
-		npc = v.object
-		if npc then
-			if npc:clsid() == clsid.script_stalker then
-				if npc:alive() then
-					-- if not db.storage[k].active_scheme == "surge_hide" then--and not npc:story_id() then
-						npc:kill(npc)
-					-- end
-				end
-			end
-		end
-	end
-	]]
 end
 
 function CHideFromSurgeTask:save(package)
@@ -2818,17 +2228,8 @@ function CHideFromSurgeTask:save(package)
 
 	task_objects.CGeneralTask.save(self, package)
 
-	if self.target ~= nil then
-		package:w_u16(self.target)
-	else
-		package:w_u16(-1)
-	end
-
-	if self.wait_time ~= nil then
-		package:w_u16(self.wait_time)
-	else
-		package:w_u16(-1)
-	end
+	package:w_u16(self.target or -1)
+	package:w_u16(self.wait_time or -1)
 
 	if self.effector_started_time == -1 or self.effector_started_time == 0 then
 		package:w_s16(self.effector_started_time)
@@ -2857,9 +2258,7 @@ function CHideFromSurgeTask:load(reader)
 
 	self.hide_tbl = {}
 
---	local sim = alife()
 	local n = 0
-
 	for k, v in pairs (self.board.smarts) do
 		if v.smrt.actor_hides ~= nil then
 			for kk, vv in pairs (v.smrt.actor_hides) do
@@ -2887,37 +2286,32 @@ class "CEliminateSquadTask" (task_objects.CGeneralTask)
 
 ------------------------------------------------------------------------------------------------
 
-function CEliminateSquadTask:__init(task_ini, id, type) super (task_ini, id, type)
-	self.target_cond = xr_logic.parse_condlist(nil, nil, nil, utils.cfg_get_string(task_ini, id, "target_cond", nil, false, "", "true"))
+function CEliminateSquadTask:__init(task_ini, section, type) super(task_ini, section, type)
+	self.target_cond = xr_logic.parse_condlist(nil, nil, nil, utils.cfg_get_string(task_ini, section, "target_cond", nil, false, "", "true"))
 	self.src_obj = nil
 end
 
 function CEliminateSquadTask:check_target(squad, faction)
-
-	local TGT = self.faction_target
-
-	if TGT ~= nil then
-		if TGT ~= faction then
-			return false
-		end
+	if self.faction_target and self.faction_target ~= faction then
+		return false
 	end
-
 	return xr_logic.pick_section_from_condlist(db.actor, squad, self.target_cond) == "true"
 end
 
-function CEliminateSquadTask:init_task(squad, faction)
-	self.target = squad.commander_id
-	self.target_obj = squad.squad_id
-	self.id	= self.id .. "_" .. squad.squad_id
-	self.community = faction
-	self.prior = self.base_prior
-end
-
-function CEliminateSquadTask:get_inited_task(squad, faction, entity_id)
-	local task = CEliminateSquadTask(self.task_ini, self.base_id, self.type)
-	task:init_task(squad, faction)
+function CEliminateSquadTask:get_inited_task(squad, entity_id)
+	local task = CEliminateSquadTask(self.task_ini, self.section, self.type)
+	task:init_task(squad)
 	task.entity_id = entity_id
 	return task
+end
+
+function CEliminateSquadTask:init_task(squad)
+	self.target = squad.commander_id
+	self.target_obj = squad.squad_id
+end
+
+function CEliminateSquadTask:give_task(community)
+	task_objects.CGeneralTask.give_task(self, community)
 end
 
 function CEliminateSquadTask:check_task(tm)
@@ -2931,13 +2325,8 @@ function CEliminateSquadTask:check_task(tm)
 	end
 end
 
-function CEliminateSquadTask:give_task(community)
-	task_objects.CGeneralTask.give_task(self, community)
-end
-
-function CEliminateSquadTask:deactivate_task(_task)
-	task_objects.CGeneralTask.deactivate_task(self, _task)
---	task_manager.get_task_manager():unregister_faction_task(self.community, self)
+function CEliminateSquadTask:deactivate_task()
+	task_objects.CGeneralTask.deactivate_task(self)
 	if self.src_obj ~= nil then
 		local squad_obj = self.board.squads[self.src_obj]
 		if squad_obj ~= nil then
@@ -2962,7 +2351,6 @@ function CEliminateSquadTask:load(reader)
 	set_save_marker(reader, "load", false, "CEliminateSquadTask")
 	task_objects.CGeneralTask.load(self, reader)
 	self.target = reader:r_u16()
-	self.id	= self.id.."_"..self.target
 	self.src_obj = reader:r_stringZ()
 	if self.src_obj == "nil" then
 		self.src_obj = nil
@@ -2976,58 +2364,34 @@ class "CFindUpgradeTask" (task_objects.CGeneralTask)
 
 ------------------------------------------------------------------------------------------------
 
-function CFindUpgradeTask:__init(task_ini, id, type) super (task_ini, id, type) -- called 0th (on load), 0th and 3rd (otherwise)
-	self.target_cond = xr_logic.parse_condlist(nil, nil, nil, utils.cfg_get_string(task_ini, id, "target_cond", nil, false, "", "false"))
-	self.requested_item = utils.cfg_get_string(task_ini, id, "requested_item", nil, false, "")
+function CFindUpgradeTask:__init(task_ini, section, type) super(task_ini, section, type) -- called 0th (on load), 0th and 3rd (otherwise)
+	self.target_cond = xr_logic.parse_condlist(nil, nil, nil, utils.cfg_get_string(task_ini, section, "target_cond", nil, false, "", "false"))
+	self.requested_item = utils.cfg_get_string(task_ini, section, "requested_item", nil, false, "")
 	self.requested_item_inv_name = trans(system_ini():r_string(self.requested_item, "inv_name"))
-	local cost = utils.cfg_get_number(task_ini, id, "cost", nil, true)
-	local sss = utils.cfg_get_string(task_ini, id, "reward_upgr", nil, false, "")
-	if sss ~= nil then
---		local char_ini = ini_file("item_upgrades.ltx")
-		local sss_table = utils.parse_names(sss)
-		local name_item = trans(system_ini():r_string(sss_table[1], "inv_name"))
-		local name_apgr = trans(self.name)
-		self.item_for_reward = name_item..". "..name_apgr..": "..tostring(cost).." "..trans("st_rubles")
-	end
-	self.cost = cost
+	self.cost = utils.cfg_get_number(task_ini, section, "cost", nil, true)
+	local item_section = utils.parse_target(utils.cfg_get_string(task_ini, section, "reward_upgr", nil, true, ""))
+	local item_name = trans(system_ini():r_string(item_section, "inv_name"))
+	local task_name = trans(self.name)
+	self.item_for_reward = item_name..". "..task_name..": "..tostring(self.cost).." "..trans("st_rubles")
 end
 
 function CFindUpgradeTask:check_target(npc, faction) -- called 1st (not on load)
-
-	local TGT = self.faction_target
-
-	if TGT ~= nil then
-		if TGT ~= faction then
-			return false
-		end
+	if self.faction_target and self.faction_target ~= faction then
+		return false
 	end
-
-	return xr_logic.pick_section_from_condlist(db.actor, db.storage[npc:id()].object, self.target_cond) == "true"
+	return xr_logic.pick_section_from_condlist(db.actor, npc, self.target_cond) == "true"
 end
 
-function CFindUpgradeTask:get_inited_task(npc, faction, entity_id) -- called 2nd (not on load)
-	local task = CFindUpgradeTask(self.task_ini, self.base_id, self.type) -- calls CGeneralTask:__init() and CFindUpgradeTask:__init()
-	task:init_task(npc)
+function CFindUpgradeTask:get_inited_task(npc_id, entity_id) -- called 2nd (not on load)
+	local task = CFindUpgradeTask(self.task_ini, self.section, self.type) -- calls CGeneralTask:__init() and CFindUpgradeTask:__init()
+	task:init_task(npc_id)
 	task.entity_id = entity_id
 	return task
 end
---[[
-local function get_inventory_find_upgrade_count(task, item)
-	if task.requested_item == item:section() then
-		if not task.presence_requested_item then
-			task.presence_requested_item = true
-			return
-		end
-	end
-end
-]]
-function CFindUpgradeTask:init_task(npc) -- called 4th (not on load)
-	self.target = npc:id()
---	self.description = ""
---	self.npc = nil
---	self.presence_requested_item = false
+
+function CFindUpgradeTask:init_task(npc_id) -- called 4th (not on load)
+	self.target = npc_id
 	self.state = "started"
---	db.actor:iterate_inventory(get_inventory_find_upgrade_count, self)
 end
 
 function CFindUpgradeTask:give_task(community) -- called 5th (not on load)
@@ -3057,7 +2421,6 @@ function CFindUpgradeTask:check_task(tm) -- called 6th
 	local tasker_id = self.target -- self.target set by CFindUpgradeTask:init_task() or CRecoverItemTask:load(), guaranteed valid
 	local tasker = sim:object(tasker_id)
 
-	-- If tasker doesn't exist or is dead, cancel:
 	if not tasker or not tasker:alive() then
 		self.last_check_task = "reversed"
 		return
@@ -3066,12 +2429,9 @@ function CFindUpgradeTask:check_task(tm) -- called 6th
 	tasker = db.storage[tasker_id]
 	tasker = tasker and tasker.object
 
-	-- If tasker is hostile, cancel:
-	if tasker then
-		if tasker:general_goodwill(actor) <= -1000 then
-			self.last_check_task = "reversed"
-			return
-		end
+	if tasker and tasker:general_goodwill(actor) <= -1000 then
+		self.last_check_task = "reversed"
+		return
 	end
 
 	if self:has_requested_item(actor) then
@@ -3080,84 +2440,36 @@ function CFindUpgradeTask:check_task(tm) -- called 6th
 		self.state = "started"
 	end
 
-	for k, condlist in pairs (self.condlist) do
+	for _, condlist in pairs (self.condlist) do
 		local status = xr_logic.pick_section_from_condlist(actor, actor, condlist)
 		if status ~= nil then
-			if valid_values[status] ~= true then
+			if not valid_values[status] then
 				abort("[task_objects.CFindUpgradeTask:check_task]: Invalid task status '%s' for task '%s'.", tostring(status), tostring(self.name))
 			end
 			self.last_check_task = status
-			return
+			break
 		end
 	end
 end
---[[
-function CFindUpgradeTask:finish_task()
-	self.last_check_task = "complete"
-end
-]]
+
 function CFindUpgradeTask:has_requested_item(actor)
-
-	local t = self.t
-
-	if t == nil then
-		t = actor:get_task(tostring(self.entity_id), false) -- "true" used to search only for not finished tasks
-		if t == nil then
-			abort("[task_objects.CFindUpgradeTask:has_requested_item]: Task with entity ID '%s' is nil.", tostring(self.entity_id))
-		end
-		self.t = t
-	end
-
-	local has_requested_item = false
-	local s = ""
-
-	if actor:object(self.requested_item) ~= nil then
-		s = "+ "
-		has_requested_item = true
-	else
-		s = "- "
-	end
-
-	local description = self.text.."\\n"..s..self.requested_item_inv_name
-
-	if self.auto_faction then
-		t:set_description(self.community_name..".\\n"..description)
-	else
-		t:set_description(description)
-	end
-
-	return has_requested_item
+	return task_objects.CRecoverItemTask.has_requested_item(self, actor)
 end
 
 function CFindUpgradeTask:transfer_items_looking_for(npc) -- called 7th
---	self.npc = npc
 	dialogs.relocate_item_section(npc, self.requested_item, "out")
 	dialogs.relocate_money(npc, self.cost, "in")
 	self.state = "finished"
 	self.last_check_task = "complete"
 end
 
-function CFindUpgradeTask:deactivate_task(_task) -- called 8th
-	task_objects.CGeneralTask.deactivate_task(self, _task)
+function CFindUpgradeTask:deactivate_task() -- called 8th
+	task_objects.CGeneralTask.deactivate_task(self)
 end
 
 function CFindUpgradeTask:save(package)
 	set_save_marker(package, "save", false, "CFindUpgradeTask")
 	task_objects.CGeneralTask.save(self, package)
---[[
-	local self_state = self.state
-	if self_state == "started" then
-		package:w_u8(1)
-	elseif self_state == "have_item" then
-		package:w_u8(2)
-	elseif self_state == "finished" then
-		package:w_u8(3)
-	else
-		abort("[task_objects.CFindUpgradeTask:save]: Tried to save an identifier for an invalid task state: '%s'. If a save file was created, it is corrupt.", tostring(self_state))
-	end
-	package:w_bool(self.presence_requested_item)
-	package:w_stringZ(self.requested_item) -- read in CFindUpgradeTask:__init()
-]]
 	package:w_u16(self.target)
 	set_save_marker(package, "save", true, "CFindUpgradeTask")
 end
@@ -3165,21 +2477,6 @@ end
 function CFindUpgradeTask:load(reader) -- called 0.5th (only on load)
 	set_save_marker(reader, "load", false, "CFindUpgradeTask")
 	task_objects.CGeneralTask.load(self, reader)
---[[
-	local state = reader:r_u8()
-	if state == 1 then
-		self.state = "started"
-	elseif state == 2 then
-		self.state = "have_item"
-	elseif state == 3 then
-		self.state = "finished"
-	else
-		abort("[task_objects.CFindUpgradeTask:load]: Tried to load an invalid task state identifier: '%s'. Your save file is corrupt.", tostring(state))
-	end
-	self.npc = nil
-	self.presence_requested_item = reader:r_bool()
-	self.requested_item = reader:r_stringZ() -- read in CFindUpgradeTask:__init()
-]]
 	self.target = reader:r_u16()
 	set_save_marker(reader, "load", true, "CFindUpgradeTask")
 end

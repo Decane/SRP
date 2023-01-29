@@ -43,27 +43,20 @@ function main_menu:Show(f)
 end
 
 function main_menu:InitCallBacks()
-	-- new game
 	self:AddCallback("btn_novice",      ui_events.BUTTON_CLICKED,                self.OnButton_new_novice_game,     self)
 	self:AddCallback("btn_stalker",     ui_events.BUTTON_CLICKED,                self.OnButton_new_stalker_game,    self)
 	self:AddCallback("btn_veteran",     ui_events.BUTTON_CLICKED,                self.OnButton_new_veteran_game,    self)
 	self:AddCallback("btn_master",      ui_events.BUTTON_CLICKED,                self.OnButton_new_master_game,     self)
 	self:AddCallback("btn_spawn",       ui_events.BUTTON_CLICKED,                self.OnButton_load_spawn,          self)
-	-- options
 	self:AddCallback("btn_options",     ui_events.BUTTON_CLICKED,                self.OnButton_options_clicked,     self)
-	-- load
 	self:AddCallback("btn_load",        ui_events.BUTTON_CLICKED,                self.OnButton_load_clicked,        self)
-	-- save
 	self:AddCallback("btn_save",        ui_events.BUTTON_CLICKED,                self.OnButton_save_clicked,        self)
-	-- multiplayer
 	self:AddCallback("btn_multiplayer", ui_events.BUTTON_CLICKED,                self.OnButton_multiplayer_clicked, self)
-	-- quit
 	self:AddCallback("btn_quit",        ui_events.BUTTON_CLICKED,                self.OnButton_quit_clicked,        self)
 	self:AddCallback("btn_quit_to_mm",  ui_events.BUTTON_CLICKED,                self.OnButton_disconnect_clicked,  self)
 	self:AddCallback("btn_ret",         ui_events.BUTTON_CLICKED,                self.OnButton_return_game,         self)
 	self:AddCallback("btn_lastsave",    ui_events.BUTTON_CLICKED,                self.OnButton_last_save,           self)
 	self:AddCallback("btn_credits",     ui_events.BUTTON_CLICKED,                self.OnButton_credits_clicked,     self)
-	-- message box
 	self:AddCallback("msg_box",         ui_events.MESSAGE_BOX_OK_CLICKED,        self.OnMsgOk,                      self)
 	self:AddCallback("msg_box",         ui_events.MESSAGE_BOX_CANCEL_CLICKED,    self.OnMsgCancel,                  self)
 	self:AddCallback("msg_box",         ui_events.MESSAGE_BOX_YES_CLICKED,       self.OnMsgYes,                     self)
@@ -118,12 +111,7 @@ function main_menu:OnMsgNo()
 end
 
 function main_menu:OnButton_last_save()
-	if alife() == nil then
-		LoadLastSave()
-		return
-	end
-	local actor = db.actor
-	if actor ~= nil and actor:alive() == false then
+	if alife() == nil or db.actor ~= nil and not db.actor:alive() then
 		LoadLastSave()
 		return
 	end
@@ -143,10 +131,10 @@ end
 
 function main_menu:OnButton_disconnect_clicked()
 	self.message_box:InitMessageBox("message_box_quit_game")
-	if level.game_id() ~= 1 then
-		self.message_box:SetText("ui_mm_disconnect_message") -- MultiPlayer
-	else
+	if level.game_id() == 1 then
 		self.message_box:SetText("ui_mm_quit_game_message") -- SinglePlayer
+	else
+		self.message_box:SetText("ui_mm_disconnect_message") -- MultiPlayer
 	end
 	self:GetHolder():start_stop_menu(self.message_box, true)
 end
@@ -154,45 +142,37 @@ end
 function main_menu:OnMessageQuitGame()
 	bind_stalker.quitting_game = true
 	_ver_static:SetText("Disconnecting...")
-	local console = get_console()
-	console:execute("disconnect")
+	get_console():execute("disconnect")
 end
 
 function main_menu:OnMessageQuitWin()
 	bind_stalker.quitting_game = true
 	_ver_static:SetText("Quitting...")
-	local console = get_console()
-	console:execute("quit")
+	get_console():execute("quit")
 end
 
 function main_menu:OnButton_return_game()
---	log("333")
-	local console = get_console()
-	console:execute("main_menu off")
+	get_console():execute("main_menu off")
 	xr_s.on_main_menu_off() --' Distemper 03.2008 --
 end
 
 function main_menu:OnButton_new_novice_game()
-	local console = get_console()
-	console:execute("g_game_difficulty gd_novice")
+	get_console():execute("g_game_difficulty gd_novice")
 	self:StartGame()
 end
 
 function main_menu:OnButton_new_stalker_game()
-	local console = get_console()
-	console:execute("g_game_difficulty gd_stalker")
+	get_console():execute("g_game_difficulty gd_stalker")
 	self:StartGame()
 end
 
 function main_menu:OnButton_new_veteran_game()
-	local console = get_console()
-	console:execute("g_game_difficulty gd_veteran")
+	get_console():execute("g_game_difficulty gd_veteran")
 	self:StartGame()
 end
 
 function main_menu:OnButton_new_master_game()
-	local console = get_console()
-	console:execute("g_game_difficulty gd_master")
+	get_console():execute("g_game_difficulty gd_master")
 	self:StartGame()
 end
 
@@ -260,8 +240,7 @@ function main_menu:OnButton_multiplayer_clicked()
 	self.mp_dlg:on_show_script()
 	self:Show(false)
 --	self.mp_dlg:OnBtn_Refresh()
-	local console = get_console()
-	console:execute("check_for_updates 0")
+	get_console():execute("check_for_updates 0")
 	self.mp_dlg:OnRadio_NetChanged()
 end
 
@@ -275,8 +254,7 @@ end
 function main_menu:OnButton_save_level_clicked()
 
 	local y, m, d, h, min, sec, ms = 0, 0, 0, 0, 0, 0, 0
-
-	y, m, d, h, min, sec, ms = game.get_game_time():get(y, m, d, h, min, sec, ms)
+	      y, m, d, h, min, sec, ms = game.get_game_time():get(y, m, d, h, min, sec, ms)
 
 	local date_time = string.format("_%d-%02d-%02d_%02d%02d", y, m, d, h, min)
 	local console = get_console()
@@ -294,30 +272,30 @@ function main_menu:OnKeyboard(dik, keyboard_action) -- virtual function
 	if keyboard_action == ui_events.WINDOW_KEY_PRESSED then
 		_ver_static:SetText(self.version)
 		if dik == DIK_keys.DIK_ESCAPE then
-			if level.present() then
-				local actor = db.actor
-				if (actor ~= nil and actor:alive()) or false == IsGameTypeSingle() then
-					self.OnButton_return_game() --' xStream 02.2008
-				end
+			local alive_or_in_multiplayer = level.present() and (db.actor ~= nil and db.actor:alive() or not IsGameTypeSingle())
+			if alive_or_in_multiplayer then
+				self.OnButton_return_game() --' xStream 02.2008
 			end
 		elseif dik == DIK_keys.DIK_Q then
 			self:OnMessageQuitWin()
 		elseif dik == DIK_keys.DIK_R and _s ~= nil then
-			if _s.execute_user_settings(true) == true then
+			if _s.execute_user_settings(true) then
 				_ver_static:SetText("Known good user profile restored. Backup user.ltx created.")
 			else
 				_ver_static:SetText("Something went wrong restoring the known good user profile.")
 			end
 		else
-			local alive_on_singleplayer_level = level.present() and db.actor ~= nil and db.actor:alive() and IsGameTypeSingle() == true
-			if dik == DIK_keys.DIK_S and alive_on_singleplayer_level then
-				self:OnButton_save_level_clicked()
-			elseif dik == DIK_keys.DIK_F3 and alive_on_singleplayer_level then
-				level.hide_indicators_safe()
-				_ver_static:SetText("HUD hidden. Player invulnerable.")
-			elseif dik == DIK_keys.DIK_F4 and alive_on_singleplayer_level then
-				level.show_indicators()
-				_ver_static:SetText("HUD restored. Player vulnerable.")
+			local alive_in_singleplayer = level.present() and db.actor ~= nil and db.actor:alive() and IsGameTypeSingle()
+			if alive_in_singleplayer then
+				if dik == DIK_keys.DIK_S then
+					self:OnButton_save_level_clicked()
+				elseif dik == DIK_keys.DIK_F3 then
+					level.hide_indicators_safe()
+					_ver_static:SetText("HUD hidden. Player invulnerable.")
+				elseif dik == DIK_keys.DIK_F4 then
+					level.show_indicators()
+					_ver_static:SetText("HUD restored. Player vulnerable.")
+				end
 			end
 		end
 	end

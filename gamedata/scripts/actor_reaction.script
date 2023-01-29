@@ -1,0 +1,104 @@
+class "action_actor_reaction" (action_base)
+
+function action_actor_reaction:__init(npc) super()
+	self.npc = npc
+end
+
+function action_actor_reaction:initialize()
+	action_base.initialize(self)
+	local npc = self.npc
+	local npc_id = npc:id()
+	local def_restr = sim_board.get_sim_board().smarts[_G.sim:object(npc_id).m_smart_terrain_id].smrt.def_restr
+	local reaction_manager = db.storage[db.storage[npc_id].robbery_zone_id].robbery_manager
+	self.scene_manager = reaction_manager.scene_manager
+	self.is_commander = npc_id == reaction_manager.commander_npc:id()
+	self.comed = false
+	npc:remove_restrictions(def_restr, "")
+	npc:set_dest_level_vertex_id(npc:level_vertex_id())
+	npc:set_path_type(game_object.level_path)
+	state_mgr.set_state(npc, "threat", nil, nil, {look_object = db.actor}, {animation = true})
+end
+
+function action_actor_reaction:execute()
+	action_base.execute(self)
+	if self.is_commander and not self.comed then
+		local npc = self.npc
+		local actor_pos = db.actor:position()
+		if actor_pos:distance_to(npc:position()) < 1.5 then
+			state_mgr.set_state(npc, "threat", nil, nil, {look_object = db.actor})
+			if npc:general_goodwill(db.actor) > -1000 then
+				npc:enable_talk()
+				npc:disable_trade()
+				npc:set_start_dialog(self.scene_manager.st.dialog)
+				db.actor:run_talk_dialog(npc, true)
+			end
+			self.comed = true
+		else
+			if self.scene_manager.stand_still then
+				npc:set_dest_level_vertex_id(db.actor:level_vertex_id())
+				state_mgr.set_state(npc, "raid", nil, nil, {look_position = actor_pos}, {animation = true}) -- vanilla uses {look_object = db.actor}, sometimes causes jerky NPC head movement
+			end
+		end
+	end
+end
+
+function action_actor_reaction:finalize()
+
+	self.scene_manager = nil
+	self.is_commander = nil
+	self.comed = nil
+
+	local npc_st = db.storage[self.npc:id()]
+	local active_section = npc_st.active_section
+
+	if active_section ~= nil then
+		restrictor_manager.get_restrictor_manager(self.npc):reset_restrictions(npc_st, active_section)
+	end
+
+	action_base.finalize(self)
+end
+
+--------------------------------------------------------------------------------
+-- Binder
+--------------------------------------------------------------------------------
+
+local op_actor_reaction                  = xr_actions_id.actor_reaction + 1
+local prop_need_actor_reaction           = xr_evaluators_id.actor_reaction + 1
+
+local wp_need_actor_reaction_false       = world_property(prop_need_actor_reaction, false)
+local wp_alive_true                      = world_property(stalker_ids.property_alive, true)
+local wp_danger_false                    = world_property(stalker_ids.property_danger, false)
+local wp_enemy_false                     = world_property(stalker_ids.property_enemy, false)
+local wp_anomaly_false                   = world_property(stalker_ids.property_anomaly, false)
+local wp_puzzle_solved_true              = world_property(stalker_ids.property_puzzle_solved, true)
+
+function add_actor_reactions(npc)
+
+	local manager           = npc:motivation_action_manager()
+	manager:add_evaluator   (prop_need_actor_reaction, property_evaluator_const(true))
+
+	local action            = action_actor_reaction(npc)
+	action:add_precondition (wp_alive_true)
+	action:add_precondition (wp_danger_false)
+	action:add_precondition (wp_enemy_false)
+	action:add_precondition (wp_anomaly_false)
+	action:add_effect       (wp_need_actor_reaction_false)
+
+	manager:add_action      (op_actor_reaction, action)
+end
+
+function enabled_actor_reaction(npc)
+	local goal = world_state()
+	goal:add_property(wp_need_actor_reaction_false)
+	local manager = npc:motivation_action_manager()
+	manager:set_goal_world_state(goal)
+end
+
+function disable_actor_reaction(npc)
+	npc:enable_trade()
+	npc:restore_default_start_dialog()
+	local goal = world_state()
+	goal:add_property(wp_puzzle_solved_true)
+	local manager = npc:motivation_action_manager()
+	manager:set_goal_world_state(goal)
+end

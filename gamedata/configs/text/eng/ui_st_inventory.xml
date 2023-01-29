@@ -1,8 +1,5 @@
 <?xml version="1.0" encoding="windows-1251" ?>
 <string_table>
-	<string id="st_activate_artefact">
-		<text>activate artifact</text>
-	</string>
 	<string id="st_attach_gl_to_rifle">
 		<text>Attach to Rifle</text>
 	</string>
@@ -17,12 +14,6 @@
 	</string>
 	<string id="st_attach_silencer_to_rifle">
 		<text>Attach to Rifle</text>
-	</string>
-	<string id="st_base_cost">
-		<text>price</text>
-	</string>
-	<string id="st_community">
-		<text>Group:</text>
 	</string>
 	<string id="st_condition">
 		<text>Condition</text>
@@ -59,9 +50,6 @@
 	</string>
 	<string id="st_move_to_slot">
 		<text>Move to Slot</text>
-	</string>
-	<string id="st_sell_item">
-		<text>sell item</text>
 	</string>
 	<string id="st_ui_acid_sensor">
 		<text>Acid protection</text>
@@ -111,9 +99,6 @@
 	<string id="ui_inv_bag">
 		<text>Backpack</text>
 	</string>
-	<string id="ui_inv_belt">
-		<text>Belt</text>
-	</string>
 	<string id="ui_inv_bleeding">
 		<text>Bleeding</text>
 	</string>
@@ -122,9 +107,6 @@
 	</string>
 	<string id="ui_inv_cant_buy_item">
 		<text>Can’t buy item</text>
-	</string>
-	<string id="ui_inv_clear">
-		<text>Clear</text>
 	</string>
 	<string id="ui_inv_count_restr">
 		<text>Amount restrictions</text>
@@ -138,20 +120,11 @@
 	<string id="ui_inv_description">
 		<text>Description</text>
 	</string>
-	<string id="ui_inv_drop">
-		<text>Take Out</text>
-	</string>
-	<string id="ui_inv_equipment">
-		<text>Equipment</text>
-	</string>
 	<string id="ui_inv_exit">
 		<text>Exit</text>
 	</string>
 	<string id="ui_inv_granadelauncher_rifle">
 		<text>Buy grenade launcher attachment for rifle (D)</text>
-	</string>
-	<string id="ui_inv_granades">
-		<text>Grenades</text>
 	</string>
 	<string id="ui_inv_granades_rifle">
 		<text>Buy grenades for the launcher (E)</text>
@@ -167,12 +140,6 @@
 	</string>
 	<string id="ui_inv_heavy_weapons">
 		<text>Heavy</text>
-	</string>
-	<string id="ui_inv_items_list">
-		<text>List of items</text>
-	</string>
-	<string id="ui_inv_last_buy">
-		<text>Buy last loadout</text>
 	</string>
 	<string id="ui_inv_last_buy(F4)">
 		<text>Previous (F4)</text>
@@ -201,9 +168,6 @@
 	<string id="ui_inv_outfit_fire_wound_protection">
 		<text>Bulletproof</text>
 	</string>
-	<string id="ui_inv_outfit_params">
-		<text>Parameters</text>
-	</string>
 	<string id="ui_inv_outfit_radiation_protection">
 		<text>Radiation</text>
 	</string>
@@ -219,14 +183,8 @@
 	<string id="ui_inv_outfit_wound_protection">
 		<text>Rupture</text>
 	</string>
-	<string id="ui_inv_outfits">
-		<text>Suits</text>
-	</string>
 	<string id="ui_inv_personal">
 		<text>Suit</text>
-	</string>
-	<string id="ui_inv_pistols">
-		<text>Pistols</text>
 	</string>
 	<string id="ui_inv_power">
 		<text>Endurance</text>
@@ -240,9 +198,6 @@
 	<string id="ui_inv_preset3(F3)">
 		<text>Loadout 3 (F3)</text>
 	</string>
-	<string id="ui_inv_primary_weapons">
-		<text>Primary</text>
-	</string>
 	<string id="ui_inv_radiation">
 		<text>Radiation</text>
 	</string>
@@ -255,9 +210,6 @@
 	<string id="ui_inv_reset_items(C)">
 		<text>Reset (C)</text>
 	</string>
-	<string id="ui_inv_rest">
-		<text>Rest</text>
-	</string>
 	<string id="ui_inv_rifles">
 		<text>Assault</text>
 	</string>
@@ -269,9 +221,6 @@
 	</string>
 	<string id="ui_inv_sell_items(X)">
 		<text>Sell all items in backpack (X)</text>
-	</string>
-	<string id="ui_inv_shop">
-		<text>Shop</text>
 	</string>
 	<string id="ui_inv_shotguns">
 		<text>Shotguns</text>
@@ -287,12 +236,6 @@
 	</string>
 	<string id="ui_inv_time">
 		<text>Time</text>
-	</string>
-	<string id="ui_inv_total_money">
-		<text>Total money</text>
-	</string>
-	<string id="ui_inv_weight">
-		<text>Weight</text>
 	</string>
 	<string id="ui_inv_you_already_have">
 		<text>You already have</text>

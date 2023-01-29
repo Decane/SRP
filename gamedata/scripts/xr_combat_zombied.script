@@ -1,22 +1,39 @@
 local act_shoot = 1
 local act_danger = 2
 
+--------------------------------------------------------------------------------
+-- Evaluators
+--------------------------------------------------------------------------------
+
 class "evaluator_combat_zombied" (property_evaluator)
 
-function evaluator_combat_zombied:__init(storage) super()
-	self.st = storage
+function evaluator_combat_zombied:__init(st) super()
+	self.st = st
 end
 
 function evaluator_combat_zombied:evaluate()
 	return self.st.script_combat_type == "zombied"
 end
 
---------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+-- Actions
+--------------------------------------------------------------------------------
+
+--[[
+
+TODO: Figure out which action class member vars are supposed to get reset when
+switching between actions. Currently, some vars are defined in __init(), others
+in initialize(). Only those defined in initialize() get reset. There seems to be
+no rhyme or reason to these; e.g. self.hit_reaction_end_time and self.turn_time
+are used similarly, yet only the latter gets reset when switching from
+action_zombie_go_to_danger to action_zombie_shoot.
+
+]]
 
 class "action_zombie_shoot" (action_base)
 
-function action_zombie_shoot:__init(storage) super()
-	self.st = storage
+function action_zombie_shoot:__init(st) super()
+	self.st = st
 	self.t = {}
 	self.was_hit = false
 	self.hit_reaction_end_time = 0
@@ -26,7 +43,6 @@ function action_zombie_shoot:initialize()
 	action_base.initialize(self)
 	self.object:set_desired_direction()
 	self.object:set_detail_path_type(move.line)
-	self.last_state = nil
 	local be = self.object:best_enemy()
 	self.enemy_last_seen_pos = be:position()
 	self.enemy_last_seen_vid = be:level_vertex_id()
@@ -36,22 +52,18 @@ function action_zombie_shoot:initialize()
 	self.st.cur_act = act_shoot
 end
 
-function action_zombie_shoot:set_state(state, be, pos)
-	self.t.look_object = be
-	if be then
-		self.t.look_position = self.enemy_last_seen_pos
-	else
-		self.t.look_position = pos
-	end
+function action_zombie_shoot:set_state(state, look_object, pos)
+	self.t.look_object = look_object -- may be nil
+	self.t.look_position = pos
 	state_mgr.set_state(self.object, state, nil, nil, self.t)
-	self.last_state = state
+	self.t.look_object = nil
 end
 
 function action_zombie_shoot:execute()
 
 	action_base.execute(self)
 
-	local be = self.object:best_enemy()
+	local be = self.object:best_enemy() -- guaranteed valid by add_to_binder()
 	local see = self.object:see(be)
 
 	if see then
@@ -62,23 +74,22 @@ function action_zombie_shoot:execute()
 	if self.last_vid ~= self.enemy_last_seen_vid then
 		self.last_vid = self.enemy_last_seen_vid
 		self.valid_path = false
-		if not self.object:accessible(self.enemy_last_seen_vid) then
-			self.enemy_last_accessible_vid, self.enemy_last_accessible_position = self.object:accessible_nearest(level.vertex_position(self.enemy_last_seen_vid), vector())
-		else
+		if self.object:accessible(self.enemy_last_seen_vid) then
 			self.enemy_last_accessible_vid, self.enemy_last_accessible_position = self.enemy_last_seen_vid, self.enemy_last_seen_pos
+		else
+			self.enemy_last_accessible_vid, self.enemy_last_accessible_position = self.object:accessible_nearest(self.enemy_last_seen_pos, vector())
 		end
-
 	end
 
 	self.object:set_path_type(game_object.level_path)
 
 	if self.object:position():distance_to_sqr(self.enemy_last_accessible_position) > 9 then
-		if self.valid_path == false then
+		if not self.valid_path then
 			self.valid_path = true
 			self.object:set_dest_level_vertex_id(self.enemy_last_accessible_vid)
 		end
 		if see then
-			self:set_state("raid_fire", be)
+			self:set_state("raid_fire", be, self.enemy_last_seen_pos)
 		elseif self.was_hit then
 			self.was_hit = false
 			self.hit_reaction_end_time = time_global() + 5000
@@ -89,17 +100,16 @@ function action_zombie_shoot:execute()
 		self.turn_time = 0
 	else
 		if see then
-			self:set_state("threat_fire", be)
 			self.turn_time = 0
-		else
-			if self.was_hit then
-				self.was_hit = false
-				self.turn_time = time_global() + math.random(5000, 7000)
-				self:set_state("threat_na", nil, self.enemy_last_seen_pos)
-			elseif self.turn_time < time_global() then
-				self.turn_time = time_global() + math.random(3000, 5000)
-				self:set_state("threat_na", nil, self:calc_random_direction())
-			end
+--			self.was_hit = true -- uncomment to prevent randomly turning away immediately after visibility loss
+			self:set_state("threat_fire", be, self.enemy_last_seen_pos)
+		elseif self.was_hit then
+			self.was_hit = false
+			self.turn_time = time_global() + math.random(5000, 7000)
+			self:set_state("threat_na", nil, self.enemy_last_seen_pos)
+		elseif self.turn_time < time_global() then
+			self.turn_time = time_global() + math.random(3000, 5000)
+			self:set_state("threat_na", nil, self:calc_random_direction())
 		end
 	end
 end
@@ -113,17 +123,17 @@ function action_zombie_shoot:calc_random_direction()
 end
 
 function action_zombie_shoot:finalize()
-	action_base.finalize(self)
 	self.st.cur_act = nil
+	action_base.finalize(self)
 end
 
-function action_zombie_shoot:hit_callback(obj, amount, local_direction, who, bone_index)
-	if who == nil then
+function action_zombie_shoot:hit_callback(victim, amount, local_direction, hitter, bone_index)
+	if hitter == nil then
 		return
 	end
 	if self.st.cur_act == act_shoot then
-		local be = self.object and self.object:best_enemy()
-		if be and who:id() == be:id() then
+		local be = victim:best_enemy() -- guaranteed valid; only reached in script combat
+		if hitter:id() == be:id() then
 			self.enemy_last_seen_pos = be:position()
 			self.enemy_last_seen_vid = be:level_vertex_id()
 			self.was_hit = true
@@ -131,12 +141,12 @@ function action_zombie_shoot:hit_callback(obj, amount, local_direction, who, bon
 	end
 end
 
---------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 
 class "action_zombie_go_to_danger" (action_base)
 
-function action_zombie_go_to_danger:__init(storage) super()
-	self.st = storage
+function action_zombie_go_to_danger:__init(st) super()
+	self.st = st
 	self.t = {}
 	self.was_hit = false
 	self.hit_reaction_end_time = 0
@@ -154,9 +164,8 @@ function action_zombie_go_to_danger:initialize()
 	self.st.cur_act = act_danger
 end
 
-function action_zombie_go_to_danger:set_state(state, be, pos)
+function action_zombie_go_to_danger:set_state(state, pos)
 	if state ~= self.last_state then
-		self.t.look_object = be
 		self.t.look_position = pos
 		state_mgr.set_state(self.object, state, nil, nil, self.t)
 		self.last_state = state
@@ -168,12 +177,12 @@ function action_zombie_go_to_danger:execute()
 	if self.was_hit then
 		self.was_hit = false
 		self.hit_reaction_end_time = time_global() + 5000
-		self:set_state("raid_fire", nil, self.enemy_last_seen_pos)
+		self:set_state("raid_fire", self.enemy_last_seen_pos)
 	elseif self.hit_reaction_end_time <= time_global() then
-		local bd = self.object:best_danger()
+		local bd = self.object:best_danger() -- guaranteed valid by add_to_binder()
 		local bdo = bd:object()
 		if bdo and bd:type() ~= danger_object.grenade then
-			if not self.bdo_id or self.bdo_id ~= bdo:id() then
+			if self.bdo_id ~= bdo:id() then
 				self.bdo_id = bdo:id()
 				self.bdo_vert_id = bdo:level_vertex_id()
 			end
@@ -181,67 +190,73 @@ function action_zombie_go_to_danger:execute()
 				self.last_sent_vert_id = self.bdo_vert_id
 				utils.send_to_nearest_accessible_vertex(self.object, self.bdo_vert_id)
 			end
-			self:set_state("raid", nil, bd:position())
+			self:set_state("raid", bd:position())
 		else
-			self:set_state("threat_na", nil, bd:position())
+			self:set_state("threat_na", bd:position())
 		end
 	end
 end
 
 function action_zombie_go_to_danger:finalize()
-	action_base.finalize(self)
 	self.st.cur_act = nil
+	action_base.finalize(self)
 end
 
-function action_zombie_go_to_danger:hit_callback(obj, amount, local_direction, who, bone_index)
-	if who == nil then
+function action_zombie_go_to_danger:hit_callback(victim, amount, local_direction, hitter, bone_index)
+	if hitter == nil then
 		return
 	end
 	if self.st.cur_act == act_danger then
-		local bd = self.object:best_danger()
-		if bd then
-			local bdo = bd:object()
-			if bdo ~= nil and (bd:type() == danger_object.attacked or amount > 0) then
-				self.enemy_last_seen_pos = bdo:position()
-				self.enemy_last_seen_vid = bdo:level_vertex_id()
-				self.was_hit = true
-			end
+		local bd = victim:best_danger() -- guaranteed valid; only reached in danger
+		local bdo = bd:object()
+		if bdo and (bd:type() == danger_object.attacked or amount > 0) then
+			self.enemy_last_seen_pos = bdo:position()
+			self.enemy_last_seen_vid = bdo:level_vertex_id()
+			self.was_hit = true
 		end
 	end
 end
 
---------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+-- Binder
+--------------------------------------------------------------------------------
 
-local xr_actions_id_combat_zombied_base            = xr_actions_id.combat_zombied_base
-local xr_actions_id_combat_zombied_base_1          = xr_actions_id_combat_zombied_base + 1
-local xr_evaluators_id_combat_zombied_base         = xr_evaluators_id.combat_zombied_base
-local wp_stalker_ids_property_alive_true           = world_property(stalker_ids.property_alive, true)
-local wp_stalker_ids_property_enemy_false          = world_property(stalker_ids.property_enemy, false)
-local wp_stalker_ids_property_danger_true          = world_property(stalker_ids.property_danger, true)
-local wp_stalker_ids_property_danger_false         = world_property(stalker_ids.property_danger, false)
-local wp_xr_evaluators_id_combat_zombied_base_true = world_property(xr_evaluators_id_combat_zombied_base, true)
-local wp_xr_evaluators_id_script_combat_true       = world_property(xr_evaluators_id.script_combat, true)
+local op_zombie_shoot          = xr_actions_id.combat_zombied_base
+local op_zombie_go_to_danger   = xr_actions_id.combat_zombied_base + 1
 
-function add_to_binder(npc, ini, st, planner)
+local prop_need_combat_zombied = xr_evaluators_id.combat_zombied_base
 
-	planner:add_evaluator                (xr_evaluators_id_combat_zombied_base, evaluator_combat_zombied(st))
+local wp_alive_true            = world_property(stalker_ids.property_alive, true)
+local wp_enemy_false           = world_property(stalker_ids.property_enemy, false)
+local wp_danger_true           = world_property(stalker_ids.property_danger, true)
+local wp_danger_false          = world_property(stalker_ids.property_danger, false)
+local wp_combat_zombied_true   = world_property(prop_need_combat_zombied, true)
+local wp_script_combat_true    = world_property(xr_evaluators_id.script_combat, true)
 
-	local action                         = action_zombie_shoot(st)
-	action:add_precondition              (wp_stalker_ids_property_alive_true)
-	action:add_precondition              (wp_xr_evaluators_id_combat_zombied_base_true)
-	action:add_precondition              (wp_xr_evaluators_id_script_combat_true)
-	action:add_effect                    (wp_stalker_ids_property_enemy_false)
-	planner:add_action                   (xr_actions_id_combat_zombied_base, action)
+function add_to_binder(st, manager)
 
-	xr_logic.subscribe_action_for_events (npc, st, action)
+	manager:add_evaluator    (prop_need_combat_zombied, evaluator_combat_zombied(st))
 
-	action = action_zombie_go_to_danger  (st)
-	action:add_precondition              (wp_stalker_ids_property_alive_true)
-	action:add_precondition              (wp_xr_evaluators_id_combat_zombied_base_true)
-	action:add_precondition              (wp_stalker_ids_property_enemy_false)
-	action:add_precondition              (wp_stalker_ids_property_danger_true)
-	action:add_effect                    (wp_stalker_ids_property_danger_false)
-	planner:add_action                   (xr_actions_id_combat_zombied_base_1, action)
+	-------------------------
 
-	xr_logic.subscribe_action_for_events (npc, st, action)
+	local action             = action_zombie_shoot(st)
+	action:add_precondition  (wp_alive_true)
+	action:add_precondition  (wp_combat_zombied_true)
+	action:add_precondition  (wp_script_combat_true)
+	action:add_effect        (wp_enemy_false)
+	manager:add_action       (op_zombie_shoot, action)
+
+	xr_logic.subscribe_action_for_events(nil, st, action)
+
+	-------------------------
+
+	action                   = action_zombie_go_to_danger(st)
+	action:add_precondition  (wp_alive_true)
+	action:add_precondition  (wp_combat_zombied_true)
+	action:add_precondition  (wp_enemy_false)
+	action:add_precondition  (wp_danger_true)
+	action:add_effect        (wp_danger_false)
+	manager:add_action       (op_zombie_go_to_danger, action)
+
+	xr_logic.subscribe_action_for_events(nil, st, action)
 end

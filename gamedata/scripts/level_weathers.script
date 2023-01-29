@@ -70,7 +70,7 @@ end
 function WeatherManager:set_state_from_string(state_string)
 	local loaded_weather
 	if string.find(state_string, "=", nil, true) then
-		loaded_weather = "default_"..string.match(state_string, "=([^,]+)")
+		loaded_weather = "default_"..string.match(state_string, "=([^,]+)") -- for save compatibility
 	else
 		loaded_weather = state_string
 	end

@@ -1,17 +1,11 @@
 function give_compass(first_speaker, second_speaker)
-	if second_speaker:object("af_compass") ~= nil then
-		dialogs.relocate_item_section_from_actor(first_speaker, second_speaker, "af_compass")
-	end
+	dialogs.relocate_item_section_from_actor(first_speaker, second_speaker, "af_compass")
 end
 
-function actor_has_compass(first_speaker)
-	return first_speaker:object("af_compass") ~= nil
+function actor_has_compass()
+	return db.actor:object("af_compass") ~= nil
 end
---[[
-function actor_hasnt_compass(first_speaker, second_speaker)
-	return not actor_has_compass(first_speaker, second_speaker)
-end
-]]
+
 function forester_reward_for_compass()
 	dialogs.relocate_item_section_to_actor(nil, nil, "wpn_vintorez_up", 1)
 end
@@ -31,25 +25,7 @@ end
 function leshiy_reward_bead()
 	dialogs.relocate_item_section_to_actor(nil, nil, "af_eye")
 end
---[[
-function leshiy_reward_very_bead()
-	dialogs.relocate_item_section_to_actor(nil, nil, "kolbasa")
-end
 
-function give_red_forest_pda_map(first_speaker, second_speaker)
-	if second_speaker:object("red_forest_pda_map") ~= nil then
-		dialogs.relocate_item_section_from_actor(first_speaker, second_speaker, "red_forest_pda_map")
-	end
-end
-
-function actor_has_red_forest_pda_map(first_speaker)
-	return first_speaker:object("red_forest_pda_map") ~= nil
-end
-
-function give_red_forest_pda_map_2()
-	dialogs.relocate_item_section_to_actor(nil, nil, "red_forest_pda_map_2")
-end
-]]
 function ahuntesr_give_reward()
 	dialogs.relocate_item_section_to_actor(nil, nil, "af_gravi")
 end

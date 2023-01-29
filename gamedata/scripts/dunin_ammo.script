@@ -31,7 +31,7 @@ local function repack_ammo(section, box_size)
 		end
 	end
 
-	if boxes_to_repack > 1 then
+	if boxes_to_repack > 1 or ammo_to_repack > box_size then
 
 		for ammo_id in pairs (release_table) do
 			sim:release(sim:object(ammo_id), true)
@@ -39,14 +39,12 @@ local function repack_ammo(section, box_size)
 
 		local vec = vector()
 
-		while ammo_to_repack >= box_size do
+		while ammo_to_repack > box_size do
 			ammo_to_repack = ammo_to_repack - box_size
 			sim:create_ammo(section, vec, 0, 0, 0, box_size)
 		end
 
-		if ammo_to_repack > 0 then
-			sim:create_ammo(section, vec, 0, 0, 0, ammo_to_repack)
-		end
+		sim:create_ammo(section, vec, 0, 0, 0, ammo_to_repack)
 	end
 end
 
@@ -56,9 +54,9 @@ function on_update()
 			updates_before_repack = updates_before_repack - 1
 		else
 			for section, ammo_data in pairs (ammo_data_table) do
-				if ammo_data.repack_needed then
+				if ammo_data.need_repack then
 					repack_ammo(section, ammo_data.box_size)
-					ammo_data.repack_needed = false
+					ammo_data.need_repack = false
 				end
 			end
 			updates_before_repack = nil
@@ -71,9 +69,7 @@ function on_take(ammo)
 	local section = ammo:section()
 
 	if section == nil then
-		dbglog("[dunin_ammo.on_take]: No ammo section defined for '%s'.", ammo:name())
-		dbgmsg("[dunin_ammo.on_take]: No ammo section defined for '%s'.", ammo:name())
-		return
+		abort("[dunin_ammo.on_take]: No ammo section defined for '%s'.", ammo:name())
 	end
 
 	local ammo_data = ammo_data_table[section]
@@ -81,7 +77,7 @@ function on_take(ammo)
 	if not ammo_data then
 		ammo_data = {
 			box_size = system_ini():r_u32(section, "box_size"),
-			repack_needed = false
+			need_repack = false
 		}
 		ammo_data_table[section] = ammo_data
 	end
@@ -89,9 +85,9 @@ function on_take(ammo)
 	local box_size = ammo_data.box_size
 
 	if box_size > 1 then
-		if not ammo_data.repack_needed then
+		if not ammo_data.need_repack then
 			if box_size ~= get_ammo_count(ammo:id()) then
-				ammo_data.repack_needed = true
+				ammo_data.need_repack = true
 				updates_before_repack = 150 -- hack per https://github.com/Decane/SRP/issues/150
 			end
 		end

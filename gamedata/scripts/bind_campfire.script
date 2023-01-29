@@ -17,18 +17,13 @@ function campfire_binder:net_spawn(se_abstract)
 		return false
 	end
 
-	local obj = self.object
-	local obj_name = obj:name()
-	local campfire = obj:get_campfire()
-	local camp_name = string.gsub(obj_name, "_campfire", "")
+	local campfire_name = self.object:name()
+	local path_name = string.gsub(campfire_name, "_campfire", "")
 
-	if level.patrol_path_exists(camp_name) then
+	if level.patrol_path_exists(path_name) then
+		local campfire = self.object:get_campfire()
 		campfire:turn_off()
-		campfire_table[obj_name] = campfire
-	end
-
-	if obj:section() == "campfire_gas_fire" then
-		campfire:turn_off()
+		campfire_table[campfire_name] = campfire
 	end
 
 	return true
@@ -37,10 +32,4 @@ end
 function campfire_binder:net_destroy() -- missing in vanilla
 	campfire_table[self.object:name()] = nil
 	object_binder.net_destroy(self)
-end
-
-local object_binder_update = object_binder.update
-
-function campfire_binder:update(delta)
-	object_binder_update(self, delta)
 end

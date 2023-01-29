@@ -202,13 +202,17 @@ end
 
 function bloodsucker_attack:reset_path()
 	self.cur_point = 0
-	local path_name_new = self.path_name
 	local path_count = #self.st.path_table
-	while self.path_name == path_name_new do
-		path_name_new = self.st.path_table[math.random(1, path_count)]
+	if path_count == 1 then
+		self.st.path = patrol(self.st.path_table[1])
+	else
+		local path_name_new
+		repeat
+			path_name_new = self.st.path_table[math.random(1, path_count)]
+		until self.path_name ~= path_name_new
+		self.path_name = path_name_new
+		self.st.path = patrol(path_name_new)
 	end
-	self.path_name = path_name_new
-	self.st.path = patrol(path_name_new)
 end
 
 function bloodsucker_attack:next_point()

@@ -14,9 +14,6 @@ function heli_binder:__init(obj) super(obj) -- called 2nd
 	self.st                   = {combat = heli_combat.heli_combat(obj, self.heliObject)}
 	self.last_hit_snd_timeout = 0
 	self.flame_start_health	  = utils.cfg_get_number(system_ini(), "helicopter", "flame_start_health", obj, true)
-	self.snd_hit              = "heli_hit"
-	self.snd_damage           = "heli_damaged"
-	self.snd_down             = "heli_down"
 end
 
 function heli_binder:reload(section) -- called 3rd
@@ -87,17 +84,16 @@ function heli_binder:check_health()
 	if not heli.m_dead then
 
 		local health = get_heli_health(heli, self.st)
-		local obj = self.object
-		local obj_id = obj:id()
+		local obj_id = self.object:id()
 
 		if health < self.flame_start_health and not heli.m_flame_started then
 			heli:StartFlame()
-			xr_sound.set_sound_play(obj_id, self.snd_damage)
+			xr_sound.set_sound_play(obj_id, "heli_damaged")
 		end
 
 		if health <= 0.005 and not self.st.immortal then
-			heli_die(obj)
-			xr_sound.set_sound_play(obj_id, self.snd_down)
+			heli_die(self.object)
+			xr_sound.set_sound_play(obj_id, "heli_down")
 		end
 	end
 end
@@ -105,13 +101,13 @@ end
 function heli_binder:on_hit(power, impulse, hit_type, enemy_id)
 
 	local enemy = level.object_by_id(enemy_id)
-	local enemy_cls_id = get_clsid(enemy)
 
 	self.heli_fire.enemy = enemy
 	self.heli_fire:update_hit()
 
-	if enemy_cls_id == clsid.actor or enemy_cls_id == clsid.script_stalker then
-		if self.st.hit then
+	if self.st.hit then
+		local enemy_cls_id = get_clsid(enemy)
+		if enemy_cls_id == clsid.actor or enemy_cls_id == clsid.script_stalker then
 			xr_logic.issue_event(nil, self.st.hit, "hit_callback", self.object, power, nil, enemy, nil)
 		end
 	end
@@ -119,7 +115,7 @@ function heli_binder:on_hit(power, impulse, hit_type, enemy_id)
 	local global_time = time_global()
 
 	if self.last_hit_snd_timeout < global_time then
-		xr_sound.set_sound_play(self.object:id(), self.snd_hit)
+		xr_sound.set_sound_play(self.object:id(), "heli_hit")
 		self.last_hit_snd_timeout = global_time + math.random(4000, 8000)
 	end
 end

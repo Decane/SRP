@@ -10,7 +10,7 @@ function agru_door_binder:__init(obj) super(obj)
 	self.move_snd = sound_object("device\\bridge\\motor_run")
 	self.start_snd = sound_object("device\\bridge\\motor_start")
 	self.stop_snd = sound_object("device\\bridge\\motor_stop")
-	self.idle = 50000
+	self.idle = 5000 * level.get_time_factor() -- 5 real in-game seconds
 	self.is_idle = true
 	self.is_play_fwd = false
 	self.first_update_done = false

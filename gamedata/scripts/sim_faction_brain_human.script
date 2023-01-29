@@ -365,25 +365,22 @@ function faction_brain_human:init_player_task(target_data)
 
 	local tm = task_manager.get_task_manager()
 	local current_faction_task = faction.random_tasks[smart.id]
+	local current_task = current_faction_task and tm:get_task_by_entity_id(current_faction_task)
 
-	if current_faction_task ~= nil then
-		local current_task = tm:get_task_by_entity_id(current_faction_task)
-		if current_task ~= nil then
-			if current_task.type == task_type then
-				return
-			end
-			current_task.last_check_task = "reversed_silent"
-			bind_stalker.task_update = true
-		end
+	if current_task and current_task.type == task_type then
+		return
 	end
 
 	local task = tm:select_task(task_type, smart, faction_name)
 
 	faction.random_tasks[smart.id] = task.entity_id
 
+	if current_task ~= nil then
+		task.is_task_update = true
+		current_task.last_check_task = "reversed_silent"
+	end
+
 	if task.status ~= "selected" then
 		task:give_task(faction_name)
 	end
-
-	bind_stalker.task_update = false
 end

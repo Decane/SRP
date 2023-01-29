@@ -1,17 +1,15 @@
 -- DC170520: Optimization.
 
-local cse_alife_human_stalker_update = cse_alife_human_stalker.update
-
 class "se_stalker" (cse_alife_human_stalker)
 
 --------------------
 
 function se_stalker:__init(section) super(section)
-	self.ini                  = nil
-	self.death_droped         = false
-	self.squad_id             = nil
-	self.sim_forced_online    = false
-	self.treasure_processed   = 0 -- SRP: 1 means true, other values (should be only 0 or 2) mean false
+	self.ini                = nil
+	self.death_droped       = false
+	self.squad_id           = nil
+	self.sim_forced_online  = false
+	self.treasure_processed = 0 -- SRP: 1 means true, other values (should be only 0 or 2) mean false
 end
 
 --------------------
@@ -22,14 +20,12 @@ function se_stalker:can_switch_offline()
 		return true
 	end
 
-	if self.sim_forced_online == true then
+	if self.sim_forced_online then
 		return false
 	end
 
 	return cse_alife_human_stalker.can_switch_offline(self)
 end
-
---------------------
 
 function se_stalker:can_switch_online()
 
@@ -37,7 +33,7 @@ function se_stalker:can_switch_online()
 		return false
 	end
 
-	if self.sim_forced_online == true then
+	if self.sim_forced_online then
 		return true
 	end
 
@@ -55,6 +51,8 @@ function se_stalker:can_switch_online()
 		return xr_logic.pick_section_from_condlist(db.actor, self, self.spawner) ~= nil or not pda.dialog_closed
 	end
 end
+
+--------------------
 
 function se_stalker:switch_online()
 	cse_alife_human_stalker.switch_online(self)
@@ -79,66 +77,22 @@ end
 --------------------
 
 function se_stalker:STATE_Write(packet)
-
 	cse_alife_human_stalker.STATE_Write(self, packet)
-
 	packet:w_u8(self.treasure_processed) -- SRP
-
---	dbglog("Saved self.treasure_processed = %d for %s", self.treasure_processed, self:name())
---[[
-	if self.job_online == true then
-		packet:w_u8(0)
-	elseif self.job_online == false then
-		packet:w_u8(1)
-	elseif self.job_online == nil then
-		packet:w_u8(2)
-	else
-		packet:w_u8(3)
-		packet:w_stringZ(self.job_online_condlist)
-	end
-]]
 	packet:w_bool(self.death_droped)
-
 	packet:w_stringZ(self.squad_id or "nil")
-
 	packet:w_bool(self.sim_forced_online)
 end
 
---------------------
-
 function se_stalker:STATE_Read(packet, size)
-
 	cse_alife_human_stalker.STATE_Read(self, packet, size)
-
 	self.treasure_processed = packet:r_u8() -- SRP
-
---	dbglog("Loaded self.treasure_processed = %d for %s", self.treasure_processed, self:name())
---[[
-	local t = packet:r_u8()
-
-	if t == 0 then
-		self.job_online = true
-	elseif t == 1 then
-		self.job_online = false
-	elseif t == 2 then
-		self.job_online = nil
-	else
-		self.job_online_condlist = packet:r_stringZ()
-		self.job_online = xr_logic.parse_condlist(nil, "se_stalker:STATE_Read", "job_online", self.job_online_condlist)
-	end
-]]
 	self.death_droped = packet:r_bool()
-
---	if self.script_version >= 7 then -- defined as 8 via 'current_server_entity_version' in system.ltx
-		self.squad_id = packet:r_stringZ()
-		if self.squad_id == "nil" then -- or tostring(self.squad_id) == "0" or tostring(self.squad_id) == "" then
-			self.squad_id = nil
-		end
---	end
-
---	if self.script_version >= 8 then
-		self.sim_forced_online = packet:r_bool()
---	end
+	self.squad_id = packet:r_stringZ()
+	if self.squad_id == "nil" then
+		self.squad_id = nil
+	end
+	self.sim_forced_online = packet:r_bool()
 end
 
 --------------------
@@ -150,8 +104,6 @@ function se_stalker:on_before_register()
 		self.spawner = xr_logic.parse_condlist(nil, nil, nil, ini:r_string("spawner", "cond"))
 	end
 end
-
---------------------
 
 function se_stalker:on_register()
 
@@ -178,8 +130,6 @@ function se_stalker:on_register()
 	end
 end
 
---------------------
-
 function se_stalker:on_unregister()
 	local strn_id = self:smart_terrain_id()
 	if strn_id ~= 65535 then
@@ -193,19 +143,25 @@ end
 
 --------------------
 
+function se_stalker:on_spawn()
+	cse_alife_human_stalker.on_spawn(self)
+end
+
 function se_stalker:on_death(killer)
 	cse_alife_human_stalker.on_death(self, killer)
 	smart_terrain.on_death(self)
 	if self.squad_id ~= nil then
 		local squad = self.board.squads[self.squad_id]
 		if squad == nil then
-			abort("[se_stalker.se_stalker:on_death]: There is no squad with ID '%s'.", self.squad_id)
+			abort("[se_stalker:on_death]: There is no squad with ID '%s'.", self.squad_id)
 		end
 		squad:on_npc_death(self, killer.id)
 	end
 end
 
 --------------------
+
+local cse_alife_human_stalker_update = cse_alife_human_stalker.update
 
 function se_stalker:update()
 	cse_alife_human_stalker_update(self)
@@ -215,12 +171,6 @@ function se_stalker:update()
 			squad:update()
 		end
 	end
-end
-
---------------------
-
-function se_stalker:on_spawn()
-	cse_alife_human_stalker.on_spawn(self)
 end
 
 --------------------

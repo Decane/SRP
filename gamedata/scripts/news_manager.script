@@ -1,48 +1,35 @@
-local trans = game.translate_string
-local string_gsub = string.gsub
-local clsid_script_stalker = clsid.script_stalker
-local clsid_stalker = clsid.stalker
-local clsid_script_trader = clsid.script_trader
-local clsid_trader = clsid.trader
-
 local tips_icons =
 {
-	bandit                        = "ui_npc_small_bandit_1",    -- "bandit_wide",
-	csky                          = "ui_npc_small_nebo_1",      -- "csky_wide",
-	dolg                          = "ui_npc_small_dolg_1",      -- "dolg_wide",
-	ecolog                        = "ui_iconsNpc_ecolog",       -- "ecolog_wide",
-	freedom                       = "ui_npc_small_freedom_1",   -- "freedom_wide",
-	killer                        = "ui_npc_small_merc_2",      -- "killer_wide",
-	army                          = "ui_npc_small_soldier_2",   -- "army_wide",
-	monolith                      = "ui_npc_small_monolith_1",  -- "monolith_wide",
-	stalker                       = "ui_npc_small_neutral_1",   -- "stalker_wide",
-	trader                        = "ui_iconsNpc_trader",       -- "trader_wide",
+	bandit                        = "ui_npc_small_bandit_1",
+	csky                          = "ui_npc_small_nebo_1",
+	dolg                          = "ui_npc_small_dolg_1",
+	ecolog                        = "ui_iconsNpc_ecolog",
+	freedom                       = "ui_npc_small_freedom_1",
+	killer                        = "ui_npc_small_merc_2",
+	army                          = "ui_npc_small_soldier_2",
+	monolith                      = "ui_npc_small_monolith_1",
+	stalker                       = "ui_npc_small_neutral_1",
+	trader                        = "ui_iconsNpc_trader",
 	zombied                       = "ui_npc_small_zombied_1",
-	renegade                      = "ui_npc_small_bandit_1",    -- "renegade_wide",
+	renegade                      = "ui_npc_small_bandit_1",
 
 	mar_csky_commander_name       = "ui_npc_small_nebo_2_face_1",
 	mar_csky_scientist_name       = "ui_npc_small_nebo_2_face_2",
 	mar_csky_tech_name            = "ui_npc_small_nebo_2_face_3",
 	mar_csky_barman               = "ui_npc_small_nebo_2_face_4",
-
 	escape_trader_name            = "ui_npc_small_trader_1",
 	esc_leader_stalkerbase_name   = "ui_npc_small_neutral_2_face_2",
 	esc_driver_name               = "ui_npc_small_soldier_1",
 	esc_zak_stalkerbase_name      = "ui_npc_small_soldier_2_face_1",
-
 	gar_bandit_leader_name        = "ui_npc_small_bandit_3_face_1",
 	gar_bandit_barman_name        = "ui_npc_small_bandit_3_face_2",
 	gar_digger_quester_name       = "ui_npc_small_neutral_2_face_1",
-
 	agr_duty_base_commander_name  = "ui_npc_small_dolg_2_face_1",
 	agr_weaponmaster_name         = "ui_npc_small_dolg_2_mask",
 	agr_barman_name               = "ui_npc_u_dolg_2_face_2",
-
 	val_freedom_leader_name       = "ui_npc_small_freedom_2_face_2",
 	val_freedom_trader_name       = "ui_npc_small_freedom_2_mask",
-
 	red_forester_name             = "ui_npc_small_lesnik_1",
-
 	yan_st_sakharov_name          = "ui_npc_small_ucheniy_1",
 
 	-- SRP additions:
@@ -61,33 +48,29 @@ local tips_icons =
 	mil_hog_name                  = "ui_npc_small_merc_4",
 	red_ally_leshiy_name          = "ui_npc_small_neutral_2_mask",
 	yan_st_levsha_name            = "ui_npc_small_neutral_2_mask",
-	yan_levshas_crew              = "ui_npc_small_neutral_2"
+	yan_levshas_crew              = "ui_npc_small_neutral_2",
 }
 
-local function is_npc_stalker(class_id)
-	return class_id == clsid_script_stalker
-	or class_id == clsid_stalker
-	or class_id == clsid_script_trader
-	or class_id == clsid_trader
-end
+local is_npc_stalker =
+{
+	[clsid.script_stalker] = true,
+	[clsid.stalker]        = true,
+	[clsid.script_trader]  = true,
+	[clsid.trader]         = true,
+}
 
 function send_tip(actor, news_id, timeout, sender, showtime, sender_id)
 
-	if news_id == nil then return false end
+	if news_id == nil then return end
 
 	if sender_id ~= nil then
-		local sim = _G.sim
-		if sim ~= nil then
-			local npc = sim:story_object(sender_id)
-			if npc ~= nil then
-				if npc.online then
-					if xr_wounded.is_heavy_wounded_by_id(npc.id) then
-						return false
-					end
-				end
-				if npc:alive() == 1 then
-					return false
-				end
+		local npc = _G.sim:story_object(sender_id)
+		if npc ~= nil then
+			if npc.online and xr_wounded.is_heavy_wounded_by_id(npc.id) then
+				return
+			end
+			if not npc:alive() then
+				return
 			end
 		end
 	end
@@ -104,17 +87,15 @@ function send_tip(actor, news_id, timeout, sender, showtime, sender_id)
 			if tips_icons[sender] then
 				texture = tips_icons[sender]
 			end
-		elseif is_npc_stalker(sender:clsid()) then
+		elseif is_npc_stalker[sender:clsid()] then
 			texture = sender:character_icon()
 		end
 	end
 
-	local news_caption = trans("st_tip")
-	local news_text = trans(news_id)
+	local news_caption = game.translate_string("st_tip")
+	local news_text = game.translate_string(news_id)
 
 	actor:give_game_news(news_caption, news_text, texture, timeout * 1000, showtime, 1)
-
-	return true
 end
 
 function send_sound(npc, faction, point, str, str2)
@@ -126,13 +107,13 @@ function send_sound(npc, faction, point, str, str2)
 	local txt = ""
 
 	if str2 == nil then
-		txt = string_gsub(str, "(characters_voice\\human_..\\)([^\\]*)", "%2")
-		txt = string_gsub(txt, "[\\]([^\\]*)", "_%1")
+		txt = string.gsub(str, "^characters_voice\\human_..\\", "", 1)
+		txt = string.gsub(txt, "\\", "_")
 	else
 		txt = str2
 	end
 
-	local news_text = trans(txt)
+	local news_text = game.translate_string(txt)
 
 	if news_text == txt then
 		return
@@ -140,20 +121,15 @@ function send_sound(npc, faction, point, str, str2)
 
 	-- xr_sound.set_sound_play(0, "pda_tips") -- 0 = actor ID
 
-	local texture = "ui_iconsTotal_grouping"
+	local texture
 
-	if npc ~= nil and is_npc_stalker(npc:clsid()) then
+	if npc ~= nil and is_npc_stalker[npc:clsid()] then
 		texture = npc:character_icon()
 	else
-		if tips_icons[faction] then
-			texture = tips_icons[faction]
-		end
-		if tips_icons[point] then
-			texture = tips_icons[point]
-		end
+		texture = tips_icons[point] or tips_icons[faction] or "ui_iconsTotal_grouping"
 	end
 
-	local news_caption = trans("st_tip").." "..trans(faction)
+	local news_caption = game.translate_string("st_tip").." "..game.translate_string(faction)
 	local point_name = ""
 
 	if point ~= nil then
@@ -161,7 +137,7 @@ function send_sound(npc, faction, point, str, str2)
 		if smart then
 			point_name = smart_names.get_smart_terrain_name(smart.smrt)
 		else
-			point_name = trans(point)
+			point_name = game.translate_string(point)
 		end
 	end
 
@@ -172,8 +148,6 @@ function send_sound(npc, faction, point, str, str2)
 	end
 
 	db.actor:give_game_news(news_caption, news_text, texture, 1000, 5000, 1)
-
-	return true
 end
 
 local action_descr_by_type =
@@ -186,24 +160,24 @@ local action_descr_by_type =
 }
 
 function send_task(actor, type, _task)
-	if actor == nil then return false end
+	if actor == nil then return end
 	xr_sound.set_sound_play(0, "pda_task") -- 0 = actor ID
-	local news_caption = trans(action_descr_by_type[type])
-	local news_text = trans(_task:get_title())
+	local news_caption = game.translate_string(action_descr_by_type[type])
+	local news_text = game.translate_string(_task:get_title())
 	local task_type = task_manager.get_task_manager():get_task_by_entity_id(tonumber(_task:get_id())).type
 	actor:give_game_news(news_caption, news_text, "ui_iconsTotal_"..task_type, 0, 15000)
 end
 
 function send_treasure(name)
-	local news_caption = trans("st_found_new_treasure")
-	local news_text = trans(name)
+	local news_caption = game.translate_string("st_found_new_treasure")
+	local news_text = game.translate_string(name)
 --	xr_sound.set_sound_play(0, "pda_news") -- 0 = actor ID; uncomment this line to get 'stash found' sound
 	db.actor:give_game_news(news_caption, news_text, "ui_iconsTotal_found_thing", 0, 3000)
 end
 
 function relocate_item(actor, type, item, amount)
 
-	if actor == nil then return false end
+	if actor == nil then return end
 
 	if not amount then
 		amount = 1
@@ -215,11 +189,11 @@ function relocate_item(actor, type, item, amount)
 	if type == "in" then
 
 		if amount == 1 then
-			news_caption = trans("general_in_item")
-			news_text = trans(system_ini():r_string(item, "inv_name"))
+			news_caption = game.translate_string("general_in_item")
+			news_text = game.translate_string(system_ini():r_string(item, "inv_name"))
 		else
-			news_caption = trans("general_in_item")
-			news_text = trans(system_ini():r_string(item, "inv_name")).." x"..amount
+			news_caption = game.translate_string("general_in_item")
+			news_text = game.translate_string(system_ini():r_string(item, "inv_name")).." x"..amount
 		end
 
 		if actor:is_talking() then
@@ -231,11 +205,11 @@ function relocate_item(actor, type, item, amount)
 	elseif type == "out" then
 
 		if amount == 1 then
-			news_caption = trans("general_out_item")
-			news_text = trans(system_ini():r_string(item, "inv_name"))
+			news_caption = game.translate_string("general_out_item")
+			news_text = game.translate_string(system_ini():r_string(item, "inv_name"))
 		else
-			news_caption = trans("general_out_item")
-			news_text = trans(system_ini():r_string(item, "inv_name")).." x"..amount
+			news_caption = game.translate_string("general_out_item")
+			news_text = game.translate_string(system_ini():r_string(item, "inv_name")).." x"..amount
 		end
 
 		if actor:is_talking() then
@@ -248,12 +222,12 @@ end
 
 function relocate_money(actor, type, amount)
 
-	if actor == nil then return false end
+	if actor == nil then return end
 
 	if type == "in" then
 
-		local news_caption = trans("general_in_money")
-		local news_text = trans(tostring(amount))
+		local news_caption = game.translate_string("general_in_money")
+		local news_text = game.translate_string(tostring(amount))
 
 		if actor:is_talking() then
 			actor:give_talk_message2(news_caption, news_text, "ui_iconsTotal_found_money", "iconed_answer_item")
@@ -263,8 +237,8 @@ function relocate_money(actor, type, amount)
 
 	elseif type == "out" then
 
-		local news_caption = trans("general_out_money")
-		local news_text = trans(tostring(amount))
+		local news_caption = game.translate_string("general_out_money")
+		local news_text = game.translate_string(tostring(amount))
 
 		if actor:is_talking() then
 			actor:give_talk_message2(news_caption, news_text, "ui_iconsTotal_lost_money", "iconed_answer_item")

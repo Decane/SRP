@@ -52,7 +52,7 @@ function restrictor_binder:net_spawn(se_abstract) -- called 5th
 		combat_restrictor.register_combat_restrictor(obj)
 	end
 
-	if ini:section_exist("logic") and ini:line_exist("logic", "active") then
+	if ini:line_exist("logic", "active") then
 		local section = ini:r_string("logic", "active")
 		if section ~= nil then
 			local scheme = string.gsub(section, "[%d@].*", "") -- utils.get_scheme_by_section(section)

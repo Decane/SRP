@@ -1,0 +1,87 @@
+class "object_collection"
+
+function object_collection:__init()
+	self.reusables = {}
+	self.assigneds = {}
+	self.max_id = 0
+end
+
+function object_collection:get_id()
+
+	local reusable_id = next(self.reusables)
+
+	if reusable_id then
+		self.reusables[reusable_id] = nil
+		self.assigneds[reusable_id] = true
+		return reusable_id
+	else
+		self.max_id = self.max_id + 1
+		self.assigneds[self.max_id] = true
+		return self.max_id
+	end
+end
+
+function object_collection:remove(id)
+	if self.assigneds[id] then
+		self.assigneds[id] = nil
+		self.reusables[id] = true
+	end
+end
+
+function object_collection:save(packet)
+
+	set_save_marker(packet, "save", false, "object_collection")
+
+	packet:w_u16(0) -- not used (but unsafe to delete)
+	packet:w_u16(self.max_id)
+
+	local n = 0
+	for id in pairs (self.reusables) do
+		n = n + 1
+	end
+
+	packet:w_u16(n)
+
+	for id in pairs (self.reusables) do
+		packet:w_u16(id)
+	end
+
+	n = 0
+	for id in pairs (self.assigneds) do
+		n = n + 1
+	end
+
+	packet:w_u16(n)
+
+	for id in pairs (self.assigneds) do
+		packet:w_u16(id)
+	end
+
+	set_save_marker(packet, "save", true, "object_collection")
+end
+
+function object_collection:load(packet)
+
+	set_save_marker(packet, "load", false, "object_collection")
+
+	packet:r_u16() -- not used (but unsafe to delete)
+	self.max_id = packet:r_u16()
+
+	local reusables = self.reusables
+	for i = 1, packet:r_u16() do
+		reusables[packet:r_u16()] = true
+	end
+
+	local assigneds = self.assigneds
+	for i = 1, packet:r_u16() do
+		assigneds[packet:r_u16()] = true
+	end
+--[[
+	dbglog("self.reusables =")
+	print_tbl(reusables)
+	dbglog("self.assigneds =")
+	print_tbl(assigneds)
+	dbglog("self.max_id: "..self.max_id)
+]]
+	set_save_marker(packet, "load", true, "object_collection")
+end

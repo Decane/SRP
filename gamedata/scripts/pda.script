@@ -4,9 +4,8 @@
 
 function fill_faction_state(state)
 
-	local board = sim_board.get_sim_board()
 	local faction_name = state.faction_id
-	local faction = board.players[faction_name]
+	local faction = sim_board.get_sim_board().players[faction_name]
 
 	if faction ~= nil then
 		state.member_count = #faction.squads
@@ -28,8 +27,7 @@ function fill_faction_state(state)
 		state.war_state_hint5 = "5"
 	end
 
-	local actor = db.actor
-	state.actor_goodwill = relation_registry.community_relation(actor:character_community(), faction_name) + actor:community_goodwill(faction_name)
+	state.actor_goodwill = relation_registry.community_relation(db.actor:character_community(), faction_name) + db.actor:community_goodwill(faction_name)
 	state.bonus = 0
 
 	if (faction_name == "actor") then
@@ -46,22 +44,17 @@ function fill_faction_state(state)
 		state.name = game.translate_string("ui_st_name_bandit")
 		state.icon = "bandit_wide"
 		state.icon_big = "bandit_big"
-		if faction ~= nil then
-			state.target = faction:get_war_target_title()
-			state.target_desc = faction:get_war_target_descr()
-		else
-			state.target = ""
-			state.target_desc = ""
-		end
+		state.target = faction:get_war_target_title()
+		state.target_desc = faction:get_war_target_descr()
 		state.location = game.translate_string("st_location_bandit")
 		state.war_state1 = faction:get_war_stage_icon(2)
-		state.war_state_hint1 = faction:get_war_stage_icon(2)
+		state.war_state_hint1 = state.war_state1
 		state.war_state2 = faction:get_war_stage_icon(3)
-		state.war_state_hint2 = faction:get_war_stage_icon(3)
+		state.war_state_hint2 = state.war_state2
 		state.war_state3 = faction:get_war_stage_icon(4)
-		state.war_state_hint3 = faction:get_war_stage_icon(4)
+		state.war_state_hint3 = state.war_state3
 		state.war_state4 = faction:get_war_stage_icon(5)
-		state.war_state_hint4 = faction:get_war_stage_icon(5)
+		state.war_state_hint4 = state.war_state4
 		state.war_state5 = ""
 		state.war_state_hint5 = ""
 
@@ -79,20 +72,15 @@ function fill_faction_state(state)
 		state.name = game.translate_string("ui_st_name_csky")
 		state.icon = "csky_wide"
 		state.icon_big = "csky_big"
-		if faction ~= nil then
-			state.target = faction:get_war_target_title()
-			state.target_desc = faction:get_war_target_descr()
-		else
-			state.target = ""
-			state.target_desc = ""
-		end
+		state.target = faction:get_war_target_title()
+		state.target_desc = faction:get_war_target_descr()
 		state.location = game.translate_string("st_location_csky")
 		state.war_state1 = faction:get_war_stage_icon(1)
-		state.war_state_hint1 = faction:get_war_stage_icon(1)
+		state.war_state_hint1 = state.war_state1
 		state.war_state2 = faction:get_war_stage_icon(2)
-		state.war_state_hint2 = faction:get_war_stage_icon(2)
+		state.war_state_hint2 = state.war_state2
 		state.war_state3 = faction:get_war_stage_icon(3)
-		state.war_state_hint3 = faction:get_war_stage_icon(3)
+		state.war_state_hint3 = state.war_state3
 		state.war_state4 = ""
 		state.war_state_hint4 = ""
 		state.war_state5 = ""
@@ -103,74 +91,59 @@ function fill_faction_state(state)
 		state.name = game.translate_string("ui_st_name_dolg")
 		state.icon = "dolg_wide"
 		state.icon_big = "dolg_big"
-		if faction ~= nil then
-			state.target = faction:get_war_target_title()
-			state.target_desc = faction:get_war_target_descr()
-		else
-			state.target = ""
-			state.target_desc = ""
-		end
+		state.target = faction:get_war_target_title()
+		state.target_desc = faction:get_war_target_descr()
 		state.location = game.translate_string("st_location_dolg")
 		state.war_state1 = faction:get_war_stage_icon(2)
-		state.war_state_hint1 = faction:get_war_stage_icon(2)
+		state.war_state_hint1 = state.war_state1
 		state.war_state2 = faction:get_war_stage_icon(3)
-		state.war_state_hint2 = faction:get_war_stage_icon(3)
+		state.war_state_hint2 = state.war_state2
 		state.war_state3 = faction:get_war_stage_icon(4)
-		state.war_state_hint3 = faction:get_war_stage_icon(4)
+		state.war_state_hint3 = state.war_state3
 		state.war_state4 = faction:get_war_stage_icon(5)
-		state.war_state_hint4 = faction:get_war_stage_icon(5)
+		state.war_state_hint4 = state.war_state4
 		state.war_state5 = faction:get_war_stage_icon(6)
-		state.war_state_hint5 = faction:get_war_stage_icon(6)
+		state.war_state_hint5 = state.war_state5
 
 	elseif (faction_name == "freedom") then
 
 		state.name = game.translate_string("ui_st_name_freedom")
 		state.icon = "freedom_wide"
 		state.icon_big = "freedom_big"
-		if faction ~= nil then
-			state.target = faction:get_war_target_title()
-			state.target_desc = faction:get_war_target_descr()
-		else
-			state.target = ""
-			state.target_desc = ""
-		end
+		state.target = faction:get_war_target_title()
+		state.target_desc = faction:get_war_target_descr()
 		state.location = game.translate_string("st_location_freedom")
 		state.war_state1 = faction:get_war_stage_icon(4)
-		state.war_state_hint1 = faction:get_war_stage_icon(4)
+		state.war_state_hint1 = state.war_state1
 		state.war_state2 = faction:get_war_stage_icon(5)
-		state.war_state_hint2 = faction:get_war_stage_icon(5)
+		state.war_state_hint2 = state.war_state2
 		state.war_state3 = faction:get_war_stage_icon(6)
-		state.war_state_hint3 = faction:get_war_stage_icon(6)
+		state.war_state_hint3 = state.war_state3
 		state.war_state4 = faction:get_war_stage_icon(7)
-		state.war_state_hint4 = faction:get_war_stage_icon(7)
+		state.war_state_hint4 = state.war_state4
 		state.war_state5 = faction:get_war_stage_icon(8)
-		state.war_state_hint5 = faction:get_war_stage_icon(8)
+		state.war_state_hint5 = state.war_state5
 
 	elseif (faction_name == "stalker") then
 
 		state.name = game.translate_string("ui_st_name_stalker")
 		state.icon = "stalker_wide"
 		state.icon_big = "stalker_big"
-		if faction ~= nil then
-			state.target = faction:get_war_target_title()
-			state.target_desc = faction:get_war_target_descr()
-		else
-			state.target = ""
-			state.target_desc = ""
-		end
+		state.target = faction:get_war_target_title()
+		state.target_desc = faction:get_war_target_descr()
 		state.location = game.translate_string("st_location_stalker")
 		state.war_state1 = faction:get_war_stage_icon(2)
-		state.war_state_hint1 = faction:get_war_stage_icon(2)
+		state.war_state_hint1 = state.war_state1
 		state.war_state2 = faction:get_war_stage_icon(3)
-		state.war_state_hint2 = faction:get_war_stage_icon(3)
+		state.war_state_hint2 = state.war_state2
 		state.war_state3 = faction:get_war_stage_icon(4)
-		state.war_state_hint3 = faction:get_war_stage_icon(4)
+		state.war_state_hint3 = state.war_state3
 		state.war_state4 = faction:get_war_stage_icon(5)
-		state.war_state_hint4 = faction:get_war_stage_icon(5)
+		state.war_state_hint4 = state.war_state4
 		state.war_state5 = ""
 		state.war_state_hint5 = ""
 	else
-		abort("Unsupported faction identifier: '%s'", tostring(faction_name))
+		abort("[pda.fill_faction_state]: Unsupported faction identifier: '%s'", tostring(faction_name))
 	end
 end
 
@@ -178,10 +151,8 @@ end
 
 function get_max_member_count()
 	local board = sim_board.get_sim_board()
-	for faction_name, faction in pairs (board.players) do
-		if faction.community_player == true then
---			local opposing_faction = board.players[sim_board.sim_fight[faction_name]]
---			return opposing_faction and #faction.squads + #opposing_faction.squads or 0
+	for _, faction in pairs (board.players) do
+		if faction.community_player then
 			return faction.expansion_level[#faction.expansion_level].base_squad_number -- DC210319
 		end
 	end
@@ -190,10 +161,8 @@ end
 
 function get_max_resource()
 	local board = sim_board.get_sim_board()
-	for faction_name, faction in pairs (board.players) do
-		if faction.community_player == true then
---			local opposing_faction = board.players[sim_board.sim_fight[faction_name]]
---			return opposing_faction and faction.resource_level + opposing_faction.resource_level or 0
+	for _, faction in pairs (board.players) do
+		if faction.community_player then
 			return #faction.spawn_by_resource -- DC210307
 		end
 	end
@@ -203,7 +172,7 @@ end
 function get_max_power()
 	local board = sim_board.get_sim_board()
 	for faction_name, faction in pairs (board.players) do
-		if faction.community_player == true then
+		if faction.community_player then
 			local opposing_faction = board.players[sim_board.sim_fight[faction_name]]
 			return opposing_faction and faction.absolute_power + opposing_faction.absolute_power or 0
 		end
@@ -213,18 +182,9 @@ end
 
 -- /DC170611
 
--- int mode:
--- 0  = Undefined
--- 1  = Inventory
--- 2  = Trade
--- 3  = Upgrade
--- 4  = DeadBodySearch
--- 10 = Talk dialog show
--- 11 = Talk dialog hide
-
-dialog_closed  = true -- false
-trade_closed   = true -- false
-upgrade_closed = true -- false
+dialog_closed  = true
+trade_closed   = true
+upgrade_closed = true
 
 function actor_menu_mode(mode) -- called from the engine only with modes 10 and 11
 	if (mode == 10) then
@@ -235,27 +195,22 @@ function actor_menu_mode(mode) -- called from the engine only with modes 10 and 
 end
 
 function dialog_wnd_showed()
---	dbglog("[pda.dialog_wnd_showed]: Called!")
 	dialog_closed = false
-	for id, v in pairs (db.storage) do
-		local obj = v.object
-		if obj ~= nil then
-			if obj:is_talking() and id ~= 0 then -- 0 = actor ID
-				if v.meet and v.robbery_zone_id == nil then
-					db.actor:allow_break_talk_dialog(v.meet.allow_break)
-				end
-				local sound_theme = xr_sound.sound_table[id]
-				if sound_theme and sound_theme.reset then
-					sound_theme:reset(id)
-				end
-				break
+	for npc_id, npc_st in pairs (db.storage) do
+		if npc_st.object and npc_st.object:is_talking() and npc_id ~= 0 then -- 0 = actor ID
+			if npc_st.meet and npc_st.robbery_zone_id == nil then
+				db.actor:allow_break_talk_dialog(npc_st.meet.allow_break)
 			end
+			local sound_theme = xr_sound.sound_table[npc_id]
+			if sound_theme and sound_theme.reset then
+				sound_theme:reset(npc_id)
+			end
+			break
 		end
 	end
 end
 
 function dialog_wnd_closed()
---	dbglog("[pda.dialog_wnd_closed]: Called!")
 	dialog_closed = true
 end
 

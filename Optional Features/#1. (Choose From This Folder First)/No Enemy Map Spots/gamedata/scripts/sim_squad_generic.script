@@ -9,7 +9,7 @@ local monster_resource_by_level =
 	agroprom   = {1,5},
 	yantar     = {3,6},
 	red_forest = {3,4},
-	military   = {1,5}
+	military   = {1,5},
 }
 
 local monster_num_by_resource =
@@ -20,23 +20,16 @@ local monster_num_by_resource =
 	[3] = {4,5},
 	[4] = {1,3},
 	[5] = {1,2},
-	[6] = {1,1}
+	[6] = {1,1},
 }
 
 local get_game_time          = game.get_game_time
 local trans                  = game.translate_string
-
 local map_add_object_spot    = level.map_add_object_spot
 local map_has_object_spot    = level.map_has_object_spot
 local map_change_spot_hint   = level.map_change_spot_hint
 local map_remove_object_spot = level.map_remove_object_spot
-local get_level_name         = level.name
-local get_time_hours         = level.get_time_hours
-
 local table_remove           = table.remove
-
-local math_random            = math.random
-local math_ceil              = math.ceil
 
 local PLAYER_HELP_MAX_RADIUS = 150*150
 
@@ -55,7 +48,6 @@ function sim_squad_generic:__init(sim_board, player_id, squad_id)
 	self.online_object = {}
 	self.online_counter = 0
 	self.random_tasks = {}
---	self.squad_alive = true
 	self.squad_online = false
 	self.current_action = nil
 	self.sim_combat_id = nil
@@ -70,10 +62,6 @@ function sim_squad_generic:__init(sim_board, player_id, squad_id)
 	self.failed_assignments = {}
 end
 
--- function sim_squad_generic:init_squad() -- smart)
---	self.box_items = self:init_box_items(smart)
--- end
-
 function sim_squad_generic:init_box_items(smart)
 	local spawn_items = death_manager.item_by_community[self.player_id]
 	if spawn_items == nil then
@@ -87,16 +75,16 @@ function sim_squad_generic:init_box_items(smart)
 			squad_level = smart_level
 		end
 	end
-	local count_by_cur_level = count_by_level[squad_level]
-	local items_to_spawn = {ammo = {}, not_ammo = {}}
+	local limits_by_item = count_by_level[squad_level]
 	local ammo_sections = ammo_section
-	local ammo_table = items_to_spawn.ammo
-	local non_ammo_table = items_to_spawn.not_ammo
+	local ammo_table = {}
+	local non_ammo_table = {}
+	local math_ceil = math.ceil
+	local math_random = math.random
 	for item_name, spawn_prob in pairs (spawn_items) do
-		local count_data = count_by_cur_level[item_name]
+		local count_data = limits_by_item[item_name]
 		if count_data == nil then
-			abort("[sim_squad_generic.init_box_items]: Missing count data for item '%s' for level '%s' in item spawn table of faction '%s' of squad with ID '%s'.", item_name, squad_level, self.player_id, tostring(self.squad_id))
-			return nil
+			abort("[sim_squad_generic.init_box_items]: Missing count data for item '%s' for level '%s' in item spawn table of faction '%s' of squad with ID '%s'.", item_name, squad_level, self.player_id, self.squad_id)
 		end
 		local units = math_ceil(math_random(count_data.min, count_data.max))
 		if units > 0 then
@@ -104,7 +92,7 @@ function sim_squad_generic:init_box_items(smart)
 				ammo_table[item_name] = units
 			else
 				for i = units, 1, -1 do
-					if math_random(100) <= spawn_prob then
+					if math_random() <= spawn_prob then
 						non_ammo_table[item_name] = i
 						break
 					end
@@ -112,55 +100,51 @@ function sim_squad_generic:init_box_items(smart)
 --[[			-- a more sophisticated alternative, but wasted in vanilla:
 				local c = 0
 				for i = 1, units do
-					if math_random(100) <= spawn_prob then
+					if math_random() <= spawn_prob then
 						c = c + 1
 					end
 				end
 				if c > 0 then
-					items_to_spawn.not_ammo[item_name] = c
+					non_ammo_table[item_name] = c
 				end
 ]]
 			end
 		end
 	end
-	return items_to_spawn
+	return {ammo = ammo_table, not_ammo = non_ammo_table}
 end
 
 function sim_squad_generic:spawn_box_items(smart_id)
 
 	local smart = self.board.smarts[smart_id].smrt
 
-	if smart.smart_level ~= get_level_name() then
---		self.items_spawned = true
+	if smart.smart_level ~= level.name() then
 		return
 	end
 
-	local smart_name = smart:name()
---	local sim = alife()
-	local box = sim:object(smart_name.."_box")
+	local box = sim:object(smart:name().."_box")
 
 	if not box then
 		self.items_spawned = true
 		return
 	end
 
-	if self.current_action ~= nil and self.current_action.name ~= "stay_point" then
+	if self.current_action and self.current_action.name ~= "stay_point" then
 		return
 	end
 
 	local box_id = box.id
 	local box_object = db.storage[box_id]
-	box_object = box_object and box_object.object
+	      box_object = box_object and box_object.object
 
 	if not box_object then
 		return
 	end
 
-	local commander_object = db.storage[self.commander_id]
-	commander_object = commander_object and commander_object.object
+	local commander = db.storage[self.commander_id]
+	      commander = commander and commander.object
 
-	if not commander_object then
---		self.items_spawned = true
+	if not commander then
 		return
 	end
 
@@ -176,18 +160,10 @@ function sim_squad_generic:spawn_box_items(smart_id)
 	end
 
 	local vec = vector()
-	local ini = system_ini()
 
-	for section, units in pairs (box_items.ammo) do
-		if death_manager.check_item_dependence(commander_object, section) then -- in vanilla, the first argument is not guaranteed to be non-nil, which can crash the game
---			se_respawn.create_ammo(section, vec, 0, 0, box_id, units) -- because method :object() is applied to it in death_manager.check_item_dependence
-			local num_in_box = ini:r_u32(section, "box_size")
-			local rounds = units
-			while rounds > num_in_box do
-				sim:create_ammo(section, vec, 0, 0, box_id, num_in_box)
-				rounds = rounds - num_in_box
-			end
-			sim:create_ammo(section, vec, 0, 0, box_id, rounds)
+	for section, rounds in pairs (box_items.ammo) do
+		if death_manager.check_item_dependence(commander, section) then
+			se_respawn.create_ammo(section, vec, 0, 0, box_id, rounds)
 		else
 			box_items.ammo[section] = nil
 		end
@@ -205,18 +181,19 @@ function sim_squad_generic:create_npc(spawn_smart)
 	self.squad_power = 0
 
 	local spawn_point = spawn_smart.spawn_point
-	local base_spawn_position, base_lvi, base_gvi
+	local position, base_lvi, base_gvi
 
 	if spawn_point ~= nil then
-		base_spawn_position = patrol(spawn_point):point(0)
+		position = patrol(spawn_point):point(0)
 		base_lvi = patrol(spawn_point):level_vertex_id(0)
 		base_gvi = patrol(spawn_point):game_vertex_id(0)
 	else
-		base_spawn_position = spawn_smart.position
+		position = spawn_smart.position
 		base_lvi = spawn_smart.m_level_vertex_id
 		base_gvi = spawn_smart.m_game_vertex_id
 	end
 
+	local math_random = math.random
 	local custom_resource = nil
 	local min_npc, max_npc = 3, 5
 	local spawn_level = spawn_smart.smart_level
@@ -238,35 +215,28 @@ function sim_squad_generic:create_npc(spawn_smart)
 		max_npc = monster_num[2]
 	end
 
---	local sim = alife()
 	local faction = self.board.players[self.player_id]
+	local npc_section = faction:get_spawn_section(spawn_level, custom_resource)
 
 	for i = 1, math_random(min_npc, max_npc) do
 
-		local position = base_spawn_position
 		position.x = position.x + math_random(-2, 2)
 		position.z = position.z + math_random(-2, 2)
 
-		local spawn_section = faction:get_spawn_section(spawn_level, custom_resource)
-		local obj = sim:create(spawn_section, position, base_lvi, base_gvi)
-		local obj_id = obj.id
+		local se_npc = sim:create(npc_section, position, base_lvi, base_gvi)
+		local npc_id = se_npc.id
 
-		obj.squad_id = self.squad_id
-		self.squad_npc[obj_id] = obj_id
-
-		self.sound_manager:register_npc(obj_id)
+		se_npc.squad_id = self.squad_id
+		self.squad_npc[npc_id] = npc_id
+		self.sound_manager:register_npc(npc_id)
 
 		if self.commander_id == nil then
-			self.commander_id = obj_id
+			self.commander_id = npc_id
 		end
 
 		self.npc_count = self.npc_count + 1
-		self.squad_power = self.squad_power + 5 * obj:rank() / 1000
+		self.squad_power = self.squad_power + 5 * se_npc:rank() / 1000
 	end
-
---	self.smart_id = spawn_smart.id -- done in sim_board:assign_squad_to_smart() after this func called
-
---	self:refresh() -- done after sim_board:create_squad() after this func called
 
 	if self.squad_power > 25 then
 		abort("[sim_squad_generic.create_npc]: Squad power ('%s') cannot exceed 25!", tostring(self.squad_power))
@@ -274,9 +244,8 @@ function sim_squad_generic:create_npc(spawn_smart)
 end
 
 function sim_squad_generic:clear_npc()
---	local sim = alife()
-	for k in pairs (self.squad_npc) do
-		sim:release(sim:object(k), true)
+	for npc_id in pairs (self.squad_npc) do
+		sim:release(sim:object(npc_id), true)
 	end
 	self.squad_npc = {}
 	self.online_object = {}
@@ -284,19 +253,18 @@ function sim_squad_generic:clear_npc()
 end
 
 function sim_squad_generic:remove_npc(npc_id)
---	local sim = alife()
-	local npc = sim:object(npc_id)
-	self:on_npc_death(npc)
-	sim:release(npc, true)
+	local se_npc = sim:object(npc_id)
+	self:on_npc_death(se_npc)
+	sim:release(se_npc, true)
 end
 
-function sim_squad_generic:on_npc_death(npc, killer_id)
+function sim_squad_generic:on_npc_death(se_npc, killer_id)
 
-	local npc_id = npc.id
+	local npc_id = se_npc.id
 
 	self.squad_npc[npc_id] = nil
 	self.npc_count = self.npc_count - 1
-	self.squad_power = self.squad_power - 5 * npc:rank() / 1000
+	self.squad_power = self.squad_power - 5 * se_npc:rank() / 1000
 
 	if self.online_object[npc_id] ~= nil then
 		self.online_object[npc_id] = nil
@@ -304,19 +272,16 @@ function sim_squad_generic:on_npc_death(npc, killer_id)
 	end
 
 	if self.commander_id == npc_id then
-		for k in pairs (self.squad_npc) do
-			self.commander_id = k
-			break
-		end
+		self.commander_id = next(self.squad_npc) -- may be nil
 	end
 
 	self.sound_manager:unregister_npc(npc_id)
 
-	npc.squad_id = nil
+	se_npc.squad_id = nil
 
-	local st_npc = db.storage[npc_id]
+	local npc_st = db.storage[npc_id]
 
-	if st_npc ~= nil then
+	if npc_st ~= nil then
 		if killer_id == 0 then -- 0 = actor ID
 			local task
 			if self.delayed_attack_task then
@@ -335,34 +300,10 @@ function sim_squad_generic:on_npc_death(npc, killer_id)
 				task:actor_hit(self.player_id)
 			end
 		end
-		st_npc.squad_obj = nil
+		npc_st.squad_obj = nil
 	end
 
 	if self.npc_count == 0 then
---[[
-		-- The block below has been moved into sim_board:remove_squad():
-
-		local tm = task_manager.get_task_manager()
-		for k, entity_id in pairs (self.random_tasks) do
-			local task = tm:get_task_by_entity_id(entity_id)
-			if task == nil then
-				self.random_tasks[k] = nil
-			else
-				if task.status == "selected" then
-					local task_type = task.type
-					if task_type == "recover_item" or task_type == "bring_item" then
-						if task.squad_id == self.squad_id then
-							task.last_check_task = "reversed"
-						else
-							self.random_tasks[k] = nil
-						end
-					elseif task_type == "capture_smart" then
-						task.last_check_task = "fail"
-					end
-				end
-			end
-		end
-]]
 		if self.current_action ~= nil then
 			self.current_action:finalize()
 			self.current_action = nil
@@ -371,11 +312,9 @@ function sim_squad_generic:on_npc_death(npc, killer_id)
 			xr_logic.pick_section_from_condlist(db.actor, self, self.death_condlist)
 		end
 		self.board:remove_squad(self, self.board.smarts[self.smart_id].smrt)
-		self.commander_id = nil
-		return
+	else
+		self:refresh()
 	end
-
-	self:refresh()
 end
 
 local faction_activity =
@@ -464,7 +403,7 @@ function sim_squad_generic:calculate_attack_power()
 		abort("[sim_squad_generic.calculate_attack_power]: Faction time activity does not exist for faction '%s'.", tostring(self.player_id))
 	end
 	local game_time = get_game_time()
-	local additional_power = faction_time_activity[get_time_hours()] * game_time:diffSec(self.last_action_timer) / 3600
+	local additional_power = faction_time_activity[level.get_time_hours()] * game_time:diffSec(self.last_action_timer) / 3600
 	self.squad_attack_power = self.squad_attack_power + additional_power
 	if self.squad_attack_power > 100 then
 		self.squad_attack_power = 100
@@ -488,8 +427,7 @@ function sim_squad_generic:update()
 	end
 
 	self:find_target()
-	self:get_next_action()
---	self:refresh() -- already called by make() called by get_next_action()
+	self:get_next_action() -- calls make() calls self:refresh()
 
 	if not self.items_spawned and self.smart_id ~= nil then
 		self:spawn_box_items(self.smart_id)
@@ -520,7 +458,7 @@ local function pave_way_off_smart(board, front, archive)
 							local step_smart = step.smart
 							sim_avail_table[step.smart_id] = {step_smart, step_smart.sim_avail}
 --							dbglog("Booting squad '%s' from smart '%s' with population %d, friendly movers %d, and sim_avail [%s] to smart '%s' with population %d and friendly movers %d", step_squad.squad_id, smart_names.get_smart_terrain_name(step_smart), board:get_smart_population(step_smart), board:get_smart_squad_quantity(step_smart, board.players[step_squad.player_id]), tostring(step_smart.sim_avail), smart_names.get_smart_terrain_name(step_target), board:get_smart_population(step_target), board:get_smart_squad_quantity(step_target, board.players[step_squad.player_id]))
-							step_smart.sim_avail = {{section = "false", infop_check = {}, infop_set = {}}} -- pseudo-hack to temporarily make the smart left by step_squad unavailable for unwanted visitors in case a race condition would otherwise send them there
+							step_smart.sim_avail = {{section = "false", conditions = {}, effects = {}}} -- pseudo-hack to temporarily make the smart left by step_squad unavailable for unwanted visitors in case a race condition would otherwise send them there
 --[[
 							-- TODO: Is this necessary? Maybe e.g. if step_squad is in combat when booted off their smart...
 							-- Update: Nope. Combat manager unregistration is done in sim_attack_point:make() if necessary, and step_squad.current_action is guaranteed to be nil or sim_stay_point, which doesn't need finalization. TODO: Check: Also, not necessary to set current_action to nil from sim_stay_point.
@@ -707,14 +645,12 @@ function sim_squad_generic:get_next_action()
 					self.current_action.next_point_id = next_point.id
 				else
 					self.current_action = sim_attack_point(self, next_point.id, false) --, self.attacking_by_quest ~= nil) -- self.attacking_by_quest is always nil here
---					self.current_action.target_power_value = next_point.value
 					for k, squad in pairs (faction.squads) do
 						squad.failed_assignments[target_smart_id] = nil
 					end
 				end
 			else
 				self.current_action = sim_attack_point(self, next_point.id, self.attacking_by_quest ~= nil)
---				self.current_action.target_power_value = next_point.value
 				for k, squad in pairs (faction.squads) do
 					squad.failed_assignments[target_smart_id] = nil
 				end
@@ -735,20 +671,18 @@ function sim_squad_generic:get_script_target()
 end
 
 function sim_squad_generic:find_target()
-	local board = self.board
-	local player = board.players[self.player_id]
-	local cache_target_id = player:find_target(self)
+	local faction = self.board.players[self.player_id]
+	local cache_target_id = faction:find_target(self)
 	if cache_target_id ~= nil then
---		self.assigned_target_smart_id = board.smarts[cache_target_id].smrt.id
 		self.assigned_target_smart_id = cache_target_id
 	end
 end
 
-local function smart_under_attack(owner_faction, faction_table, smart_id)
-	for checked_faction_name, checked_faction in pairs (faction_table) do
-		if checked_faction_name ~= owner_faction then
-			local checked_faction_attackers = checked_faction.current_attack_quantity[smart_id] or 0
-			if checked_faction_attackers > 0 then
+local function smart_under_attack(smart_id, smart_owner, factions)
+	for faction_name, faction in pairs (factions) do
+		if faction_name ~= smart_owner then
+			local num_attackers = faction.current_attack_quantity[smart_id] or 0
+			if num_attackers > 0 then
 				return true
 			end
 		end
@@ -761,34 +695,34 @@ function sim_squad_generic:init_squad_task()
 	local board = self.board
 	local tm = task_manager.get_task_manager()
 	local squad_faction_name = self.player_id
-	local random_tasks = self.random_tasks
-	local old_capture_task_1 = random_tasks[1]
-	local old_capture_task_2 = random_tasks[2]
-	local recover_task = random_tasks[3]
+	local old_random_tasks = self.random_tasks
+	local old_capture_task_1 = old_random_tasks[1]
+	local old_capture_task_2 = old_random_tasks[2]
+	local old_recover_task = old_random_tasks[3]
 	local squad_smart_id = self.smart_id
 	local squad_smart = board.smarts[squad_smart_id].smrt
 	local board_factions = board.players
-	local task
+	local random_tasks = {}
 
-	random_tasks = {}
 	self.random_tasks = random_tasks
 
 	if old_capture_task_1 ~= nil then
-		task = tm:get_task_by_entity_id(old_capture_task_1)
+		local task = tm:get_task_by_entity_id(old_capture_task_1)
 		if task and task.status == "selected" then
 			random_tasks[1] = old_capture_task_1
 		end
 	end
 
 	if old_capture_task_2 ~= nil then
-		task = tm:get_task_by_entity_id(old_capture_task_2)
+		local task = tm:get_task_by_entity_id(old_capture_task_2)
 		if task and task.status == "selected" then
 			random_tasks[#random_tasks + 1] = old_capture_task_2
 		end
 	end
 
 	if random_tasks[2] == nil then
-		if board:get_smart_population(squad_smart) > 1 or (board_factions[squad_faction_name].precondition_targets[squad_smart_id] == nil and smart_under_attack(squad_faction_name, board_factions, squad_smart_id) == false) then
+		if board:get_smart_population(squad_smart) > 1
+		or (board_factions[squad_faction_name].precondition_targets[squad_smart_id] == nil and not smart_under_attack(squad_smart_id, squad_faction_name, board_factions)) then
 			if self:get_script_target() == nil and not tm:get_tasks_by_smart(squad_smart_id) then
 				local level_cluster = sim_board.sim_level_cluster
 				local squad_smart_cluster = level_cluster[squad_smart.smart_level]
@@ -796,19 +730,17 @@ function sim_squad_generic:init_squad_task()
 					if level_cluster[neighbor_smart.smart_level] == squad_smart_cluster then
 						if sim_board.is_point_avail(neighbor_smart, squad_faction_name) then
 							local neighbor_faction_name = neighbor_smart.player_name
-							if neighbor_faction_name ~= "none" then
-								if game_relations.is_factions_enemies(squad_faction_name, neighbor_faction_name) then
-									if smart_under_attack(neighbor_faction_name, board_factions, neighbor_smart_id) == false then
-										local neighbor_smart_task = tm:get_tasks_by_smart(neighbor_smart_id)
-										if not neighbor_smart_task or neighbor_smart_task.base_prior <= 1 then -- only permits replacing 'generic' eliminate tasks with capture tasks
-											task = tm:select_task("capture_smart", neighbor_smart, squad_faction_name)
-											task.src_obj = self.squad_id
-											if random_tasks[1] == nil then
-												random_tasks[1] = task.entity_id
-											else
-												random_tasks[2] = task.entity_id
-												break
-											end
+							if game_relations.is_factions_enemies(squad_faction_name, neighbor_faction_name) then
+								if not smart_under_attack(neighbor_smart_id, neighbor_faction_name, board_factions) then
+									local neighbor_smart_task = tm:get_tasks_by_smart(neighbor_smart_id)
+									if not neighbor_smart_task or neighbor_smart_task.prior <= 1 then -- only permits replacing 'generic' eliminate tasks with capture tasks
+										local task = tm:select_task("capture_smart", neighbor_smart, squad_faction_name)
+										task.src_obj = self.squad_id
+										if random_tasks[1] == nil then
+											random_tasks[1] = task.entity_id
+										else
+											random_tasks[2] = task.entity_id
+											break
 										end
 									end
 								end
@@ -820,32 +752,22 @@ function sim_squad_generic:init_squad_task()
 		end
 	end
 
-	task = tm:select_task("recover_item", self.squad_id, squad_faction_name)
+	local task = tm:select_task("recover_item", self.squad_id, squad_faction_name)
 	if task ~= nil then
 		random_tasks[3] = task.entity_id
-	elseif recover_task ~= nil then
-		random_tasks[3] = recover_task
+	elseif old_recover_task ~= nil then
+		random_tasks[3] = old_recover_task
 	end
 
---	task = tm:select_task("bring_item", self.commander_id, squad_faction_name)
 	task = tm:select_task("bring_item", self.squad_id, squad_faction_name)
 	if task ~= nil then
 		random_tasks[4] = task.entity_id
 	end
 end
 
-function sim_squad_generic:give_squad_task(target_smart_id)
-	local ktask = task_manager.get_task_manager():get_tasks_by_smart(target_smart_id)
-	if ktask ~= nil then
-		if ktask.type == "eliminate_smart" then
-			ktask.last_check_task = "reversed_silent"
-			bind_stalker.task_update = true
-		else
-			ktask:reverse_task()
-		end
-	end
+function sim_squad_generic:clear_current_action()
 	if self.current_action == nil then
-		abort("[sim_squad_generic.give_squad_task]: self.current_action = nil but vanilla code presupposes the opposite.")
+		abort("[sim_squad_generic.clear_current_action]: Squad '%s' has no current action.", self.squad_id)
 	end
 	self.current_action:finalize()
 	self.current_action = nil
@@ -890,25 +812,17 @@ function sim_squad_generic:cover_attack()
 		end
 	else
 		return (my_squad_stage == "wait") or (my_squad_stage == "defence" and enemy_squad_stage == "wait")
---[[
-		if my_squad_stage == "wait" then
-			return true
-		elseif my_squad_stage == "defence" and enemy_squad_stage == "wait" then
-			return true
-		end
-		return false
-]]
 	end
 end
 
 function sim_squad_generic:issue_order(order)
 
 --	if self.npc_count <= 1 then
---		return false
+--		return
 --	end
 
 	if self.board.players[self.player_id].brain.use_issue_order ~= true then
-		return false
+		return
 	end
 
 	local actor = db.actor
@@ -917,14 +831,13 @@ function sim_squad_generic:issue_order(order)
 	commander = commander and commander.object
 
 	if actor == nil or commander == nil or commander:general_goodwill(actor) <= -1000 then
-		return false
+		return
 	end
 
---	local sim = alife()
 	local com_pos = sim:object(commander_id).m_game_vertex_id
 
 	if utils.graph_distance(sim:actor().m_game_vertex_id, com_pos) > 150 then
-		return false
+		return
 	end
 
 	if order == "attack" then
@@ -935,10 +848,8 @@ function sim_squad_generic:issue_order(order)
 		if self.attacking_by_quest ~= nil then
 			self.sound_manager:set_storyteller(commander_id)
 			self.sound_manager:set_story("squad_prepare_attack")
-			return true
 		else
 			self.sound_manager:set_story("squad_prepare_attack_self")
-			return false
 		end
 	elseif order == "wait_again_signal" then
 		xr_sound.set_sound_play(commander_id, "alife_wait_actor_signal", self.player_id, self.current_action.dest_smrt_id)
@@ -998,29 +909,10 @@ function sim_squad_generic:save(packet)
 
 	set_save_marker(packet, "save", false, "sim_squad_generic")
 
-	if self.smart_id == nil then
-		packet:w_u16(-1)
-	else
-		packet:w_u16(self.smart_id)
-	end
-
-	if self.assigned_target_smart_id == nil then
-		packet:w_u16(-1)
-	else
-		packet:w_u16(self.assigned_target_smart_id)
-	end
-
-	if self.sim_combat_id == nil then
-		packet:w_u16(-1)
-	else
-		packet:w_u16(self.sim_combat_id)
-	end
-
-	if self.delayed_attack_task == nil then
-		packet:w_u16(-1)
-	else
-		packet:w_u16(self.delayed_attack_task)
-	end
+	packet:w_u16(self.smart_id or -1)
+	packet:w_u16(self.assigned_target_smart_id or -1)
+	packet:w_u16(self.sim_combat_id or -1)
+	packet:w_u16(self.delayed_attack_task or -1)
 
 	local n = 0
 	for k in pairs (self.random_tasks) do
@@ -1029,34 +921,21 @@ function sim_squad_generic:save(packet)
 
 	packet:w_u8(n)
 
-	for k, v in pairs (self.random_tasks) do
+	for k, entity_id in pairs (self.random_tasks) do
 		packet:w_u16(k)
-		packet:w_u16(v)
+		packet:w_u16(entity_id)
 	end
 
 	packet:w_u8(self.npc_count)
 	packet:w_float(self.squad_power)
 	packet:w_u16(self.commander_id)
---[[
-	n = 0
-	for k in pairs (self.squad_npc) do
-		n = n + 1
+
+	for npc_id in pairs (self.squad_npc) do
+		packet:w_u16(npc_id)
 	end
 
-	packet:w_u8(n)
-]]
-	for k, v in pairs (self.squad_npc) do
-		packet:w_u16(v)
-	end
-
-	if self.spoted_shouted == true then
-		packet:w_bool(true)
-	else
-		packet:w_bool(false)
-	end
-
+	packet:w_bool(self.spoted_shouted == true)
 	utils.w_CTime(packet, self.last_action_timer)
-
 	packet:w_u16(self.squad_attack_power)
 
 	if self.current_action == nil then
@@ -1072,79 +951,67 @@ function sim_squad_generic:save(packet)
 		self.current_action:save(packet)
 	end
 
-	packet:w_bool(self.items_spawned == true)
-
+	packet:w_bool(self.items_spawned)
 	utils.w_CTime(packet, self.bring_item_inited_time)
 	utils.w_CTime(packet, self.recover_item_inited_time)
 
 	set_save_marker(packet, "save", true, "sim_squad_generic")
 end
 
-function sim_squad_generic:load(packet) --, registred)
+function sim_squad_generic:load(packet)
 
 	set_save_marker(packet, "load", false, "sim_squad_generic")
 
-	local smart_id = packet:r_u16()
-	if smart_id == 65535 then
-		smart_id = nil
+	self.smart_id = packet:r_u16()
+	self.assigned_target_smart_id = packet:r_u16()
+	self.sim_combat_id = packet:r_u16()
+	self.delayed_attack_task = packet:r_u16()
+
+	if self.smart_id == 65535 then
+		self.smart_id = nil
 	end
 
-	self.smart_id = smart_id
---[[
-	if self.name == "sim_squad_generic" then
-		local smart_info = smart_id and self.board.smarts[smart_id]
-		self:init_squad(smart_info and smart_info.smrt) -- let's allow loaded generic squads to spawn box items, too
-	end
-]]
-	self.assigned_target_smart_id = packet:r_u16()
 	if self.assigned_target_smart_id == 65535 then
 		self.assigned_target_smart_id = nil
 	end
 
-	self.sim_combat_id = packet:r_u16()
 	if self.sim_combat_id == 65535 then
 		self.sim_combat_id = nil
 	end
 
-	self.delayed_attack_task = packet:r_u16()
 	if self.delayed_attack_task == 65535 then
 		self.delayed_attack_task = nil
 	end
 
---	self.random_tasks = {}
-	local T = self.random_tasks
+	local random_tasks = self.random_tasks
 
-	local n = packet:r_u8()
-
-	for i = 1, n do
+	for i = 1, packet:r_u8() do
 		local k = packet:r_u16()
-		local v = packet:r_u16()
-		T[k] = v
+		local entity_id = packet:r_u16()
+		random_tasks[k] = entity_id
 	end
 
 	self.npc_count = packet:r_u8()
 	self.squad_power = packet:r_float()
 	self.commander_id = packet:r_u16()
 
---	self.squad_npc = {}
-	T = self.squad_npc
-
---	n = packet:r_u8()
+	local squad_npc = self.squad_npc
 
 	for i = 1, self.npc_count do
-		local k = packet:r_u16()
-		T[k] = k
-		self.sound_manager:register_npc(k)
+		local npc_id = packet:r_u16()
+		squad_npc[npc_id] = npc_id
+		self.sound_manager:register_npc(npc_id)
 	end
 
 	self.spoted_shouted = packet:r_bool()
 	self.last_action_timer = utils.r_CTime(packet)
 	self.squad_attack_power = packet:r_u16()
 
-	local flag = packet:r_bool()
-	if flag == true then
-		local class = packet:r_bool()
-		if class == true then
+	local has_current_action = packet:r_bool()
+
+	if has_current_action then
+		local is_attack_point = packet:r_bool()
+		if is_attack_point then
 			local dest_smrt_id = packet:r_u16()
 			self.current_action = sim_attack_point(self, dest_smrt_id)
 		else
@@ -1171,7 +1038,6 @@ function sim_squad_generic:init_squad_on_load()
 end
 
 function sim_squad_generic:force_online(to_online)
---	local sim = alife()
 	for npc_id in pairs (self.squad_npc) do
 		local se_npc = sim:object(npc_id)
 		if se_npc ~= nil then
@@ -1196,24 +1062,12 @@ function sim_squad_generic:switch_online(is_online, npc_id)
 	else
 		if self.online_object[npc_id] ~= nil then
 --[[
-			if npc_id == self.commander_id then
-				local st_npc = db.storage[npc_id]
-				if st_npc == nil then
-					abort("[sim_squad_generic.switch_online]: db.storage[npc_id] = nil but vanilla code presupposes the opposite.")
-				end
-				local obj = st_npc.object
-				if obj then
-					local act = db.actor
-					if act then
-						local relation = obj:general_goodwill(act)
-						if relation <= -1000 then
-							db.goodwill.relations[npc_id] = -3000
-						elseif relation >= 1000 then
-							db.goodwill.relations[npc_id] = 9000
-						else
-							db.goodwill.relations[npc_id] = 0
-						end
-					end
+			local npc = db.storage[npc_id]
+			npc = npc and npc.object
+			if npc then
+				local actor = db.actor
+				if actor then
+					db.goodwill.relations[npc_id] = npc:general_goodwill(actor)
 				end
 			end
 ]]
@@ -1321,8 +1175,8 @@ function sim_squad_generic:hide()
 	self.spot_section = nil
 end
 
-local stage_name_table = {
-
+local stage_name_table =
+{
 --	idle        = "st_stage_idle",
 --	move        = "st_stage_move",
 	combat      = "st_stage_combat",
@@ -1406,51 +1260,36 @@ function sim_squad_generic:get_squad_props()
 	return str
 end
 
--- function sim_squad_generic:print()
--- end
-
 -------------------------------------------
 
 class "sim_attack_point"
 
 function sim_attack_point:__init(squad, dest_smrt_id, major)
 	self.name = "attack_point"
-	self.squad = squad -- SRP
-	self.board = squad.board
---	self.player_id = squad.player_id
---	self.squad_id = squad.squad_id
---	self.src_smrt_id = squad.smart_id
+	self.squad = squad
 	self.dest_smrt_id = dest_smrt_id
 	self.major = major
+	self.target_was_hostile = false
 end
 
 function sim_attack_point:save(packet)
 	set_save_marker(packet, "save", false, "sim_attack_point")
 	packet:w_bool(self.major)
---	if self.target_power_value == nil then
---		packet:w_u16(-1)
---	else
---		packet:w_u16(self.target_power_value)
---	end
-	packet:w_bool(self.target_was_hostile == true)
+	packet:w_bool(self.target_was_hostile)
 	set_save_marker(packet, "save", true, "sim_attack_point")
 end
 
 function sim_attack_point:load(packet)
 	set_save_marker(packet, "load", false, "sim_attack_point")
 	self.major = packet:r_bool()
---	self.target_power_value = packet:r_u16()
---	if self.target_power_value == 65535 then
---		self.target_power_value = nil
---	end
 	self.target_was_hostile = packet:r_bool()
 	set_save_marker(packet, "load", true, "sim_attack_point")
 end
 
 function sim_attack_point:is_finished()
 
-	local board = self.board
 	local squad = self.squad
+	local board = squad.board
 	local dest_smrt_id = self.dest_smrt_id
 	local dest_smart = board.smarts[dest_smrt_id].smrt
 	local squad_stage = dest_smart.combat_manager:get_squad_stage(squad)
@@ -1472,12 +1311,6 @@ function sim_attack_point:is_finished()
 		or (dest_def_restr == nil and obj_pos:distance_to_sqr(dest_smart.position) > 900) then
 			return false
 		end
---	else
---		local dist = utils.graph_distance(dest_smart.m_game_vertex_id, commander.m_game_vertex_id)
---		if dist > 84 then
---			dbgmsg("Offline "..trans(squad.player_id).." squad is "..dist.."m away from "..smart_names.get_smart_terrain_name(dest_smart)..".")
---			return false
---		end
 	end
 
 	local dest_faction = dest_smart.player_name
@@ -1487,7 +1320,7 @@ function sim_attack_point:is_finished()
 		if dest_faction ~= "none" then
 			return false
 		else
-			if self.target_was_hostile == true then
+			if self.target_was_hostile then
 				xr_sound.set_sound_play(squad.commander_id, "alife_point_captured", squad_faction, dest_smrt_id)
 			end
 		end
@@ -1498,19 +1331,14 @@ function sim_attack_point:is_finished()
 	board:assign_squad_to_smart(squad, dest_smrt_id)
 	board:enter_smart(squad, dest_smrt_id)
 
---	dbgmsg(trans(squad_faction).." squad entered "..smart_names.get_smart_terrain_name(dest_smart)..".")
-
---	squad:refresh() -- done at call point
-
 	return true
 end
 
 function sim_attack_point:make()
 
-	local board = self.board
 	local squad = self.squad
-	local squad_faction_name = squad.player_id
-	local cur_attack_quantity = board.players[squad_faction_name].current_attack_quantity
+	local board = squad.board
+	local cur_attack_quantity = board.players[squad.player_id].current_attack_quantity
 	local dest_smrt_id = self.dest_smrt_id
 
 	if cur_attack_quantity[dest_smrt_id] == nil then
@@ -1522,17 +1350,16 @@ function sim_attack_point:make()
 	squad.failed_assignments = {}
 	squad.spoted_shouted = false
 
-	local board_smarts = board.smarts
-	local dest_smart = board_smarts[dest_smrt_id].smrt
-	local attack_smart_owner = dest_smart.player_name -- use this local instead of 'self.attack_smart_owner'
+	local dest_smart = board.smarts[dest_smrt_id].smrt
+	local dest_smart_owner = dest_smart.player_name
 
-	if attack_smart_owner ~= "none" and attack_smart_owner ~= squad_faction_name then
+	if dest_smart_owner ~= "none" and dest_smart_owner ~= squad.player_id then
 		self.target_was_hostile = true
 		squad.sound_manager:set_storyteller(squad.commander_id)
 		squad.sound_manager:set_story("squad_begin_attack")
 	end
 
-	local src_smart = board_smarts[squad.smart_id].smrt
+	local src_smart = board.smarts[squad.smart_id].smrt
 
 	if squad.sim_combat_id ~= nil then
 		src_smart.combat_manager:unregister_squad(squad)
@@ -1553,18 +1380,13 @@ function sim_attack_point:make()
 	squad.last_action_timer = get_game_time()
 	squad.squad_attack_power = 0
 	squad:refresh()
-
---	board.players[squad_faction_name]:refresh()
 end
 
 function sim_attack_point:finalize()
-	local cur_attack_quantity = self.board.players[self.squad.player_id].current_attack_quantity
+	local cur_attack_quantity = self.squad.board.players[self.squad.player_id].current_attack_quantity
 	local dest_smrt_id = self.dest_smrt_id
 	cur_attack_quantity[dest_smrt_id] = cur_attack_quantity[dest_smrt_id] - 1
 end
-
--- function sim_attack_point:print(space)
--- end
 
 -------------------------------------------
 
@@ -1572,22 +1394,18 @@ class "sim_stay_point"
 
 function sim_stay_point:__init(squad, stay_defended)
 	self.name = "stay_point"
-	self.squad = squad -- SRP
-	self.board = squad.board
---	self.player_id = squad.player_id
---	self.squad_id = squad.squad_id
---	self.src_smrt_id = squad.smart_id
+	self.squad = squad
 	self.stay_defended = stay_defended or false
+	self.next_point_id = nil
+	self.begin_time = nil
+	self.delay_attack_id = nil
+	self.delay_attack_defender = nil
 end
 
 function sim_stay_point:save(packet)
 	set_save_marker(packet, "save", false, "sim_stay_point")
 	packet:w_bool(self.stay_defended)
-	if self.next_point_id == nil then
-		packet:w_u16(-1)
-	else
-		packet:w_u16(self.next_point_id)
-	end
+	packet:w_u16(self.next_point_id or -1)
 	if self.begin_time == nil then
 		packet:w_bool(false)
 	else
@@ -1604,8 +1422,8 @@ function sim_stay_point:load(packet)
 	if self.next_point_id == 65535 then
 		self.next_point_id = nil
 	end
-	local flag = packet:r_bool()
-	if flag then
+	local has_begin_time = packet:r_bool()
+	if has_begin_time then
 		self.begin_time = utils.r_CTime(packet)
 	end
 	set_save_marker(packet, "load", true, "sim_stay_point")
@@ -1640,21 +1458,20 @@ function sim_stay_point:is_finished()
 	-- We can't leave smart if we're delay attacking.
 
 	if squad.delayed_attack_task ~= nil then
---		dbgmsg("delayed_attack_task is not nil for "..trans(squad.player_id).." squad with ID "..tostring(squad.squad_id).." and npc count "..tostring(squad.npc_count)..".")
 		return false
 	end
 
 	-- We can't leave smart if we're not idle.
 
-	if self.board.smarts[squad.smart_id].smrt.combat_manager:get_squad_stage(squad) ~= "idle" then
+	if squad.board.smarts[squad.smart_id].smrt.combat_manager:get_squad_stage(squad) ~= "idle" then
 		return false
 	end
 
-	if self.board.players[squad.player_id].squad_target_cache[squad.squad_id] ~= squad.assigned_target_smart_id then
+	if squad.board.players[squad.player_id].squad_target_cache[squad.squad_id] ~= squad.assigned_target_smart_id then
 		return true
 	end
 
-	if self.stay_defended == true then
+	if self.stay_defended then
 		return true
 	end
 
@@ -1668,7 +1485,7 @@ function sim_stay_point:is_finished()
 	-- for stay -> attack transitions:
 
 	if squad.sim_combat_id ~= nil then
-		self.board.smarts[squad.smart_id].smrt.combat_manager:unregister_squad(squad)
+		squad.board.smarts[squad.smart_id].smrt.combat_manager:unregister_squad(squad)
 	end
 ]]
 	self.begin_time = nil
@@ -1678,14 +1495,11 @@ end
 
 function sim_stay_point:make()
 	local squad = self.squad
---	if squad ~= nil then
---		squad.current_action = self -- superfluous
-		local src_smart = self.board.smarts[squad.smart_id].smrt
-		src_smart.combat_manager:register_squad(squad)
-		self.begin_time = get_game_time()
-		self:init_defend_smart_delay(squad)
-		squad:refresh()
---	end
+	local src_smart = squad.board.smarts[squad.smart_id].smrt
+	src_smart.combat_manager:register_squad(squad)
+	self.begin_time = get_game_time()
+	self:init_defend_smart_delay(squad)
+	squad:refresh()
 end
 
 function sim_stay_point:init_defend_smart_delay(attack_squad)
@@ -1695,7 +1509,7 @@ function sim_stay_point:init_defend_smart_delay(attack_squad)
 	if attack_squad.delayed_attack_task ~= nil then -- if squad is already attacking
 		return
 	end
-	local target_smart_obj = self.board.smarts[self.delay_attack_id].smrt
+	local target_smart_obj = attack_squad.board.smarts[self.delay_attack_id].smrt
 	if target_smart_obj.combat_manager:point_under_attack() then
 		return
 	end
@@ -1713,16 +1527,13 @@ function sim_stay_point:init_defend_smart_delay(attack_squad)
 			end
 		end
 		local task = tm:select_task("defend_smart_delay", target_smart_obj, self.delay_attack_defender)
-		if task.status ~= "selected" then
+		if task.status == "normal" then
 			attack_squad.delayed_attack_task = task.entity_id
 			task.src_squad_id = attack_squad.squad_id
 			task:give_task(self.delay_attack_defender)
 		end
 	end
 end
-
--- function sim_stay_point:print(space)
--- end
 
 function sim_stay_point:finalize()
 end

@@ -1,30 +1,30 @@
-class "evaluator_check_combat" (property_evaluator)
+class "evaluator_script_combat" (property_evaluator)
 
-function evaluator_check_combat:__init(st) super()
+function evaluator_script_combat:__init(st) super()
 	self.st = st
 end
 
-function evaluator_check_combat:evaluate()
+function evaluator_script_combat:evaluate()
 	return self.st.script_combat_type ~= nil and self.object:best_enemy() ~= nil and db.actor ~= nil
 end
 
 --------------------------------------------------------------------------------
--- binder
+-- Binder
 --------------------------------------------------------------------------------
 
-local stalker_ids_action_combat_planner    = stalker_ids.action_combat_planner
-local xr_evaluators_id_script_combat       = xr_evaluators_id.script_combat
-local wp_evaluators_id_script_combat_false = world_property(xr_evaluators_id_script_combat, false)
+local stalker_ids_action_combat_planner = stalker_ids.action_combat_planner
+local prop_need_script_combat           = xr_evaluators_id.script_combat
+local wp_script_combat_false            = world_property(prop_need_script_combat, false)
 
-function add_to_binder(npc, ini, scheme, section, st)
+function add_to_binder(npc, _, _, _, st)
 
-	local manager             = npc:motivation_action_manager()
-	manager:add_evaluator     (xr_evaluators_id_script_combat, this.evaluator_check_combat(st))
+	local manager            = npc:motivation_action_manager()
+	manager:add_evaluator    (prop_need_script_combat, evaluator_script_combat(st))
 
-	local action              = manager:action(stalker_ids_action_combat_planner)
-	action:add_precondition   (wp_evaluators_id_script_combat_false)
+	local action             = manager:action(stalker_ids_action_combat_planner)
+	action:add_precondition  (wp_script_combat_false)
 
-	xr_combat_zombied.add_to_binder(npc, nil, st, manager)
+	xr_combat_zombied.add_to_binder(st, manager)
 end
 
 function set_combat_checker(npc, ini, scheme, section)

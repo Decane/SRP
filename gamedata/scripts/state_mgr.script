@@ -7,23 +7,9 @@ local state_lib_states = state_lib.states
 local ops = state_mgr_goap.ops
 local props = state_mgr_goap.props
 
-local prop_state_mgr_idle_combat = xr_evaluators_id.state_mgr + 1
-local prop_state_mgr_idle_alife = xr_evaluators_id.state_mgr + 2
-local prop_state_mgr_idle_smartcover = xr_evaluators_id.state_mgr + 3
-
+local op_alife = xr_actions_id.alife
+local op_contact = xr_actions_id.stohe_meet_base + 1
 local op_state_mgr_to_idle_combat = xr_actions_id.state_mgr + 1
-local op_state_mgr_to_idle_alife = xr_actions_id.state_mgr + 2
-local op_action_smartcover_to_idle = xr_actions_id.smartcover_action + 1
-
-local wp_prop_state_mgr_idle_combat_false = world_property(prop_state_mgr_idle_combat, false)
-local wp_prop_state_mgr_idle_combat_true = world_property(prop_state_mgr_idle_combat, true)
-local wp_prop_state_mgr_idle_alife_false = world_property(prop_state_mgr_idle_alife, false)
-local wp_prop_state_mgr_idle_alife_true = world_property(prop_state_mgr_idle_alife, true)
-local wp_prop_state_mgr_idle_smartcover_false = world_property(prop_state_mgr_idle_smartcover, false)
-local wp_prop_state_mgr_idle_smartcover_true = world_property(prop_state_mgr_idle_smartcover, true)
-
-local wp_stalker_ids_property_enemy_false = world_property(stalker_ids.property_enemy, false)
-local wp_stalker_ids_property_danger_false = world_property(stalker_ids.property_danger, false)
 
 local stalker_ids_action_combat_planner = stalker_ids.action_combat_planner
 local stalker_ids_action_post_combat_wait = stalker_ids.action_post_combat_wait
@@ -31,36 +17,29 @@ local stalker_ids_action_danger_planner = stalker_ids.action_danger_planner
 local stalker_ids_action_anomaly_planner = stalker_ids.action_anomaly_planner
 local stalker_ids_action_gather_items = stalker_ids.action_gather_items
 
-local xr_actions_id_alife = xr_actions_id.alife
-
-local prop_enemy = game_object.enemy
-local object_fire1 = object.fire1
-local object_idle = object.idle
-
 --------------------------------------------------------------------------------
 
-class "evaluator_state_mgr_idle" (property_evaluator)
+class "evaluator_state_mgr_idle_combat" (property_evaluator)
 
-function evaluator_state_mgr_idle:__init(state_manager) super()
+function evaluator_state_mgr_idle_combat:__init(state_manager) super()
 	self.st = state_manager
 	self.mgr = state_manager.npc:motivation_action_manager()
+	self.combat_planner = cast_planner(self.mgr:action(stalker_ids_action_combat_planner))
 	local planner = state_manager.planner
 	self.movement_eval = planner:evaluator(props.movement)
 	self.animstate_eval = planner:evaluator(props.animstate)
 	self.animation_eval = planner:evaluator(props.animation)
 end
 
-function evaluator_state_mgr_idle:evaluate()
+function evaluator_state_mgr_idle_combat:evaluate()
 
-	local mgr = self.mgr
-
-	if not mgr:initialized() then
+	if not self.mgr:initialized() then
 		return false
 	end
 
 	local self_st = self.st
 
-	if self_st.combat == true then
+	if self_st.combat then
 		return true
 	end
 
@@ -68,23 +47,17 @@ function evaluator_state_mgr_idle:evaluate()
 	and self.movement_eval:evaluate()
 	and self.animstate_eval:evaluate()
 	and self.animation_eval:evaluate()
-	and mgr:current_action_id() == op_state_mgr_to_idle_combat then
+	and self.mgr:current_action_id() == op_state_mgr_to_idle_combat then
 		self_st.combat = true
 		return true
 	end
 
-	local combat_planner = self.combat_planner
-
-	if combat_planner == nil then
-		combat_planner = cast_planner(mgr:action(stalker_ids_action_combat_planner))
-		self.combat_planner = combat_planner
+	if self.combat_planner:initialized()
+	and self.combat_planner:current_action_id() == stalker_ids_action_post_combat_wait then
+		return true
 	end
 
-	if not combat_planner:initialized() then
-		return false
-	end
-
-	return combat_planner:current_action_id() == stalker_ids_action_post_combat_wait
+	return false
 end
 
 --------------------------------------------------------------------------------
@@ -104,32 +77,39 @@ end
 
 function evaluator_state_mgr_idle_alife:evaluate()
 
-	if not self.object:alive() then
-		return true
+	if not self.mgr:initialized() then
+		return false
 	end
 
-	local mgr = self.mgr
 	local self_st = self.st
+	local current_action_id = self.mgr:current_action_id()
 
-	if mgr:initialized() and mgr:current_action_id() ~= xr_actions_id_alife then
+	if current_action_id ~= op_alife then
 		self_st.alife = false
 	end
 
-	if self.npc_st.active_section == nil then
-		if xr_meet.is_meet(self.object) == false then
-			if self_st.target_state == "idle"
-			and not self.locked_eval:evaluate()
-			and self.movement_eval:evaluate()
-			and self.animstate_eval:evaluate()
-			and self.animation_eval:evaluate() then
-				self_st.alife = true
-				return true
-			end
-			return self_st.alife == true
-		end
+	if self.npc_st.active_section then
+		return true
+	end
+
+	if current_action_id == op_contact then
 		return false
 	end
-	return true
+
+	if self_st.alife then
+		return true
+	end
+
+	if self_st.target_state == "idle"
+	and not self.locked_eval:evaluate()
+	and self.movement_eval:evaluate()
+	and self.animstate_eval:evaluate()
+	and self.animation_eval:evaluate() then
+		self_st.alife = true
+		return true
+	end
+
+	return false
 end
 
 --------------------------------------------------------------------------------
@@ -145,9 +125,6 @@ function evaluator_state_mgr_idle_smartcover:__init(state_manager) super()
 end
 
 function evaluator_state_mgr_idle_smartcover:evaluate()
-	if not self.object:alive() then
-		return true
-	end
 	return self.st.target_state == "idle"
 	and self.movement_eval:evaluate()
 	and self.animstate_eval:evaluate()
@@ -167,9 +144,9 @@ function act_state_mgr_to_idle:initialize()
 	local npc = self.object
 	if npc:best_enemy() or npc:best_danger() then
 		self.st:set_state("idle", nil, nil, nil, {animation = true})
-		return
+	else
+		self.st:set_state("idle")
 	end
-	self.st:set_state("idle")
 end
 
 function act_state_mgr_to_idle:execute()
@@ -177,9 +154,9 @@ function act_state_mgr_to_idle:execute()
 	local npc = self.object
 	if npc:best_enemy() or npc:best_danger() then
 		self.st:set_state("idle", nil, nil, nil, {animation = true})
-		return
+	else
+		self.st:set_state("idle")
 	end
-	self.st:set_state("idle")
 end
 
 function act_state_mgr_to_idle:finalize()
@@ -195,28 +172,20 @@ class "eva_state_mgr_end" (property_evaluator)
 function eva_state_mgr_end:__init(st) super()
 	self.st = st
 	self.mgr = st.npc:motivation_action_manager()
+	self.combat_planner = cast_planner(self.mgr:action(stalker_ids_action_combat_planner))
 end
 
 function eva_state_mgr_end:evaluate()
 
-	local mgr = self.mgr
-
-	if not mgr:initialized() then
+	if not self.mgr:initialized() then
 		return false
 	end
 
-	local current_action_id = mgr:current_action_id()
+	local current_action_id = self.mgr:current_action_id()
 
 	if current_action_id == stalker_ids_action_combat_planner then
-		local combat_planner = self.combat_planner
-		if combat_planner == nil then
-			combat_planner = cast_planner(mgr:action(stalker_ids_action_combat_planner))
-			self.combat_planner = combat_planner
-		end
-		if not combat_planner:initialized() then
-			return false
-		end
-		if combat_planner:current_action_id() == stalker_ids_action_post_combat_wait then
+		if self.combat_planner:initialized()
+		and self.combat_planner:current_action_id() == stalker_ids_action_post_combat_wait then
 			self.st.combat = false
 		end
 	else
@@ -257,10 +226,7 @@ end
 
 function eva_state_mgr_locked_external:evaluate()
 	local self_st = self.st
-	if self_st.combat or self_st.alife then
-		return true
-	end
-	return false
+	return self_st.combat or self_st.alife
 end
 
 --------------------------------------------------------------------------------
@@ -302,22 +268,22 @@ function act_state_mgr_end:weapon_update()
 				self_st.look_object = nil
 				return
 			end -- Red75 via bardak:
-			if npc:see(look_object) and (not IsStalker(look_object) or npc:relation(look_object) == prop_enemy) and look_object:alive() == true then
+			if npc:see(look_object) and (not IsStalker(look_object) or npc:relation(look_object) == game_object.enemy) and look_object:alive() then
 				if t == "sniper_fire" then
 					local sniper_aim = npc:position():distance_to(look_object:position()) * 20
-					npc:set_item(object_fire1, best_wpn, 1, sniper_aim <= 1500 and 1500 or sniper_aim)
+					npc:set_item(object.fire1, best_wpn, 1, sniper_aim <= 1500 and 1500 or sniper_aim)
 				else
-					npc:set_item(object_fire1, best_wpn, state_mgr_weapon.get_queue_params(npc, target_state_data))
+					npc:set_item(object.fire1, best_wpn, state_mgr_weapon.get_queue_params(npc, target_state_data))
 				end
 				return
 			end
-			npc:set_item(object_idle, best_wpn)
+			npc:set_item(object.idle, best_wpn)
 			return
 		end
 		if self_st.look_position ~= nil and t == "sniper_fire" then
-			npc:set_item(object_fire1, best_wpn, 1, 3000)
+			npc:set_item(object.fire1, best_wpn, 1, 3000)
 		else
-			npc:set_item(object_fire1, best_wpn, state_mgr_weapon.get_queue_params(npc, target_state_data))
+			npc:set_item(object.fire1, best_wpn, state_mgr_weapon.get_queue_params(npc, target_state_data))
 		end
 	elseif t == "unstrapped" then
 		npc:set_item(state_mgr_weapon.get_idle_state(target_state), best_wpn)
@@ -333,7 +299,6 @@ end
 class "act_state_mgr_locked" (action_base)
 
 function act_state_mgr_locked:__init() super()
---	self.st = st
 end
 
 function act_state_mgr_locked:initialize()
@@ -354,11 +319,11 @@ class "state_manager"
 
 local animation_reset_denied =
 {
-	wounded = true,
-	wounded_heavy = true,
+	wounded         = true,
+	wounded_heavy   = true,
 	wounded_heavy_2 = true,
 	wounded_heavy_3 = true,
-	wounded_zombie = true
+	wounded_zombie  = true,
 }
 
 function state_manager:__init(npc)
@@ -405,12 +370,12 @@ function state_manager:set_state(state_name, callback, timeout, target, emerg, s
 			npc:set_item(state_mgr_weapon.get_idle_state(state_name), state_mgr_weapon.get_weapon(npc, state_name))
 		end
 
-		if new_state.special_danger_move == true then
-			if npc:special_danger_move() ~= true then
+		if new_state.special_danger_move then
+			if not npc:special_danger_move() then
 				npc:special_danger_move(true)
 			end
 		else
-			if npc:special_danger_move() == true then
+			if npc:special_danger_move() then
 				npc:special_danger_move(false)
 			end
 		end
@@ -422,10 +387,9 @@ function state_manager:set_state(state_name, callback, timeout, target, emerg, s
 	self.reset_state = new_state.reset == true
 
 	if switched and emerg ~= nil then
-		if animation_reset_denied[last_state] ~= true then
-			local self_emerg = self.emerg
-			self_emerg.animation = emerg.animation
-			self_emerg.animation_nout = emerg.animation_nout
+		if not animation_reset_denied[last_state] then
+			self.emerg.animation = emerg.animation
+			self.emerg.animation_nout = emerg.animation_nout
 		end
 	end
 
@@ -449,7 +413,7 @@ end
 
 function state_manager:update()
 
-	if self.npc:in_smart_cover() == true then
+	if self.npc:in_smart_cover() then
 		return
 	end
 
@@ -457,21 +421,13 @@ function state_manager:update()
 	self.animation:update()
 
 	local planner = self.planner
+	local current_id, previous_id
 
-	planner:update()
-
-	if not planner:initialized() then
-		return
-	end
-
-	local pl_id = planner:current_action_id()
-	local last_pl_id = nil
-
-	while pl_id ~= last_pl_id and pl_id ~= ops["end"] and pl_id ~= ops.locked do
-		last_pl_id = pl_id
+	repeat
 		planner:update()
-		pl_id = planner:current_action_id()
-	end
+		previous_id = current_id
+		current_id = planner:current_action_id()
+	until current_id == previous_id or current_id == ops["end"] or current_id == ops.locked
 end
 
 function set_state(npc, state_name, callback, timeout, target, emerg, synsound, extrakeys)
@@ -488,46 +444,81 @@ end
 
 --------------------------------------------------------------------------------
 
+local op_state_mgr_to_idle_alife = xr_actions_id.state_mgr + 2
+local op_action_smartcover_to_idle = xr_actions_id.smartcover_action + 1
+
+local prop_state_mgr_idle_combat = xr_evaluators_id.state_mgr + 1
+local prop_state_mgr_idle_alife = xr_evaluators_id.state_mgr + 2
+local prop_state_mgr_idle_smartcover = xr_evaluators_id.state_mgr + 3
+
+local wp_state_mgr_idle_combat_false = world_property(prop_state_mgr_idle_combat, false)
+local wp_state_mgr_idle_combat_true = world_property(prop_state_mgr_idle_combat, true)
+local wp_state_mgr_idle_alife_false = world_property(prop_state_mgr_idle_alife, false)
+local wp_state_mgr_idle_alife_true = world_property(prop_state_mgr_idle_alife, true)
+local wp_state_mgr_idle_smartcover_false = world_property(prop_state_mgr_idle_smartcover, false)
+local wp_state_mgr_idle_smartcover_true = world_property(prop_state_mgr_idle_smartcover, true)
+
+local wp_alive_true = world_property(stalker_ids.property_alive, true)
+local wp_enemy_false = world_property(stalker_ids.property_enemy, false)
+local wp_danger_false = world_property(stalker_ids.property_danger, false)
+
 function bind_manager(npc)
 
 	local manager               = npc:motivation_action_manager()
 	local state_manager         = state_mgr.state_manager(npc)
 
-	manager:add_evaluator       (prop_state_mgr_idle_combat, evaluator_state_mgr_idle(state_manager))
+	manager:add_evaluator       (prop_state_mgr_idle_combat, evaluator_state_mgr_idle_combat(state_manager))
 	manager:add_evaluator       (prop_state_mgr_idle_alife, evaluator_state_mgr_idle_alife(state_manager))
 	manager:add_evaluator       (prop_state_mgr_idle_smartcover, evaluator_state_mgr_idle_smartcover(state_manager))
 
-	local action                = this.act_state_mgr_to_idle(state_manager)
-	action:add_precondition     (wp_prop_state_mgr_idle_combat_false)
-	action:add_effect           (wp_prop_state_mgr_idle_combat_true)
+	local action                = act_state_mgr_to_idle(state_manager)
+	action:add_precondition     (wp_alive_true)
+	action:add_precondition     (wp_state_mgr_idle_combat_false)
+	action:add_effect           (wp_state_mgr_idle_combat_true)
 	manager:add_action          (op_state_mgr_to_idle_combat, action)
 
-	action                      = this.act_state_mgr_to_idle(state_manager)
-	action:add_precondition     (wp_stalker_ids_property_enemy_false)
-	action:add_precondition     (wp_stalker_ids_property_danger_false)
-	action:add_precondition     (wp_prop_state_mgr_idle_alife_false)
-	action:add_effect           (wp_prop_state_mgr_idle_alife_true)
+	-------------------------
+
+	action                      = act_state_mgr_to_idle(state_manager)
+	action:add_precondition     (wp_alive_true)
+	action:add_precondition     (wp_enemy_false)
+	action:add_precondition     (wp_danger_false)
+	action:add_precondition     (wp_state_mgr_idle_alife_false)
+	action:add_effect           (wp_state_mgr_idle_alife_true)
 	manager:add_action          (op_state_mgr_to_idle_alife, action)
 
-	action                      = this.act_state_mgr_to_idle(state_manager)
-	action:add_precondition     (wp_prop_state_mgr_idle_smartcover_false)
-	action:add_effect           (wp_prop_state_mgr_idle_smartcover_true)
+	-------------------------
+
+	action                      = act_state_mgr_to_idle(state_manager)
+	action:add_precondition     (wp_alive_true)
+	action:add_precondition     (wp_state_mgr_idle_smartcover_false)
+	action:add_effect           (wp_state_mgr_idle_smartcover_true)
 	manager:add_action          (op_action_smartcover_to_idle, action)
 
-	action                      = manager:action(xr_actions_id_alife)
-	action:add_precondition     (wp_prop_state_mgr_idle_alife_true)
+	-------------------------
+
+	action                      = manager:action(op_alife)
+	action:add_precondition     (wp_state_mgr_idle_alife_true)
+
+	-------------------------
 
 	action                      = manager:action(stalker_ids_action_combat_planner)
-	action:add_precondition     (wp_prop_state_mgr_idle_combat_true)
+	action:add_precondition     (wp_state_mgr_idle_combat_true)
+
+	-------------------------
 
 	action                      = manager:action(stalker_ids_action_anomaly_planner)
-	action:add_precondition     (wp_prop_state_mgr_idle_combat_true)
+	action:add_precondition     (wp_state_mgr_idle_combat_true)
+
+	-------------------------
 
 	action                      = manager:action(stalker_ids_action_danger_planner)
-	action:add_precondition     (wp_prop_state_mgr_idle_combat_true)
+	action:add_precondition     (wp_state_mgr_idle_combat_true)
+
+	-------------------------
 
 	action                      = manager:action(stalker_ids_action_gather_items)
-	action:add_precondition     (wp_prop_state_mgr_idle_alife_true)
+	action:add_precondition     (wp_state_mgr_idle_alife_true)
 
 	return state_manager
 end

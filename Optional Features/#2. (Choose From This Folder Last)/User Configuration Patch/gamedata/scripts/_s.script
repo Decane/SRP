@@ -1,10 +1,8 @@
-local function execute_section_settings(ini, section_name)
-	if ini:section_exist(section_name) then    -- user_settings.ltx should contain section header '[section_name]'
-		local n = ini:line_count(section_name)
-		local result, command = "", ""
+local function execute_section_settings(ini, section)
+	if ini:section_exist(section) then
 		local console = get_console()
-		for i = 0, n - 1 do
-			result, command = ini:r_line(section_name, i, "", "")    -- and some console commands to execute
+		for i = 0, ini:line_count(section) - 1 do
+			local _, command = ini:r_line(section, i, "", "")
 			console:execute(command)
 		end
 	end
@@ -13,21 +11,19 @@ end
 function execute_user_settings(from_button_press)
 	local fs = getFS()
 	local settings_file = "user_settings.ltx"
-	local settings_file_path = "$game_config$"
-	if not fs:exist(settings_file_path, settings_file) then    -- do nothing if user_settings.ltx does not exist in configs\
-		return
+	if not fs:exist("$game_config$", settings_file) then
+		return false
 	end
 	local user_ltx = "user.ltx"
-	local user_ltx_path = "$app_data_root$"
-	if not fs:exist(user_ltx_path, user_ltx) then    -- do nothing if user.ltx does not exist in $app_data_root$
-		return
+	local user_ltx_root = "$app_data_root$"
+	if not fs:exist(user_ltx_root, user_ltx) then
+		return false
 	end
-	local user_ltx_backup = (not from_button_press) and "user.ltx.before_srp" or "user.ltx." .. os.date("%Y-%m-%d_%H-%M-%S")
+	local user_ltx_backup = from_button_press and "user.ltx." .. os.date("%Y-%m-%d_%H-%M-%S") or "user.ltx.before_srp"
 	local ini = ini_file(settings_file)
-	if not fs:exist(user_ltx_path, user_ltx_backup) then
-		local app_data_root = fs:update_path(user_ltx_path, "")
+	if not fs:exist(user_ltx_root, user_ltx_backup) then
+		local app_data_root = fs:update_path(user_ltx_root, "")
 		fs:file_copy(app_data_root .. user_ltx, app_data_root .. user_ltx_backup)
---		dbglog("File %s has been backed up. This is not an error message; ignore the prefix.", user_ltx)
 		execute_section_settings(ini, "exec_once")
 	end
 	execute_section_settings(ini, "exec_always")

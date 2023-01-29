@@ -12,7 +12,6 @@ function defer_net_spawn(binder)
 	deferred_spawns[#deferred_spawns + 1] = binder
 end
 
-task_update = false
 quitting_game = false
 delayed_alife_release_objects = {}
 
@@ -209,18 +208,26 @@ end
 ]]
 --------------------------------------------------------------------------------
 function actor_binder:task_callback(_task, _state)
-	if _state ~= task.fail then
-		if _state == task.completed then
-			news_manager.send_task(actor, "complete", _task)
-		elseif task_update == false then
-			news_manager.send_task(actor, "new", _task)
-		else
-			news_manager.send_task(actor, "update", _task)
-			local actor_stats = xr_statistic.actor_statistic
-			actor_stats.recieved_quests = actor_stats.recieved_quests - 1 -- hack to undo the counter incrementation on assignment of the updated task
+	local states = task -- global C++ enum
+	local task_id = _task:get_id()
+	local task = tm.task_info[task_id]
+	if _state == states.completed then
+		xr_logic.pick_section_from_condlist(actor, actor, task.on_complete)
+		news_manager.send_task(actor, "complete", _task)
+		tm:task_callback(task_id, true)
+	elseif _state == states.fail then
+		if task.last_check_task == "fail" then
+			xr_logic.pick_section_from_condlist(actor, actor, task.on_fail) -- missing by default but referenced in tm_military.ltx
+			news_manager.send_task(actor, "fail", _task)
+		elseif task.last_check_task == "reversed" then
+			xr_logic.pick_section_from_condlist(actor, actor, task.on_reversed)
+			news_manager.send_task(actor, "reversed", _task)
 		end
+		tm:task_callback(task_id, false)
+	else
+		local state = task.is_task_update and "update" or "new"
+		news_manager.send_task(actor, state, _task)
 	end
-	task_manager.task_callback(_task, _state)
 end
 --------------------------------------------------------------------------------
 -- nv111103/nv130223: level-specific autosaves

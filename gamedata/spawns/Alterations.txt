@@ -2281,6 +2281,14 @@ p1:name = name01|ret=0
 
 ------------------------------------
 
+[mar_smart_terrain_5_12_sleep_3]
+
+--> [mar_smart_terrain_5_12_sleep_1]
+
+• Waypoint index parsing begins at 1 in gulag_general.script and is performed to the highest contiguous index. That is, in order for path 'mar_smart_terrain_5_12_sleep_3' to be used by NPCs, paths 'mar_smart_terrain_5_12_sleep_1' and 'mar_smart_terrain_5_12_sleep_2' must also exist. [mar_smart_terrain_5_12_sleep_3] was the only _sleep_ waypoint for this smart terrain, so decremented 3 to 1 to enable its use by NPCs.
+
+------------------------------------
+
 [mar_smart_terrain_6_7_walker_1_look]
 
 p0:name = name00|a=sleep|t=40000
@@ -2316,9 +2324,31 @@ p2:name = name02|sig=arrive_to_wait
 
 
 ====================================
+way_l02_garbage.ltx:
+====================================
+
+
+[gar_smart_terrain_3_5_sleep_1]
+
+p1:position = -79.8380279541016,3.93092727661133,-3.22822093963623
+p1:level_vertex_id = 112750
+
+• Fixed the bad position (was beside the mattress, not on it) and level_vertex_id.
+
+
+====================================
 way_l03_escape.ltx:
 ====================================
 
+
+[esc_smart_terrain_3_16_sleep_1]
+
+p0:position = -116.094520568848,-29.9744701385498,-387.181610107422
+p0:level_vertex_id = 142161
+
+• Fixed the bad position (was off-center) and level_vertex_id.
+
+------------------------------------
 
 [esc_smart_terrain_3_7_walker_1_walk]
 
@@ -2350,6 +2380,16 @@ p1:name = wp01|a=ward
 p0:name = name00|a=binocular
 
 • Added the missing character: '|'.
+
+------------------------------------
+
+[esc_smart_terrain_7_10_sleep_1]
+
+p0:position = 97.3507461547852,3.11157631874084,70.3494720458984
+p0:game_vertex_id = 666
+p0:level_vertex_id = 426475
+
+• Fixed the bad position (was beside the mattress, not on it) and game_vertex_id and level_vertex_id.
 
 
 ====================================
@@ -2391,11 +2431,59 @@ p0:name = name00|sig=action
 
 • Deleted the extra character: '|'.
 
+------------------------------------
+
+[red_bridge_csky_smart_commander_f1_look]
+
+p0:name = name00
+
+• Deleted the invalid animation reference: '|a=stand_left'.
+
+------------------------------------
+
+[red_pursuit_boars_walk_1]
+
+p0:name = name00|r=true
+
+• Replaced '|a=run_fwd' with '|r=true' so move.run_fwd is utilized in mob_walker:update_movement_state() as intended.
+
+------------------------------------
+
+[red_smart_terrain_3_2_sleep_1_walk]
+
+--> [red_smart_terrain_3_2_sleep_1]
+
+• Path name 'red_smart_terrain_3_2_sleep_1_walk' is not considered valid in gulag_general.script, so it was never used.
+
+------------------------------------
+
+[red_smart_terrain_monsters_1_walker_2_look]
+
+--> [red_smart_terrain_monsters_2_walker_1_look]
+
+• There is no smart terrain 'red_smart_terrain_monsters_1', so this was never used.
+
+------------------------------------
+
+[red_smart_terrain_monsters_1_walker_2_walk]
+
+--> [red_smart_terrain_monsters_2_walker_1_walk]
+
+• There is no smart terrain 'red_smart_terrain_monsters_1', so this was never used. Fixing this had the side-effect of also unlocking use of red_smart_terrain_monsters_2_walker_2_walk (and _look).
+
 
 ====================================
 way_l06_agroprom.ltx:
 ====================================
 
+
+[agr_hole_snork_1_walk]
+
+p0:name = name00|r=true
+
+• Appended '=true' so that self.path_walk_info[index]["r"] in mob_walker:waypoint_callback() evaluates to "true" for this waypoint as intended.
+
+------------------------------------
 
 [agr_smart_terrain_4_4_near_1_agr_stalker_defender_on_trains_1_look]
 
@@ -2410,6 +2498,22 @@ p0:name = name00|a=threat_na
 p0:name = name00|a=threat_na
 
 • Added the missing character: '|'.
+
+------------------------------------
+
+[agr_smart_terrain_4_4_near_3_defender_1_walk]
+
+p0:name = name00
+
+• Deleted '|out_restr=agr_smart_terrain_4_4_near_1_defender_1' as parameter 'out_restr' is not supported in waypoint names.
+
+------------------------------------
+
+[agr_smart_terrain_4_4_near_3_defender_2_walk]
+
+p0:name = name00
+
+• Deleted '|out_restr=agr_smart_terrain_4_4_near_1_defender_1' as parameter 'out_restr' is not supported in waypoint names.
 
 ------------------------------------
 

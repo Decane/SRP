@@ -11,9 +11,9 @@ local table_sort = table.sort
 class "se_smart_terrain" (cse_alife_smart_zone)
 
 function se_smart_terrain:__init(section) super(section)
-	self.b_registred = false
+--	self.b_registred = false
 	self.need_init_npc = false
-	self.npc_to_register = {}
+--	self.npc_to_register = {}
 	self.npc_by_job_section = {}
 	self.dead_time = {}
 	self.npc_info = {}
@@ -22,14 +22,18 @@ end
 local squad_id = nil
 local prev_level_id = nil
 local actor_level_id = nil
+local num_smarts_to_initialize = 0
 
 function se_smart_terrain:on_before_register()
 
 	cse_alife_smart_zone.on_before_register(self)
 
 	self:read_params()
-
 	self.board:register_smart(self)
+
+	if actor_level_id == nil then
+		actor_level_id = game_graph():vertex(_G.sim:actor().m_game_vertex_id):level_id()
+	end
 
 	local level_id = game_graph():vertex(self.m_game_vertex_id):level_id()
 
@@ -43,38 +47,76 @@ function se_smart_terrain:on_before_register()
 	self.squad_id = squad_id -- see change_team_sqaud_group()
 	self.level_id = level_id
 	self.smart_level = _G.sim:level_name(level_id)
-
-	if not actor_level_id then
-		actor_level_id = game_graph():vertex(_G.sim:actor().m_game_vertex_id):level_id()
-	end
-
 	self.is_on_actor_level = level_id == actor_level_id
+
+	num_smarts_to_initialize = num_smarts_to_initialize + 1
 end
 
 function se_smart_terrain:on_register()
 
 	cse_alife_smart_zone.on_register(self)
 
-	self:visible_for_map(true) -- TODO: remove on next new game requirement
+	self.check_time = -10000
+	self.targets_actor_level = false
 
-	local board = self.board
+	local smart_targets = self.board:build_cross_table(self)
 
-	board:build_cross_table(self)
+	if smart_targets then
+		for _, target in pairs (smart_targets) do
+			if target.is_on_actor_level then
+				self.targets_actor_level = true
+				break
+			end
+		end
+	end
 
-	self.b_registred = true
+--	self.b_registred = true
 
 	self:load_jobs()
 
-	board:init_smart(self)
+--	self.board:init_smart(self)
 
-	if self.need_init_npc == true then
+	if self.need_init_npc then
 		self.need_init_npc = false
 		self:init_npc_after_load()
 	end
 
-	self:register_delayed_npc()
+--	self:register_delayed_npc()
+--[[
+	Every faction's squads should be initialized before any faction's targets,
+	else a squad's relative power may be wrong after load (due to enemy squads
+	not yet having been initialized), which can lead to inappropriate target
+	points being registered for the squad's faction.
 
-	self.check_time = -10000
+	In vanilla, factions are initialized in se_sim_faction:on_register(). There,
+	their squads are assigned to smarts. There is no guarantee these smarts
+	have been initialized by then, since factions and smarts are initialized in
+	order of appearance in all.spawn. As both are mutually interleaved, so are
+	their on_register() calls. Ditto their on_before_register() calls. (Their
+	on_before_register() calls are not, however, interleaved with their
+	on_register() calls.)
+
+	Since se_smart_terrain:register_npc() can be called when a squad is assigned
+	to a smart and this only works (correctly) once se_smart_terrain:load_jobs()
+	has been called from se_smart_terrain:on_register(), GSC implemented a
+	'delayed registration' system as a fallback for cases where a smart terrain
+	has not been loaded by the time a squad is assigned to it.
+
+	In the SRP, all factions are initialized only after the final smart terrain
+	has been initialized, bypassing the need for a fallback.
+]]
+	num_smarts_to_initialize = num_smarts_to_initialize - 1
+
+	local is_final_smart = num_smarts_to_initialize == 0
+
+	if is_final_smart then
+		for _, faction in pairs (self.board.players) do
+			faction:init_brain_and_squads()
+		end
+		for _, faction in pairs (self.board.players) do
+			faction:init_targets()
+		end
+	end
 end
 
 function se_smart_terrain:on_unregister()
@@ -104,42 +146,24 @@ function se_smart_terrain:read_params()
 
 	self.squad_capacity       = get_number(ini, sect, "squad_capacity", nil, false, 1)
 	self.player_name          = "none"
---	self.squad_id             = get_number(ini, sect, "squad_id", nil, false, 0)
 	self.respawn_radius       = get_number(ini, sect, "respawn_radius", nil, false, 150)
 
 	local respawn_sector      = get_string(ini, sect, "respawn_sector", nil, false, "")
 
-	if respawn_sector ~= nil then
---		if respawn_sector == "default" then
---			respawn_sector = "all"
---		end
-		respawn_sector = xr_logic.parse_condlist(nil, nil, nil, respawn_sector)
-	end
-
-	self.respawn_sector       = respawn_sector
---	self.important_point      = get_bool(ini, sect, "important_point", nil, false)
---	self.mutant_lair          = get_bool(ini, sect, "mutant_lair", nil, false)
+	self.respawn_sector       = respawn_sector and xr_logic.parse_condlist(nil, nil, nil, respawn_sector)
 	self.no_mutant            = get_bool(ini, sect, "no_mutant", nil, false)
---	self.forbidden_point      = get_string(ini, sect, "forbidden_point", nil, false, "")
-	self.def_restr            = get_string(ini, sect, "def_restr", nil, false, "", nil)
-	self.att_restr            = get_string(ini, sect, "att_restr", nil, false, "", nil)
+	self.def_restr            = get_string(ini, sect, "def_restr", nil, false, "")
+	self.att_restr            = get_string(ini, sect, "att_restr", nil, false, "")
 	self.spawn_point          = get_string(ini, sect, "spawn_point", nil, false, "")
 
 	local sim_avail           = get_string(ini, sect, "sim_avail", nil, false, "")
 
-	if sim_avail ~= nil then
-		sim_avail = xr_logic.parse_condlist(nil, nil, nil, sim_avail)
-	end
-
-	self.sim_avail            = sim_avail
---	self.respawn              = get_string(ini, sect, "respawn", nil, false, "", nil)
+	self.sim_avail            = sim_avail and xr_logic.parse_condlist(nil, nil, nil, sim_avail)
 	self.surge_hide_avaliable = get_bool(ini, sect, "surge_hide_avaliable", nil, false, false)
 
 	local hides               = get_string(ini, sect, "actor_hides", nil, false, "")
 
-	if hides ~= nil then
-		self.actor_hides = utils.parse_names(hides)
-	end
+	self.actor_hides          = hides and parse_names(hides)
 end
 
 local function fill_npc_info(se_npc)
@@ -159,12 +183,12 @@ local function fill_npc_info(se_npc)
 end
 
 function se_smart_terrain:register_npc(se_npc)
-
+--[[
 	if self.b_registred == false then
 		self.npc_to_register[#self.npc_to_register + 1] = se_npc
 		return
 	end
-
+]]
 	self.npc_info[se_npc.id] = fill_npc_info(se_npc)
 
 	se_npc.m_smart_terrain_id = self.id
@@ -173,14 +197,14 @@ function se_smart_terrain:register_npc(se_npc)
 
 	self:update_jobs(se_npc)
 end
-
+--[[
 function se_smart_terrain:register_delayed_npc()
 	for i = 1, #self.npc_to_register do
 		self:register_npc(self.npc_to_register[i])
 	end
 	self.npc_to_register = {}
 end
-
+]]
 function se_smart_terrain:unregister_npc(se_npc)
 
 	local npc_info = self.npc_info[se_npc.id]
@@ -584,11 +608,7 @@ function se_smart_terrain:switch_to_desired_job(npc)
 	npc_info.job = selected_job
 	npc_info.need_job = "nil"
 
-	local npc_st = db.storage[npc_id]
-
-	if npc_st ~= nil then
-		self:setup_logic(npc_st.object) -- might npc_st.object be nil here?
-	end
+	self:setup_logic(npc)
 
 	changing_npc_info.job = nil
 	changing_npc_info.job_id = -1
@@ -733,14 +753,11 @@ function se_smart_terrain:update()
 	cse_alife_smart_zone_update(self)
 
 	self.combat_manager:update()
---[[
-	The path-finding of NPCs arriving to the player's level from another breaks
-	if the statement below is uncommented. Pity.
 
-	if not self.is_on_actor_level then
+	if not self.is_on_actor_level and not self.targets_actor_level then
 		return
 	end
-]]
+
 	local current_time = time_global()
 
 	if current_time < self.check_time then

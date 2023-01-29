@@ -3,7 +3,6 @@ bridge_by_name         = {}
 script_ids             = {}
 storage                = {}
 actor                  = nil
-actor_proxy            = actor_proxy.actor_proxy()
 heli_enemies           = {}
 heli_enemy_count       = 0
 anim_obj_by_name       = {}
@@ -49,13 +48,11 @@ end
 
 function add_actor(obj)
 	actor = obj
-	actor_proxy:net_spawn(obj)
 	add_obj(obj)
 end
 
 function del_actor()
 	del_obj(actor)
-	actor_proxy:net_destroy()
 	actor = nil
 end
 

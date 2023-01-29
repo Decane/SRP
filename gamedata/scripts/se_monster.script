@@ -1,54 +1,32 @@
 -- DC170520: Optimization.
 
-local cse_alife_monster_base_update = cse_alife_monster_base.update
-
 class "se_monster" (cse_alife_monster_base)
 
 --------------------
 
 function se_monster:__init(section) super(section)
-	self.ini                  = nil
-	self.squad_id             = nil
-	self.sim_forced_online    = false
+	self.ini                = nil
+	self.squad_id           = nil
+	self.sim_forced_online  = false
 end
 
 --------------------
 
 function se_monster:can_switch_offline()
-
-	if self.sim_forced_online == true then
+	if self.sim_forced_online then
 		return false
 	end
-
 	return cse_alife_monster_base.can_switch_offline(self)
 end
 
---------------------
-
 function se_monster:can_switch_online()
-
-	if self.sim_forced_online == true then
+	if self.sim_forced_online then
 		return true
 	end
-
-	-- self.spawner is always nil for mutants, so at this point this func would always:
 	return cse_alife_monster_base.can_switch_online(self)
---[[
-	if self.ini == nil or self.spawner == nil then
-		return cse_alife_monster_base.can_switch_online(self)
-	end
-
-	if db.actor ~= nil and db.actor:alive() == false then
-		return self.online
-	end
-
-	if self.online == false then
-		return xr_logic.pick_section_from_condlist(db.actor, self, self.spawner) ~= nil and cse_alife_monster_base.can_switch_online(self)
-	else
-		return xr_logic.pick_section_from_condlist(db.actor, self, self.spawner) ~= nil
-	end
-]]
 end
+
+--------------------
 
 function se_monster:switch_online()
 	cse_alife_monster_base.switch_online(self)
@@ -73,58 +51,20 @@ end
 --------------------
 
 function se_monster:STATE_Write(packet)
-
 	cse_alife_monster_base.STATE_Write(self, packet)
-
 	packet:w_u8(2) -- always 2 in vanilla; not used (but unsafe to delete)
---[[
-	if self.job_online == true then
-		packet:w_u8(0)
-	elseif self.job_online == false then
-		packet:w_u8(1)
-	elseif self.job_online == nil then
-		packet:w_u8(2)
-	else
-		packet:w_u8(3)
-		packet:w_stringZ(self.job_online_condlist)
-	end
-]]
 	packet:w_stringZ(self.squad_id or "nil")
-
 	packet:w_bool(self.sim_forced_online)
 end
 
---------------------
-
 function se_monster:STATE_Read(packet, size)
-
 	cse_alife_monster_base.STATE_Read(self, packet, size)
-
 	packet:r_u8() -- always 2 in vanilla; not used (but unsafe to delete)
---[[
-	local t = packet:r_u8()
-
-	if t == 0 then
-		self.job_online = true
-	elseif t == 1 then
-		self.job_online = false
-	elseif t == 2 then
-		self.job_online = nil
-	else
-		self.job_online_condlist = packet:r_stringZ()
-		self.job_online = xr_logic.parse_condlist(nil, "se_monster:STATE_Read", "job_online", self.job_online_condlist)
+	self.squad_id = packet:r_stringZ()
+	if self.squad_id == "nil" then
+		self.squad_id = nil
 	end
-]]
---	if self.script_version >= 7 then -- defined as 8 via 'current_server_entity_version' in system.ltx
-		self.squad_id = packet:r_stringZ()
-		if self.squad_id == "nil" then -- or tostring(self.squad_id) == "0" then
-			self.squad_id = nil
-		end
---	end
-
---	if self.script_version >= 8 then
-		self.sim_forced_online = packet:r_bool()
---	end
+	self.sim_forced_online = packet:r_bool()
 end
 
 --------------------
@@ -133,19 +73,11 @@ function se_monster:on_before_register()
 	self.ini = self:spawn_ini()
 end
 
---------------------
-
 function se_monster:on_register()
-
 	cse_alife_monster_base.on_register(self)
-
 	self.board = sim_board.get_sim_board()
---	self.tm = task_manager.get_task_manager()
-
 	self:brain():can_choose_alife_tasks(false)
 end
-
---------------------
 
 function se_monster:on_unregister()
 	local strn_id = self:smart_terrain_id()
@@ -166,13 +98,15 @@ function se_monster:on_death(killer)
 	if self.squad_id ~= nil then
 		local squad = self.board.squads[self.squad_id]
 		if squad == nil then
-			abort("[se_monster.se_monster:on_death]: There is no squad with ID '%s'.", self.squad_id)
+			abort("[se_monster:on_death]: There is no squad with ID '%s'.", self.squad_id)
 		end
 		squad:on_npc_death(self, killer.id)
 	end
 end
 
 --------------------
+
+local cse_alife_monster_base_update = cse_alife_monster_base.update
 
 function se_monster:update()
 	cse_alife_monster_base_update(self)

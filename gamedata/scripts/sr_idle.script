@@ -1,30 +1,29 @@
-----------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 -- Do nothing
-----------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 
 class "action_idle"
 
-function action_idle:__init(obj, storage)
-	self.object = obj
-	self.st = storage
+function action_idle:__init(zone, st)
+	self.zone = zone
+	self.st = st
 end
 
 function action_idle:reset_scheme()
 	self.st.signals = {}
 end
 
-function action_idle:update(delta)
-	xr_logic.try_switch_to_another_section(self.object, self.st, db.actor)
+function action_idle:update()
+	xr_logic.try_switch_to_another_section(self.zone, self.st, db.actor)
 end
 
-----------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 
-function add_to_binder(npc, ini, scheme, section, storage)
-	local new_action = action_idle(npc, storage)
-	xr_logic.subscribe_action_for_events(npc, storage, new_action)
+function add_to_binder(zone, _, _, _, st)
+	xr_logic.subscribe_action_for_events(nil, st, action_idle(zone, st))
 end
 
-function set_scheme(npc, ini, scheme, section) --, gulag_name)
-	local st = xr_logic.assign_storage_and_bind(npc, ini, scheme, section)
-	st.logic = xr_logic.cfg_get_switch_conditions(ini, section, npc)
+function set_scheme(zone, ini, scheme, section)
+	local st = xr_logic.assign_storage_and_bind(zone, ini, scheme, section)
+	st.logic = xr_logic.cfg_get_switch_conditions(ini, section, zone)
 end

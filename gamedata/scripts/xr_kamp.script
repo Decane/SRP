@@ -1,10 +1,5 @@
-local kamps           = {}
-kamp_stalkers         = {}
-
-local math_random     = math.random
-local math_mod        = math.mod
-
-local prop_level_path = game_object.level_path
+local kamps = {}
+kamp_stalkers = {}
 
 --------------------------------------------------------------------------------
 -- Evaluators
@@ -12,26 +7,25 @@ local prop_level_path = game_object.level_path
 
 class "evaluator_kamp_end" (property_evaluator)
 
-function evaluator_kamp_end:__init(storage) super ()
-	self.a = storage
-	self.npc_st = db.storage[storage.npc:id()]
+function evaluator_kamp_end:__init(st) super()
+	self.st = st
+	self.npc_st = db.storage[st.npc:id()]
 end
 
 function evaluator_kamp_end:evaluate()
---	return not xr_logic.is_active(self.object, self.a)
-	return self.a.section ~= self.npc_st.active_section
+	return self.st.section ~= self.npc_st.active_section
 end
 
 --------------------------------------------------------------------------------
 
 class "evaluator_on_position" (property_evaluator)
 
-function evaluator_on_position:__init(storage) super ()
-	self.a = storage
+function evaluator_on_position:__init(st) super()
+	self.st = st
 end
 
 function evaluator_on_position:evaluate()
-	return self.object:level_vertex_id() == self.a.pos_vertex
+	return self.object:level_vertex_id() == self.st.pos_vertex
 end
 
 --------------------------------------------------------------------------------
@@ -40,48 +34,35 @@ end
 
 class "action_go_position" (action_base)
 
-function action_go_position:__init (storage) super ()
-	self.a = storage
+function action_go_position:__init(st) super()
+	self.st = st
 end
 
 function action_go_position:initialize()
 	action_base.initialize(self)
 	self.object:set_desired_position()
 	self.object:set_desired_direction()
-	self.update_time = time_global() + 3000
-	self:update_movement()
-	self.a.signals = {}
+	self.update_time = -10000
+	self.st.signals = {}
 end
 
 function action_go_position:update_movement()
 
 	local npc = self.object
-	local st = self.a
+	local st = self.st
 
 	st.pos_vertex = kamps[st.center_point]:getDestVertex(npc, st.radius)
 
-	local dir = vector():set(math_random(-1, 1), 0, math_random(-1, 1))
-
-	dir:normalize()
-
-	local delta_dist = math_random(0, 0.5)
-	local pp = patrol(st.center_point):point(0)
-
-	st.pp = pp
-
-	pp.x = pp.x + dir.x * delta_dist
-	pp.z = pp.z + dir.z * delta_dist
-
+	npc:set_path_type(game_object.level_path)
 	npc:set_dest_level_vertex_id(st.pos_vertex)
 
-	local desired_direction = vector():sub(pp, level.vertex_position(st.pos_vertex))
+	local desired_direction = vector():sub(st.pp, level.vertex_position(st.pos_vertex))
 
-	if desired_direction ~= nil and not utils.vector_cmp(desired_direction, vector():set(0, 0, 0)) then
+	if desired_direction ~= nil and not utils.vector_cmp(desired_direction, vector():set(0,0,0)) then
 		desired_direction:normalize()
 		npc:set_desired_direction(desired_direction)
 	end
 
-	npc:set_path_type(prop_level_path)
 	state_mgr.set_state(npc, st.def_state_moving)
 end
 
@@ -102,8 +83,13 @@ end
 
 class "action_wait" (action_base)
 
-function action_wait:__init (storage) super ()
-	self.a = storage
+function action_wait:__init(st) super()
+	self.st = st
+end
+
+function action_wait:activate_scheme()
+	self.kamp = kamps[self.st.center_point]
+	self.st.signals = {}
 end
 
 function action_wait:initialize()
@@ -111,51 +97,46 @@ function action_wait:initialize()
 	local npc = self.object
 	npc:set_desired_position()
 	npc:set_desired_direction()
-	local npc_kamp = kamps[self.a.center_point]
-	npc_kamp:increasePops()
+	self.kamp:increasePops()
+	self.extrakeys = {}
 	local npc_community = npc:character_community()
 	if npc_community ~= "monolith" and npc_community ~= "zombied" then
-		npc_kamp:checkNpcAbility(npc) -- only check normal stalkers
+		self.kamp:checkNpcAbility(npc) -- TODO: What if player buys item off NPC?
 	end
-end
-
-function action_wait:activate_scheme()
-	self.a.signals = {}
 end
 
 function action_wait:execute()
 	action_base.execute(self)
 	local npc = self.object
-	local st = self.a
-	local state, sound, substate = kamps[st.center_point]:updateNpc(npc)
-	state_mgr.set_state(npc, state, nil, nil, {look_position = st.pp}, nil, nil, {subanim = substate})
+	local state, sound, substate = self.kamp:updateNpc(npc)
+	self.extrakeys.subanim = substate
+	state_mgr.set_state(npc, state, nil, nil, self.st.target, nil, nil, self.extrakeys)
 	if sound ~= "" then
 		xr_sound.set_sound_play(npc:id(), sound)
 	end
 end
 
 function action_wait:finalize()
-	kamps[self.a.center_point]:decreasePops()
+	self.kamp:decreasePops()
 	action_base.finalize(self)
 end
 
 function action_wait:deactivate(npc)
-	kamps[self.a.center_point]:removeNpc(npc)
+	self.kamp:removeNpc(npc)
 end
 
 function action_wait:death_callback(npc)
-	kamps[self.a.center_point]:removeNpc(npc)
+	self.kamp:removeNpc(npc)
 end
 
 function action_wait:net_destroy(npc)
-	kamps[self.a.center_point]:removeNpc(npc)
+	self.kamp:removeNpc(npc)
 end
 
 --------------------------------------------------------------------------------
 
 local standard_states =
 {
---	"wait", -- not in self.npc[npc_id].states, so will never be chosen
 	"sit",
 	"sit_ass",
 	"sit_knee",
@@ -163,7 +144,7 @@ local standard_states =
 	"eat_vodka",
 	"eat_energy",
 	"eat_bread",
-	"trans"
+	"trans",
 }
 
 local avail_state =
@@ -175,7 +156,7 @@ local avail_state =
 	pre_guitar          = {directed = {"wait_guitar"},    undirected = standard_states},
 	guitar              = {directed = {"play_guitar"},    undirected = standard_states},
 	post_guitar         = {directed = {"wait_guitar"},    undirected = standard_states},
-	story               = {directed = {"declarate"},      undirected = standard_states}
+	story               = {directed = {"declarate"},      undirected = standard_states},
 }
 
 local avail_sound =
@@ -187,7 +168,7 @@ local avail_sound =
 	pre_guitar          = {directed = "pre_guitar",       undirected = ""},
 	guitar              = {directed = "",                 undirected = ""},
 	post_guitar         = {directed = "",                 undirected = "reac_guitar"},
-	story               = {directed = "",                 undirected = ""}
+	story               = {directed = "",                 undirected = ""},
 }
 
 local timeout =
@@ -199,7 +180,7 @@ local timeout =
 	pre_guitar          = {min = 3000},
 	guitar              = {min = 5000, soundstart = true},
 	post_guitar         = {min = 3000},
-	story               = {min = 1000, soundstart = true}
+	story               = {min = 1000, soundstart = true},
 }
 
 local target_states =
@@ -211,7 +192,7 @@ local target_states =
 	pre_guitar          = {guitar = 100},
 	guitar              = {post_guitar = 100},
 	post_guitar         = {idle = 70, guitar = 30},
-	story               = {idle = 100}
+	story               = {idle = 100},
 }
 
 --[[
@@ -237,7 +218,7 @@ local position_vectors =
 	vector():set(-1, 0, 0),
 	vector():set(-1, 0, -1),
 	vector():set(-1, 0, 1),
-	vector():set(1, 0, -1)
+	vector():set(1, 0, -1),
 }
 
 class "CKampManager"
@@ -249,35 +230,28 @@ function CKampManager:__init(path)
 	self.npc = {}
 	self.population = 0
 	self.kamp_state = "idle"
+	self.begin = nil
 	self.director = nil
 	self.sound_manager = sound_manager.get_sound_manager("kamp_"..path)
 end
 
 function CKampManager:selectPosition(npc_id)
-	if #self.free > 0 then
-		self.npc[npc_id].position_idx = table.remove(self.free, math_random(#self.free))
+	if #self.free == 0 then
+		abort("[xr_kamp.CKampManager:selectPosition]: No space for NPC %d in kamp '%s'", npc_id, self.kamp_name)
 	end
+	self.npc[npc_id].position_idx = table.remove(self.free, math.random(#self.free))
 end
 
 function CKampManager:getDestVertex(npc, radius)
 
-	local camp_npc_pos = self.npc[npc:id()].position_idx
+	local dir = position_vectors[self.npc[npc:id()].position_idx]
 
-	if camp_npc_pos == nil then
-		abort("[xr_kamp.CKampManager:getDestVertex]: NPC position_idx is nil for "..npc:name())
-		return nil
-	end
-
-	local pp = self.patrol_point
-	local dir = position_vectors[camp_npc_pos]
-
---	dir.x = dir.x + math_random(-1, 1) / 5
---	dir.z = dir.z + math_random(-1, 1) / 5
 	dir:normalize()
 
-	radius = radius + 0.3 -- math_random(-0.3, 0.3)
+	radius = radius + 0.3
 
 	local ideal_radius = radius
+	local pp = self.patrol_point
 	local dest_pos = vector():set(pp.x + dir.x * ideal_radius, pp.y, pp.z + dir.z * ideal_radius)
 	local dest_vertex = level.vertex_id(dest_pos)
 
@@ -291,8 +265,7 @@ function CKampManager:getDestVertex(npc, radius)
 	if not npc:accessible(dest_vertex) then
 		dest_pos.x = pp.x + dir.x * ideal_radius
 		dest_pos.z = pp.z + dir.z * ideal_radius
-		local nearest_vertex = npc:accessible_nearest(dest_pos, vector():set(0,0,0))
-		return nearest_vertex
+		dest_vertex = npc:accessible_nearest(dest_pos, vector())
 	end
 
 	return dest_vertex
@@ -301,25 +274,21 @@ end
 function CKampManager:proceedState(npc)
 
 	local npc_id = npc:id()
-	local snpc = self.npc
-	local camp_npc = snpc[npc_id]
+	local camp_npc = self.npc[npc_id]
 	local active_sound_count = npc:active_sound_count()
 
-	if camp_npc.need_sound_begin == true then
+	if camp_npc.need_sound_begin then
 		if active_sound_count == 0 then
 			return
-		else
-			camp_npc.need_sound_begin = false
 		end
-	end
-
-	if self.begin ~= nil then
-		if time_global() - self.begin < timeout[self.kamp_state].min then
-			return
-		end
+		camp_npc.need_sound_begin = false
 	end
 
 	if active_sound_count > 0 then
+		return
+	end
+
+	if self.begin ~= nil and time_global() - self.begin < timeout[self.kamp_state].min then
 		return
 	end
 
@@ -333,7 +302,7 @@ function CKampManager:proceedState(npc)
 	local kamp_states = camp_npc.kamp_states
 
 	for state_name, prob in pairs (target_states[self.kamp_state]) do
-		if kamp_states[state_name] == true then
+		if kamp_states[state_name] then
 			avail_states[state_name] = prob
 			max_rnd = max_rnd + prob
 		end
@@ -344,7 +313,7 @@ function CKampManager:proceedState(npc)
 		max_rnd = 100
 	end
 
-	local p = math_random(0, max_rnd)
+	local p = math.random(0, max_rnd)
 
 	for state_name, prob in pairs (avail_states) do
 		p = p - prob
@@ -357,61 +326,47 @@ function CKampManager:proceedState(npc)
 			elseif state_name == "story" then
 				self.sound_manager:set_story("test_story")
 				self.director = npc_id
---				self.censor = nil
 			else
 				camp_npc.begin = nil
-				if timeout[state_name].soundstart == true then
+				if timeout[state_name].soundstart then
 					camp_npc.need_sound_begin = true
 				end
 				self.director = npc_id
---				self.censor = nil
 			end
 			self.kamp_state = state_name
 			self.begin = time_global()
-			for npc_id, npc_data in pairs (snpc) do
-				npc_data.new = true
+			for _, npc_data in pairs (self.npc) do
+				npc_data.is_new = true
 			end
 			return
 		end
 	end
 end
 
-function CKampManager:proceedRole(npc_id, director)
+function CKampManager:proceedRole(npc_id, is_director)
 
-	local sound = ""
-	local state = "sleep_sit"
+	local state, sound
 	local camp_npc = self.npc[npc_id]
 
 	if camp_npc.begin == nil or time_global() - camp_npc.begin >= camp_npc.state_idle then
 
-		local states
-
-		if director then
-			states = avail_state[self.kamp_state].directed
-		else
-			states = avail_state[self.kamp_state].undirected
-		end
-
+		local states = avail_state[self.kamp_state][is_director and "directed" or "undirected"]
 		local avail_states = {}
 		local camp_npc_states = camp_npc.states
 		local c = 0
 
-		for k, state_name in pairs (states) do
-			if camp_npc_states[state_name] == true then
---				table.insert(avail_states, state_name)
+		for _, state_name in pairs (states) do
+			if camp_npc_states[state_name] then
 				c = c + 1
 				avail_states[c] = state_name
 			end
 		end
 
+		state = (c > 0) and avail_states[math.random(c)] or "sleep_sit"
+
 		camp_npc.begin = time_global()
-
-		if #avail_states > 0 then
-			state = avail_states[math_random(#avail_states)]
-		end
-
 		camp_npc.state_selected = state
-		camp_npc.state_idle = math_random(15000, 20000)
+		camp_npc.state_idle = math.random(15000, 20000)
 	else
 		state = camp_npc.state_selected
 	end
@@ -419,11 +374,7 @@ function CKampManager:proceedRole(npc_id, director)
 	if self.kamp_state == "story" then
 		sound = ""
 	else
-		if director then
-			sound = avail_sound[self.kamp_state].directed
-		else
-			sound = avail_sound[self.kamp_state].undirected
-		end
+		sound = avail_sound[self.kamp_state][is_director and "directed" or "undirected"]
 	end
 
 	return state, sound
@@ -432,22 +383,22 @@ end
 function CKampManager:updateNpc(npc)
 
 	local npc_id = npc:id()
-	local director = self.director == nil or self.director == npc_id
+	local is_director = self.director == nil or self.director == npc_id
 
-	if director then
+	if is_director then
 		self:proceedState(npc)
 	end
 
-	local state, sound = self:proceedRole(npc_id, director)
+	local state, sound = self:proceedRole(npc_id, is_director)
 	local substate = nil
 
 	if state == "wait_guitar" then
 
 		local camp_npc = self.npc[npc_id]
 
-		if sound == "pre_guitar" and camp_npc.new == true then
+		if sound == "pre_guitar" and camp_npc.is_new then
 			xr_sound.set_sound_play(npc_id, "intro_music")
-			camp_npc.new = false
+			camp_npc.is_new = false
 		end
 		state = "guitar"
 		xr_kamp.kamp_stalkers[npc_id] = false
@@ -462,21 +413,14 @@ function CKampManager:updateNpc(npc)
 
 		local camp_npc = self.npc[npc_id]
 
-		if camp_npc.new == true then
-			camp_npc.new = false
+		if camp_npc.is_new then
+			camp_npc.is_new = false
 		end
 
-		if camp_npc.comm_class == -1 then
-			local t = math_mod(npc_id, 2)
-			if t == 0 then
-				state = "trans_0"
-			else
-				state = "trans_1"
-			end
-		elseif camp_npc.comm_class == -2 then
-			state = "trans_zombied"
+		if camp_npc.trance_state then
+			state = camp_npc.trance_state
 		else
-			local t = math_mod(npc_id, 3)
+			local t = math.mod(npc_id, 3)
 			if t == 0 then
 				state = "sit"
 			elseif t == 1 then
@@ -490,17 +434,10 @@ function CKampManager:updateNpc(npc)
 
 	elseif state == "trans" then
 
-		local camp_npc = self.npc[npc_id]
+		local trance_state = self.npc[npc_id].trance_state
 
-		if camp_npc.comm_class == -1 then
-			local t = math_mod(npc_id, 2)
-			if t == 0 then
-				state = "trans_0"
-			else
-				state = "trans_1"
-			end
-		elseif camp_npc.comm_class == -2 then
-			state = "trans_zombied"
+		if trance_state then
+			state = trance_state
 		end
 
 		xr_kamp.kamp_stalkers[npc_id] = false
@@ -509,9 +446,9 @@ function CKampManager:updateNpc(npc)
 
 		local camp_npc = self.npc[npc_id]
 
-		if sound == "pre_harmonica" and camp_npc.new == true then
+		if sound == "pre_harmonica" and camp_npc.is_new then
 			xr_sound.set_sound_play(npc_id, "intro_music")
-			camp_npc.new = false
+			camp_npc.is_new = false
 		end
 		state = "harmonica"
 		xr_kamp.kamp_stalkers[npc_id] = false
@@ -583,55 +520,38 @@ function CKampManager:addNpc(npc)
 	local npc_id = npc:id()
 
 	if self.npc[npc_id] ~= nil then
---		dbglog("[xr_kamp.CKampManager:addNpc]: NPC "..npc:name().." already added to camp!")
-		return
+		abort("[xr_kamp.CKampManager:addNpc]: NPC '%s' already added to camp '%s'", npc:name(), self.kamp_name)
 	end
 
-	local comm_type = 0
+	local trance_state = nil
 	local npc_community = npc:character_community()
 
 	if npc_community == "monolith" then
-		comm_type = -1
+		local t = math.mod(npc_id, 2)
+		trance_state = t == 0 and "trans_0" or "trans_1"
 	elseif npc_community == "zombied" then
-		comm_type = -2
+		trance_state = "trans_zombied"
 	end
 
-	if comm_type == 0 then
+	if trance_state == nil then
 		self.npc[npc_id] =
 		{
---			name = npc:name(),
 			position_idx = nil,
-			comm_class = 0,
-			states =
-			{
---				stand_wait = true, -- no such state in avail_state or state_lib.states
-				sit = true,
-				sit_ass = true,
-				sit_knee = true,
-				declarate = true
-			},
-			kamp_states =
-			{
-				idle = true,
-				story = true
-			}
+			trance_state = nil,
+			is_new = false,
+			need_sound_begin = false,
+			states = {declarate = true, sit = true, sit_ass = true, sit_knee = true},
+			kamp_states = {idle = true, story = true},
 		}
 	else
 		self.npc[npc_id] =
 		{
---			name = npc:name(),
 			position_idx = nil,
-			comm_class = comm_type,
-			states =
-			{
-				declarate = true,
-				trans = true
-			},
-			kamp_states =
-			{
-				idle = true,
-				story = true
-			}
+			trance_state = trance_state,
+			is_new = false,
+			need_sound_begin = false,
+			states = {declarate = true, trans = true},
+			kamp_states = {idle = true, story = true},
 		}
 	end
 
@@ -641,24 +561,19 @@ end
 
 function CKampManager:removeNpc(npc)
 	local npc_id = npc:id()
-	self.sound_manager:unregister_npc(npc_id)
 	local snpc = self.npc
-	if snpc[npc_id] ~= nil then
+	if snpc[npc_id] ~= nil then -- not guaranteed
+		self.sound_manager:unregister_npc(npc_id)
 		if self.director == npc_id then
 			self.director = nil
---			snpc[npc_id].begin = nil -- superfluous, as snpc[npc_id] = nil below
---			self.censor = nil
 			self.kamp_state = "idle"
 			self.begin = time_global()
-			for kk, vv in pairs (snpc) do
-				vv.new = true
+			for _, camp_npc in pairs (snpc) do
+				camp_npc.is_new = true
 			end
 			stop_play_sound(npc)
 		end
-		local cur_npc_spot = snpc[npc_id].position_idx
-		if cur_npc_spot ~= nil then
-			table.insert(self.free, cur_npc_spot) -- return spot to pool
-		end
+		table.insert(self.free, snpc[npc_id].position_idx) -- return spot to pool
 		snpc[npc_id] = nil
 	end
 end
@@ -680,7 +595,7 @@ function CKampManager:decreasePops()
 end
 
 --------------------------------------------------------------------------------
--- Kamp binder
+-- Binder
 --------------------------------------------------------------------------------
 
 local op_alife                  = xr_actions_id.alife
@@ -698,12 +613,12 @@ function add_to_binder(npc, ini, scheme, section, st)
 
 	local manager               = npc:motivation_action_manager()
 
-	manager:add_evaluator       (prop_kamp_end, this.evaluator_kamp_end(st))
-	manager:add_evaluator       (prop_on_position, this.evaluator_on_position(st))
+	manager:add_evaluator       (prop_kamp_end, evaluator_kamp_end(st))
+	manager:add_evaluator       (prop_on_position, evaluator_on_position(st))
 
 	-------------------------
 
-	local action                = this.action_wait(st)
+	local action                = action_wait(st)
 
 	xr_motivator.addPrecondAliveNoDangerNoEnemyNoAnomalyNoSmartcover(action)
 	xr_motivator.addCommonPrecondition(action)
@@ -716,7 +631,7 @@ function add_to_binder(npc, ini, scheme, section, st)
 
 	-------------------------
 
-	action                      = this.action_go_position(st)
+	action                      = action_go_position(st)
 
 	xr_motivator.addPrecondAliveNoDangerNoEnemyNoAnomalyNoSmartcover(action)
 	xr_motivator.addCommonPrecondition(action)
@@ -729,6 +644,20 @@ function add_to_binder(npc, ini, scheme, section, st)
 
 	action                      = manager:action(op_alife)
 	action:add_precondition     (wp_switched_section_true)
+end
+
+local function get_look_position(center_point)
+
+	local pp = patrol(center_point):point(0)
+	local delta_dist = math.random(0, 0.5)
+	local dir = vector():set(math.random(-1, 1), 0, math.random(-1, 1))
+
+	dir:normalize()
+
+	pp.x = pp.x + dir.x * delta_dist
+	pp.z = pp.z + dir.z * delta_dist
+
+	return pp
 end
 
 function set_scheme(npc, ini, scheme, section, gulag_name)
@@ -745,5 +674,7 @@ function set_scheme(npc, ini, scheme, section, gulag_name)
 	kamps[center_point]:addNpc(npc)
 
 	st.pos_vertex       = nil
+	st.pp               = get_look_position(center_point)
+	st.target           = {look_position = st.pp}
 	st.def_state_moving = utils.cfg_get_string(ini, section, "def_state_moving", nil, false, "", "walk")
 end

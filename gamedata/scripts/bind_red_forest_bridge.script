@@ -11,7 +11,7 @@ function bridge_binder:__init(obj) super(obj)
 	self.down_snd = sound_object("device\\bridge\\bridge_down")
 	self.start_snd = sound_object("device\\bridge\\bridge_start")
 	self.stop_snd = sound_object("device\\bridge\\bridge_stop")
-	self.idle = 50000
+	self.idle = 5000 * level.get_time_factor() -- 5 real in-game seconds
 	self.is_idle = true
 	self.is_play_fwd = false
 	self.first_update_done = false

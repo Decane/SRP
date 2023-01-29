@@ -1,0 +1,25 @@
+registered_smartcovers = {}
+
+function bind(obj)
+	obj:bind_object(smart_cover_binder(obj))
+end
+
+--------------------------------------------------------------------------------
+
+class "smart_cover_binder" (object_binder)
+
+function smart_cover_binder:__init(obj) super(obj)
+end
+
+function smart_cover_binder:net_spawn(se_abstract)
+	if not object_binder.net_spawn(self, se_abstract) then
+		return false
+	end
+	registered_smartcovers[se_abstract:name()] = self.object
+	return true
+end
+
+function smart_cover_binder:net_destroy()
+	registered_smartcovers[self.object:name()] = nil
+	object_binder.net_destroy(self)
+end

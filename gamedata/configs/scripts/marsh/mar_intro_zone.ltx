@@ -10,20 +10,16 @@ on_timer = 40000 | sr_idle@scene_2_spawn %=run_postprocess(mar_fade)%
 ;-----------------------------------------------------------------------
 
 [sr_idle@scene_2_spawn]
-on_timer = 2500 | sr_idle@scene_2_sit %+mar_intro_scene_1_end =spawn_object(mar_intro_lebedev_2:mar_intro_scene_2_lebedev:0:270.0) =update_weather(true) =play_sound(mar_intro_getting_up)%
-
-[sr_idle@scene_2_sit]
-on_timer = 14000 | sr_idle@scene_2_talk
-
-[sr_idle@scene_2_talk]
-on_info = {+mar_intro_scene_2_end} sr_idle@scene_2_end
+on_timer = 2500 | sr_idle@scene_2_end %+mar_intro_scene_1_end =spawn_object(mar_intro_lebedev_2:mar_intro_scene_2_lebedev:0:270.0) =update_weather(true) =play_sound(mar_intro_getting_up)%
 
 [sr_idle@scene_2_end]
-on_info = {+mar_intro_scene_2_cameff_end} sr_idle@scene_3_barman_wait_1 %=enable_ui =give_inited_task(storyline:mar_story_talk_with_barman:csky)%
+on_info = {+mar_intro_scene_2_end +mar_intro_scene_2_cameff_end} sr_idle@scene_3_barman_wait_1 %=enable_ui =give_inited_task(storyline:mar_story_talk_with_barman:csky)%
 
 ;-----------------------------------------------------------------------
 
 [sr_idle@scene_3_barman_wait_1]
+; The effect list is executed before the section change, so the saved game state will still have this section active.
+; The mar_autosave info portion is necessary to prevent re-executing autosave_game() each time the save is loaded.
 on_info = {-mar_autosave} sr_idle@scene_3_barman_wait_2 %+mar_autosave =autosave_game%, sr_idle@scene_3_barman_wait_2
 
 [sr_idle@scene_3_barman_wait_2]
@@ -31,8 +27,8 @@ on_info = {+mar_intro_talk_with_barman_radio_timer} sr_idle@scene_3_barman_time
 
 [sr_idle@scene_3_barman_time]
 on_timer = 44000 | %=play_sound(mar_csky_leader_to_barman_0:csky:mar_csky_commander_name)%
-on_info = {+mar_intro_talk_with_barman_done} sr_idle@scene_3_commander_wait %=enable_ui%, {+mar_intro_talk_with_barman_break} %=play_sound(mar_csky_leader_to_barman_0:csky:mar_csky_commander_name)%
-on_signal = sound_end | sr_idle@scene_3_commander_wait %=give_inited_task(storyline:mar_story_talk_with_commander_1:csky) +mar_intro_talk_with_barman_done +mar_intro_talk_with_commander_1_started =enable_ui%
+on_info = {+mar_intro_talk_with_barman_break} %=play_sound(mar_csky_leader_to_barman_0:csky:mar_csky_commander_name)%
+on_signal = sound_end | sr_idle@scene_3_commander_wait %=give_inited_task(storyline:mar_story_talk_with_commander_1:csky) +mar_intro_talk_with_barman_done =enable_ui%
 
 ;-----------------------------------------------------------------------
 
@@ -41,7 +37,7 @@ on_info = {+mar_intro_talk_with_commander_1_radio_timer} sr_idle@scene_3_command
 
 [sr_idle@scene_3_commander_time]
 on_timer = 30000 | %=play_sound(mar_csky_forpost_sos:csky)%
-on_info = {+mar_intro_talk_with_commander_1_radio_played} sr_idle@scene_3_commander_catch, {+mar_intro_talk_with_commander_1_break} %=play_sound(mar_csky_forpost_sos:csky)%
+on_info = {+mar_intro_talk_with_commander_1_break} %=play_sound(mar_csky_forpost_sos:csky)%
 on_signal = sound_end | sr_idle@scene_3_commander_catch %+mar_intro_talk_with_commander_1_radio_played%
 
 [sr_idle@scene_3_commander_catch]
@@ -82,7 +78,7 @@ on_info = {+mar_tutorial_kill_boars_done} sr_idle@tutorial_surge %+mar_tutorial_
 on_timer = 8000 | sr_idle@tutorial_surge
 
 [sr_idle@tutorial_surge]
-on_timer = 1000 | sr_idle@tutorial_warn_wait %=activate_surge(6)% 
+on_timer = 1000 | sr_idle@tutorial_warn_wait %=activate_surge(6)%
 on_info = {+mar_tutorial_help_reversed} sr_idle@tutorial_warn_wait
 on_info2 = {+mar_tutorial_kill_boars_done -mar_tutorial_help_done} %+mar_tutorial_tower_top_reversed +mar_tutorial_help_done%
 
@@ -96,12 +92,10 @@ on_info2 = {+mar_tutorial_kill_boars_done -mar_tutorial_help_done} %+mar_tutoria
 on_info = {+mar_tutorial_return_to_base_reversed} sr_idle@tutorial_final_time_1
 
 [sr_idle@tutorial_final_time_1]
-on_timer = 4500 | sr_idle@tutorial_final_time_2 %=update_weather(true) =teleport_actor(mar_intro_scene_2_actor_walk:mar_intro_scene_2_actor_look) +mar_tutorial_returned_to_base%
-on_info = {+mar_tutorial_returned_to_base} sr_idle@tutorial_final_time_2
+on_timer = 4500 | sr_idle@tutorial_final_time_2 %=update_weather(true) =teleport_actor(mar_intro_scene_2_actor_walk:mar_intro_scene_2_actor_look)%
 
 [sr_idle@tutorial_final_time_2]
-on_timer = 4000 | sr_idle@scene_4_signal %=run_cam_effector_global(scenario_cam\Marsh\camera_mar_04_on_foot:3) +mar_tutorial_returned_got_on_feet%
-on_info = {+mar_tutorial_returned_got_on_feet} sr_idle@scene_4_signal
+on_timer = 4000 | sr_idle@scene_4_signal %=run_cam_effector_global(scenario_cam\Marsh\camera_mar_04_on_foot:3)%
 
 ;-----------------------------------------------------------------------
 

@@ -1,86 +1,78 @@
--- DC170515: Optimization.
-
 local zones = {}
 
-----------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 
 class "action_light"
 
-function action_light:__init(npc, storage)
-	self.object = npc
-	self.st = storage
-	self.id = npc:id()
+function action_light:__init(zone, st)
+	self.zone = zone
+	self.st = st
 end
 
 function action_light:reset_scheme()
-	zones[self.id] = self
+	zones[self.zone] = self.st.light
 end
 
-function action_light:update(delta)
-	if xr_logic.try_switch_to_another_section(self.object, self.st, db.actor) then
-		zones[self.id] = nil
+function action_light:update()
+	if xr_logic.try_switch_to_another_section(self.zone, self.st, db.actor) then
+		zones[self.zone] = nil
 	end
 end
 
-----------------------------------------------------------------------------------------------------
-
-function add_to_binder(npc, ini, scheme, section, storage)
-	xr_logic.subscribe_action_for_events(npc, storage, action_light(npc, storage))
+function action_light:net_destroy()
+	zones[self.zone] = nil
 end
 
-function set_scheme(npc, ini, scheme, section)
-	local st = xr_logic.assign_storage_and_bind(npc, ini, scheme, section)
-	st.logic = xr_logic.cfg_get_switch_conditions(ini, section, npc)
+--------------------------------------------------------------------------------
+
+function add_to_binder(zone, _, _, _, st)
+	xr_logic.subscribe_action_for_events(nil, st, action_light(zone, st))
+end
+
+function set_scheme(zone, ini, scheme, section)
+	local st = xr_logic.assign_storage_and_bind(zone, ini, scheme, section)
+	st.logic = xr_logic.cfg_get_switch_conditions(ini, section, zone)
 	st.light = utils.cfg_get_bool(ini, section, "light_on", nil, false, false)
 end
 
-----------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 
-function check_light(stalker)
---[[
-	if stalker == nil then
-		abort("[sr_light.check_light]: This code should never be reached...")
-		return
-	end
-]]
-	local torch = stalker:object("device_torch")
+function check_light(npc)
+
+	local torch = npc:object("device_torch")
 	if torch == nil then
 		return
 	end
 
-	if stalker:alive() == false then
+	if not npc:alive() then
 		torch:enable_attachable_item(false)
 		return
 	end
 --[[
-	if stalker:best_enemy() ~= nil then
+	if npc:best_enemy() ~= nil then
 		torch:enable_attachable_item(false)
 		return
 	end
 ]]
-	local scheme = db.storage[stalker:id()].active_scheme
+	local scheme = db.storage[npc:id()].active_scheme
 	if scheme == "kamp" or scheme == "camper" then
 		torch:enable_attachable_item(false)
 		return
 	end
 
-	local npc_pos = stalker:position()
-	for k, zone in pairs (zones) do
-		if zone.object:inside(npc_pos) then
-			torch:enable_attachable_item(zone.st.light)
+	local npc_pos = npc:position()
+	for zone, need_light in pairs (zones) do
+		if zone:inside(npc_pos) then
+			torch:enable_attachable_item(need_light)
 			return
 		end
 	end
 
-	local htime = level.get_time_hours()
-	if htime <= 4 or htime >= 22 then
+	local hour = level.get_time_hours()
+	if hour < 5 or hour >= 22 then
 		torch:enable_attachable_item(true)
 		return
 	end
 
 	torch:enable_attachable_item(false)
-end
-
-function clean_up()
-	zones = {}
 end
