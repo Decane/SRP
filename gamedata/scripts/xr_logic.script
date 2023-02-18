@@ -964,9 +964,11 @@ function mob_captured(mob)
 	return mob:get_script()
 end
 
-local pstor_number = 0
+local pstor_float = 0
 local pstor_string = 1
 local pstor_boolean = 2
+local pstor_s32 = 3
+local pstor_u32 = 4
 
 function pstor_store(obj, varname, val)
 
@@ -996,6 +998,13 @@ function pstor_retrieve(obj, varname, defval)
 	return defval
 end
 
+function pstor_clear(obj, varname)
+	local npc_st = db_storage[obj:id()]
+	if npc_st.pstor ~= nil then
+		npc_st.pstor[varname] = nil
+	end
+end
+
 function pstor_save_all(obj, packet)
 
 	local obj_st = db_storage[obj:id()]
@@ -1018,8 +1027,18 @@ function pstor_save_all(obj, packet)
 		packet:w_stringZ(k)
 		local tv = type(v)
 		if tv == "number" then
-			packet:w_u8(pstor_number)
-			packet:w_float(v)
+			if v % 1 == 0 then
+				if v < 2 ^ 31 then
+					packet:w_u8(pstor_s32)
+					packet:w_s32(v)
+				else
+					packet:w_u8(pstor_u32)
+					packet:w_u32(v)
+				end
+			else
+				packet:w_u8(pstor_float)
+				packet:w_float(v)
+			end
 		elseif tv == "string" then
 			packet:w_u8(pstor_string)
 			packet:w_stringZ(v)
@@ -1050,12 +1069,16 @@ function pstor_load_all(obj, reader)
 	for i = 1, ctr do
 		local varname = reader:r_stringZ()
 		local tn = reader:r_u8()
-		if tn == pstor_number then
+		if tn == pstor_float then
 			pstor[varname] = reader:r_float()
 		elseif tn == pstor_string then
 			pstor[varname] = reader:r_stringZ()
 		elseif tn == pstor_boolean then
 			pstor[varname] = reader:r_bool()
+		elseif tn == pstor_s32 then
+			pstor[varname] = reader:r_s32()
+		elseif tn == pstor_u32 then
+			pstor[varname] = reader:r_u32()
 		else
 			local ppos = obj:position()
 			dbglog("[xr_logic.pstor_load_all]: Tried to load an unregistered pstor value-type ["..tostring(tn).."] with key ["..tostring(varname).."] for alive(?) ["..tostring(obj:alive() == true).."] NPC with ID ["..tostring(obj:id()).."], name ["..tostring(obj:name()).."], and position [x: "..tostring(ppos.x)..", y: "..tostring(ppos.y)..", z: "..tostring(ppos.z).."].")

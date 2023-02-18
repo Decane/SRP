@@ -76,10 +76,10 @@ function action_wounded:execute()
 
 	if self.a.autoheal and not wound_manager.can_use_medkit then
 		local begin_wounded = xr_logic.pstor_retrieve(self.object, "begin_wounded")
-		local current_time = time_global()
+		local current_time = game.time()
 		if begin_wounded == nil then
 			xr_logic.pstor_store(self.object, "begin_wounded", current_time)
-		elseif current_time - begin_wounded > 60000 then
+		elseif current_time - begin_wounded > 60000 * level.get_time_factor() then -- 60 real seconds in-game
 			local npc = self.object
 			_G.sim:create("medkit", npc:position(), npc:level_vertex_id(), npc:game_vertex_id(), npc:id())
 			wound_manager:unlock_medkit()
@@ -164,6 +164,7 @@ function action_wounded:finalize()
 	--' xr_sound.set_sound(self.object, nil)
 	self.object:wounded(false)
 	self.object:movement_enabled(true)
+	xr_logic.pstor_clear(self.object, "begin_wounded")
 end
 
 --------------------------------------------------------------------------------
