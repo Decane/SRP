@@ -1,0 +1,125 @@
+--------------------------------------------------------------------------------
+-- Evaluators
+--------------------------------------------------------------------------------
+
+class "evaluator_need_sleeper" (property_evaluator)
+
+function evaluator_need_sleeper:__init(st) super()
+	self.st = st
+	self.npc_st = db.storage[st.npc:id()]
+end
+
+function evaluator_need_sleeper:evaluate()
+	return self.st.section == self.npc_st.active_section
+end
+
+--------------------------------------------------------------------------------
+-- Actions
+--------------------------------------------------------------------------------
+
+class "action_sleeper" (action_base)
+
+function action_sleeper:__init(st) super()
+	self.st = st
+	self.move_mgr = db.storage[st.npc:id()].move_mgr
+end
+
+function action_sleeper:initialize()
+	action_base.initialize(self)
+	self.object:set_desired_position()
+	self.object:set_desired_direction()
+	self:reset_scheme()
+end
+
+function action_sleeper:reset_scheme()
+	local st = self.st
+	st.signals = {}
+	self.is_walking = true
+	self.move_mgr:reset(st.path_walk, st.path_walk_info, st.path_look, st.path_look_info, nil, nil, {obj = self, func = self.is_position_reached}, true)
+end
+
+function action_sleeper:execute()
+	action_base.execute(self)
+	if self.is_walking then
+		self.move_mgr:update()
+	end
+end
+
+function action_sleeper:finalize()
+	self.move_mgr:finalize()
+	action_base.finalize(self)
+end
+
+function action_sleeper:is_position_reached()
+	self.is_walking = false
+	state_mgr.set_state(self.object, "sleep", nil, nil, self.st.target)
+	return true
+end
+
+--------------------------------------------------------------------------------
+-- Binder
+--------------------------------------------------------------------------------
+
+local op_alife                  = xr_actions_id.alife
+local op_sleeper                = xr_actions_id.zmey_sleeper_base + 1
+local prop_need_sleeper         = xr_evaluators_id.zmey_sleeper_base + 1
+
+local wp_switched_section_false = world_property(prop_need_sleeper, true)
+local wp_switched_section_true  = world_property(prop_need_sleeper, false)
+
+function add_to_binder(npc, ini, scheme, section, st)
+
+	local manager               = npc:motivation_action_manager()
+	manager:add_evaluator       (prop_need_sleeper, evaluator_need_sleeper(st))
+
+	-------------------------
+
+	local action                = action_sleeper(st)
+
+	xr_motivator.addPrecondAliveNoDangerNoEnemyNoAnomalyNoSmartcover(action)
+	xr_motivator.addCommonPrecondition(action)
+
+	action:add_precondition     (wp_switched_section_false)
+	action:add_effect           (wp_switched_section_true)
+	manager:add_action          (op_sleeper, action)
+
+	-------------------------
+
+	action                      = manager:action(op_alife)
+	action:add_precondition     (wp_switched_section_true)
+end
+
+function set_scheme(npc, ini, scheme, section, gulag_name)
+
+	local st          = xr_logic.assign_storage_and_bind(npc, ini, scheme, section)
+
+	st.logic          = xr_logic.cfg_get_switch_conditions(ini, section, npc)
+
+	local path_main   = utils.cfg_get_string(ini, section, "path_main", npc, true, gulag_name)
+	local patrol_main = patrol(path_main)
+	local num_wayp    = patrol_main:count()
+
+	if not level.patrol_path_exists(path_main) then
+		abort("[xr_sleeper.set_scheme]: There is no patrol path '%s'.", path_main)
+	end
+
+	st.path_walk = path_main
+
+	if num_wayp == 1 then
+		st.path_walk_info = utils.path_parse_waypoints_from_arglist(path_main, 1, {0, "wp00|ret=1"})
+		st.path_look = nil
+		st.path_look_info = nil
+		st.target = nil
+	elseif num_wayp == 2 then
+		st.path_walk_info = utils.path_parse_waypoints_from_arglist(path_main, 2, {1, "wp00"}, {0, "wp01|ret=1"})
+		st.path_look = path_main
+		st.path_look_info = utils.path_parse_waypoints_from_arglist(path_main, 2, {0, "wp00"}, {1, "wp01|ret=1"})
+		st.target = {look_position = patrol_main:point(0)}
+	else
+		abort("[xr_sleeper.set_scheme]: Patrol path '%s' contains %d waypoints, 1 or 2 were expected", path_main, num_wayp)
+	end
+end
+
+function is_npc_asleep(npc)
+	return db.storage[npc:id()].state_mgr.animstate:state() == "sleep"
+end

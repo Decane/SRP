@@ -11,6 +11,7 @@ v1.1.4
 + Fixed the game crashing if a stalker squad at a smart terrain has it as a scripted target and is joined by another squad that doesn't and the general job capacity of that smart terrain is saturated by the two squads. - Decane
 + Fixed a rare crash caused by too many stalkers trying to enter the 'Small old wagon' at the Dark Valley: smart_terrain.script:483: Insufficient smart_terrain jobs val_smart_terrain_9_6. - Decane
 + Fixed a rare crash caused by too many stalkers trying to enter the 'Camp amidst rocks' at the Army Warehouses: smart_terrain.script:483: Insufficient smart_terrain jobs mil_smart_terrain_2_1 (new game required for effect). - Decane
++ Fixed NPCs not settling into their sleeping animation at some sleep waypoints. - Decane
 + Fixed the start time for NPCs' heavily wounded state being saved incorrectly. - Decane
 + Mitigated the issue where the weather would sometimes inexplicably change after loading. - Decane
 + Mitigated the issue where the player's character model would revert back to the default rookie jacket model upon picking up another suit of armor. - Artos, Shoker
