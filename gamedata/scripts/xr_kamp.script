@@ -45,14 +45,17 @@ function action_go_position:__init (storage) super ()
 end
 
 function action_go_position:initialize()
-
 	action_base.initialize(self)
+	self.object:set_desired_position()
+	self.object:set_desired_direction()
+	self.update_time = time_global() + 3000
+	self:update_movement()
+	self.a.signals = {}
+end
+
+function action_go_position:update_movement()
 
 	local npc = self.object
-
-	npc:set_desired_position()
-	npc:set_desired_direction()
-
 	local st = self.a
 
 	st.pos_vertex = kamps[st.center_point]:getDestVertex(npc, st.radius)
@@ -80,12 +83,15 @@ function action_go_position:initialize()
 
 	npc:set_path_type(prop_level_path)
 	state_mgr.set_state(npc, st.def_state_moving)
-
-	st.signals = {}
 end
 
 function action_go_position:execute()
 	action_base.execute(self)
+	local global_time = time_global()
+	if global_time > self.update_time then
+		self:update_movement()
+		self.update_time = global_time + 3000
+	end
 end
 
 function action_go_position:finalize()
@@ -271,26 +277,21 @@ function CKampManager:getDestVertex(npc, radius)
 
 	radius = radius + 0.3 -- math_random(-0.3, 0.3)
 
-	local dest_vertex = 4294967295
+	local ideal_radius = radius
+	local dest_pos = vector():set(pp.x + dir.x * ideal_radius, pp.y, pp.z + dir.z * ideal_radius)
+	local dest_vertex = level.vertex_id(dest_pos)
 
-	while dest_vertex == 4294967295 do
-		local tmp_pos = vector():set(0,0,0)
-		tmp_pos.x = pp.x + dir.x * radius
-		tmp_pos.z = pp.z + dir.z * radius
-		tmp_pos.y = pp.y
-		dest_vertex = level.vertex_id(tmp_pos)
-		if dest_vertex == 4294967295 then
-			if radius < 1 then
-				abort("[xr_kamp.CKampManager:getDestVertex]: Invalid AI map at kamp point [%s]", self.kamp_name)
-			else
-				radius = radius - 0.5
-			end
-		end
+	while dest_vertex == 4294967296 and radius > 1 do
+		radius = radius - 0.1
+		dest_pos.x = pp.x + dir.x * radius
+		dest_pos.z = pp.z + dir.z * radius
+		dest_vertex = level.vertex_id(dest_pos)
 	end
 
 	if not npc:accessible(dest_vertex) then
-		local vp = level.vertex_position(dest_vertex)
-		local nearest_vertex = npc:accessible_nearest(vp, vector():set(0,0,0))
+		dest_pos.x = pp.x + dir.x * ideal_radius
+		dest_pos.z = pp.z + dir.z * ideal_radius
+		local nearest_vertex = npc:accessible_nearest(dest_pos, vector():set(0,0,0))
 		return nearest_vertex
 	end
 
