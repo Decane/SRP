@@ -6,6 +6,12 @@ function actor_init(actor)
 	actor:bind_object(actor_binder(actor))
 end
 
+local deferred_spawns = {}
+
+function defer_net_spawn(binder)
+	deferred_spawns[#deferred_spawns + 1] = binder
+end
+
 task_update = false
 quitting_game = false
 delayed_alife_release_objects = {}
@@ -66,6 +72,13 @@ function actor_binder:net_spawn(se_abstract)
 	level.show_indicators()
 
 	db.add_actor(actor)
+
+	for i = 1, #deferred_spawns do
+		local binder = deferred_spawns[i]
+		binder:finish_net_spawn() -- DC20230306
+	end
+
+	deferred_spawns = nil
 
 	dunin_ammo_on_update = dunin_ammo.on_update -- SRP
 

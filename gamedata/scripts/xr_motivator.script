@@ -84,11 +84,29 @@ function motivator_binder:net_spawn(se_abstract) -- called 5th
 		return true
 	end
 
-	xrs_dyn_music.add_object(npc)
+	-- DC20230306: It's possible for motivator_binder:net_spawn() to be called before
+	-- actor_binder:net_spawn() or even actor_binder:__init(). Several function calls
+	-- originating from motivator_binder:net_spawn() assume that db.actor has been
+	-- initialized, and a few corrupt the NPC if db.actor = nil, e.g. npc:see(db.actor)
+	-- in xr_wounded.script and npc:set_goodwill(goodwill, db.actor) here.
 
+	if db.actor then
+		self:finish_net_spawn()
+	else
+		bind_stalker.defer_net_spawn(self)
+	end
+
+	return true
+end
+
+function motivator_binder:finish_net_spawn()
+
+	local npc = self.object
 	local npc_id = npc:id()
 	local se_npc = _G.sim:object(npc_id)
 	local npc_st = self.st
+
+	xrs_dyn_music.add_object(npc)
 
 	npc_st.squad_obj = sim_board.get_sim_board().squads[se_npc.squad_id]
 
@@ -99,12 +117,8 @@ function motivator_binder:net_spawn(se_abstract) -- called 5th
 	npc:set_callback(callback.death, motivator_binder.death_callback, self)
 	npc:apply_loophole_direction_distance(1)
 
-	-- It's possible for an NPC's net_spawn() to be called before actor_binder:__init().
-	-- So, we need to check that db.actor ~= nil, as npc:set_goodwill(goodwill, nil)
-	-- corrupts the NPC. TODO: Consider moving into update() instead.
-
 	local goodwill = db.goodwill.relations[npc_id]
-	if goodwill and db.actor then
+	if goodwill then
 		npc:set_goodwill(goodwill, db.actor)
 	end
 
@@ -149,8 +163,6 @@ function motivator_binder:net_spawn(se_abstract) -- called 5th
 	if self.is_strelok then
 		stc_strelok_health_manager.cs_strelok_health(npc)
 	end
-
-	return true
 end
 
 function motivator_binder:net_destroy()

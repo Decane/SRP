@@ -29,12 +29,22 @@ function generic_object_binder:net_spawn(se_abstract) -- called 5th
 		return false
 	end
 
-	local npc = self.object
-
-	if not npc:alive() then
+	if not self.object:alive() then
 		return true
 	end
 
+	if db.actor then
+		self:finish_net_spawn() -- DC20230306
+	else
+		bind_stalker.defer_net_spawn(self)
+	end
+
+	return true
+end
+
+function generic_object_binder:finish_net_spawn()
+
+	local npc = self.object
 	local se_npc = _G.sim:object(npc:id())
 	local npc_st = self.st
 
@@ -55,8 +65,6 @@ function generic_object_binder:net_spawn(se_abstract) -- called 5th
 	else
 		smart_terrain.setup_gulag_and_logic_on_spawn(npc, npc_st, se_npc, modules.stype_mobile, self.loaded)
 	end
-
-	return true
 end
 
 function generic_object_binder:net_destroy()
