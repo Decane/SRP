@@ -14,6 +14,7 @@ v1.1.4
 + Fixed NPCs not settling into their sleeping animation at some sleep waypoints. - Decane
 + Fixed campfire NPCs sometimes not settling into their campfire idle animation. - Decane
 + Fixed the start time for NPCs' heavily wounded state being saved incorrectly. - Decane
++ Fixed the dialogue exploit where the player could farm starting equipment from Suslov multiple times by eliminating the few frames long delay before the player's ability to break out of certain dialogues gets revoked. - Decane
 + Mitigated the issue where the weather would sometimes inexplicably change after loading. - Decane
 + Mitigated the issue where the player's character model would revert back to the default rookie jacket model upon picking up another suit of armor. - Artos, Shoker
 + Fixed the issue where the player would be rejected from playing the shooting minigame if their money precisely matches the entry fee instead of exceeding it. - Decane

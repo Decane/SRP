@@ -241,6 +241,9 @@ function dialog_wnd_showed()
 		local obj = v.object
 		if obj ~= nil then
 			if obj:is_talking() and id ~= 0 then -- 0 = actor ID
+				if v.meet and v.robbery_zone_id == nil then
+					db.actor:allow_break_talk_dialog(v.meet.allow_break)
+				end
 				local sound_theme = xr_sound.sound_table[id]
 				if sound_theme and sound_theme.reset then
 					sound_theme:reset(id)

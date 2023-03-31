@@ -245,6 +245,7 @@ Dialog fixes:
 + Fixed the issue where Sidorovich would answer only one question per game session after Scar returns him his case.
 + Fixed the branching of some Duty member dialogs in Agroprom.
 + Fixed all buggy Cordon, Garbage, Yantar, Army Warehouses, and Limansk dialog trees.
++ Fixed all dialogue exploits made possible by the revocation of the player's ability to break out of certain dialogues being delayed.
 
 Weapon fixes:
 
