@@ -51,6 +51,9 @@ end
 function action_robbery:disable_reaction_final(sobj_id, rm)
 	for k, npc_obj in pairs (rm.whole_gulag) do
 		actor_reaction.disable_actor_reaction(npc_obj)
+		if db.storage[k] ~= nil then
+			db.storage[k].robbery_zone_id = nil
+		end
 		if npc_obj:is_talking() then
 			npc_obj:stop_talk()
 		end
