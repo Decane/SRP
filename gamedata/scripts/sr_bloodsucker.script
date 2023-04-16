@@ -125,7 +125,8 @@ function bloodsucker_attack:update(delta)
 				self.snd_obj:stop()
 			end
 		else
-			self.snd_obj = xr_sound.set_sound_play(restr_id, st.snd_obj)
+			local active_snd = xr_sound.set_sound_play(restr_id, st.snd_obj)
+			self.snd_obj = active_snd and active_snd.snd_obj
 			if self.snd_obj and self.snd_obj:playing() then
 				self.snd_obj:set_position(self.current)
 			end

@@ -11,9 +11,7 @@ local table_sort = table.sort
 class "se_smart_terrain" (cse_alife_smart_zone)
 
 function se_smart_terrain:__init(section) super(section)
---	self.b_registred = false
 	self.need_init_npc = false
---	self.npc_to_register = {}
 	self.npc_by_job_section = {}
 	self.dead_time = {}
 	self.npc_info = {}
@@ -70,18 +68,12 @@ function se_smart_terrain:on_register()
 		end
 	end
 
---	self.b_registred = true
-
 	self:load_jobs()
-
---	self.board:init_smart(self)
 
 	if self.need_init_npc then
 		self.need_init_npc = false
 		self:init_npc_after_load()
 	end
-
---	self:register_delayed_npc()
 --[[
 	Every faction's squads should be initialized before any faction's targets,
 	else a squad's relative power may be wrong after load (due to enemy squads
@@ -183,12 +175,7 @@ local function fill_npc_info(se_npc)
 end
 
 function se_smart_terrain:register_npc(se_npc)
---[[
-	if self.b_registred == false then
-		self.npc_to_register[#self.npc_to_register + 1] = se_npc
-		return
-	end
-]]
+
 	self.npc_info[se_npc.id] = fill_npc_info(se_npc)
 
 	se_npc.m_smart_terrain_id = self.id
@@ -197,14 +184,7 @@ function se_smart_terrain:register_npc(se_npc)
 
 	self:update_jobs(se_npc)
 end
---[[
-function se_smart_terrain:register_delayed_npc()
-	for i = 1, #self.npc_to_register do
-		self:register_npc(self.npc_to_register[i])
-	end
-	self.npc_to_register = {}
-end
-]]
+
 function se_smart_terrain:unregister_npc(se_npc)
 
 	local npc_info = self.npc_info[se_npc.id]

@@ -12,7 +12,6 @@ function heli_binder:__init(obj) super(obj) -- called 2nd
 	self.heli_fire            = heli_fire.get_heli_firer(obj)
 	self.heliObject           = obj:get_helicopter()
 	self.st                   = {combat = heli_combat.heli_combat(obj, self.heliObject)}
-	self.last_hit_snd_timeout = 0
 	self.flame_start_health	  = utils.cfg_get_number(system_ini(), "helicopter", "flame_start_health", obj, true)
 end
 
@@ -112,12 +111,7 @@ function heli_binder:on_hit(power, impulse, hit_type, enemy_id)
 		end
 	end
 
-	local global_time = time_global()
-
-	if self.last_hit_snd_timeout < global_time then
-		xr_sound.set_sound_play(self.object:id(), "heli_hit")
-		self.last_hit_snd_timeout = global_time + math.random(4000, 8000)
-	end
+	xr_sound.set_sound_play(self.object:id(), "heli_hit")
 end
 
 function heli_binder:on_point(distance, position, path_idx)

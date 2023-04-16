@@ -35,6 +35,7 @@ end
 
 function npc_sound:reset(npc_id)
 	self.stop_time = nil
+	self.idle_time = nil
 	self.played_id = nil
 	self.can_play_group_sound = true
 	self.can_play_sound[npc_id] = true
@@ -43,10 +44,7 @@ function npc_sound:reset(npc_id)
 		npc:set_sound_mask(-1)
 		npc:set_sound_mask(0)
 	end
-	if self.pda_snd_obj ~= nil then
-		self.pda_snd_obj:stop()
-		self.pda_snd_obj = nil
-	end
+	self:stop()
 end
 
 function npc_sound:is_playing(npc_id)
@@ -260,7 +258,7 @@ function npc_sound:select_next_sound(npc_data) -- TODO: Replace with local func 
 end
 
 function npc_sound:stop()
-	if self.pda_snd_obj ~= nil and self.pda_snd_obj:playing() then
+	if self.pda_snd_obj ~= nil then
 		self.pda_snd_obj:stop()
 		self.pda_snd_obj = nil
 	end
@@ -380,6 +378,14 @@ function actor_sound:__init(ini, section)
 	end
 end
 
+function actor_sound:reset()
+	self.stop_time = nil
+	self.idle_time = nil
+	self.played_id = nil
+	self.can_play_sound = true
+	self:stop()
+end
+
 function actor_sound:callback(obj_id) -- executed on first obj binder update() after sound stops playing
 
 	self.stop_time      = time_global()
@@ -443,6 +449,7 @@ end
 function actor_sound:stop()
 	if self.snd_obj ~= nil then
 		self.snd_obj:stop()
+		self.snd_obj = nil
 	end
 end
 
@@ -466,6 +473,7 @@ function object_sound:__init(ini, section)
 
 	self.class_id       = "object_sound"
 	self.shuffle        = utils.cfg_get_string(ini, section, "shuffle", nil, false, "", "rnd")
+	self.play_always    = utils.cfg_get_bool(ini, section, "play_always", nil, false, false)
 	self.section        = section
 	self.played_id      = nil
 	self.stop_time      = nil
@@ -502,11 +510,20 @@ function object_sound:__init(ini, section)
 	end
 end
 
+function object_sound:reset()
+	self.stop_time = nil
+	self.idle_time = nil
+	self.played_id = nil
+	self.can_play_sound = true
+	self:stop()
+end
+
 function object_sound:callback(obj_id) -- executed on first obj binder update() after sound stops playing
 
 	self.stop_time      = time_global()
 	self.idle_time      = math.random(self.min_idle, self.max_idle) * 1000
 	self.snd_obj        = nil
+	self.pda_snd_obj    = nil
 	self.can_play_sound = true
 
 	local obj_st = db.storage[obj_id]
@@ -529,6 +546,7 @@ end
 
 function object_sound:is_playing()
 	return self.snd_obj ~= nil and self.snd_obj:playing()
+	or self.pda_snd_obj ~= nil and self.pda_snd_obj:playing()
 end
 
 function object_sound:play(obj_id, faction, point)
@@ -576,8 +594,9 @@ end
 function object_sound:stop()
 	if self.snd_obj ~= nil then
 		self.snd_obj:stop()
+		self.snd_obj = nil
 	end
-	if self.pda_snd_obj ~= nil and self.pda_snd_obj:playing() then
+	if self.pda_snd_obj ~= nil then
 		self.pda_snd_obj:stop()
 		self.pda_snd_obj = nil
 	end
@@ -611,18 +630,17 @@ function looped_sound:__init(ini, section)
 	end
 end
 
-function looped_sound:is_playing()
-	return self.snd_obj ~= nil and self.snd_obj:playing()
-end
-
 function looped_sound:stop()
 	if self.snd_obj ~= nil then
 		self.snd_obj:stop()
+		self.snd_obj = nil
 	end
 end
 
 function looped_sound:set_volume(level)
-	self.snd_obj.volume = level
+	if self.snd_obj ~= nil then
+		self.snd_obj.volume = level
+	end
 end
 
 function looped_sound:play(obj_id)

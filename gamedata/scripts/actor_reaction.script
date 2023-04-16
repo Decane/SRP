@@ -33,11 +33,11 @@ function action_actor_reaction:execute()
 				db.actor:run_talk_dialog(npc, true)
 			end
 			self.comed = true
-		else
-			if self.scene_manager.stand_still then
-				npc:set_dest_level_vertex_id(db.actor:level_vertex_id())
-				state_mgr.set_state(npc, "raid", nil, nil, {look_position = actor_pos}, {animation = true}) -- vanilla uses {look_object = db.actor}, sometimes causes jerky NPC head movement
-			end
+		elseif self.scene_manager.actor_enemy then
+			state_mgr.set_state(npc, "threat_fire", nil, nil, {look_position = actor_pos})
+		elseif self.scene_manager.stand_still then
+			npc:set_dest_level_vertex_id(db.actor:level_vertex_id())
+			state_mgr.set_state(npc, "raid", nil, nil, {look_position = actor_pos}, {animation = true}) -- vanilla uses {look_object = db.actor}, sometimes causes jerky NPC head movement
 		end
 	end
 end

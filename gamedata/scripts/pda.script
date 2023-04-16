@@ -201,9 +201,9 @@ function dialog_wnd_showed()
 			if npc_st.meet and npc_st.robbery_zone_id == nil then
 				db.actor:allow_break_talk_dialog(npc_st.meet.allow_break)
 			end
-			local sound_theme = xr_sound.sound_table[npc_id]
-			if sound_theme and sound_theme.reset then
-				sound_theme:reset(npc_id)
+			local sound = xr_sound.sound_table[npc_id]
+			if sound then
+				sound:reset(npc_id)
 			end
 			break
 		end

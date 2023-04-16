@@ -28,7 +28,7 @@ function evaluator_contact:evaluate()
 		return false
 	end
 
-	if tostring(self.wound_manager.state) ~= "nil" then
+	if self.wound_manager.state ~= "nil" then
 		return false
 	end
 
@@ -208,18 +208,6 @@ function Cmeet_manager:update()
 	end
 
 	self.victim = self:process_victim()
---[[
-	local state_zone, sound_zone = self:process_zone()
-
-	if state_zone ~= "nil" then
-		if self.victim == "nil" then
-			self.victim = "actor"
-		end
-		self.state, self.sound = state_zone, sound_zone
-	else
-		self.state, self.sound = self:process_meet()
-	end
-]]
 	self.state, self.sound = self:process_meet()
 
 	if self.st.quest_npc and get_data_for_distance(self.st.meet_state, self.dist) then
@@ -243,32 +231,6 @@ function Cmeet_manager:update()
 		end
 	end
 end
-
---[[
-
-local function get_data_for_zone(zones)
-	for i = 1, #zones do
-		local zone_data = zones[i]
-		if utils.npc_in_zone(db.actor, db.zone_by_name[zone_data.zone]) then
-			return zone_data
-		end
-	end
-	return nil
-end
-
-function Cmeet_manager:process_zone()
-	local zone_data = get_data_for_zone(self.st.zone)
-	if zone_data ~= nil then
-		self.emerg_state = true
-		local r1 = xr_logic.pick_section_from_condlist(db.actor, self.npc, zone_data.state)
-		local r2 = zone_data.sound
-		       and xr_logic.pick_section_from_condlist(db.actor, self.npc, zone_data.sound)
-		return tostring(r1), tostring(r2)
-	end
-	return "nil", "nil"
-end
-
-]]
 
 function Cmeet_manager:process_meet()
 
@@ -403,30 +365,6 @@ function parse_data(str)
 	return t
 end
 
---[[
-
-function parse_syn_data(str)
-	local t = {}
-	for state, sound in string.gfind(str, "([^|@]+)@([^|]+)") do
-		t[#t + 1] = {state = state, sound = sound}
-	end
-	return t
-end
-
-local function parse_zone_data(str)
-	local t = {}
-	for zone, state, sound in string.gfind(str, "([^|]+)%|([^|@]+)([^|]*)") do
-		local data = {zone = zone, state = xr_logic.parse_condlist(nil, nil, nil, state)}
-		if sound ~= "" then
-			data.sound = xr_logic.parse_condlist(nil, nil, nil, string.sub(sound, 2)) -- strips off leading '@'
-		end
-		t[#t + 1] = data
-	end
-	return t
-end
-
-]]
-
 local function get_meet_defaults(npc, scheme)
 
 	local def = {}
@@ -485,14 +423,17 @@ local function get_meet_defaults(npc, scheme)
 	return def
 end
 
-local function init_meet(npc, ini, section, st, scheme)
+local function init_meet(npc, ini, ini_filename, section, st, scheme)
 
-	if section == st.cached_section and scheme == st.cached_scheme then
-		return
+	if section == st.cached_section then
+		if section == "no_meet" or scheme == st.cached_scheme and ini_filename == st.cached_ini_filename then
+			return
+		end
 	end
 
 	st.cached_section = section
 	st.cached_scheme = scheme
+	st.cached_ini_filename = ini_filename
 
 	if section == "nil" then
 		local def            = get_meet_defaults(npc, scheme)
@@ -506,7 +447,6 @@ local function init_meet(npc, ini, section, st, scheme)
 		st.use               = xr_logic.parse_condlist(nil, nil, nil, def.use)
 		st.use_wpn           = xr_logic.parse_condlist(nil, nil, nil, "false")
 		st.meet_dialog       = xr_logic.parse_condlist(nil, nil, nil, "")
---		st.zone              = parse_zone_data("")
 		st.precond           = def.precond
 		st.abuse             = def.abuse
 		st.meet_only_at_path = false
@@ -524,7 +464,6 @@ local function init_meet(npc, ini, section, st, scheme)
 		st.use               = xr_logic.parse_condlist(nil, nil, nil, "false")
 		st.use_wpn           = xr_logic.parse_condlist(nil, nil, nil, "false")
 		st.meet_dialog       = xr_logic.parse_condlist(nil, nil, nil, "")
---		st.zone              = parse_zone_data("")
 		st.precond           = "usability"
 		st.abuse             = "false"
 		st.meet_only_at_path = false
@@ -543,7 +482,6 @@ local function init_meet(npc, ini, section, st, scheme)
 		st.use               = xr_logic.parse_condlist(nil, nil, nil, utils.cfg_get_string(ini, section, "use",         nil, false, "", def.use))
 		st.use_wpn           = xr_logic.parse_condlist(nil, nil, nil, utils.cfg_get_string(ini, section, "use_wpn",     nil, false, "", "false"))
 		st.meet_dialog       = xr_logic.parse_condlist(nil, nil, nil, utils.cfg_get_string(ini, section, "meet_dialog", nil, false, "", ""))
---		st.zone              = parse_zone_data(utils.cfg_get_string(ini, section, "zone", nil, false, "", ""))
 		st.precond           = utils.cfg_get_string(ini, section, "precond",           nil, false, "", def.precond)
 		st.abuse             = utils.cfg_get_string(ini, section, "abuse",             nil, false, "", def.abuse)
 		st.meet_only_at_path = utils.cfg_get_bool  (ini, section, "meet_only_at_path", nil, false, false)
@@ -566,21 +504,10 @@ local function init_meet(npc, ini, section, st, scheme)
 end
 
 function reset_meet(npc, scheme, npc_st, section)
-	local meet_section
-	if scheme == "nil" then
-		meet_section = utils.cfg_get_string(npc_st.ini, npc_st.section_logic, "meet", nil, false, "", "nil")
-	else
-		meet_section = utils.cfg_get_string(npc_st.ini, section, "meet", nil, false, "", "nil")
-	end
-	if meet_section == "default_meet" then
-		if scheme == "kamp" then
-			init_meet(npc, npc_st.ini, "nil", npc_st.meet, "kamp")
-		else
-			init_meet(npc, npc_st.ini, "nil", npc_st.meet, "nil")
-		end
-	else
-		init_meet(npc, npc_st.ini, meet_section, npc_st.meet, scheme)
-	end
+	local meet_section = section ~= "nil" and
+	                     utils.cfg_get_string(npc_st.ini, section, "meet", nil, false, "") or
+	                     utils.cfg_get_string(npc_st.ini, npc_st.section_logic, "meet", nil, false, "", "nil")
+	init_meet(npc, npc_st.ini, npc_st.ini_filename, meet_section, npc_st.meet, scheme)
 end
 
 function cannot_talk_by_weapon(npc)

@@ -195,8 +195,6 @@ function sim_board:__init()
 	self.squads = {}
 	self.id_generator = object_collection.object_collection()
 	self.spawn_smarts = {}
---	self.tmp_assigned_squad = {}
---	self.tmp_entered_squad = {}
 end
 
 function sim_board:start_sim()
@@ -262,27 +260,7 @@ function sim_board:register_smart(smart)
 		self.spawn_smarts[smart_id] = smart.respawn_sector
 	end
 end
---[[
-function sim_board:init_smart(smart) -- called (only) from smart_terrain.on_register()
-	local smart_id = smart.id
-	local temp_squad_table = self.tmp_assigned_squad[smart_id]
-	if temp_squad_table ~= nil then
-		for _, squad in pairs (temp_squad_table) do
---			dbglog("Delay-assigning %s squad with ID '%s' to smart '%s'", game.translate_string(squad.player_id), tostring(squad.squad_id), smart_names.get_smart_terrain_name(smart))
-			self:assign_squad_to_smart(squad, smart_id) -- delay-assigns squads from early instances of assign_squad_to_smart(squad, smart) where self.smarts[smart.id] was still nil
-		end
-		self.tmp_assigned_squad[smart_id] = nil
-	end
-	temp_squad_table = self.tmp_entered_squad[smart_id]
-	if temp_squad_table ~= nil then
-		for _, squad in pairs (temp_squad_table) do
---			dbglog("Delay-entering %s squad with ID '%s' to smart '%s'", game.translate_string(squad.player_id), tostring(squad.squad_id), smart_names.get_smart_terrain_name(smart))
-			self:enter_smart(squad, smart_id) -- delay-enters squads from early instances of enter_smart(squad, smart_id) where self.smarts[smart_id] was still nil
-		end
-		self.tmp_entered_squad[smart_id] = nil
-	end
-end
-]]
+
 function sim_board:unregister_smart(smart)
 	if self.smarts[smart.id] == nil then
 		abort("[sim_board:unregister_smart]: Tried to unregister a smart not registered: '%s'.", smart:name())
@@ -413,14 +391,6 @@ function sim_board:assign_squad_to_smart(squad, new_smart_id) -- first unassigns
 	local new_smart_info = self.smarts[new_smart_id]
 
 	if new_smart_info == nil then
---[[
-		local tmp_assigned_tbl = self.tmp_assigned_squad
-		if tmp_assigned_tbl[new_smart_id] == nil then
-			tmp_assigned_tbl[new_smart_id] = {}
-		end
-		table.insert(tmp_assigned_tbl[new_smart_id], squad)
-		return
-]]
 		abort("[sim_board:assign_squad_to_smart]: Tried to assign squad with ID '%s' to unregistered smart with ID '%s'.", tostring(squad.squad_id), tostring(new_smart_id))
 	end
 
@@ -518,14 +488,6 @@ function sim_board:enter_smart(squad, smart_id, after_load)
 	local smart_info = self.smarts[smart_id]
 
 	if smart_info == nil then
---[[
-		local tmp_entered_tbl = self.tmp_entered_squad
-		if tmp_entered_tbl[smart_id] == nil then
-			tmp_entered_tbl[smart_id] = {}
-		end
-		table.insert(tmp_entered_tbl[smart_id], squad)
-		return
-]]
 		abort("[sim_board:enter_smart]: Squad with ID '%s' tried to enter unregistered smart with ID '%s'.", tostring(squad.squad_id), tostring(smart_id))
 	end
 

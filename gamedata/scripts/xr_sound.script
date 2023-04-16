@@ -24,19 +24,17 @@ function set_sound_play(obj_id, section, faction, point)
 
 	if active_sound then
 		if not sound.play_always then
-			return active_sound.snd_obj
+			return active_sound
 		end
-		if active_sound.reset ~= nil then
-			active_sound:reset(obj_id) -- TODO: Don't reset before knowing you can play!
-		end
+		active_sound:reset(obj_id) -- TODO: Don't reset before knowing you can play!
 	end
 
 	if sound:play(obj_id, faction, point) then
 		active_sounds[obj_id] = sound
-		return sound.snd_obj
+		return sound
 	end
 
-	return active_sound and active_sound.snd_obj
+	return active_sound
 end
 
 function update(obj_id)
@@ -70,15 +68,13 @@ function stop_sound_looped(obj_id, section)
 	end
 	if section then
 		local active_loop = active_obj_loops[section]
-		if active_loop and active_loop:is_playing() then
+		if active_loop then
 			active_loop:stop()
 			active_obj_loops[section] = nil
 		end
 	else
 		for _, active_loop in pairs (active_obj_loops) do
-			if active_loop:is_playing() then
-				active_loop:stop()
-			end
+			active_loop:stop()
 		end
 		active_loops[obj_id] = nil
 	end
@@ -90,7 +86,7 @@ function set_volume_sound_looped(obj_id, section, level)
 		return
 	end
 	local active_loop = active_obj_loops[section]
-	if active_loop and active_loop:is_playing() then
+	if active_loop then
 		active_loop:set_volume(level)
 	end
 end
@@ -175,9 +171,8 @@ function stop_sounds_by_id(obj_id)
 	local active_obj_loops = active_loops[obj_id]
 	if active_obj_loops then
 		for _, active_loop in pairs (active_obj_loops) do
-			if active_loop:is_playing() then
-				active_loop:stop()
-			end
+			active_loop:stop()
 		end
+		active_loops[obj_id] = nil
 	end
 end

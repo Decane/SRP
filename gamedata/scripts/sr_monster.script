@@ -68,7 +68,8 @@ function fake_monster:update(delta)
 		else
 			self.current = vector():set(target_pos)
 		end
-		self.snd_obj = xr_sound.set_sound_play(self.object:id(), self.st.snd_obj)
+		local active_snd = xr_sound.set_sound_play(self.object:id(), self.st.snd_obj)
+		self.snd_obj = active_snd and active_snd.snd_obj
 		if self.snd_obj and self.snd_obj:playing() then
 			self.snd_obj:set_position(self.current)
 		end

@@ -23,7 +23,7 @@ function evaluator_close_combat:__init(st) super()
 	self.npc_st = db.storage[st.npc:id()]
 end
 
-local prop_can_fight = xr_evaluators_id.sidor_wounded_base + 1
+local prop_wounded = xr_evaluators_id.sidor_wounded_base
 
 function evaluator_close_combat:evaluate()
 
@@ -34,7 +34,7 @@ function evaluator_close_combat:evaluate()
 	if self.enemy_evaluator == nil then
 		local mgr = self.object:motivation_action_manager()
 		self.enemy_evaluator = mgr:evaluator(stalker_ids.property_enemy)
-		self.can_fight_evaluator = mgr:evaluator(prop_can_fight)
+		self.wounded_evaluator = mgr:evaluator(prop_wounded)
 		self.danger_evaluator = mgr:evaluator(stalker_ids.property_danger)
 	end
 
@@ -42,7 +42,7 @@ function evaluator_close_combat:evaluate()
 		return false
 	end
 
-	if not self.can_fight_evaluator:evaluate() then
+	if self.wounded_evaluator:evaluate() then
 		return false
 	end
 
@@ -266,7 +266,7 @@ function action_camper:process_danger()
 		return false
 	end
 
-	local danger_obj = danger:object()
+--	local danger_obj = danger:object() -- uncommented in vanilla, unsure which is correct (behaviors may differ with danger_type)
 
 	if danger_type == danger_object.attack_sound then
 		if danger_obj and danger_obj:character_community() == npc:character_community() then
@@ -420,7 +420,6 @@ local wp_danger_false     = world_property(stalker_ids.property_danger, false)
 local wp_enemy_false      = world_property(stalker_ids.property_enemy, false)
 local wp_anomaly_false    = world_property(stalker_ids.property_anomaly, false)
 local wp_smartcover_false = world_property(xr_evaluators_id.smartcover_action + 3, false)
-local wp_can_fight_true   = world_property(prop_can_fight, true)
 
 local wp_switched_section_true   = world_property(prop_camper_end, true)
 local wp_switched_section_false  = world_property(prop_camper_end, false)
@@ -437,12 +436,11 @@ function add_to_binder(npc, ini, scheme, section, st)
 
 	local action             = action_camper(npc, st)
 	action:add_precondition  (wp_alive_true)
-	action:add_precondition  (wp_switched_section_false)
-	action:add_precondition  (wp_close_combat_unsuitable)
-	action:add_precondition  (wp_can_fight_true)
 	action:add_precondition  (wp_danger_false)
 	action:add_precondition  (wp_anomaly_false)
 	action:add_precondition  (wp_smartcover_false)
+	action:add_precondition  (wp_close_combat_unsuitable)
+	action:add_precondition  (wp_switched_section_false)
 
 	xr_motivator.addCommonPrecondition(action)
 
