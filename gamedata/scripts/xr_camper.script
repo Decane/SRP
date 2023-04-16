@@ -101,7 +101,6 @@ function action_camper:reset_scheme()
 	local npc = self.object
 	local st = self.st
 	state_mgr.set_state(npc, "patrol")
-	st.signals = {}
 	if st.is_sniper then
 		self.move_mgr:reset(st.path_walk, st.path_walk_info, nil, nil, nil, st.suggested_state, {obj = self, func = self.process_point})
 		if not npc:sniper_update_rate() then
@@ -120,6 +119,7 @@ function action_camper:reset_scheme()
 end
 
 function action_camper:activate_scheme()
+	self.st.signals = {}
 	self:reset_scheme()
 end
 
@@ -149,15 +149,17 @@ function action_camper:execute()
 		local when_detected = npc:memory_time(best_enemy)
 		if time_global() - when_detected > st.idle then
 			best_enemy = nil
-			self.when_detected = nil
-			self.move_mgr:continue()
+			if self.when_detected ~= nil then
+				self.when_detected = nil
+				self:reset_scheme()
+			end
 		else
 			self.when_detected = when_detected
 		end
 	else
 		if self.when_detected ~= nil then
 			self.when_detected = nil
-			self.move_mgr:continue()
+			self:reset_scheme()
 		end
 	end
 

@@ -14,6 +14,7 @@ v1.1.4
 + Fixed NPCs becoming corrupted in the rare (but possible) case where the game attempts to load their logic before initializing the player, thus creating an opportunity for save corruption. - Decane
 + Fixed NPCs not settling into their sleeping animation at some sleep waypoints. - Decane
 + Fixed campfire NPCs sometimes not settling into their campfire idle animation. - Decane
++ Fixed sniper NPCs not settling back into their scan-for-targets state after an enemy detection timeout. - Decane
 + Fixed the start time for NPCs' heavily wounded state being saved incorrectly. - Decane
 + Fixed the issue where a 'capture' or 'eliminate' task could get cancelled while being actively progressed by the player if enough enemies are killed to cause the player's faction to achieve its desired relative power before the task is complete. - Decane
 + Fixed the issue where a 'capture' task could get cancelled instead of progressing to the counter-attack phase when an ally squad shows up if they are merely passing through the capture target. - Decane

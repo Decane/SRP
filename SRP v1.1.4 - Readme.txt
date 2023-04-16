@@ -206,6 +206,7 @@ Gameplay fixes:
 + Mitigated the issue where the weather would sometimes inexplicably change after loading.
 + Fixed NPCs not settling into their sleeping animation at some sleep waypoints.
 + Fixed campfire NPCs sometimes not settling into their campfire idle animation.
++ Fixed sniper NPCs not settling back into their scan-for-targets state after an enemy detection timeout.
 + Fixed the start time for NPCs' heavily wounded state being saved incorrectly.
 + Fixed PSI emission hit and effector intensity doubling on save/reload.
 + Fixed the issue where crows could get stuck floating in the air upon being shot.
