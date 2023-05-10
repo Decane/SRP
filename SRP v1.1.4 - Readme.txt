@@ -294,6 +294,7 @@ Audio fixes:
 + Fixed the issue where zombified stalkers would sometimes shout battle slogans as if they were ordinary stalkers.
 + Fixed the overlapping audio transmissions during the initial cutscene in the Abandoned Hospital.
 + Fixed Professor Beanpolev's overlapping greeting audio.
++ Fixed mercenaries' silent guitar playing around campfires.
 + Fixed some NPCs using the wrong voice files.
 + Fixed unlit campfires emitting a burning sound.
 

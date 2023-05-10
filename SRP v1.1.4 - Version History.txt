@@ -25,6 +25,7 @@ v1.1.4
 + Fixed the issue where the Freedom NPCs that hold the player at gunpoint at a Dark Valley entrance would refuse to talk to the player after the hold-up has ended. - Decane
 + Fixed the issue where the Freedom base megaphone could start playing Yar and Ashot's banter even if the player is in Yar's armory or Ashot's shop, resulting in the conversation being abruptly cut off immediately after starting. - Decane
 + Mitigated the issue where the weather would sometimes inexplicably change after loading. - Decane
++ Fixed the issue where mercenaries would fall mute around campfires and play the guitar silently. - Decane
 + Mitigated the issue where the player's character model would revert back to the default rookie jacket model upon picking up another suit of armor. - Artos, Shoker
 + Fixed the issue where the player would be rejected from playing the shooting minigame if their money precisely matches the entry fee instead of exceeding it. - Decane
 + Fixed an SRP v1.1.3 (or v1.0.2 with the optional 'No NPC Weapon Tossing Upon Death' feature) regression that prevented killed NPCs from ever dropping a grenade. - Decane

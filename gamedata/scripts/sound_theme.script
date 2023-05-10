@@ -107,9 +107,7 @@ function npc_sound:init_npc(npc)
 	if self.group_snd then
 		self.can_play_group_sound = true
 	else
-		if self.can_play_sound[npc_id] ~= false then
-			self.can_play_sound[npc_id] = true
-		end
+		self.can_play_sound[npc_id] = true
 	end
 end
 
@@ -263,6 +261,9 @@ function npc_sound:stop()
 		self.pda_snd_obj = nil
 	end
 end
+
+-- TODO: Stop saving self.can_play_group_sound and self.can_play_sound[npc_id].
+-- They get clobbered in npc_sound:init_npc on NPC net_spawn(), so saving them is useless.
 
 function npc_sound:save(thread)
 	thread:w_stringZ(tostring(self.played_id))
