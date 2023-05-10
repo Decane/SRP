@@ -1,6 +1,6 @@
 ------------------------------------
 
-Sky Reclamation Project (SRP) v1.1.4
+Sky Reclamation Project (SRP) v1.1.5
 
 ------------------------------------
 
@@ -24,7 +24,7 @@ Is a new game required?
 ====================================
 
 
-Yes, unless you are upgrading from SRP v1.1.3. This SRP release is compatible only with savegames created with SRP v1.1.3 or above.
+Yes.
 
 
 ====================================
@@ -327,6 +327,7 @@ Optional additional features:
 • Ally map spots only
 • Reduced grenade spam
 • No weapon sway on strafe
+• Move faster through water
 • Easier Cordon machine gun
 • Re-enabled pistol ironsights aiming
 • NPCs do not toss weapons upon death
@@ -335,6 +336,7 @@ Optional additional features:
 • Disabled developer startup videos
 • Smaller inventory grids
 • Transparent inventory
+• Smaller player icon
 
 
 ====================================
@@ -344,21 +346,21 @@ Advice / good to know:
 ====================================
 
 
-• Frequently make hard-saves through the main menu and avoid relying on the quick-save feature — it is less reliable than hard-saving.
+• Frequently make hard-saves through the main menu and avoid relying only on the quick-save feature — it re-uses a single save slot and getting soft-locked is possible (e.g. by getting stuck in level geometry).
 
-• A potentially more reliable alternative to the quick-save feature is to enter the main menu and press the 'S' key to create a quick named savegame from the currently active game session.
+• Enter the main menu and press the 'S' key to create a quick named savegame from the currently active game session.
 
-• Make a separate named savegame before entering Limansk; you will not be able to return to the earlier levels upon entering it until in freeplay mode.
+• Make a separate named savegame before entering Limansk; you will not be able to return to the earlier levels upon entering it until post-credits freeplay mode.
 
-• Keep the key bound to the 'use' command pressed down when approaching corpses to display the names of any tossed weapons in the vicinity.
+• Keep the key bound to the 'Use' command (default: 'F') pressed down when approaching corpses to display the names of any tossed weapons in the vicinity.
 
-• Double-click usable inventory items as a convenient shortcut to right-clicking them and selecting 'use this' from the droplist.
+• Double-click usable inventory items as a convenient shortcut to right-clicking them and selecting 'Use This' from the droplist.
 
-• Press the 'SHIFT' key as a convenient shortcut to take everything from a container or corpse when the inventory screen is open.
+• Press the key bound to the 'Sprint' command (default: 'X') as a convenient shortcut to take everything from a container or corpse when the inventory screen is open.
 
-• Outside the PDA, press the key bound to the 'order to attack' command (default: 'K') to order a nearby friendly squad, currently on standby, to attack.
+• Outside the PDA, press the key bound to the 'Order to Attack' command (default: 'K') to order a nearby friendly squad, currently on standby, to attack.
 
-• Inside the PDA, press the key bound to the 'order to attack' command (default: 'K') to toggle displaying of location names on the world map.
+• Inside the PDA, press the key bound to the 'Order to Attack' command (default: 'K') to toggle displaying of location names on the world map.
 
 • Unload the magazines of any weapons you have looted before selling them: contained ammo does not get factored into the selling price.
 

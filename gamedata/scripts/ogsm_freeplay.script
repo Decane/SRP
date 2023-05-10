@@ -52,7 +52,7 @@ function teleport()
 --		act:give_info_portion("set_changers")
 		set_lc()
 --	end
-	level.set_weather("default_clear", true)
+	level_weathers.get_weather_manager():reset()
 	level.remove_pp_effector(20080704)
 	level.remove_cam_effector(20080705)
 	act:set_actor_position(vector():set(133.6553, -0.0013, 268.5011))

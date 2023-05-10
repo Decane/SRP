@@ -5,6 +5,17 @@ This file provides a comprehensive changelog / version history for the SRP.
 -----------------------------------------------------------------------------
 
 
+v1.1.5
+
++ Fixed the issue where completing the 'Flood the underground' task would mistakenly increase Clear Sky's goodwill towards the player instead of Duty's. - Decane
++ Fixed the issue where the 'Find the teleport that leads to the heat pipeline' task would not be cancelled when the player disables Strelok's PSI protection, leaving it active in freeplay mode with no chance of completion. - Decane
++ Fixed the wrong ambient sounds being loaded for saves created at the CNPP in freeplay mode before leaving the level for the first time. - Decane
+~ Replaced canned NPC death animations with ragdoll physics in the optional 'Alternative Ballistics' feature.
++ (Optional) Added a feature to reduce the size of the player icon on the world map.
++ (Optional) Added a feature to move faster through bodies of water. - TehGlitch
+
+-----------------------------------------------------------------------------
+
 v1.1.4
 
 + Fixed the issue where an NPC could switch offline while their dialogue/trade/upgrade window is open, crashing the game. - Decane
@@ -41,11 +52,11 @@ v1.1.4
 + Fixed two invalid waypoint names in all.spawn to unlock an NPC sleep job at the 'Fishing hamlet' in the Swamps and in the 'Barracks in mine' at the Red Forest. - Decane
 + Fixed a badly positioned NPC sleep waypoint in the bandit base at the Garbage, in the army base at the Cordon, and at the 'Makeshift encampment' at the Cordon. - Decane
 + Added support for toggling location names on the world map via the alife_command key binding. - Decane
-+ Added a 'Move to Backpack'/'Attach to Belt' option to the menu that appears when right-clicking a detector in the inventory. - Lebedev88
-+ Fixed the alignment of the scroll bar in the inventory in widescreen mode. - Georgiy-Timoshin
++ Added a 'Move to Backpack' / 'Move to Slot' option to artifact detectors' right-click menu in the inventory. - Lebedev88
++ Fixed the alignment of the inventory scroll bar in widescreen mode. - Georgiy-Timoshin
 + Fixed minor UI bugs in the controls menu. - Georgiy-Timoshin
 + (Optional) Added a feature to disable weapon sway while strafing.
-- Removed the need to install the Widescreen Patch in a separate step by automating its application when a widescreen resolution is used. - Georgiy-Timoshin
+- Removed the need to install the 'Widescreen Patch' in a separate step by automatically enabling it whenever a widescreen resolution is used. - Georgiy-Timoshin
 
 -----------------------------------------------------------------------------
 

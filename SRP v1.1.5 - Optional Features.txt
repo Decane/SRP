@@ -34,6 +34,7 @@ Complete feature list:
  • NPC armor damage modifiers have been revised so that every different armor and helmet-type has its own unique protection stats.
  • Reduced the exaggerated zoom effect when aiming down iron-sights: doing so should only simulate focus and not give you a free, invisible 2x scope.
  • Tracers are enabled on all ammo types except those that leave behind a particle trail (e.g. OG-7V rockets, EM1 accumulators).
+ • Replaced canned NPC death animations with ragdoll physics.
 
 
 ====================================================
@@ -68,6 +69,14 @@ In the unmodded game, the first time you enter a map for which an emission is pe
 This feature makes it so emissions always have a 15% probability of occurring upon the player entering a map, regardless of how many times the player has in the past entered a map for which an emission is permitted and the permission criteria are met.
 
 This makes emissions much less frequent on average and should be a good compromise for those who find frequent emissions annoying but do not wish to disable the functionality altogether.
+
+
+====================================================
+Move Faster Through Water (*)
+====================================================
+
+
+Tempers the unmodded game's comically severe movement speed penalty in shallow bodies of water.
 
 
 ====================================================
@@ -234,6 +243,14 @@ Makes the inventory 19 x 10 grids (for widescreen) or 18 x 9 grids (for 4:3) ins
 Also tweaks trade screens, corpses, and containers to display more items at once.
 
 Substantially reduces the need for scrolling in the inventory screen.
+
+
+====================================================
+Smaller Player Icon (*)
+====================================================
+
+
+Reduces the size of the huge default player icon on the world map.
 
 
 ====================================================
