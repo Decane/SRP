@@ -299,6 +299,7 @@ Audio fixes:
 Other changes:
 
 + Restored some content left out of the game due to bugs and/or negligence (see changelog for details).
++ Added support for displaying location names on the world map.
 + Added a squad state indicator text to squad info tooltips on the world map.
 + Added the target camp owner name to 'capture' task dialog descriptions.
 + Added the target camp name to 'capture' task phase titles.
@@ -354,7 +355,9 @@ Advice / good to know:
 
 • Press the 'SHIFT' key as a convenient shortcut to take everything from a container or corpse when the inventory screen is open.
 
-• Press the key bound to the 'order to attack' command (default: 'K') to order a nearby friendly squad, currently on standby, to attack.
+• Outside the PDA, press the key bound to the 'order to attack' command (default: 'K') to order a nearby friendly squad, currently on standby, to attack.
+
+• Inside the PDA, press the key bound to the 'order to attack' command (default: 'K') to toggle displaying of location names on the world map.
 
 • Unload the magazines of any weapons you have looted before selling them: contained ammo does not get factored into the selling price.
 

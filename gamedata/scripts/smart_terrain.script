@@ -55,6 +55,9 @@ function se_smart_terrain:on_register()
 
 	cse_alife_smart_zone.on_register(self)
 
+	self:visible_for_map(false)
+	level.map_add_object_spot(self.id, self:name(), "")
+
 	local board = self.board
 
 	board:build_cross_table(self)

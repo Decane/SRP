@@ -1,0 +1,1713 @@
+<!-- garbage -->
+
+<gar_smart_terrain_1_5>
+	<level_map spot="gar_smart_terrain_1_5_spot"/>
+</gar_smart_terrain_1_5>
+<gar_smart_terrain_1_5_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_gar_smart_terrain_1_5</text>
+</gar_smart_terrain_1_5_spot>
+
+<gar_smart_terrain_1_7>
+	<level_map spot="gar_smart_terrain_1_7_spot"/>
+</gar_smart_terrain_1_7>
+<gar_smart_terrain_1_7_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_gar_smart_terrain_1_7</text>
+</gar_smart_terrain_1_7_spot>
+
+<gar_smart_terrain_2_3>
+	<level_map spot="gar_smart_terrain_2_3_spot"/>
+</gar_smart_terrain_2_3>
+<gar_smart_terrain_2_3_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_gar_smart_terrain_2_3</text>
+</gar_smart_terrain_2_3_spot>
+
+<gar_smart_terrain_2_4>
+	<level_map spot="gar_smart_terrain_2_4_spot"/>
+</gar_smart_terrain_2_4>
+<gar_smart_terrain_2_4_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_gar_smart_terrain_2_4</text>
+</gar_smart_terrain_2_4_spot>
+
+<gar_smart_terrain_3_2>
+	<level_map spot="gar_smart_terrain_3_2_spot"/>
+</gar_smart_terrain_3_2>
+<gar_smart_terrain_3_2_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_gar_smart_terrain_3_2</text>
+</gar_smart_terrain_3_2_spot>
+
+<gar_smart_terrain_3_3>
+	<level_map spot="gar_smart_terrain_3_3_spot"/>
+</gar_smart_terrain_3_3>
+<gar_smart_terrain_3_3_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_gar_smart_terrain_3_3</text>
+</gar_smart_terrain_3_3_spot>
+
+<gar_smart_terrain_3_5>
+	<level_map spot="gar_smart_terrain_3_5_spot"/>
+</gar_smart_terrain_3_5>
+<gar_smart_terrain_3_5_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_gar_smart_terrain_3_5</text>
+</gar_smart_terrain_3_5_spot>
+
+<gar_smart_terrain_3_6>
+	<level_map spot="gar_smart_terrain_3_6_spot"/>
+</gar_smart_terrain_3_6>
+<gar_smart_terrain_3_6_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_gar_smart_terrain_3_6</text>
+</gar_smart_terrain_3_6_spot>
+
+<gar_smart_terrain_3_7>
+	<level_map spot="gar_smart_terrain_3_7_spot"/>
+</gar_smart_terrain_3_7>
+<gar_smart_terrain_3_7_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_gar_smart_terrain_3_7</text>
+</gar_smart_terrain_3_7_spot>
+
+<gar_smart_terrain_3_8>
+	<level_map spot="gar_smart_terrain_3_8_spot"/>
+</gar_smart_terrain_3_8>
+<gar_smart_terrain_3_8_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_gar_smart_terrain_3_8</text>
+</gar_smart_terrain_3_8_spot>
+
+<gar_smart_terrain_4_2>
+	<level_map spot="gar_smart_terrain_4_2_spot"/>
+</gar_smart_terrain_4_2>
+<gar_smart_terrain_4_2_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_gar_smart_terrain_4_2</text>
+</gar_smart_terrain_4_2_spot>
+<!--
+<gar_smart_terrain_4_3>
+	<level_map spot="gar_smart_terrain_4_3_spot"/>
+</gar_smart_terrain_4_3>
+<gar_smart_terrain_4_3_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_gar_smart_terrain_4_3</text>
+</gar_smart_terrain_4_3_spot>
+
+<gar_smart_terrain_4_4>
+	<level_map spot="gar_smart_terrain_4_4_spot"/>
+</gar_smart_terrain_4_4>
+<gar_smart_terrain_4_4_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_gar_smart_terrain_4_4</text>
+</gar_smart_terrain_4_4_spot>
+-->
+<gar_smart_terrain_4_5>
+	<level_map spot="gar_smart_terrain_4_5_spot"/>
+</gar_smart_terrain_4_5>
+<gar_smart_terrain_4_5_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_gar_smart_terrain_4_5</text>
+</gar_smart_terrain_4_5_spot>
+<!--
+<gar_smart_terrain_4_6>
+	<level_map spot="gar_smart_terrain_4_6_spot"/>
+</gar_smart_terrain_4_6>
+<gar_smart_terrain_4_6_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_gar_smart_terrain_4_6</text>
+</gar_smart_terrain_4_6_spot>
+-->
+<gar_smart_terrain_4_7>
+	<level_map spot="gar_smart_terrain_4_7_spot"/>
+</gar_smart_terrain_4_7>
+<gar_smart_terrain_4_7_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_gar_smart_terrain_4_7</text>
+</gar_smart_terrain_4_7_spot>
+
+<gar_smart_terrain_4_8>
+	<level_map spot="gar_smart_terrain_4_8_spot"/>
+</gar_smart_terrain_4_8>
+<gar_smart_terrain_4_8_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_gar_smart_terrain_4_8</text>
+</gar_smart_terrain_4_8_spot>
+
+<gar_smart_terrain_5_2>
+	<level_map spot="gar_smart_terrain_5_2_spot"/>
+</gar_smart_terrain_5_2>
+<gar_smart_terrain_5_2_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_gar_smart_terrain_5_2</text>
+</gar_smart_terrain_5_2_spot>
+
+<gar_smart_terrain_5_4>
+	<level_map spot="gar_smart_terrain_5_4_spot"/>
+</gar_smart_terrain_5_4>
+<gar_smart_terrain_5_4_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_gar_smart_terrain_5_4</text>
+</gar_smart_terrain_5_4_spot>
+
+<gar_smart_terrain_5_5>
+	<level_map spot="gar_smart_terrain_5_5_spot"/>
+</gar_smart_terrain_5_5>
+<gar_smart_terrain_5_5_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_gar_smart_terrain_5_5</text>
+</gar_smart_terrain_5_5_spot>
+
+<gar_smart_terrain_5_6>
+	<level_map spot="gar_smart_terrain_5_6_spot"/>
+</gar_smart_terrain_5_6>
+<gar_smart_terrain_5_6_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_gar_smart_terrain_5_6</text>
+</gar_smart_terrain_5_6_spot>
+
+<gar_smart_terrain_5_8>
+	<level_map spot="gar_smart_terrain_5_8_spot"/>
+</gar_smart_terrain_5_8>
+<gar_smart_terrain_5_8_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_gar_smart_terrain_5_8</text>
+</gar_smart_terrain_5_8_spot>
+
+<gar_smart_terrain_6_1>
+	<level_map spot="gar_smart_terrain_6_1_spot"/>
+</gar_smart_terrain_6_1>
+<gar_smart_terrain_6_1_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_gar_smart_terrain_6_1</text>
+</gar_smart_terrain_6_1_spot>
+
+<gar_smart_terrain_6_3>
+	<level_map spot="gar_smart_terrain_6_3_spot"/>
+</gar_smart_terrain_6_3>
+<gar_smart_terrain_6_3_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_gar_smart_terrain_6_3</text>
+</gar_smart_terrain_6_3_spot>
+
+<gar_smart_terrain_6_4>
+	<level_map spot="gar_smart_terrain_6_4_spot"/>
+</gar_smart_terrain_6_4>
+<gar_smart_terrain_6_4_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_gar_smart_terrain_6_4</text>
+</gar_smart_terrain_6_4_spot>
+
+<gar_smart_terrain_6_5>
+	<level_map spot="gar_smart_terrain_6_5_spot"/>
+</gar_smart_terrain_6_5>
+<gar_smart_terrain_6_5_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_gar_smart_terrain_6_5</text>
+</gar_smart_terrain_6_5_spot>
+
+<gar_smart_terrain_6_6>
+	<level_map spot="gar_smart_terrain_6_6_spot"/>
+</gar_smart_terrain_6_6>
+<gar_smart_terrain_6_6_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_gar_smart_terrain_6_6</text>
+</gar_smart_terrain_6_6_spot>
+
+<gar_smart_terrain_6_7>
+	<level_map spot="gar_smart_terrain_6_7_spot"/>
+</gar_smart_terrain_6_7>
+<gar_smart_terrain_6_7_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_gar_smart_terrain_6_7</text>
+</gar_smart_terrain_6_7_spot>
+<!--
+<gar_smart_terrain_7_2>
+	<level_map spot="gar_smart_terrain_7_2_spot"/>
+</gar_smart_terrain_7_2>
+<gar_smart_terrain_7_2_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_gar_smart_terrain_7_2</text>
+</gar_smart_terrain_7_2_spot>
+-->
+<gar_smart_terrain_7_3>
+	<level_map spot="gar_smart_terrain_7_3_spot"/>
+</gar_smart_terrain_7_3>
+<gar_smart_terrain_7_3_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_gar_smart_terrain_7_3</text>
+</gar_smart_terrain_7_3_spot>
+
+<gar_smart_terrain_7_4>
+	<level_map spot="gar_smart_terrain_7_4_spot"/>
+</gar_smart_terrain_7_4>
+<gar_smart_terrain_7_4_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_gar_smart_terrain_7_4</text>
+</gar_smart_terrain_7_4_spot>
+
+<gar_smart_terrain_8_3>
+	<level_map spot="gar_smart_terrain_8_3_spot"/>
+</gar_smart_terrain_8_3>
+<gar_smart_terrain_8_3_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_gar_smart_terrain_8_3</text>
+</gar_smart_terrain_8_3_spot>
+
+<gar_smart_terrain_8_5>
+	<level_map spot="gar_smart_terrain_8_5_spot"/>
+</gar_smart_terrain_8_5>
+<gar_smart_terrain_8_5_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_gar_smart_terrain_8_5</text>
+</gar_smart_terrain_8_5_spot>
+
+<gar_smart_terrain_8_7>
+	<level_map spot="gar_smart_terrain_8_7_spot"/>
+</gar_smart_terrain_8_7>
+<gar_smart_terrain_8_7_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_gar_smart_terrain_8_7</text>
+</gar_smart_terrain_8_7_spot>
+
+<!-- marsh -->
+
+<mar_smart_terrain_10_10>
+	<level_map spot="mar_smart_terrain_10_10_spot"/>
+</mar_smart_terrain_10_10>
+<mar_smart_terrain_10_10_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_mar_smart_terrain_10_10</text>
+</mar_smart_terrain_10_10_spot>
+
+<mar_smart_terrain_10_5>
+	<level_map spot="mar_smart_terrain_10_5_spot"/>
+</mar_smart_terrain_10_5>
+<mar_smart_terrain_10_5_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_mar_smart_terrain_10_5</text>
+</mar_smart_terrain_10_5_spot>
+
+<mar_smart_terrain_10_7>
+	<level_map spot="mar_smart_terrain_10_7_spot"/>
+</mar_smart_terrain_10_7>
+<mar_smart_terrain_10_7_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_mar_smart_terrain_10_7</text>
+</mar_smart_terrain_10_7_spot>
+
+<mar_smart_terrain_11_11>
+	<level_map spot="mar_smart_terrain_11_11_spot"/>
+</mar_smart_terrain_11_11>
+<mar_smart_terrain_11_11_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_mar_smart_terrain_11_11</text>
+</mar_smart_terrain_11_11_spot>
+
+<mar_smart_terrain_11_3>
+	<level_map spot="mar_smart_terrain_11_3_spot"/>
+</mar_smart_terrain_11_3>
+<mar_smart_terrain_11_3_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_mar_smart_terrain_11_3</text>
+</mar_smart_terrain_11_3_spot>
+
+<mar_smart_terrain_12_2>
+	<level_map spot="mar_smart_terrain_12_2_spot"/>
+</mar_smart_terrain_12_2>
+<mar_smart_terrain_12_2_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_mar_smart_terrain_12_2</text>
+</mar_smart_terrain_12_2_spot>
+
+<mar_smart_terrain_3_10>
+	<level_map spot="mar_smart_terrain_3_10_spot"/>
+</mar_smart_terrain_3_10>
+<mar_smart_terrain_3_10_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_mar_smart_terrain_3_10</text>
+</mar_smart_terrain_3_10_spot>
+
+<mar_smart_terrain_3_3>
+	<level_map spot="mar_smart_terrain_3_3_spot"/>
+</mar_smart_terrain_3_3>
+<mar_smart_terrain_3_3_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_mar_smart_terrain_3_3</text>
+</mar_smart_terrain_3_3_spot>
+
+<mar_smart_terrain_3_7>
+	<level_map spot="mar_smart_terrain_3_7_spot"/>
+</mar_smart_terrain_3_7>
+<mar_smart_terrain_3_7_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_mar_smart_terrain_3_7</text>
+</mar_smart_terrain_3_7_spot>
+
+<mar_smart_terrain_4_5>
+	<level_map spot="mar_smart_terrain_4_5_spot"/>
+</mar_smart_terrain_4_5>
+<mar_smart_terrain_4_5_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_mar_smart_terrain_4_5</text>
+</mar_smart_terrain_4_5_spot>
+
+<mar_smart_terrain_4_7>
+	<level_map spot="mar_smart_terrain_4_7_spot"/>
+</mar_smart_terrain_4_7>
+<mar_smart_terrain_4_7_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_mar_smart_terrain_4_7</text>
+</mar_smart_terrain_4_7_spot>
+
+<mar_smart_terrain_5_10>
+	<level_map spot="mar_smart_terrain_5_10_spot"/>
+</mar_smart_terrain_5_10>
+<mar_smart_terrain_5_10_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_mar_smart_terrain_5_10</text>
+</mar_smart_terrain_5_10_spot>
+
+<mar_smart_terrain_5_12>
+	<level_map spot="mar_smart_terrain_5_12_spot"/>
+</mar_smart_terrain_5_12>
+<mar_smart_terrain_5_12_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_mar_smart_terrain_5_12</text>
+</mar_smart_terrain_5_12_spot>
+
+<mar_smart_terrain_5_8>
+	<level_map spot="mar_smart_terrain_5_8_spot"/>
+</mar_smart_terrain_5_8>
+<mar_smart_terrain_5_8_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_mar_smart_terrain_5_8</text>
+</mar_smart_terrain_5_8_spot>
+
+<mar_smart_terrain_6_10>
+	<level_map spot="mar_smart_terrain_6_10_spot"/>
+</mar_smart_terrain_6_10>
+<mar_smart_terrain_6_10_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_mar_smart_terrain_6_10</text>
+</mar_smart_terrain_6_10_spot>
+
+<mar_smart_terrain_6_11>
+	<level_map spot="mar_smart_terrain_6_11_spot"/>
+</mar_smart_terrain_6_11>
+<mar_smart_terrain_6_11_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_mar_smart_terrain_6_11</text>
+</mar_smart_terrain_6_11_spot>
+
+<mar_smart_terrain_6_4>
+	<level_map spot="mar_smart_terrain_6_4_spot"/>
+</mar_smart_terrain_6_4>
+<mar_smart_terrain_6_4_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_mar_smart_terrain_6_4</text>
+</mar_smart_terrain_6_4_spot>
+
+<mar_smart_terrain_6_7>
+	<level_map spot="mar_smart_terrain_6_7_spot"/>
+</mar_smart_terrain_6_7>
+<mar_smart_terrain_6_7_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_mar_smart_terrain_6_7</text>
+</mar_smart_terrain_6_7_spot>
+
+<mar_smart_terrain_6_8>
+	<level_map spot="mar_smart_terrain_6_8_spot"/>
+</mar_smart_terrain_6_8>
+<mar_smart_terrain_6_8_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_mar_smart_terrain_6_8</text>
+</mar_smart_terrain_6_8_spot>
+
+<mar_smart_terrain_7_3>
+	<level_map spot="mar_smart_terrain_7_3_spot"/>
+</mar_smart_terrain_7_3>
+<mar_smart_terrain_7_3_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_mar_smart_terrain_7_3</text>
+</mar_smart_terrain_7_3_spot>
+
+<mar_smart_terrain_7_7>
+	<level_map spot="mar_smart_terrain_7_7_spot"/>
+</mar_smart_terrain_7_7>
+<mar_smart_terrain_7_7_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_mar_smart_terrain_7_7</text>
+</mar_smart_terrain_7_7_spot>
+
+<mar_smart_terrain_8_11>
+	<level_map spot="mar_smart_terrain_8_11_spot"/>
+</mar_smart_terrain_8_11>
+<mar_smart_terrain_8_11_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_mar_smart_terrain_8_11</text>
+</mar_smart_terrain_8_11_spot>
+
+<mar_smart_terrain_8_4>
+	<level_map spot="mar_smart_terrain_8_4_spot"/>
+</mar_smart_terrain_8_4>
+<mar_smart_terrain_8_4_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_mar_smart_terrain_8_4</text>
+</mar_smart_terrain_8_4_spot>
+
+<mar_smart_terrain_8_8>
+	<level_map spot="mar_smart_terrain_8_8_spot"/>
+</mar_smart_terrain_8_8>
+<mar_smart_terrain_8_8_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_mar_smart_terrain_8_8</text>
+</mar_smart_terrain_8_8_spot>
+
+<mar_smart_terrain_8_9>
+	<level_map spot="mar_smart_terrain_8_9_spot"/>
+</mar_smart_terrain_8_9>
+<mar_smart_terrain_8_9_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_mar_smart_terrain_8_9</text>
+</mar_smart_terrain_8_9_spot>
+
+<mar_smart_terrain_9_10>
+	<level_map spot="mar_smart_terrain_9_10_spot"/>
+</mar_smart_terrain_9_10>
+<mar_smart_terrain_9_10_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_mar_smart_terrain_9_10</text>
+</mar_smart_terrain_9_10_spot>
+
+<mar_smart_terrain_csky_base>
+	<level_map spot="mar_smart_terrain_csky_base_spot"/>
+</mar_smart_terrain_csky_base>
+<mar_smart_terrain_csky_base_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_mar_smart_terrain_csky_base</text>
+</mar_smart_terrain_csky_base_spot>
+
+<mar_smart_terrain_csky_respawn>
+	<level_map spot="mar_smart_terrain_csky_respawn_spot"/>
+</mar_smart_terrain_csky_respawn>
+<mar_smart_terrain_csky_respawn_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_mar_smart_terrain_csky_respawn</text>
+</mar_smart_terrain_csky_respawn_spot>
+
+<!-- agroprom -->
+<!--
+<agr_smart_terrain_1_11>
+	<level_map spot="agr_smart_terrain_1_11_spot"/>
+</agr_smart_terrain_1_11>
+<agr_smart_terrain_1_11_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_agr_smart_terrain_1_11</text>
+</agr_smart_terrain_1_11_spot>
+-->
+<agr_smart_terrain_1_2>
+	<level_map spot="agr_smart_terrain_1_2_spot"/>
+</agr_smart_terrain_1_2>
+<agr_smart_terrain_1_2_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_agr_smart_terrain_1_2</text>
+</agr_smart_terrain_1_2_spot>
+
+<agr_smart_terrain_1_3>
+	<level_map spot="agr_smart_terrain_1_3_spot"/>
+</agr_smart_terrain_1_3>
+<agr_smart_terrain_1_3_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_agr_smart_terrain_1_3</text>
+</agr_smart_terrain_1_3_spot>
+
+<agr_smart_terrain_1_6>
+	<level_map spot="agr_smart_terrain_1_6_spot"/>
+</agr_smart_terrain_1_6>
+<agr_smart_terrain_1_6_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_agr_smart_terrain_1_6</text>
+</agr_smart_terrain_1_6_spot>
+
+<agr_smart_terrain_1_6_near_1>
+	<level_map spot="agr_smart_terrain_1_6_near_1_spot"/>
+</agr_smart_terrain_1_6_near_1>
+<agr_smart_terrain_1_6_near_1_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_agr_smart_terrain_1_6_near_1</text>
+</agr_smart_terrain_1_6_near_1_spot>
+<!--
+<agr_smart_terrain_1_near_2>
+	<level_map spot="agr_smart_terrain_1_near_2_spot"/>
+</agr_smart_terrain_1_near_2>
+<agr_smart_terrain_1_near_2_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_agr_smart_terrain_1_near_2</text>
+</agr_smart_terrain_1_near_2_spot>
+-->
+<agr_smart_terrain_2_2>
+	<level_map spot="agr_smart_terrain_2_2_spot"/>
+</agr_smart_terrain_2_2>
+<agr_smart_terrain_2_2_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_agr_smart_terrain_2_2</text>
+</agr_smart_terrain_2_2_spot>
+
+<agr_smart_terrain_2_3>
+	<level_map spot="agr_smart_terrain_2_3_spot"/>
+</agr_smart_terrain_2_3>
+<agr_smart_terrain_2_3_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_agr_smart_terrain_2_3</text>
+</agr_smart_terrain_2_3_spot>
+
+<agr_smart_terrain_2_5>
+	<level_map spot="agr_smart_terrain_2_5_spot"/>
+</agr_smart_terrain_2_5>
+<agr_smart_terrain_2_5_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_agr_smart_terrain_2_5</text>
+</agr_smart_terrain_2_5_spot>
+
+<agr_smart_terrain_3_5>
+	<level_map spot="agr_smart_terrain_3_5_spot"/>
+</agr_smart_terrain_3_5>
+<agr_smart_terrain_3_5_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_agr_smart_terrain_3_5</text>
+</agr_smart_terrain_3_5_spot>
+
+<agr_smart_terrain_4_2>
+	<level_map spot="agr_smart_terrain_4_2_spot"/>
+</agr_smart_terrain_4_2>
+<agr_smart_terrain_4_2_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_agr_smart_terrain_4_2</text>
+</agr_smart_terrain_4_2_spot>
+
+<agr_smart_terrain_4_4>
+	<level_map spot="agr_smart_terrain_4_4_spot"/>
+</agr_smart_terrain_4_4>
+<agr_smart_terrain_4_4_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_agr_smart_terrain_4_4</text>
+</agr_smart_terrain_4_4_spot>
+
+<agr_smart_terrain_4_4_near_1>
+	<level_map spot="agr_smart_terrain_4_4_near_1_spot"/>
+</agr_smart_terrain_4_4_near_1>
+<agr_smart_terrain_4_4_near_1_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_agr_smart_terrain_4_4_near_1</text>
+</agr_smart_terrain_4_4_near_1_spot>
+
+<agr_smart_terrain_4_4_near_2>
+	<level_map spot="agr_smart_terrain_4_4_near_2_spot"/>
+</agr_smart_terrain_4_4_near_2>
+<agr_smart_terrain_4_4_near_2_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_agr_smart_terrain_4_4_near_2</text>
+</agr_smart_terrain_4_4_near_2_spot>
+
+<agr_smart_terrain_4_6>
+	<level_map spot="agr_smart_terrain_4_6_spot"/>
+</agr_smart_terrain_4_6>
+<agr_smart_terrain_4_6_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_agr_smart_terrain_4_6</text>
+</agr_smart_terrain_4_6_spot>
+
+<agr_smart_terrain_5_2>
+	<level_map spot="agr_smart_terrain_5_2_spot"/>
+</agr_smart_terrain_5_2>
+<agr_smart_terrain_5_2_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_agr_smart_terrain_5_2</text>
+</agr_smart_terrain_5_2_spot>
+
+<agr_smart_terrain_5_3>
+	<level_map spot="agr_smart_terrain_5_3_spot"/>
+</agr_smart_terrain_5_3>
+<agr_smart_terrain_5_3_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_agr_smart_terrain_5_3</text>
+</agr_smart_terrain_5_3_spot>
+
+<agr_smart_terrain_5_4>
+	<level_map spot="agr_smart_terrain_5_4_spot"/>
+</agr_smart_terrain_5_4>
+<agr_smart_terrain_5_4_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_agr_smart_terrain_5_4</text>
+</agr_smart_terrain_5_4_spot>
+
+<agr_smart_terrain_5_7>
+	<level_map spot="agr_smart_terrain_5_7_spot"/>
+</agr_smart_terrain_5_7>
+<agr_smart_terrain_5_7_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_agr_smart_terrain_5_7</text>
+</agr_smart_terrain_5_7_spot>
+<!--
+<agr_smart_terrain_5_7u>
+	<level_map spot="agr_smart_terrain_5_7u_spot"/>
+</agr_smart_terrain_5_7u>
+<agr_smart_terrain_5_7u_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_agr_smart_terrain_5_7u</text>
+</agr_smart_terrain_5_7u_spot>
+-->
+<agr_smart_terrain_6_4>
+	<level_map spot="agr_smart_terrain_6_4_spot"/>
+</agr_smart_terrain_6_4>
+<agr_smart_terrain_6_4_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_agr_smart_terrain_6_4</text>
+</agr_smart_terrain_6_4_spot>
+
+<agr_smart_terrain_6_6>
+	<level_map spot="agr_smart_terrain_6_6_spot"/>
+</agr_smart_terrain_6_6>
+<agr_smart_terrain_6_6_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_agr_smart_terrain_6_6</text>
+</agr_smart_terrain_6_6_spot>
+
+<agr_smart_terrain_7_4>
+	<level_map spot="agr_smart_terrain_7_4_spot"/>
+</agr_smart_terrain_7_4>
+<agr_smart_terrain_7_4_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_agr_smart_terrain_7_4</text>
+</agr_smart_terrain_7_4_spot>
+
+<agr_smart_terrain_7_5>
+	<level_map spot="agr_smart_terrain_7_5_spot"/>
+</agr_smart_terrain_7_5>
+<agr_smart_terrain_7_5_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_agr_smart_terrain_7_5</text>
+</agr_smart_terrain_7_5_spot>
+
+<agr_smart_terrain_1_6_near_2>
+	<level_map spot="agr_smart_terrain_1_6_near_2_spot"/>
+</agr_smart_terrain_1_6_near_2>
+<agr_smart_terrain_1_6_near_2_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_agr_smart_terrain_1_6_near_2</text>
+</agr_smart_terrain_1_6_near_2_spot>
+
+<agr_smart_terrain_4_4_near_3>
+	<level_map spot="agr_smart_terrain_4_4_near_3_spot"/>
+</agr_smart_terrain_4_4_near_3>
+<agr_smart_terrain_4_4_near_3_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_agr_smart_terrain_4_4_near_3</text>
+</agr_smart_terrain_4_4_near_3_spot>
+
+<!-- agroprom_underground -->
+
+<agru_smart_terrain_1>
+	<level_map spot="agru_smart_terrain_1_spot"/>
+</agru_smart_terrain_1>
+<agru_smart_terrain_1_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_agru_smart_terrain_1</text>
+</agru_smart_terrain_1_spot>
+
+<!-- darkvalley -->
+<!--
+<val_smart_terrain_10_10>
+	<level_map spot="val_smart_terrain_10_10_spot"/>
+</val_smart_terrain_10_10>
+<val_smart_terrain_10_10_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_val_smart_terrain_10_10</text>
+</val_smart_terrain_10_10_spot>
+
+<val_smart_terrain_10_9>
+	<level_map spot="val_smart_terrain_10_9_spot"/>
+</val_smart_terrain_10_9>
+<val_smart_terrain_10_9_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_val_smart_terrain_10_9</text>
+</val_smart_terrain_10_9_spot>
+-->
+<val_smart_terrain_1_2>
+	<level_map spot="val_smart_terrain_1_2_spot"/>
+</val_smart_terrain_1_2>
+<val_smart_terrain_1_2_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_val_smart_terrain_1_2</text>
+</val_smart_terrain_1_2_spot>
+
+<val_smart_terrain_3_0>
+	<level_map spot="val_smart_terrain_3_0_spot"/>
+</val_smart_terrain_3_0>
+<val_smart_terrain_3_0_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_val_smart_terrain_3_0</text>
+</val_smart_terrain_3_0_spot>
+
+<val_smart_terrain_4_0>
+	<level_map spot="val_smart_terrain_4_0_spot"/>
+</val_smart_terrain_4_0>
+<val_smart_terrain_4_0_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_val_smart_terrain_4_0</text>
+</val_smart_terrain_4_0_spot>
+
+<val_smart_terrain_5_10>
+	<level_map spot="val_smart_terrain_5_10_spot"/>
+</val_smart_terrain_5_10>
+<val_smart_terrain_5_10_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_val_smart_terrain_5_10</text>
+</val_smart_terrain_5_10_spot>
+
+<val_smart_terrain_5_7>
+	<level_map spot="val_smart_terrain_5_7_spot"/>
+</val_smart_terrain_5_7>
+<val_smart_terrain_5_7_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_val_smart_terrain_5_7</text>
+</val_smart_terrain_5_7_spot>
+
+<val_smart_terrain_5_8>
+	<level_map spot="val_smart_terrain_5_8_spot"/>
+</val_smart_terrain_5_8>
+<val_smart_terrain_5_8_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_val_smart_terrain_5_8</text>
+</val_smart_terrain_5_8_spot>
+
+<val_smart_terrain_6_4>
+	<level_map spot="val_smart_terrain_6_4_spot"/>
+</val_smart_terrain_6_4>
+<val_smart_terrain_6_4_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_val_smart_terrain_6_4</text>
+</val_smart_terrain_6_4_spot>
+
+<val_smart_terrain_6_5>
+	<level_map spot="val_smart_terrain_6_5_spot"/>
+</val_smart_terrain_6_5>
+<val_smart_terrain_6_5_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_val_smart_terrain_6_5</text>
+</val_smart_terrain_6_5_spot>
+
+<val_smart_terrain_6_6>
+	<level_map spot="val_smart_terrain_6_6_spot"/>
+</val_smart_terrain_6_6>
+<val_smart_terrain_6_6_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_val_smart_terrain_6_6</text>
+</val_smart_terrain_6_6_spot>
+<!--
+<val_smart_terrain_7_0>
+	<level_map spot="val_smart_terrain_7_0_spot"/>
+</val_smart_terrain_7_0>
+<val_smart_terrain_7_0_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_val_smart_terrain_7_0</text>
+</val_smart_terrain_7_0_spot>
+-->
+<val_smart_terrain_7_11>
+	<level_map spot="val_smart_terrain_7_11_spot"/>
+</val_smart_terrain_7_11>
+<val_smart_terrain_7_11_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_val_smart_terrain_7_11</text>
+</val_smart_terrain_7_11_spot>
+
+<val_smart_terrain_7_3>
+	<level_map spot="val_smart_terrain_7_3_spot"/>
+</val_smart_terrain_7_3>
+<val_smart_terrain_7_3_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_val_smart_terrain_7_3</text>
+</val_smart_terrain_7_3_spot>
+
+<val_smart_terrain_7_4>
+	<level_map spot="val_smart_terrain_7_4_spot"/>
+</val_smart_terrain_7_4>
+<val_smart_terrain_7_4_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_val_smart_terrain_7_4</text>
+</val_smart_terrain_7_4_spot>
+
+<val_smart_terrain_7_5>
+	<level_map spot="val_smart_terrain_7_5_spot"/>
+</val_smart_terrain_7_5>
+<val_smart_terrain_7_5_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_val_smart_terrain_7_5</text>
+</val_smart_terrain_7_5_spot>
+
+<val_smart_terrain_7_6>
+	<level_map spot="val_smart_terrain_7_6_spot"/>
+</val_smart_terrain_7_6>
+<val_smart_terrain_7_6_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_val_smart_terrain_7_6</text>
+</val_smart_terrain_7_6_spot>
+
+<val_smart_terrain_7_8>
+	<level_map spot="val_smart_terrain_7_8_spot"/>
+</val_smart_terrain_7_8>
+<val_smart_terrain_7_8_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_val_smart_terrain_7_8</text>
+</val_smart_terrain_7_8_spot>
+
+<val_smart_terrain_8_6>
+	<level_map spot="val_smart_terrain_8_6_spot"/>
+</val_smart_terrain_8_6>
+<val_smart_terrain_8_6_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_val_smart_terrain_8_6</text>
+</val_smart_terrain_8_6_spot>
+
+<val_smart_terrain_8_7>
+	<level_map spot="val_smart_terrain_8_7_spot"/>
+</val_smart_terrain_8_7>
+<val_smart_terrain_8_7_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_val_smart_terrain_8_7</text>
+</val_smart_terrain_8_7_spot>
+
+<val_smart_terrain_8_9>
+	<level_map spot="val_smart_terrain_8_9_spot"/>
+</val_smart_terrain_8_9>
+<val_smart_terrain_8_9_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_val_smart_terrain_8_9</text>
+</val_smart_terrain_8_9_spot>
+
+<val_smart_terrain_9_10>
+	<level_map spot="val_smart_terrain_9_10_spot"/>
+</val_smart_terrain_9_10>
+<val_smart_terrain_9_10_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_val_smart_terrain_9_10</text>
+</val_smart_terrain_9_10_spot>
+
+<val_smart_terrain_9_11> <!-- SRP -->
+	<level_map spot="val_smart_terrain_9_11_spot"/>
+</val_smart_terrain_9_11>
+<val_smart_terrain_9_11_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1"></text>
+</val_smart_terrain_9_11_spot>
+
+<val_smart_terrain_9_2>
+	<level_map spot="val_smart_terrain_9_2_spot"/>
+</val_smart_terrain_9_2>
+<val_smart_terrain_9_2_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_val_smart_terrain_9_2</text>
+</val_smart_terrain_9_2_spot>
+
+<val_smart_terrain_9_4>
+	<level_map spot="val_smart_terrain_9_4_spot"/>
+</val_smart_terrain_9_4>
+<val_smart_terrain_9_4_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_val_smart_terrain_9_4</text>
+</val_smart_terrain_9_4_spot>
+
+<val_smart_terrain_9_5>
+	<level_map spot="val_smart_terrain_9_5_spot"/>
+</val_smart_terrain_9_5>
+<val_smart_terrain_9_5_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_val_smart_terrain_9_5</text>
+</val_smart_terrain_9_5_spot>
+
+<val_smart_terrain_9_6>
+	<level_map spot="val_smart_terrain_9_6_spot"/>
+</val_smart_terrain_9_6>
+<val_smart_terrain_9_6_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_val_smart_terrain_9_6</text>
+</val_smart_terrain_9_6_spot>
+
+<!-- escape -->
+
+<esc_smart_terrain_1_11>
+	<level_map spot="esc_smart_terrain_1_11_spot"/>
+</esc_smart_terrain_1_11>
+<esc_smart_terrain_1_11_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_esc_smart_terrain_1_11</text>
+</esc_smart_terrain_1_11_spot>
+<!--
+<esc_smart_terrain_1_12>
+	<level_map spot="esc_smart_terrain_1_12_spot"/>
+</esc_smart_terrain_1_12>
+<esc_smart_terrain_1_12_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_esc_smart_terrain_1_12</text>
+</esc_smart_terrain_1_12_spot>
+
+<esc_smart_terrain_1_16>
+	<level_map spot="esc_smart_terrain_1_16_spot"/>
+</esc_smart_terrain_1_16>
+<esc_smart_terrain_1_16_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_esc_smart_terrain_1_16</text>
+</esc_smart_terrain_1_16_spot>
+-->
+<esc_smart_terrain_2_12>
+	<level_map spot="esc_smart_terrain_2_12_spot"/>
+</esc_smart_terrain_2_12>
+<esc_smart_terrain_2_12_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_esc_smart_terrain_2_12</text>
+</esc_smart_terrain_2_12_spot>
+
+<esc_smart_terrain_2_14>
+	<level_map spot="esc_smart_terrain_2_14_spot"/>
+</esc_smart_terrain_2_14>
+<esc_smart_terrain_2_14_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_esc_smart_terrain_2_14</text>
+</esc_smart_terrain_2_14_spot>
+<!--
+<esc_smart_terrain_2_2>
+	<level_map spot="esc_smart_terrain_2_2_spot"/>
+</esc_smart_terrain_2_2>
+<esc_smart_terrain_2_2_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_esc_smart_terrain_2_2</text>
+</esc_smart_terrain_2_2_spot>
+
+<esc_smart_terrain_2_4>
+	<level_map spot="esc_smart_terrain_2_4_spot"/>
+</esc_smart_terrain_2_4>
+<esc_smart_terrain_2_4_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_esc_smart_terrain_2_4</text>
+</esc_smart_terrain_2_4_spot>
+
+<esc_smart_terrain_3_14>
+	<level_map spot="esc_smart_terrain_3_14_spot"/>
+</esc_smart_terrain_3_14>
+<esc_smart_terrain_3_14_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_esc_smart_terrain_3_14</text>
+</esc_smart_terrain_3_14_spot>
+-->
+<esc_smart_terrain_3_16>
+	<level_map spot="esc_smart_terrain_3_16_spot"/>
+</esc_smart_terrain_3_16>
+<esc_smart_terrain_3_16_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_esc_smart_terrain_3_16</text>
+</esc_smart_terrain_3_16_spot>
+<!--
+<esc_smart_terrain_3_4>
+	<level_map spot="esc_smart_terrain_3_4_spot"/>
+</esc_smart_terrain_3_4>
+<esc_smart_terrain_3_4_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_esc_smart_terrain_3_4</text>
+</esc_smart_terrain_3_4_spot>
+-->
+<esc_smart_terrain_3_6>
+	<level_map spot="esc_smart_terrain_3_6_spot"/>
+</esc_smart_terrain_3_6>
+<esc_smart_terrain_3_6_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_esc_smart_terrain_3_6</text>
+</esc_smart_terrain_3_6_spot>
+
+<esc_smart_terrain_3_7>
+	<level_map spot="esc_smart_terrain_3_7_spot"/>
+</esc_smart_terrain_3_7>
+<esc_smart_terrain_3_7_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_esc_smart_terrain_3_7</text>
+</esc_smart_terrain_3_7_spot>
+
+<esc_smart_terrain_4_10>
+	<level_map spot="esc_smart_terrain_4_10_spot"/>
+</esc_smart_terrain_4_10>
+<esc_smart_terrain_4_10_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_esc_smart_terrain_4_10</text>
+</esc_smart_terrain_4_10_spot>
+
+<esc_smart_terrain_4_11>
+	<level_map spot="esc_smart_terrain_4_11_spot"/>
+</esc_smart_terrain_4_11>
+<esc_smart_terrain_4_11_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_esc_smart_terrain_4_11</text>
+</esc_smart_terrain_4_11_spot>
+
+<esc_smart_terrain_4_13>
+	<level_map spot="esc_smart_terrain_4_13_spot"/>
+</esc_smart_terrain_4_13>
+<esc_smart_terrain_4_13_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_esc_smart_terrain_4_13</text>
+</esc_smart_terrain_4_13_spot>
+
+<esc_smart_terrain_4_8>
+	<level_map spot="esc_smart_terrain_4_8_spot"/>
+</esc_smart_terrain_4_8>
+<esc_smart_terrain_4_8_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_esc_smart_terrain_4_8</text>
+</esc_smart_terrain_4_8_spot>
+
+<esc_smart_terrain_4_9>
+	<level_map spot="esc_smart_terrain_4_9_spot"/>
+</esc_smart_terrain_4_9>
+<esc_smart_terrain_4_9_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_esc_smart_terrain_4_9</text>
+</esc_smart_terrain_4_9_spot>
+
+<esc_smart_terrain_5_10>
+	<level_map spot="esc_smart_terrain_5_10_spot"/>
+</esc_smart_terrain_5_10>
+<esc_smart_terrain_5_10_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_esc_smart_terrain_5_10</text>
+</esc_smart_terrain_5_10_spot>
+
+<esc_smart_terrain_5_11>
+	<level_map spot="esc_smart_terrain_5_11_spot"/>
+</esc_smart_terrain_5_11>
+<esc_smart_terrain_5_11_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_esc_smart_terrain_5_11</text>
+</esc_smart_terrain_5_11_spot>
+
+<esc_smart_terrain_5_12>
+	<level_map spot="esc_smart_terrain_5_12_spot"/>
+</esc_smart_terrain_5_12>
+<esc_smart_terrain_5_12_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_esc_smart_terrain_5_12</text>
+</esc_smart_terrain_5_12_spot>
+
+<esc_smart_terrain_5_2>
+	<level_map spot="esc_smart_terrain_5_2_spot"/>
+</esc_smart_terrain_5_2>
+<esc_smart_terrain_5_2_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_esc_smart_terrain_5_2</text>
+</esc_smart_terrain_5_2_spot>
+
+<esc_smart_terrain_5_4>
+	<level_map spot="esc_smart_terrain_5_4_spot"/>
+</esc_smart_terrain_5_4>
+<esc_smart_terrain_5_4_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_esc_smart_terrain_5_4</text>
+</esc_smart_terrain_5_4_spot>
+
+<esc_smart_terrain_5_6>
+	<level_map spot="esc_smart_terrain_5_6_spot"/>
+</esc_smart_terrain_5_6>
+<esc_smart_terrain_5_6_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_esc_smart_terrain_5_6</text>
+</esc_smart_terrain_5_6_spot>
+
+<esc_smart_terrain_5_7>
+	<level_map spot="esc_smart_terrain_5_7_spot"/>
+</esc_smart_terrain_5_7>
+<esc_smart_terrain_5_7_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_esc_smart_terrain_5_7</text>
+</esc_smart_terrain_5_7_spot>
+
+<esc_smart_terrain_5_9>
+	<level_map spot="esc_smart_terrain_5_9_spot"/>
+</esc_smart_terrain_5_9>
+<esc_smart_terrain_5_9_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_esc_smart_terrain_5_9</text>
+</esc_smart_terrain_5_9_spot>
+
+<esc_smart_terrain_6_3>
+	<level_map spot="esc_smart_terrain_6_3_spot"/>
+</esc_smart_terrain_6_3>
+<esc_smart_terrain_6_3_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_esc_smart_terrain_6_3</text>
+</esc_smart_terrain_6_3_spot>
+
+<esc_smart_terrain_6_5>
+	<level_map spot="esc_smart_terrain_6_5_spot"/>
+</esc_smart_terrain_6_5>
+<esc_smart_terrain_6_5_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_esc_smart_terrain_6_5</text>
+</esc_smart_terrain_6_5_spot>
+
+<esc_smart_terrain_6_6>
+	<level_map spot="esc_smart_terrain_6_6_spot"/>
+</esc_smart_terrain_6_6>
+<esc_smart_terrain_6_6_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_esc_smart_terrain_6_6</text>
+</esc_smart_terrain_6_6_spot>
+
+<esc_smart_terrain_6_7>
+	<level_map spot="esc_smart_terrain_6_7_spot"/>
+</esc_smart_terrain_6_7>
+<esc_smart_terrain_6_7_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_esc_smart_terrain_6_7</text>
+</esc_smart_terrain_6_7_spot>
+
+<esc_smart_terrain_6_8>
+	<level_map spot="esc_smart_terrain_6_8_spot"/>
+</esc_smart_terrain_6_8>
+<esc_smart_terrain_6_8_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_esc_smart_terrain_6_8</text>
+</esc_smart_terrain_6_8_spot>
+
+<esc_smart_terrain_7_10>
+	<level_map spot="esc_smart_terrain_7_10_spot"/>
+</esc_smart_terrain_7_10>
+<esc_smart_terrain_7_10_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_esc_smart_terrain_7_10</text>
+</esc_smart_terrain_7_10_spot>
+
+<esc_smart_terrain_7_11>
+	<level_map spot="esc_smart_terrain_7_11_spot"/>
+</esc_smart_terrain_7_11>
+<esc_smart_terrain_7_11_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_esc_smart_terrain_7_11</text>
+</esc_smart_terrain_7_11_spot>
+<!--
+<esc_smart_terrain_7_9>
+	<level_map spot="esc_smart_terrain_7_9_spot"/>
+</esc_smart_terrain_7_9>
+<esc_smart_terrain_7_9_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_esc_smart_terrain_7_9</text>
+</esc_smart_terrain_7_9_spot>
+-->
+<esc_smart_terrain_8_10>
+	<level_map spot="esc_smart_terrain_8_10_spot"/>
+</esc_smart_terrain_8_10>
+<esc_smart_terrain_8_10_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_esc_smart_terrain_8_10</text>
+</esc_smart_terrain_8_10_spot>
+
+<esc_smart_terrain_8_6>
+	<level_map spot="esc_smart_terrain_8_6_spot"/>
+</esc_smart_terrain_8_6>
+<esc_smart_terrain_8_6_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_esc_smart_terrain_8_6</text>
+</esc_smart_terrain_8_6_spot>
+<!--
+<esc_smart_terrain_8_8>
+	<level_map spot="esc_smart_terrain_8_8_spot"/>
+</esc_smart_terrain_8_8>
+<esc_smart_terrain_8_8_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_esc_smart_terrain_8_8</text>
+</esc_smart_terrain_8_8_spot>
+-->
+<esc_smart_terrain_8_9>
+	<level_map spot="esc_smart_terrain_8_9_spot"/>
+</esc_smart_terrain_8_9>
+<esc_smart_terrain_8_9_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_esc_smart_terrain_8_9</text>
+</esc_smart_terrain_8_9_spot>
+
+<esc_smart_terrain_9_10>
+	<level_map spot="esc_smart_terrain_9_10_spot"/>
+</esc_smart_terrain_9_10>
+<esc_smart_terrain_9_10_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_esc_smart_terrain_9_10</text>
+</esc_smart_terrain_9_10_spot>
+
+<esc_smart_terrain_9_7>
+	<level_map spot="esc_smart_terrain_9_7_spot"/>
+</esc_smart_terrain_9_7>
+<esc_smart_terrain_9_7_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_esc_smart_terrain_9_7</text>
+</esc_smart_terrain_9_7_spot>
+
+<!-- limansk -->
+
+<lim_smart_terrain_1>
+	<level_map spot="lim_smart_terrain_1_spot"/>
+</lim_smart_terrain_1>
+<lim_smart_terrain_1_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_lim_smart_terrain_1</text>
+</lim_smart_terrain_1_spot>
+
+<lim_smart_terrain_10>
+	<level_map spot="lim_smart_terrain_10_spot"/>
+</lim_smart_terrain_10>
+<lim_smart_terrain_10_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_lim_smart_terrain_10</text>
+</lim_smart_terrain_10_spot>
+
+<lim_smart_terrain_2>
+	<level_map spot="lim_smart_terrain_2_spot"/>
+</lim_smart_terrain_2>
+<lim_smart_terrain_2_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_lim_smart_terrain_2</text>
+</lim_smart_terrain_2_spot>
+
+<lim_smart_terrain_3>
+	<level_map spot="lim_smart_terrain_3_spot"/>
+</lim_smart_terrain_3>
+<lim_smart_terrain_3_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_lim_smart_terrain_3</text>
+</lim_smart_terrain_3_spot>
+
+<lim_smart_terrain_4>
+	<level_map spot="lim_smart_terrain_4_spot"/>
+</lim_smart_terrain_4>
+<lim_smart_terrain_4_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_lim_smart_terrain_4</text>
+</lim_smart_terrain_4_spot>
+
+<lim_smart_terrain_5>
+	<level_map spot="lim_smart_terrain_5_spot"/>
+</lim_smart_terrain_5>
+<lim_smart_terrain_5_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_lim_smart_terrain_5</text>
+</lim_smart_terrain_5_spot>
+
+<lim_smart_terrain_6>
+	<level_map spot="lim_smart_terrain_6_spot"/>
+</lim_smart_terrain_6>
+<lim_smart_terrain_6_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_lim_smart_terrain_6</text>
+</lim_smart_terrain_6_spot>
+
+<lim_smart_terrain_7>
+	<level_map spot="lim_smart_terrain_7_spot"/>
+</lim_smart_terrain_7>
+<lim_smart_terrain_7_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_lim_smart_terrain_7</text>
+</lim_smart_terrain_7_spot>
+
+<lim_smart_terrain_8>
+	<level_map spot="lim_smart_terrain_8_spot"/>
+</lim_smart_terrain_8>
+<lim_smart_terrain_8_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_lim_smart_terrain_8</text>
+</lim_smart_terrain_8_spot>
+
+<lim_smart_terrain_9>
+	<level_map spot="lim_smart_terrain_9_spot"/>
+</lim_smart_terrain_9>
+<lim_smart_terrain_9_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_lim_smart_terrain_9</text>
+</lim_smart_terrain_9_spot>
+
+<lim_smart_terrain_help_smart>
+	<level_map spot="lim_smart_terrain_help_smart_spot"/>
+</lim_smart_terrain_help_smart>
+<lim_smart_terrain_help_smart_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_lim_smart_terrain_help_smart</text>
+</lim_smart_terrain_help_smart_spot>
+
+<!-- military -->
+
+<mil_smart_terrain_2_1>
+	<level_map spot="mil_smart_terrain_2_1_spot"/>
+</mil_smart_terrain_2_1>
+<mil_smart_terrain_2_1_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_mil_smart_terrain_2_1</text>
+</mil_smart_terrain_2_1_spot>
+
+<mil_smart_terrain_2_10>
+	<level_map spot="mil_smart_terrain_2_10_spot"/>
+</mil_smart_terrain_2_10>
+<mil_smart_terrain_2_10_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_mil_smart_terrain_2_10</text>
+</mil_smart_terrain_2_10_spot>
+
+<mil_smart_terrain_2_2>
+	<level_map spot="mil_smart_terrain_2_2_spot"/>
+</mil_smart_terrain_2_2>
+<mil_smart_terrain_2_2_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_mil_smart_terrain_2_2</text>
+</mil_smart_terrain_2_2_spot>
+
+<mil_smart_terrain_2_3>
+	<level_map spot="mil_smart_terrain_2_3_spot"/>
+</mil_smart_terrain_2_3>
+<mil_smart_terrain_2_3_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_mil_smart_terrain_2_3</text>
+</mil_smart_terrain_2_3_spot>
+
+<mil_smart_terrain_2_4>
+	<level_map spot="mil_smart_terrain_2_4_spot"/>
+</mil_smart_terrain_2_4>
+<mil_smart_terrain_2_4_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_mil_smart_terrain_2_4</text>
+</mil_smart_terrain_2_4_spot>
+
+<mil_smart_terrain_2_6>
+	<level_map spot="mil_smart_terrain_2_6_spot"/>
+</mil_smart_terrain_2_6>
+<mil_smart_terrain_2_6_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_mil_smart_terrain_2_6</text>
+</mil_smart_terrain_2_6_spot>
+
+<mil_smart_terrain_3_2>
+	<level_map spot="mil_smart_terrain_3_2_spot"/>
+</mil_smart_terrain_3_2>
+<mil_smart_terrain_3_2_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_mil_smart_terrain_3_2</text>
+</mil_smart_terrain_3_2_spot>
+
+<mil_smart_terrain_3_5>
+	<level_map spot="mil_smart_terrain_3_5_spot"/>
+</mil_smart_terrain_3_5>
+<mil_smart_terrain_3_5_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_mil_smart_terrain_3_5</text>
+</mil_smart_terrain_3_5_spot>
+
+<mil_smart_terrain_3_8>
+	<level_map spot="mil_smart_terrain_3_8_spot"/>
+</mil_smart_terrain_3_8>
+<mil_smart_terrain_3_8_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_mil_smart_terrain_3_8</text>
+</mil_smart_terrain_3_8_spot>
+
+<mil_smart_terrain_4_2>
+	<level_map spot="mil_smart_terrain_4_2_spot"/>
+</mil_smart_terrain_4_2>
+<mil_smart_terrain_4_2_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_mil_smart_terrain_4_2</text>
+</mil_smart_terrain_4_2_spot>
+
+<mil_smart_terrain_4_3>
+	<level_map spot="mil_smart_terrain_4_3_spot"/>
+</mil_smart_terrain_4_3>
+<mil_smart_terrain_4_3_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_mil_smart_terrain_4_3</text>
+</mil_smart_terrain_4_3_spot>
+
+<mil_smart_terrain_4_5>
+	<level_map spot="mil_smart_terrain_4_5_spot"/>
+</mil_smart_terrain_4_5>
+<mil_smart_terrain_4_5_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_mil_smart_terrain_4_5</text>
+</mil_smart_terrain_4_5_spot>
+
+<mil_smart_terrain_4_6>
+	<level_map spot="mil_smart_terrain_4_6_spot"/>
+</mil_smart_terrain_4_6>
+<mil_smart_terrain_4_6_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_mil_smart_terrain_4_6</text>
+</mil_smart_terrain_4_6_spot>
+
+<mil_smart_terrain_4_7>
+	<level_map spot="mil_smart_terrain_4_7_spot"/>
+</mil_smart_terrain_4_7>
+<mil_smart_terrain_4_7_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_mil_smart_terrain_4_7</text>
+</mil_smart_terrain_4_7_spot>
+
+<mil_smart_terrain_4_8>
+	<level_map spot="mil_smart_terrain_4_8_spot"/>
+</mil_smart_terrain_4_8>
+<mil_smart_terrain_4_8_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_mil_smart_terrain_4_8</text>
+</mil_smart_terrain_4_8_spot>
+
+<mil_smart_terrain_5_2>
+	<level_map spot="mil_smart_terrain_5_2_spot"/>
+</mil_smart_terrain_5_2>
+<mil_smart_terrain_5_2_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_mil_smart_terrain_5_2</text>
+</mil_smart_terrain_5_2_spot>
+<!--
+<mil_smart_terrain_5_4>
+	<level_map spot="mil_smart_terrain_5_4_spot"/>
+</mil_smart_terrain_5_4>
+<mil_smart_terrain_5_4_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_mil_smart_terrain_5_4</text>
+</mil_smart_terrain_5_4_spot>
+-->
+<mil_smart_terrain_5_5>
+	<level_map spot="mil_smart_terrain_5_5_spot"/>
+</mil_smart_terrain_5_5>
+<mil_smart_terrain_5_5_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_mil_smart_terrain_5_5</text>
+</mil_smart_terrain_5_5_spot>
+
+<mil_smart_terrain_5_6>
+	<level_map spot="mil_smart_terrain_5_6_spot"/>
+</mil_smart_terrain_5_6>
+<mil_smart_terrain_5_6_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_mil_smart_terrain_5_6</text>
+</mil_smart_terrain_5_6_spot>
+<!--
+<mil_smart_terrain_5_8>
+	<level_map spot="mil_smart_terrain_5_8_spot"/>
+</mil_smart_terrain_5_8>
+<mil_smart_terrain_5_8_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_mil_smart_terrain_5_8</text>
+</mil_smart_terrain_5_8_spot>
+-->
+<mil_smart_terrain_6_4>
+	<level_map spot="mil_smart_terrain_6_4_spot"/>
+</mil_smart_terrain_6_4>
+<mil_smart_terrain_6_4_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_mil_smart_terrain_6_4</text>
+</mil_smart_terrain_6_4_spot>
+
+<mil_smart_terrain_7_2>
+	<level_map spot="mil_smart_terrain_7_2_spot"/>
+</mil_smart_terrain_7_2>
+<mil_smart_terrain_7_2_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_mil_smart_terrain_7_2</text>
+</mil_smart_terrain_7_2_spot>
+
+<mil_smart_terrain_7_4>
+	<level_map spot="mil_smart_terrain_7_4_spot"/>
+</mil_smart_terrain_7_4>
+<mil_smart_terrain_7_4_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_mil_smart_terrain_7_4</text>
+</mil_smart_terrain_7_4_spot>
+
+<mil_smart_terrain_7_7>
+	<level_map spot="mil_smart_terrain_7_7_spot"/>
+</mil_smart_terrain_7_7>
+<mil_smart_terrain_7_7_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_mil_smart_terrain_7_7</text>
+</mil_smart_terrain_7_7_spot>
+
+<mil_smart_terrain_7_8>
+	<level_map spot="mil_smart_terrain_7_8_spot"/>
+</mil_smart_terrain_7_8>
+<mil_smart_terrain_7_8_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_mil_smart_terrain_7_8</text>
+</mil_smart_terrain_7_8_spot>
+
+<mil_smart_terrain_8_3>
+	<level_map spot="mil_smart_terrain_8_3_spot"/>
+</mil_smart_terrain_8_3>
+<mil_smart_terrain_8_3_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_mil_smart_terrain_8_3</text>
+</mil_smart_terrain_8_3_spot>
+<!--
+<mil_smart_terrain_base2>
+	<level_map spot="mil_smart_terrain_base2_spot"/>
+</mil_smart_terrain_base2>
+<mil_smart_terrain_base2_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_mil_smart_terrain_base2</text>
+</mil_smart_terrain_base2_spot>
+
+<mil_smart_terrain_base3>
+	<level_map spot="mil_smart_terrain_base3_spot"/>
+</mil_smart_terrain_base3>
+<mil_smart_terrain_base3_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_mil_smart_terrain_base3</text>
+</mil_smart_terrain_base3_spot>
+
+<mil_smart_terrain_base4>
+	<level_map spot="mil_smart_terrain_base4_spot"/>
+</mil_smart_terrain_base4>
+<mil_smart_terrain_base4_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_mil_smart_terrain_base4</text>
+</mil_smart_terrain_base4_spot>
+
+<mil_smart_terrain_base5>
+	<level_map spot="mil_smart_terrain_base5_spot"/>
+</mil_smart_terrain_base5>
+<mil_smart_terrain_base5_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_mil_smart_terrain_base5</text>
+</mil_smart_terrain_base5_spot>
+
+<mil_smart_terrain_base_monster>
+	<level_map spot="mil_smart_terrain_base_monster_spot"/>
+</mil_smart_terrain_base_monster>
+<mil_smart_terrain_base_monster_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_mil_smart_terrain_base_monster</text>
+</mil_smart_terrain_base_monster_spot>
+-->
+<mil_smart_terrain_7_9>
+	<level_map spot="mil_smart_terrain_7_9_spot"/>
+</mil_smart_terrain_7_9>
+<mil_smart_terrain_7_9_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_mil_smart_terrain_7_9</text>
+</mil_smart_terrain_7_9_spot>
+
+<mil_smart_terrain_7_10>
+	<level_map spot="mil_smart_terrain_7_10_spot"/>
+</mil_smart_terrain_7_10>
+<mil_smart_terrain_7_10_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_mil_smart_terrain_7_10</text>
+</mil_smart_terrain_7_10_spot>
+
+<mil_smart_terrain_7_11>
+	<level_map spot="mil_smart_terrain_7_11_spot"/>
+</mil_smart_terrain_7_11>
+<mil_smart_terrain_7_11_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_mil_smart_terrain_7_11</text>
+</mil_smart_terrain_7_11_spot>
+
+<mil_smart_terrain_7_12>
+	<level_map spot="mil_smart_terrain_7_12_spot"/>
+</mil_smart_terrain_7_12>
+<mil_smart_terrain_7_12_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_mil_smart_terrain_7_12</text>
+</mil_smart_terrain_7_12_spot>
+
+<!-- red_forest -->
+<!--
+<red_terrain_ally_smart>
+	<level_map spot="red_terrain_ally_smart_spot"/>
+</red_terrain_ally_smart>
+<red_terrain_ally_smart_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_red_terrain_ally_smart</text>
+</red_terrain_ally_smart_spot>
+
+<red_terrain_bandit_smart>
+	<level_map spot="red_terrain_bandit_smart_spot"/>
+</red_terrain_bandit_smart>
+<red_terrain_bandit_smart_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_red_terrain_bandit_smart</text>
+</red_terrain_bandit_smart_spot>
+-->
+<red_smart_terrain_3_1>
+	<level_map spot="red_smart_terrain_3_1_spot"/>
+</red_smart_terrain_3_1>
+<red_smart_terrain_3_1_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_red_smart_terrain_3_1</text>
+</red_smart_terrain_3_1_spot>
+
+<red_smart_terrain_3_2>
+	<level_map spot="red_smart_terrain_3_2_spot"/>
+</red_smart_terrain_3_2>
+<red_smart_terrain_3_2_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_red_smart_terrain_3_2</text>
+</red_smart_terrain_3_2_spot>
+
+<red_smart_terrain_3_3>
+	<level_map spot="red_smart_terrain_3_3_spot"/>
+</red_smart_terrain_3_3>
+<red_smart_terrain_3_3_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_red_smart_terrain_3_3</text>
+</red_smart_terrain_3_3_spot>
+
+<red_smart_terrain_4_2>
+	<level_map spot="red_smart_terrain_4_2_spot"/>
+</red_smart_terrain_4_2>
+<red_smart_terrain_4_2_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_red_smart_terrain_4_2</text>
+</red_smart_terrain_4_2_spot>
+
+<red_smart_terrain_4_3>
+	<level_map spot="red_smart_terrain_4_3_spot"/>
+</red_smart_terrain_4_3>
+<red_smart_terrain_4_3_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_red_smart_terrain_4_3</text>
+</red_smart_terrain_4_3_spot>
+
+<red_smart_terrain_4_5>
+	<level_map spot="red_smart_terrain_4_5_spot"/>
+</red_smart_terrain_4_5>
+<red_smart_terrain_4_5_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_red_smart_terrain_4_5</text>
+</red_smart_terrain_4_5_spot>
+
+<red_smart_terrain_5_5>
+	<level_map spot="red_smart_terrain_5_5_spot"/>
+</red_smart_terrain_5_5>
+<red_smart_terrain_5_5_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_red_smart_terrain_5_5</text>
+</red_smart_terrain_5_5_spot>
+
+<red_smart_terrain_5_6>
+	<level_map spot="red_smart_terrain_5_6_spot"/>
+</red_smart_terrain_5_6>
+<red_smart_terrain_5_6_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_red_smart_terrain_5_6</text>
+</red_smart_terrain_5_6_spot>
+
+<red_smart_terrain_6_3>
+	<level_map spot="red_smart_terrain_6_3_spot"/>
+</red_smart_terrain_6_3>
+<red_smart_terrain_6_3_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_red_smart_terrain_6_3</text>
+</red_smart_terrain_6_3_spot>
+
+<red_smart_terrain_6_6>
+	<level_map spot="red_smart_terrain_6_6_spot"/>
+</red_smart_terrain_6_6>
+<red_smart_terrain_6_6_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_red_smart_terrain_6_6</text>
+</red_smart_terrain_6_6_spot>
+
+<red_smart_terrain_bridge>
+	<level_map spot="red_smart_terrain_bridge_spot"/>
+</red_smart_terrain_bridge>
+<red_smart_terrain_bridge_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_red_smart_terrain_bridge</text>
+</red_smart_terrain_bridge_spot>
+
+<red_smart_terrain_monsters>
+	<level_map spot="red_smart_terrain_monsters_spot"/>
+</red_smart_terrain_monsters>
+<red_smart_terrain_monsters_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_red_smart_terrain_monsters</text>
+</red_smart_terrain_monsters_spot>
+
+<red_smart_terrain_monsters_2>
+	<level_map spot="red_smart_terrain_monsters_2_spot"/>
+</red_smart_terrain_monsters_2>
+<red_smart_terrain_monsters_2_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_red_smart_terrain_monsters_2</text>
+</red_smart_terrain_monsters_2_spot>
+
+<red_bridge_bandit_smart>
+	<level_map spot="red_bridge_bandit_smart_spot"/>
+</red_bridge_bandit_smart>
+<red_bridge_bandit_smart_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_red_terrain_bandit_smart</text> <!-- SRP -->
+</red_bridge_bandit_smart_spot>
+
+<red_bridge_ally_smart>
+	<level_map spot="red_bridge_ally_smart_spot"/>
+</red_bridge_ally_smart>
+<red_bridge_ally_smart_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_red_bridge_ally_smart</text>
+</red_bridge_ally_smart_spot>
+
+<red_smart_terrain_monsters_3>
+	<level_map spot="red_smart_terrain_monsters_3_spot"/>
+</red_smart_terrain_monsters_3>
+<red_smart_terrain_monsters_3_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_red_smart_terrain_monsters_3</text>
+</red_smart_terrain_monsters_3_spot>
+
+<!-- yantar -->
+
+<yan_smart_terrain_1_6>
+	<level_map spot="yan_smart_terrain_1_6_spot"/>
+</yan_smart_terrain_1_6>
+<yan_smart_terrain_1_6_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_yan_smart_terrain_1_6</text>
+</yan_smart_terrain_1_6_spot>
+
+<yan_smart_terrain_2_4>
+	<level_map spot="yan_smart_terrain_2_4_spot"/>
+</yan_smart_terrain_2_4>
+<yan_smart_terrain_2_4_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_yan_smart_terrain_2_4</text>
+</yan_smart_terrain_2_4_spot>
+
+<yan_smart_terrain_2_5>
+	<level_map spot="yan_smart_terrain_2_5_spot"/>
+</yan_smart_terrain_2_5>
+<yan_smart_terrain_2_5_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_yan_smart_terrain_2_5</text>
+</yan_smart_terrain_2_5_spot>
+
+<yan_smart_terrain_3_4>
+	<level_map spot="yan_smart_terrain_3_4_spot"/>
+</yan_smart_terrain_3_4>
+<yan_smart_terrain_3_4_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_yan_smart_terrain_3_4</text>
+</yan_smart_terrain_3_4_spot>
+
+<yan_smart_terrain_3_6>
+	<level_map spot="yan_smart_terrain_3_6_spot"/>
+</yan_smart_terrain_3_6>
+<yan_smart_terrain_3_6_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_yan_smart_terrain_3_6</text>
+</yan_smart_terrain_3_6_spot>
+
+<yan_smart_terrain_4_2>
+	<level_map spot="yan_smart_terrain_4_2_spot"/>
+</yan_smart_terrain_4_2>
+<yan_smart_terrain_4_2_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_yan_smart_terrain_4_2</text>
+</yan_smart_terrain_4_2_spot>
+
+<yan_smart_terrain_4_4>
+	<level_map spot="yan_smart_terrain_4_4_spot"/>
+</yan_smart_terrain_4_4>
+<yan_smart_terrain_4_4_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_yan_smart_terrain_4_4</text>
+</yan_smart_terrain_4_4_spot>
+
+<yan_smart_terrain_4_5>
+	<level_map spot="yan_smart_terrain_4_5_spot"/>
+</yan_smart_terrain_4_5>
+<yan_smart_terrain_4_5_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_yan_smart_terrain_4_5</text>
+</yan_smart_terrain_4_5_spot>
+
+<yan_smart_terrain_5_3>
+	<level_map spot="yan_smart_terrain_5_3_spot"/>
+</yan_smart_terrain_5_3>
+<yan_smart_terrain_5_3_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_yan_smart_terrain_5_3</text>
+</yan_smart_terrain_5_3_spot>
+
+<yan_smart_terrain_5_4> <!-- SRP -->
+	<level_map spot="yan_smart_terrain_5_4_spot"/>
+</yan_smart_terrain_5_4>
+<yan_smart_terrain_5_4_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1"></text>
+</yan_smart_terrain_5_4_spot>
+
+<yan_smart_terrain_5_5>
+	<level_map spot="yan_smart_terrain_5_5_spot"/>
+</yan_smart_terrain_5_5>
+<yan_smart_terrain_5_5_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_yan_smart_terrain_5_5</text>
+</yan_smart_terrain_5_5_spot>
+
+<yan_smart_terrain_5_6>
+	<level_map spot="yan_smart_terrain_5_6_spot"/>
+</yan_smart_terrain_5_6>
+<yan_smart_terrain_5_6_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_yan_smart_terrain_5_6</text>
+</yan_smart_terrain_5_6_spot>
+
+<yan_smart_terrain_6_2>
+	<level_map spot="yan_smart_terrain_6_2_spot"/>
+</yan_smart_terrain_6_2>
+<yan_smart_terrain_6_2_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_yan_smart_terrain_6_2</text>
+</yan_smart_terrain_6_2_spot>
+
+<yan_smart_terrain_6_4>
+	<level_map spot="yan_smart_terrain_6_4_spot"/>
+</yan_smart_terrain_6_4>
+<yan_smart_terrain_6_4_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_yan_smart_terrain_6_4</text>
+</yan_smart_terrain_6_4_spot>
+<!--
+<yan_smart_terrain_saharov>
+	<level_map spot="yan_smart_terrain_saharov_spot"/>
+</yan_smart_terrain_saharov>
+<yan_smart_terrain_saharov_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_yan_smart_terrain_saharov</text>
+</yan_smart_terrain_saharov_spot>
+-->
+<yan_smart_terrain_zombi_in_sci_base1>
+	<level_map spot="yan_smart_terrain_zombi_in_sci_base1_spot"/>
+</yan_smart_terrain_zombi_in_sci_base1>
+<yan_smart_terrain_zombi_in_sci_base1_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_yan_smart_terrain_zombi_in_sci_base1</text>
+</yan_smart_terrain_zombi_in_sci_base1_spot>
+
+<yan_smart_terrain_zombi_in_sci_base3>
+	<level_map spot="yan_smart_terrain_zombi_in_sci_base3_spot"/>
+</yan_smart_terrain_zombi_in_sci_base3>
+<yan_smart_terrain_zombi_in_sci_base3_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_yan_smart_terrain_zombi_in_sci_base3</text>
+</yan_smart_terrain_zombi_in_sci_base3_spot>
+
+<yan_smart_terrain_zombi_in_sci_base4>
+	<level_map spot="yan_smart_terrain_zombi_in_sci_base4_spot"/>
+</yan_smart_terrain_zombi_in_sci_base4>
+<yan_smart_terrain_zombi_in_sci_base4_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_yan_smart_terrain_zombi_in_sci_base4</text>
+</yan_smart_terrain_zombi_in_sci_base4_spot>
+
+<yan_smart_terrain_zombi_in_sci_base5>
+	<level_map spot="yan_smart_terrain_zombi_in_sci_base5_spot"/>
+</yan_smart_terrain_zombi_in_sci_base5>
+<yan_smart_terrain_zombi_in_sci_base5_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_yan_smart_terrain_zombi_in_sci_base5</text>
+</yan_smart_terrain_zombi_in_sci_base5_spot>
+
+<yan_smart_terrain_zombi_in_sci_base6>
+	<level_map spot="yan_smart_terrain_zombi_in_sci_base6_spot"/>
+</yan_smart_terrain_zombi_in_sci_base6>
+<yan_smart_terrain_zombi_in_sci_base6_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_yan_smart_terrain_zombi_in_sci_base6</text>
+</yan_smart_terrain_zombi_in_sci_base6_spot>
+
+<yan_smart_terrain_zombi_spawn>
+	<level_map spot="yan_smart_terrain_zombi_spawn_spot"/>
+</yan_smart_terrain_zombi_spawn>
+<yan_smart_terrain_zombi_spawn_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_yan_smart_terrain_zombi_spawn</text>
+</yan_smart_terrain_zombi_spawn_spot>
+
+<yan_smart_terrain_quest_saharov>
+	<level_map spot="yan_smart_terrain_quest_saharov_spot"/>
+</yan_smart_terrain_quest_saharov>
+<yan_smart_terrain_quest_saharov_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_yan_smart_terrain_quest_saharov</text>
+</yan_smart_terrain_quest_saharov_spot>
+
+<yan_smart_terrain_for_squad_levsha>
+	<level_map spot="yan_smart_terrain_for_squad_levsha_spot"/>
+</yan_smart_terrain_for_squad_levsha>
+<yan_smart_terrain_for_squad_levsha_spot x="0" y="0" width="230" height="0" alignment="c" stretch="1" scale_min="0.1" scale_max="2" scale="1" location_level="0">
+	<text font="arial_14" color="ui_1" align="c" vert_align="c" complex_mode="1">st_name_yan_smart_terrain_for_squad_levsha</text>
+</yan_smart_terrain_for_squad_levsha_spot>

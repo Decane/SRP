@@ -861,11 +861,16 @@ function add_wait_attack(combat, squad_id)
 end
 
 function start_attack()
-	local sim_board = sim_board.get_sim_board()
-	for k, v in pairs (wait_for_combat) do
-		local squad = sim_board.squads[v]
-		sim_board.smarts[k].smrt.combat_manager:request_squad_stage(squad, "combat")
+	local board = sim_board.get_sim_board()
+	if has_alife_info("ui_pda") then
+		for _, smart in pairs (board.smarts_by_names) do
+			smart:visible_for_map(not smart:visible_for_map())
+		end
+	else
+		for smart_id, squad_id in pairs (wait_for_combat) do
+			local squad = board.squads[squad_id]
+			board.smarts[smart_id].smrt.combat_manager:request_squad_stage(squad, "combat")
+		end
+		wait_for_combat = {}
 	end
-	wait_for_combat = {}
---	dbglog("[sim_combat.start_attack]: Table wait_for_combat has been emptied.")
 end
