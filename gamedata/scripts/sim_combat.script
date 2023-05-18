@@ -863,8 +863,19 @@ end
 function start_attack()
 	local board = sim_board.get_sim_board()
 	if has_alife_info("ui_pda") then
-		for _, smart in pairs (board.smarts_by_names) do
-			smart:visible_for_map(not smart:visible_for_map())
+		-- Adding all location names on load and using smart:visible_for_map()
+		-- to show/hide them would be much more efficient than adding/removing
+		-- them each time, as below. However, that would also affect other map
+		-- spots for the smart terrain, like mission markers.
+		local map_has_object_spot = level.map_has_object_spot
+		local map_add_object_spot = level.map_add_object_spot
+		local map_remove_object_spot = level.map_remove_object_spot
+		for smart_name, smart in pairs (board.smarts_by_names) do
+			if map_has_object_spot(smart.id, smart_name) == 0 then
+				map_add_object_spot(smart.id, smart_name, "")
+			else
+				map_remove_object_spot(smart.id, smart_name)
+			end
 		end
 	else
 		for smart_id, squad_id in pairs (wait_for_combat) do
