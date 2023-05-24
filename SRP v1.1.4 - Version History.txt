@@ -15,6 +15,7 @@ v1.1.4
 + Fixed NPCs not settling into their sleeping animation at some sleep waypoints. - Decane
 + Fixed campfire NPCs sometimes not settling into their campfire idle animation. - Decane
 + Fixed the start time for NPCs' heavily wounded state being saved incorrectly. - Decane
++ Fixed a load order issue that understated some factions' relative power against their main enemy immediately after load, sometimes manifesting as the player being tasked with eliminating/capturing a power target after load only for the task to soon be inexplicably cancelled. - Decane
 + Fixed the dialogue exploit where the player could farm starting equipment from Suslov multiple times by eliminating the few frames long delay before the player's ability to break out of certain dialogues gets revoked. - Decane
 + Fixed the issue where the Freedom NPCs that hold the player at gunpoint at a Dark Valley entrance would refuse to talk to the player after the hold-up has ended. - Decane
 + Mitigated the issue where the weather would sometimes inexplicably change after loading. - Decane

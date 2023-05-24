@@ -124,15 +124,36 @@ function se_sim_faction:read_params()
 	end
 end
 
+--[[
+
+To prevent obscure bugs, every faction's squads should be initialized before any
+faction's targets are, else a squad's relative power may be wrong after load
+(due to enemy squads not having been initialized yet), leading to inappropriate
+faction target points being registered for the squad's faction.
+
+]]
+
+function se_sim_faction:on_before_register()
+	cse_alife_smart_zone.on_before_register(self)
+	self.board:register_player(self)
+end
+
+local is_every_faction_inited = false
+
 function se_sim_faction:on_register()
-
 	cse_alife_smart_zone.on_register(self)
+	if not is_every_faction_inited then
+		for _, faction in pairs (self.board.players) do
+			faction:init_brain_and_squads()
+		end
+		for _, faction in pairs (self.board.players) do
+			faction:init_targets()
+		end
+		is_every_faction_inited = true
+	end
+end
 
---	self:show()
-
-	local board = self.board
-
-	board:register_player(self)
+function se_sim_faction:init_brain_and_squads()
 
 	local our_faction = self.player_name
 
@@ -142,7 +163,7 @@ function se_sim_faction:on_register()
 		self.brain = sim_faction_brain_human.faction_brain_human(self)
 	end
 
-	local board_squads = board.squads
+	local board_squads = self.board.squads
 	local faction_squads = self.squads
 	local c = #faction_squads
 
@@ -154,21 +175,26 @@ function se_sim_faction:on_register()
 	end
 
 	self:fill_start_position() -- most of this executes only once, at the start of a new game
+end
+
+function se_sim_faction:init_targets()
 
 	self.brain:calculate_expansion_targets() -- now done just once, not after each squad spawns
 
-	for k, squad in pairs (faction_squads) do -- loads all squad map spots on initialization
+	for k, squad in pairs (self.squads) do -- loads all squad map spots on initialization
 		squad:refresh()
 	end
 
 	local precondition_targets = self.precondition_targets
-	local smarts_by_name = board.smarts_by_names
+	local smarts_by_name = self.board.smarts_by_names
 
 	for k, expansion in pairs (self.expansion_level) do
 		for kk, target_name in pairs (expansion.precondition_target) do
 			precondition_targets[smarts_by_name[target_name].id] = true
 		end
 	end
+
+--	self:show()
 end
 
 function se_sim_faction:on_unregister()
