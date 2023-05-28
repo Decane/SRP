@@ -578,6 +578,7 @@ function CCaptureSmartTask:give_task(community) -- called 5th (not on load)
 			if current_task ~= nil then
 				if current_task.type == "eliminate_smart" then
 					self.is_task_update = true
+					self.actor_helped = current_task.actor_helped
 					current_task.last_check_task = "reversed_silent"
 				else
 					current_task.last_check_task = "reversed"

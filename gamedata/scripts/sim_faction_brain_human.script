@@ -377,6 +377,7 @@ function faction_brain_human:init_player_task(target_data)
 
 	if current_task ~= nil then
 		task.is_task_update = true
+		task.actor_helped = current_task.actor_helped
 		current_task.last_check_task = "reversed_silent"
 	end
 
