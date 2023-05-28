@@ -227,6 +227,7 @@ end
 
 function faction_brain_human:reset_actor_tasks() -- all and only tasks assigned from here, possibly via init_player_task(), go into faction.random_tasks
 
+	local allies_by_smart = {}
 	local obstacle_points = {}
 	local faction = self.faction
 	local faction_target_smarts = faction.target_smart_value
@@ -265,6 +266,7 @@ function faction_brain_human:reset_actor_tasks() -- all and only tasks assigned 
 						end
 --					end
 				end
+				allies_by_smart[dest_smart] = true
 			end
 		end
 	end
@@ -278,11 +280,7 @@ function faction_brain_human:reset_actor_tasks() -- all and only tasks assigned 
 				local task = tm:get_task_by_entity_id(entity_id)
 				if task ~= nil then
 					if task.actor_helped then
-						local smart_owner = faction.board.smarts[smart_id].smrt.player_name
-						if smart_owner == faction.player_name
-						or smart_owner == "none" and task.type == "eliminate_smart" then
-							task.last_check_task = "complete"
-						else
+						if task.type == "capture_smart" and allies_by_smart[smart_id] == nil then
 							task.last_check_task = "reversed"
 						end
 					else
