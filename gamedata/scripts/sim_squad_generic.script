@@ -611,9 +611,17 @@ function sim_squad_generic:get_next_action()
 		end
 	end
 
-	-- If we are forbidden from this smart, try to leave.
-
 	local squad_faction = self.player_id
+
+	-- If our smart is the target of an active random task for our faction, stay.
+
+	if board.players[squad_faction].random_tasks[smart_id] ~= nil then
+		self.current_action = sim_stay_point(self, true)
+		self.current_action:make()
+		return
+	end
+
+	-- If we are forbidden from this smart, try to leave.
 
 	if sim_board.is_point_avail(smart, squad_faction) == nil then
 		if not self:get_script_target() then
