@@ -289,7 +289,7 @@ Audio fixes:
 + Fixed the issue where a duplicate 'drop him' command would be issued by the commander of a Garbage exit bandit robber squad upon player non-cooperation.
 + Fixed the issue where a duplicate 'thank you' message would be played by the relevant squad leader in response to the player completing a 'capture', 'defend', or 'help' task.
 + Fixed the issue where the Freedom (/Duty) base megaphone would continue to play Freedom's (/Duty's) propaganda even after the base is no longer captured by Freedom (/Duty).
-+ Made the Freedom base megaphone play Yar and Ashot's conversations only when the player is in the vicinity of the Freedom base.
++ Made the Freedom base megaphone play Yar and Ashot's banter only when the player is in the vicinity of the Freedom base and not in a location where it can abruptly cut off immediately after it begins.
 + Fixed the issue where zombified stalkers would sometimes shout battle slogans as if they were ordinary stalkers.
 + Fixed the overlapping audio transmissions during the initial cutscene in the Abandoned Hospital.
 + Fixed Professor Beanpolev's overlapping greeting audio.

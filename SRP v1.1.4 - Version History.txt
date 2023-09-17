@@ -20,6 +20,7 @@ v1.1.4
 + Fixed a load order issue that understated some factions' relative power against their main enemy immediately after load, sometimes manifesting as the player being tasked with eliminating/capturing a power target after load only for the task to soon be inexplicably cancelled. - Decane
 + Fixed the dialogue exploit where the player could farm starting equipment from Suslov multiple times by eliminating the few frames long delay before the player's ability to break out of certain dialogues gets revoked. - Decane
 + Fixed the issue where the Freedom NPCs that hold the player at gunpoint at a Dark Valley entrance would refuse to talk to the player after the hold-up has ended. - Decane
++ Fixed the issue where the Freedom base megaphone could start playing Yar and Ashot's banter even if the player is in Yar's armory or Ashot's shop, resulting in the conversation being abruptly cut off immediately after starting. - Decane
 + Mitigated the issue where the weather would sometimes inexplicably change after loading. - Decane
 + Mitigated the issue where the player's character model would revert back to the default rookie jacket model upon picking up another suit of armor. - Artos, Shoker
 + Fixed the issue where the player would be rejected from playing the shooting minigame if their money precisely matches the entry fee instead of exceeding it. - Decane
