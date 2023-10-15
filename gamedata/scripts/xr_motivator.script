@@ -259,6 +259,10 @@ function motivator_binder:update(delta) -- called 6th
 
 	if npc_alive then
 
+		local npc_id = npc:id()
+
+		xr_sound.update(npc_id) -- DC20231015
+
 		if npc_st.active_scheme then
 			local need_switch = true
 			local manager = npc:motivation_action_manager()
@@ -281,10 +285,6 @@ function motivator_binder:update(delta) -- called 6th
 
 		npc_st.active_sector = sr_danger.select_active_sectors(npc)
 		npc_st.state_mgr:update()
-
-		local npc_id = npc:id()
-
-		xr_sound.update(npc_id)
 
 		local squad = npc_st.squad_obj
 

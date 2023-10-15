@@ -12,6 +12,7 @@ v1.1.4
 + Fixed a rare crash caused by too many stalkers trying to enter the 'Small old wagon' at the Dark Valley: smart_terrain.script:483: Insufficient smart_terrain jobs val_smart_terrain_9_6. - Decane
 + Fixed a rare crash caused by too many stalkers trying to enter the 'Camp amidst rocks' at the Army Warehouses: smart_terrain.script:483: Insufficient smart_terrain jobs mil_smart_terrain_2_1 (new game required for effect). - Decane
 + Fixed NPCs becoming corrupted in the rare (but possible) case where the game attempts to load their logic before initializing the player, thus creating an opportunity for save corruption. - Decane
++ Fixed the issue where a sound_end and/or theme_end signal would be registered and processed in successive calls of the relevant object binder's update() routine, opening time windows in which saving the game could generate a save with stuck logic scripts. - Decane
 + Fixed NPCs not settling into their sleeping animation at some sleep waypoints. - Decane
 + Fixed campfire NPCs sometimes not settling into their campfire idle animation. - Decane
 + Fixed sniper NPCs not settling back into their scan-for-targets state after an enemy detection timeout. - Decane

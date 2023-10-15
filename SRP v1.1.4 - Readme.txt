@@ -130,6 +130,7 @@ Quest fixes:
 + Fixed an onslaught of tasks being suddenly received and completed in the Abandoned Hospital if the player kills the sniper earlier than intended.
 + Fixed the issue where the player could break the storyline at Agroprom by killing the Duty outpost commander while he is speaking or by leaving the map before he has finished.
 + Fixed the "Help the stalkers" task in Agroprom being cancelled immediately after being received if the loner faction is hostile to the player.
++ Fixed the storyline potentially breaking in saves created immediately after Sidorovich's first audio transmission to the player upon entering the Cordon.
 + Fixed the storyline breaking if the player kills every stalker in the Cordon stalker base before extracting the location of Sidorovich's loot from Khaletskiy, even after paying Sidorovich to set things right with the stalkers.
 + Fixed the storyline temporarily breaking if the player suppresses the Limansk military machine gun nest during the interval between receiving and completing the task to speak to the Clear Sky squad commander.
 + Fixed the storyline breaking if the player speaks to Forester before responding to the SOS signal in the Red Forest.
