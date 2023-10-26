@@ -24,8 +24,8 @@ reload_dof           = 0.0, 0.5, 5, 2.85
 ;-------------------------------------------------------------------------------
 
 ;-------------------------------------------------------------------------------
-holder_range_modifier   = 1.0                       ; во сколько раз увеличивается eye_range
-holder_fov_modifier     = 0.7              ; во сколько раз увеличивается eye_fov
+holder_range_modifier   = 1.0                       ; ГўГ® Г±ГЄГ®Г«ГјГЄГ® Г°Г Г§ ГіГўГҐГ«ГЁГ·ГЁГўГ ГҐГІГ±Гї eye_range
+holder_fov_modifier     = 0.7              ; ГўГ® Г±ГЄГ®Г«ГјГЄГ® Г°Г Г§ ГіГўГҐГ«ГЁГ·ГЁГўГ ГҐГІГ±Гї eye_fov
 ;-------------------------------------------------------------------------------
 upgrades                = up_gr_ab_ak74u, up_gr_cd_ak74u, up_gr_ef_ak74u, up_gr_i_ak74u
 installed_upgrades      =
@@ -67,16 +67,16 @@ kill_msg_height		= 30
 
 ;-------------------------------------------------------------------------------
 ;params of weapon recoil
-fire_dispersion_base       = 0.9      ;угол (в градусах) базовой дисперсии оружия (оружия зажатого в тисках)
+fire_dispersion_base       = 0.9      ;ГіГЈГ®Г« (Гў ГЈГ°Г Г¤ГіГ±Г Гµ) ГЎГ Г§Г®ГўГ®Г© Г¤ГЁГ±ГЇГҐГ°Г±ГЁГЁ Г®Г°ГіГ¦ГЁГї (Г®Г°ГіГ¦ГЁГї Г§Г Г¦Г ГІГ®ГЈГ® Гў ГІГЁГ±ГЄГ Гµ)
 control_inertion_factor    = 1.1f
 
-;отдача
-cam_relax_speed         = 5			;скорость возврата в исходное положение
+;Г®ГІГ¤Г Г·Г 
+cam_relax_speed         = 5			;Г±ГЄГ®Г°Г®Г±ГІГј ГўГ®Г§ГўГ°Г ГІГ  Гў ГЁГ±ГµГ®Г¤Г­Г®ГҐ ГЇГ®Г«Г®Г¦ГҐГ­ГЁГҐ
 cam_relax_speed_ai     	= 120.75
-cam_dispersion          = 0.5		;увеличения угла (в градусах) с первым выстрелом
-cam_dispersion_inc      = 0.5	;увеличениe cam_dispersion с каждым выстрелом
-cam_dispersion_frac     = 0.7	    ;ствол будет подыматься на cam_dispersion*cam_dispersion_frac +- cam_dispersion*(1-cam_dispersion_frac)
-cam_max_angle			= 5.0      ;максимальный угол отдачи
+cam_dispersion          = 0.5		;ГіГўГҐГ«ГЁГ·ГҐГ­ГЁГї ГіГЈГ«Г  (Гў ГЈГ°Г Г¤ГіГ±Г Гµ) Г± ГЇГҐГ°ГўГ»Г¬ ГўГ»Г±ГІГ°ГҐГ«Г®Г¬
+cam_dispersion_inc      = 0.5	;ГіГўГҐГ«ГЁГ·ГҐГ­ГЁe cam_dispersion Г± ГЄГ Г¦Г¤Г»Г¬ ГўГ»Г±ГІГ°ГҐГ«Г®Г¬
+cam_dispersion_frac     = 0.7	    ;Г±ГІГўГ®Г« ГЎГіГ¤ГҐГІ ГЇГ®Г¤Г»Г¬Г ГІГјГ±Гї Г­Г  cam_dispersion*cam_dispersion_frac +- cam_dispersion*(1-cam_dispersion_frac)
+cam_max_angle			= 5.0      ;Г¬Г ГЄГ±ГЁГ¬Г Г«ГјГ­Г»Г© ГіГЈГ®Г« Г®ГІГ¤Г Г·ГЁ
 cam_max_angle_horz      = 10.0      ;(degree) maximum shot horizontal degree
 cam_step_angle_horz     = 1.5		;(degree) size of step camera moved in horizontal position while shooting
 
@@ -89,10 +89,10 @@ zoom_cam_max_angle           = 5.0
 zoom_cam_max_angle_horz      = 5.0
 zoom_cam_step_angle_horz     = 1.0
 
-fire_dispersion_condition_factor    = 15         ;увеличение дисперсии в процентах при максимальном износе
-misfire_probability     = 0.0003  ;вероятность осечки при максимальном износе
+fire_dispersion_condition_factor    = 15         ;ГіГўГҐГ«ГЁГ·ГҐГ­ГЁГҐ Г¤ГЁГ±ГЇГҐГ°Г±ГЁГЁ Гў ГЇГ°Г®Г¶ГҐГ­ГІГ Гµ ГЇГ°ГЁ Г¬Г ГЄГ±ГЁГ¬Г Г«ГјГ­Г®Г¬ ГЁГ§Г­Г®Г±ГҐ
+misfire_probability     = 0.0003  ;ГўГҐГ°Г®ГїГІГ­Г®Г±ГІГј Г®Г±ГҐГ·ГЄГЁ ГЇГ°ГЁ Г¬Г ГЄГ±ГЁГ¬Г Г«ГјГ­Г®Г¬ ГЁГ§Г­Г®Г±ГҐ
 misfire_condition_k     = 0.05
-condition_shot_dec      = 0.0001 ;увеличение износа при каждом выстреле
+condition_shot_dec      = 0.0001 ;ГіГўГҐГ«ГЁГ·ГҐГ­ГЁГҐ ГЁГ§Г­Г®Г±Г  ГЇГ°ГЁ ГЄГ Г¦Г¤Г®Г¬ ГўГ»Г±ГІГ°ГҐГ«ГҐ
 ;-------------------------------------------------------------------------------
 
 
@@ -131,7 +131,7 @@ rpm                     = 600    ; max round per minute
 rpm_empty_click         = 200
 ; end ttc
 
-use_aim_bullet          = true                ;Поддерживается ли первая суппер пуля
+use_aim_bullet          = true                ;ГЏГ®Г¤Г¤ГҐГ°Г¦ГЁГўГ ГҐГІГ±Гї Г«ГЁ ГЇГҐГ°ГўГ Гї Г±ГіГЇГЇГҐГ° ГЇГіГ«Гї
 time_to_aim             = 1.0
 
 silencer_hit_power       		= 0.55, 0.55, 0.55, 0.55
@@ -142,7 +142,7 @@ silencer_bullet_speed	 		= 600
 hud                        = wpn_ak74u_hud            ; name of the section of the hud
 
 ;--STRAP PARAMETERS-----------------------------------------------------------------
-;под мишкой
+;ГЇГ®Г¤ Г¬ГЁГёГЄГ®Г©
 strap_position         		= -0.18,-0.45,0.2			; position (offset) and orientation of the weapon when it is strapped
 strap_orientation      		= -10,-5,10					; (3rd person view in degrees)
 strap_bone0             = bip01_spine2
@@ -180,21 +180,19 @@ silencer_y 					= -2
 ;grenade_launcher_x      = 126                ; offset in inventory icon
 ;grenade_launcher_y      = 24
 
-;звуки
+;Г§ГўГіГЄГЁ
 snd_draw                = weapons\ak74_draw
 snd_holster             = weapons\generic_holster
 snd_shoot               = weapons\n_ak74u_shot
-snd_bore		= weapons\abakan_bore
 
-snd_empty               = weapons\gen_empty
-;snd_reload              = weapons\groza_reload
-snd_reload              = weapons\ak74u_reload
+snd_empty               = weapons\gen_empty, 0.5
+snd_reload              = weapons\groza_reload, 0.7
 snd_shoot_grenade       = weapons\gen_grenshoot
-snd_reload_grenade      = weapons\gen_grenload
-snd_switch              = weapons\groza_switch
+snd_reload_grenade      = weapons\gen_grenload, 1.0, 0.8
+snd_switch              = weapons\groza_switch, 1.0, 0.5
 
 
-;настройки для глушителя
+;Г­Г Г±ГІГ°Г®Г©ГЄГЁ Г¤Г«Гї ГЈГ«ГіГёГЁГІГҐГ«Гї
 silencer_hit_power      = 0.55, 0.55, 0.55, 0.55
 silencer_hit_impulse    = 120
 silencer_fire_distance  = 250
@@ -284,9 +282,9 @@ lean_hud_offset_pos		= 0,0,0
 lean_hud_offset_rot		= 0,0,0
 
 ;-----------------------------------------------------------------------------
-; Уникальные
+; Г“Г­ГЁГЄГ Г«ГјГ­Г»ГҐ
 ;-----------------------------------------------------------------------------
-[wpn_ak74u_m1]:wpn_ak74u	;АК-74у спецназ
+[wpn_ak74u_m1]:wpn_ak74u	;ГЂГЉ-74Гі Г±ГЇГҐГ¶Г­Г Г§
 $spawn             				= "weapons\uniq\wpn_ak74u_m1"
 description						= enc_weapons1_wpn-ak74u_m1
 inv_name	        			= wpn-ak74u_m1
