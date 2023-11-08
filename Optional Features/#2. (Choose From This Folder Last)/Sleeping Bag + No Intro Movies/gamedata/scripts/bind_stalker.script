@@ -93,9 +93,11 @@ function actor_binder:net_spawn(se_abstract)
 
 	xr_s.on_game_load()					--' Distemper 03.2008 --
 
-	weather_manager:reset()
-
 	local level_name = level.name()
+
+	if last_level_name ~= level_name then
+		weather_manager:reset()
+	end
 
 	death_manager.init_level_drop_settings(level_name) -- SRP
 

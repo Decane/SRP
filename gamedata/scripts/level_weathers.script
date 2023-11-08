@@ -18,7 +18,6 @@ function WeatherManager:__init()
 	self.current_weather     = "[default]"
 	self.target_weather      = "[default]"
 	self.need_hourly_update  = false
-	self.need_loaded_weather = false
 	self.graphs              = {}
 	self.graphs_ini          = ini_file("environment\\dynamic_weather_graphs.ltx") or abort("[WeatherManager:__init]: Invalid dynamic_weather_graphs.ltx")
 	local ini                = ini_file("game_maps_single.ltx") or abort("[WeatherManager:__init]: Invalid game_maps_single.ltx")
@@ -58,11 +57,6 @@ end
 
 function WeatherManager:select_weather(now)
 
-	if self.need_loaded_weather then
-		self.need_loaded_weather = false
-		return
-	end
-
 	local weather_name = xr_logic.pick_section_from_condlist(db.actor, db.actor, self.weather_condlist)
 	local graph = self:get_graph_by_name(weather_name)
 	local weather_section = graph == nil and weather_name or "default_"..get_next_state(graph)
@@ -83,7 +77,6 @@ function WeatherManager:set_state_from_string(state_string)
 	level.set_weather(loaded_weather, true)
 	self.current_weather = loaded_weather
 	self.target_weather = loaded_weather
-	self.need_loaded_weather = true
 end
 
 function WeatherManager:get_state_as_string()
