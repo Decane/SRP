@@ -2,8 +2,8 @@
 
 #include "ui\map_spots_mp.xml"
 #include "ui\map_spots_relations.xml"
-#include "ui\map_spots_complex.xml"
-#include "ui\map_spots_find_upgrade.xml"
+#include "ui\map_spots_complex_16.xml"
+#include "ui\map_spots_find_upgrade_16.xml"
 #include "ui\map_spots_smart_terrain_names.xml"
 
 	<quest_pointer x="0" y="0" width="11" height="24" heading="1" alignment="c">
@@ -829,7 +829,7 @@
 	</ui_pda_long_blink_point_location>
 
 	<ui_pda_blink_point_location_spot width="30" height="30" stretch="1" light_anim="new_task_highlight" light_anim_cyclic="1" la_texture="1" xform_anim="new_task_highlight_xform" xform_anim_cyclic="1" alignment="c" location_level="-1">
-		<texture>ui_pda2_stask_last_01a</texture>
+		<texture>ui_pda2_stask_last_01a_16</texture>
 	</ui_pda_blink_point_location_spot>
 
 </map_spots>

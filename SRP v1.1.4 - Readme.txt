@@ -42,9 +42,7 @@ Before proceeding, ensure your game is patched to version 1.5.10. If you are uns
 • C:\Program Files (x86)\Steam\steamapps\common\stalker clear sky\     (Steam version)
 • C:\GOG Games\S.T.A.L.K.E.R. Clear Sky\                               (GOG version)
 
-2.) If you are using a widescreen display, overwrite the 'gamedata' folder that now exists in your game's root directory with the 'gamedata' folder located in the 'Widescreen Patch' folder. Otherwise, skip this step.
-
-3.) Install any desired optional features by pasting into your game's root directory the contents of the folder named after the desired optional feature. For example, to install 'Alternative Ballistics', locate the 'Alternative Ballistics' folder and paste its contents — the 'gamedata' folder it contains — into your game's root directory. Overwrite any pre-existing files and folders when prompted.
+2.) Install any desired optional features by pasting into your game's root directory the contents of the folder named after the desired optional feature. For example, to install 'Alternative Ballistics', locate the 'Alternative Ballistics' folder and paste its contents — the 'gamedata' folder it contains — into your game's root directory. Overwrite any pre-existing files and folders when prompted.
 
 To prevent conflicts, install any optional features desired from folder #1 before installing any from folder #2. The 'Prefilled Stashes' and 'Prefilled Randomized Stashes' features require a new game, but all other optional features can be installed at any point in the game. Note also that the 'Reduced Grenade Spam' feature will take full effect only after starting a new game, although it is safe to install at any time. Consult the documentation marked 'Optional Features' for information on each feature, including recommendations for players unsure of which features to use.
 

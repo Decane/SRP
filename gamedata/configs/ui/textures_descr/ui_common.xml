@@ -538,6 +538,7 @@
 	<texture id="ui_mmap_stask_last_01" x="824" y="776" width="17" height="17"/>
 	<texture id="ui_pda2_stask_last_01" x="822" y="795" width="21" height="21"/>
 	<texture id="ui_pda2_stask_last_01a" x="870" y="777" width="23" height="23"/>
+	<texture id="ui_pda2_stask_last_01a_16" x="869" y="776" width="24" height="24"/>
 
 	<texture id="ui_mmap_stask_last_02" x="848" y="776" width="17" height="17"/>
 	<texture id="ui_pda2_stask_last_02" x="846" y="795" width="21" height="21"/>
