@@ -764,7 +764,7 @@
 
 		<cap_keyboardsetup x="6" y="95" width="456" height="23">
 			<texture>ui_brokenline</texture>
-			<auto_static x="10" y="0" width="446" height="23">
+			<auto_static x="10" y="2" width="446" height="23">
 				<text font="letterica16" color="ui_6">ui_mm_keyboard_setup</text>
 			</auto_static>
 		</cap_keyboardsetup>
@@ -778,49 +778,40 @@
 			<text font="letterica16" color="ui_6">ui_mm_invert_mouse</text>
 		</check_mouseinvert>
 
-		<key_binding x="10" y="120" width="451" height="199">
-
-			<!-- headers -->
+		<key_binding x="10" y="116" width="451" height="199">
 
 			<header_1 x="0" y="0" width="229" height="17">
 				<texture>ui_table_button_e</texture>
 				<auto_static x="2" y="0" width="229" height="17">
-					<text font="arial_14" color="ui_6" x="2" y="1" align="l" vert_align="c" complex_mode="0">ui_mm_action</text>
+					<text font="arial_14" color="ui_6" x="2" y="2" align="l" vert_align="c" complex_mode="0">ui_mm_action</text>
 				</auto_static>
 			</header_1>
 
 			<header_2 x="229" y="0" width="102" height="17">
 				<texture>ui_table_button_e</texture>
 				<auto_static x="2" y="0" width="102" height="17">
-					<text font="arial_14" color="ui_6" x="2" y="1" align="l" vert_align="c" complex_mode="0">ui_mm_key</text>
+					<text font="arial_14" color="ui_6" x="2" y="2" align="l" vert_align="c" complex_mode="0">ui_mm_key</text>
 				</auto_static>
 			</header_2>
 
 			<header_3 x="330" y="0" width="102" height="17">
 				<texture>ui_table_button_e</texture>
 				<auto_static x="2" y="0" width="102" height="17">
-					<text font="arial_14" color="ui_6" x="2" y="1" align="l" vert_align="c" complex_mode="0">ui_mm_alternative</text>
+					<text font="arial_14" color="ui_6" x="2" y="2" align="l" vert_align="c" complex_mode="0">ui_mm_alternative</text>
 				</auto_static>
 			</header_3>
 
-			<!--frame-->
-
-			<frame x="0" y="20" width="431" height="181">
+			<frame x="0" y="20" width="431" height="185">
 				<texture>ui_cb_listbox</texture>
 			</frame>
 
-			<list x="0" y="20" width="451" height="181" item_height="18" always_show_scroll="1">
-				<group_name font="letterica16" color="ui_6"/>
-				<item_text font="letterica16" r="215" g="215" b="215"/>
-			</list>
-
-			<scroll_view x="0" y="20" width="447" height="181" always_show_scroll="1" vert_interval="3">
+			<scroll_view x="0" y="22" width="451" height="181" always_show_scroll="1" vert_interval="3">
 				<item_group x="0" y="0" width="160" height="25">
-					<text font="letterica16" color="ui_6"/>
+					<text x="4" y="7" font="letterica16" color="ui_6"/>
 				</item_group>
 
 				<item_key x="0" y="0" width="414" height="18">
-					<text font="letterica16" r="215" g="215" b="215"/>
+					<text x="4" font="letterica16" r="215" g="215" b="215"/>
 				</item_key>
 			</scroll_view>
 

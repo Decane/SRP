@@ -41,6 +41,7 @@ v1.1.4
 + Fixed a badly positioned NPC sleep waypoint in the bandit base at the Garbage, in the army base at the Cordon, and at the 'Makeshift encampment' at the Cordon. - Decane
 + Added support for toggling location names on the world map via the alife_command key binding. - Decane
 + Added a 'Move to Backpack'/'Attach to Belt' option to the menu that appears when right-clicking a detector in the inventory. - Lebedev88
++ Fixed minor UI bugs in the controls menu. - Georgiy-Timoshin
 + (Optional) Added a feature to disable weapon sway while strafing.
 - Removed the need to install the Widescreen Patch in a separate step by automating its application when a widescreen resolution is used. - Georgiy-Timoshin
 
