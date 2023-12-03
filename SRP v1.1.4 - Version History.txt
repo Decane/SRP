@@ -34,6 +34,7 @@ v1.1.4
 + Fixed an SRP v1.1.1 regression that caused the game to forget the squad from which the player accepted a 'capture' task via dialogue under certain circumstances. - Decane
 + Fixed an SRP v1.0.4 regression that caused several dialogue options to be erroneously unavailable when speaking to generic mercenary NPCs, including Hog's subordinates at the Army Warehouses and Leshiy's subordinates at the Red Forest. - Decane
 + Fixed an SRP v1.0.3 regression that caused Yoga's walkie-talkie transmissions to the player to sound as if Yoga were speaking to the player in person rather than over walkie-talkie. - Decane
++ Fixed an SRP v1.0.3 regression that caused the radiation detector dial on the HUD and in the inventory to be rendered over the detector's front panel instead of behind it. - Georgiy-Timoshin
 + Worked around an SRP v1.0.3 regression introduced by the Dunin Ammo Aggregation mod that caused ammo unloaded from a weapon to disappear under certain circumstances. - Decane, Alex Rinic
 + Worked around an SRP v1.0.3 regression that caused bullet tracers to be visible through geometry when playing in DX10/10.1 mode with anti-aliasing enabled through the game's graphics settings. Note: This was achieved by reintroducing the bug from the unmodded game of tracers not being visible at all in DX10/10.1 mode.
 + Fixed an SRP v0.5 regression that caused DX9 sun shafts quality to be hard-coded to low.

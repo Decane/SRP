@@ -94,7 +94,7 @@
 <!--
 			<texture>ui_hud2_rad01_over</texture>
 -->
-      <auto_static x="-15" y="14"  width="86" height="37" stretch="1">
+      <auto_static x="-15" y="0"  width="86" height="51" stretch="1">
         <texture>ui_hud2_stamina_bk</texture>
       </auto_static>
     </back_over_arrow>

@@ -285,11 +285,11 @@
 
 	<main_sensor x="110" y="150" width="83" height="100">
 		<hint_text delay="800">st_ui_main_sensor</hint_text>
-<!--
-		<icon x="15" y="54" width="55" height="51" stretch="1">
-			<texture>ui_hud2_rad01_over</texture>
+
+		<icon x="-1.8" y="55" width="89" height="51" stretch="1">
+			<texture>ui_inGame2_rad01_over</texture>
 		</icon>
--->
+
 		<arrow x="38" y="32" width="9" height="97" heading="1" clockwise="1" begin_angle="0.75" end_angle="-0.75" ang_velocity="0.75">
 			<texture a="255">ui_hud2_rad01_arrow</texture>
 		</arrow>
@@ -297,7 +297,7 @@
 			<texture a="250">ui_hud2_rad01_arrow_shadow</texture>
 		</arrow_shadow>
 		
-		<progress_shape x="3" y="40" width="96" height="96" sector_count="36" clockwise="1" blend="0" begin_angle="0.75" end_angle="-0.75">
+		<progress_shape x="2" y="40" width="96" height="96" sector_count="36" clockwise="1" blend="0" begin_angle="0.75" end_angle="-0.75">
 			<front x="0" y="0" width="80" height="96" stretch="1">
 				<texture>ui_hud2_rad01_progress</texture>
 			</front>
