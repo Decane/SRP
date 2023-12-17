@@ -354,7 +354,7 @@ Advice / good to know:
 
 • Double-click usable inventory items as a convenient shortcut to right-clicking them and selecting 'use this' from the droplist.
 
-• Press the 'SHIFT' key as a convenient shortcut to take everything from a container or corpse when the inventory screen is open.
+• Press the 'Sprint' key (default: 'X') as a convenient shortcut to take everything from a container or corpse when the inventory screen is open.
 
 • Outside the PDA, press the key bound to the 'order to attack' command (default: 'K') to order a nearby friendly squad, currently on standby, to attack.
 
