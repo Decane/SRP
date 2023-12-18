@@ -10,13 +10,13 @@
 		<text>Nowhere, I changed my mind.</text>
 	</string>
 	<string id="st_tm_guide_213">
-		<text>Whoops, I can’t afford this.</text>
+		<text>Seems like I canâ€™t afford this.</text>
 	</string>
 	<string id="st_tm_guide_214">
 		<text>On second thought, maybe now is not a good time to travel.</text>
 	</string>
 	<string id="gar_bandit_robbery_112">
-		<text>I don’t think so.</text>
+		<text>I donâ€™t think so.</text>
 	</string>
 	<string id="gar_bandit_robbery_122">
 		<text>Not today.</text>
@@ -31,13 +31,13 @@
 		<text>You must wait for the transmission to finish.</text>
 	</string>
 	<string id="tips_wait_emission_finish">
-		<text>You must wait for the emission to finish.</text>
+		<text>It's not safe to travel during the emission.</text>
 	</string>
 	<string id="no_sleep_during_emission">
-		<text>You cannot sleep through an emission!</text>
+		<text>You cannot sleep through an emission.</text>
 	</string>
 	<string id="nothing_to_repair">
-		<text>Nothing to repair!</text>
+		<text>Nothing to repair.</text>
 	</string>
 	<string id="st_stash_emptied">
 		<text>Stash emptied:</text>
@@ -46,7 +46,7 @@
 	<!-- NPCs -->
 
 	<string id="yan_levshas_crew">
-		<text>Lefty’s crew member</text>
+		<text>Leftyâ€™s crew member</text>
 	</string>
 
 	<!-- Equipment -->
