@@ -262,7 +262,7 @@ function action_camper:process_danger()
 
 	local passed_time = time_global() - danger:time()
 
-	if xr_danger.check_danger_inertion_time(npc, danger, passed_time) == false then
+	if not xr_danger.is_danger_recent(npc, danger, passed_time) then
 		return false
 	end
 
@@ -274,7 +274,7 @@ function action_camper:process_danger()
 		end
 	end
 
-	if xr_danger.check_danger_distance(npc, danger) == false then
+	if not xr_danger.is_danger_nearby(npc, danger) then
 		return false
 	end
 

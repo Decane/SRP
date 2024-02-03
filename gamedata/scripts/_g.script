@@ -35,48 +35,49 @@ function print_table() end
 function store_table() end
 function callstack() end
 
-local function print_indented(fmt, indent_level, ...)
-	error_log(string.rep("  ", indent_level) .. string.format(fmt, ...))
+local function print_indented(indent_count, fmt, ...)
+	error_log(string.rep("  ", indent_count) .. string.format(fmt, ...))
 end
 
-function print_tbl(table, indent_level)
+function print_tbl(table, indent_count)
 
-	if indent_level == nil then
-		indent_level = 0
+	if indent_count == nil then
+		indent_count = 0
 	end
 
-	print_indented("{", indent_level)
+	print_indented(indent_count, "{")
 
-	for k, v in pairs (table) do
+	for key, value in pairs (table) do
 
-		local ktype = type(k)
-		local vtype = type(v)
-		local kstring
+		local key_type = type(key)
+		local value_type = type(value)
+		local key_as_string
 
-		if ktype == "string" then
-			kstring = "'"..k.."'"
-		elseif ktype == "userdata" then
-			kstring = "<userdata>"
-		elseif ktype == "number" or ktype == "boolean" then
-			kstring = tostring(k)
+		if key_type == "string" then
+			key_as_string = "'"..key.."'"
+		elseif key_type == "userdata" then
+			key_as_string = "<userdata>"
+		elseif key_type == "number" or key_type == "boolean" then
+			key_as_string = tostring(key)
 		else -- table/function/thread
-			kstring = "<"..tostring(k)..">"
+			key_as_string = "<"..tostring(key)..">"
 		end
 
-		if vtype == "table" then
-			print_indented("[%s] =", indent_level + 1, kstring)
-			print_tbl(v, indent_level + 1)
-		elseif vtype == "userdata" then
-			print_indented("[%s] = <userdata>,", indent_level + 1, kstring)
-		elseif vtype == "function" or vtype == "thread" then
-			print_indented("[%s] = <%s>,", indent_level + 1, kstring, tostring(v))
-		else -- string/number/boolean
-			local vstring = vtype == "string" and "'"..v.."'" or tostring(v)
-			print_indented("[%s] = %s,", indent_level + 1, kstring, vstring)
+		if value_type == "table" then
+			print_indented(indent_count + 1, "[%s] =", key_as_string)
+			print_tbl(value, indent_count + 1)
+		elseif value_type == "userdata" then
+			print_indented(indent_count + 1, "[%s] = <userdata>,", key_as_string)
+		elseif value_type == "function" or value_type == "thread" then
+			print_indented(indent_count + 1, "[%s] = <%s>,", key_as_string, tostring(value))
+		elseif value_type == "string" then
+			print_indented(indent_count + 1, "[%s] = '%s',", key_as_string, value)
+		else -- number/boolean
+			print_indented(indent_count + 1, "[%s] = %s,", key_as_string, tostring(value))
 		end
 	end
 
-	print_indented(indent_level == 0 and "}" or "},", indent_level)
+	print_indented(indent_count, indent_count == 0 and "}" or "},")
 end
 
 ----------------------------------------------------------------------
@@ -404,8 +405,8 @@ ammo_section =
 }
 
 function get_param_string(src_string, obj)
-	local script_ids = db.script_ids[obj:id()]
-	local out_string, num = string.gsub(src_string, "%$script_id%$", tostring(script_ids))
+	local zone_name = db.script_ids[obj:id()] -- may be nil
+	local out_string, num = string.gsub(src_string, "%$script_id%$", tostring(zone_name))
 	if num > 0 then
 		return out_string, true
 	else
