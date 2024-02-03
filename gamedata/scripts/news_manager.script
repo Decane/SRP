@@ -16,7 +16,6 @@ local tips_icons =
 	mar_csky_commander_name       = "ui_npc_small_nebo_2_face_1",
 	mar_csky_scientist_name       = "ui_npc_small_nebo_2_face_2",
 	mar_csky_tech_name            = "ui_npc_small_nebo_2_face_3",
-	mar_csky_barman               = "ui_npc_small_nebo_2_face_4",
 	escape_trader_name            = "ui_npc_small_trader_1",
 	esc_leader_stalkerbase_name   = "ui_npc_small_neutral_2_face_2",
 	esc_driver_name               = "ui_npc_small_soldier_1",
@@ -104,7 +103,7 @@ function send_sound(npc, faction, point, str, str2)
 		return
 	end
 
-	local txt = ""
+	local txt
 
 	if str2 == nil then
 		txt = string.gsub(str, "^characters_voice\\human_..\\", "", 1)
@@ -119,8 +118,6 @@ function send_sound(npc, faction, point, str, str2)
 		return
 	end
 
-	-- xr_sound.set_sound_play(0, "pda_tips") -- 0 = actor ID
-
 	local texture
 
 	if npc ~= nil and is_npc_stalker[npc:clsid()] then
@@ -130,22 +127,19 @@ function send_sound(npc, faction, point, str, str2)
 	end
 
 	local news_caption = game.translate_string("st_tip").." "..game.translate_string(faction)
-	local point_name = ""
 
 	if point ~= nil then
 		local smart = sim_board.get_sim_board().smarts[point]
+		local point_name
 		if smart then
 			point_name = smart_names.get_smart_terrain_name(smart.smrt)
 		else
 			point_name = game.translate_string(point)
 		end
+		news_caption = news_caption..". "..point_name
 	end
 
-	if point_name ~= "" then
-		news_caption = news_caption..". "..point_name..":"
-	else
-		news_caption = news_caption..":"
-	end
+	news_caption = news_caption..":"
 
 	db.actor:give_game_news(news_caption, news_text, texture, 1000, 5000, 1)
 end

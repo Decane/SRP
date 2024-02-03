@@ -226,11 +226,11 @@ function se_sim_faction:update()
 		local calculated_expansion_targets = false
 		if board.simulation_started then
 			local expansion = self.expansion_level[self.current_expansion_level]
-			if expansion.respawn_hours[tostring(level.get_time_hours())] == true then
-				local last_spawn_time, current_game_time = self.last_spawn_time, game.get_game_time()
-				if last_spawn_time == nil or current_game_time:diffSec(last_spawn_time) >= expansion.respawn_idle_time then
+			if expansion.respawn_hours[tostring(level.get_time_hours())] then
+				local current_time = game.get_game_time()
+				if self.last_spawn_time == nil or current_time:diffSec(self.last_spawn_time) >= expansion.respawn_idle_time then
 					local is_spawned = false
-					for i = #self.squads, expansion.base_squad_number - 1 do
+					for i = #self.squads + 1, expansion.base_squad_number do
 						local spawn_smart = board:get_spawn_smart(self)
 						if spawn_smart == nil then
 							break
@@ -239,16 +239,16 @@ function se_sim_faction:update()
 						squad:update()
 						is_spawned = true
 					end
-					if is_spawned == false then
+					if not is_spawned then
 						self.brain:calculate_expansion_targets()
 						calculated_expansion_targets = true
 					end
-					self.last_spawn_time = current_game_time
+					self.last_spawn_time = current_time
 				end
 			end
 		end
 
-		if self.community_player == true then
+		if self.community_player then
 			if not calculated_expansion_targets and self.brain.reset_actor_tasks ~= nil then
 				self.brain:reset_actor_tasks()
 			end
@@ -260,70 +260,45 @@ end
 
 function se_sim_faction:get_spawn_section(level_name, custom_resource)
 
-	local resource_spawn_data
+	local spawns_for_resource = self.spawn_by_resource[custom_resource or self.resource_level] or
+	                            self.spawn_by_resource[#self.spawn_by_resource]
 
-	if custom_resource ~= nil then
-		resource_spawn_data = self.spawn_by_resource[custom_resource]
-	else
-		resource_spawn_data = self.spawn_by_resource[self.resource_level]
+	if spawns_for_resource == nil then
+		abort("[sim_faction.get_spawn_section]: Spawn data for faction '%s' is missing.", self:name())
 	end
 
-	if resource_spawn_data == nil then
-		local n = self.resource_level
-		while n >= 0 do
-			resource_spawn_data = self.spawn_by_resource[n]
-			if resource_spawn_data ~= nil then
-				break
-			end
-			n = n - 1
-		end
-		if resource_spawn_data == nil then
-			abort("[sim_faction.get_spawn_section]: Spawn data for faction '%s' and resource level '%s' is missing.", self:name(), tostring(custom_resource or self.resource_level))
-		end
-	end
+	local spawns_for_level = self.spawn_by_level[level_name]
 
-	local level_spawn_data = self.spawn_by_level[level_name]
-
-	if level_spawn_data == nil then
+	if spawns_for_level == nil then
 		abort("[sim_faction.get_spawn_section]: Spawn data for faction '%s' and level '%s' is missing.", self:name(), tostring(level_name))
 	end
 
-	local spawn_data = {}
+	local spawns = {}
+	local sum = 0
 	local c = 0
 
-	for k, v in pairs (resource_spawn_data) do
-		for kk, vv in pairs (level_spawn_data) do
+	for _, v in pairs (spawns_for_resource) do
+		for _, vv in pairs (spawns_for_level) do
 			if v.section == vv.section then
 				c = c + 1
-				spawn_data[c] = {section = v.section, prob = v.prob * vv.prob}
+				local prob = v.prob * vv.prob
+				spawns[c] = {section = v.section, prob = prob}
+				sum = sum + prob
 				break
 			end
 		end
 	end
 
-	local sum = 0
-
-	for k, v in pairs (spawn_data) do
-		sum = sum + v.prob
-	end
-
-	local spawn_section = nil
-
 	sum = math.random(0, sum)
 
-	for k, v in pairs (spawn_data) do
+	for _, v in pairs (spawns) do
 		sum = sum - v.prob
 		if sum <= 0 then
-			spawn_section = v.section
-			break
+			return v.section
 		end
 	end
 
-	if spawn_section == nil then
-		abort("[sim_faction.get_spawn_section]: Spawn section for faction '%s' and resource level '%s' is missing.", self:name(), tostring(custom_resource or self.resource_level))
-	end
-
-	return spawn_section
+	abort("[sim_faction.get_spawn_section]: Failed to calculate spawn section for faction '%s' and resource level '%s'.", self:name(), tostring(custom_resource or self.resource_level))
 end
 
 function se_sim_faction:calculate_squad_tasks()
@@ -332,7 +307,7 @@ function se_sim_faction:calculate_squad_tasks()
 
 	self.squad_target_cache = {}
 
-	for k, target_smart in pairs (self.target_smart_value) do -- for all registered target smarts, set number of squads assigned to that smart to 0
+	for _, target_smart in pairs (self.target_smart_value) do -- for all registered target smarts, set number of squads assigned to that smart to 0
 		target_smart.num = 0
 	end
 
@@ -341,7 +316,7 @@ function se_sim_faction:calculate_squad_tasks()
 	local board_smarts = self.board.smarts
 	local squad_need_task = {}
 
-	for k, squad in pairs (self.squads) do -- for all squads:
+	for _, squad in pairs (self.squads) do -- for all squads:
 
 		local script_target = squad:get_script_target()
 
@@ -513,7 +488,7 @@ end
 
 function se_sim_faction:calculate_absolute_power()
 	self.absolute_power = 0
-	for k, squad in pairs (self.squads) do
+	for _, squad in pairs (self.squads) do
 		self.absolute_power = self.absolute_power + squad.squad_power
 	end
 end
@@ -527,7 +502,6 @@ function se_sim_faction:get_relative_power()
 	self:calculate_absolute_power()
 
 	local rel_enemy = sim_board.sim_fight[self.player_name]
-
 	if rel_enemy == nil then
 		return self.absolute_power * 0.0001
 	end
@@ -574,7 +548,7 @@ end
 
 function se_sim_faction:get_war_target_descr()
 
-	if not self.target_smart_value then
+	if self.target_smart_value == nil then
 		return ""
 	end
 
@@ -583,35 +557,35 @@ function se_sim_faction:get_war_target_descr()
 	local capture_exist = false
 	local defend_exist = false
 
-	for k, v in pairs (self.target_smart_value) do
-		if v.task_point_type ~= 0 then
-			if v.smart.player_name ~= self.player_name then
-				if v.num > 0 then
-					if capture_exist == false then
-						capture_descr = capture_descr..game.translate_string("ui_st_capture").." "
-						capture_exist = true
-					else
-						capture_descr = capture_descr..", "
-					end
-					capture_descr = capture_descr..smart_names.get_smart_terrain_name(v.smart)
-				end
-			else
-				if defend_exist == false then
-					defend_descr = defend_descr..game.translate_string("ui_st_defend").." "
-					defend_exist = true
-				else
+	for _, target_smart in pairs (self.target_smart_value) do
+		if target_smart.task_point_type ~= 0 then
+			if target_smart.smart.player_name == self.player_name then
+				if defend_exist then
 					defend_descr = defend_descr..", "
+				else
+					defend_descr = game.translate_string("ui_st_defend").." "
+					defend_exist = true
 				end
-				defend_descr = defend_descr..smart_names.get_smart_terrain_name(v.smart)
+				defend_descr = defend_descr..smart_names.get_smart_terrain_name(target_smart.smart)
+			else
+				if target_smart.num > 0 then
+					if capture_exist then
+						capture_descr = capture_descr..", "
+					else
+						capture_descr = game.translate_string("ui_st_capture").." "
+						capture_exist = true
+					end
+					capture_descr = capture_descr..smart_names.get_smart_terrain_name(target_smart.smart)
+				end
 			end
 		end
 	end
 
-	if defend_exist == true then
-		capture_descr = capture_descr.."\\n\\n"..defend_descr
+	if defend_exist then
+		return capture_descr.."\\n\\n"..defend_descr
+	else
+		return capture_descr
 	end
-
-	return capture_descr
 end
 
 function se_sim_faction:get_war_state_icon(stage)
@@ -809,17 +783,17 @@ function se_sim_faction:STATE_Read(packet, size)
 end
 
 function get_current_expansion(faction_id)
-	local player = sim_board.get_sim_board().players[faction_id]
-	if player == nil then
+	local faction = sim_board.get_sim_board().players[faction_id]
+	if faction == nil then
 		abort("[sim_faction.get_current_expansion]: There is no faction with ID '%s'.", tostring(faction_id))
 	end
-	return player.expansion_level[player.current_expansion_level].section
+	return faction.expansion_level[faction.current_expansion_level].section
 end
 
 function get_current_resource(faction_id)
-	local player = sim_board.get_sim_board().players[faction_id]
-	if player == nil then
+	local faction = sim_board.get_sim_board().players[faction_id]
+	if faction == nil then
 		abort("[sim_faction.get_current_resource]: There is no faction with ID '%s'.", tostring(faction_id))
 	end
-	return player.resource_level
+	return faction.resource_level
 end

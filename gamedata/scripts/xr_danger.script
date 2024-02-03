@@ -20,17 +20,17 @@ local danger_type_entity_attacked       = danger_object.entity_attacked
 local danger_type_entity_corpse         = danger_object.entity_corpse
 local danger_type_entity_death          = danger_object.entity_death
 local danger_type_grenade               = danger_object.grenade
-local game_object_enemy                 = game_object.enemy
-local stalker_ids_property_danger       = stalker_ids.property_danger
 
-----------------------------------------------------------------------------------------------------------------------
--- EVALUATORS
-----------------------------------------------------------------------------------------------------------------------
+local game_object_enemy                 = game_object.enemy
+
+--------------------------------------------------------------------------------
+-- Evaluators
+--------------------------------------------------------------------------------
 
 class "evaluator_danger" (property_evaluator)
 
 function evaluator_danger:__init(storage) super()
---	self.a = storage
+--	self.st = storage
 	self.npc_st = db.storage[storage.npc:id()]
 	self.faction = storage.npc:character_community()
 end
@@ -38,11 +38,6 @@ end
 function evaluator_danger:evaluate()
 
 	local npc = self.object
---[[
-	if self.mgr == nil then
-		self.mgr = npc:motivation_action_manager()
-	end
-]]
 	local danger = npc:best_danger()
 
 	if danger == nil then
@@ -63,9 +58,12 @@ function evaluator_danger:evaluate()
 		return false
 	end
 
-	if danger_obj:id() == 0 and (danger_type == danger_type_attack_sound or danger_type == danger_type_bullet_ricochet) then -- 0 = actor ID
-		if npc:relation(db.actor) ~= game_object_enemy then -- and npc:best_enemy() == nil -- no danger if non-hostile actor fires gun, now even when NPC is engaging enemy
-			return false
+	if danger_obj:id() == 0 then -- 0 = actor ID
+		if danger_type == danger_type_attack_sound
+		or danger_type == danger_type_bullet_ricochet then
+			if npc:relation(db.actor) ~= game_object_enemy then -- and npc:best_enemy() == nil -- no danger if non-hostile actor fires gun, now even when NPC is engaging enemy
+				return false
+			end
 		end
 	end
 
@@ -87,24 +85,25 @@ function evaluator_danger:evaluate()
 		if self.faction == "zombied" then
 			return false
 		end
---		if self.a.ignore_types["grenade"] == true then -- use the ignore_distance parameters instead of 'ignore_types' for danger ignorance via NPC script logic
---			return false
---		end
-	end
 --[[
-	if danger_type == danger_type_entity_attacked or danger_type == danger_type_attacked then
-		if self.a.ignore_types["hit"] == true then
+		if self.st.ignore_types["grenade"] == true then -- use the ignore_distance parameters instead of 'ignore_types' for danger ignorance via NPC script logic
+			return false
+		end
+	elseif danger_type == danger_type_entity_attacked
+	    or danger_type == danger_type_attacked then
+		if self.st.ignore_types["hit"] == true then
 			return false
 		end
 	elseif danger_type == danger_type_enemy_sound or
 		danger_type == danger_type_bullet_ricochet or -- SRP addition: ignore bullet ricochets if set to ignore sounds
 		danger_type == danger_type_attack_sound or
 		danger_type == danger_type_entity_death then
-		if self.a.ignore_types["sound"] == true then
+		if self.st.ignore_types["sound"] == true then
 			return false
 		end
-	end
 ]]
+	end
+
 	local npc_st = self.npc_st
 
 	if not xr_combat_ignore.is_enemy(npc, danger_obj, npc_st.combat_ignore, true) then
@@ -116,12 +115,14 @@ function evaluator_danger:evaluate()
 	end
 
 	if self.danger_time then
+		-- TODO: Why store a time if it's always going to be clobbered right
+		-- before being checked? Just use a flag instead?
 		self.danger_time = danger:time()
 		local passed_time = time_global() - self.danger_time
-		return check_danger_inertion_time(npc, danger, passed_time)
+		return is_danger_recent(npc, danger, passed_time)
 	end
 
-	if check_danger_distance(npc, danger) == false then
+	if not is_danger_nearby(npc, danger) then
 		return false
 	end
 
@@ -130,11 +131,7 @@ function evaluator_danger:evaluate()
 			return false
 		end
 	end
---[[
-	if xr_gulag.is_info_restricted(npc:id(), danger:position()) then -- nv130303 test is never true in vanilla
-		return false
-	end
-]]
+
 	if npc_st.wounded then
 		local wounded_state = npc_st.wounded.wound_manager.state
 		if wounded_state ~= nil and wounded_state ~= "nil" then -- xr_wounded.is_heavy_wounded_by_id(npc:id())
@@ -142,24 +139,22 @@ function evaluator_danger:evaluate()
 		end
 	end
 
-	if npc_st.active_scheme == "camper" then
-		if danger_type == danger_type_grenade then
-			self.danger_time = danger:time()
-			return true
-		end
+	if npc_st.active_scheme == "camper" and danger_type ~= danger_type_grenade then
 		return false
-	else
-		self.danger_time = danger:time()
-		return true
 	end
+
+	self.danger_time = danger:time()
+	return true
 end
 
-----------------------------------------------------------------------------------------------------------------------
--- BINDER
-----------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+-- Binder
+--------------------------------------------------------------------------------
 
-function add_to_binder(object, ini, scheme, section, storage)
-	local manager = object:motivation_action_manager()
+local stalker_ids_property_danger = stalker_ids.property_danger
+
+function add_to_binder(npc, ini, scheme, section, storage)
+	local manager = npc:motivation_action_manager()
 	manager:remove_evaluator(stalker_ids_property_danger)
 	manager:add_evaluator(stalker_ids_property_danger, this.evaluator_danger(storage))
 end
@@ -171,16 +166,13 @@ function reset_danger(npc, scheme, npc_st, section) -- scheme is either "nil" or
 	local danger_section
 
 	if scheme ~= "nil" then
-		danger_section = utils.cfg_get_string(ini, section, "danger", npc, false, "")
+		danger_section = utils.cfg_get_string(ini, section, "danger", nil, false, "")
 	end
 --[[
 	st.ignore_types = {} -- define an appropriate ignore_distance parameter with value 0 in NPC logic if you want full danger ignorance - don't use the 'ignore_types' parameter
 
 	if danger_section then
-		local t = parse_names(utils.cfg_get_string(ini, danger_section, "ignore_types", npc, false, "", ""))
-		for k, v in pairs (t) do
-			st.ignore_types[v] = true
-		end
+		st.ignore_types = parse_names_to_hash(utils.cfg_get_string(ini, danger_section, "ignore_types", nil, false, "", ""))
 	end
 ]]
 	if danger_section and ini:section_exist(danger_section) then
@@ -213,124 +205,67 @@ function reset_danger(npc, scheme, npc_st, section) -- scheme is either "nil" or
 	end
 end
 
-function check_danger_inertion_time(npc, danger, passed_time)
+function is_danger_recent(npc, danger, passed_time)
 
 	local danger_settings = db.storage[npc:id()].danger
 	local danger_type = danger:type()
 
-	if danger_settings ~= nil then
-		if danger_type == danger_type_grenade then
-			if danger_settings.danger_inertion_time_grenade <= passed_time then
-				return false
-			end
-		elseif danger_type == danger_type_entity_corpse then
-			if danger_settings.danger_inertion_time_corpse <= passed_time then
-				return false
-			end
-		elseif danger_type == danger_type_entity_attacked
-		or danger_type == danger_type_attacked then
-			if danger_settings.danger_inertion_time_hit <= passed_time then
-				return false
-			end
-		elseif danger_type == danger_type_enemy_sound
-		or danger_type == danger_type_attack_sound
-		or danger_type == danger_type_entity_death then
-			if danger_settings.danger_inertion_time_sound <= passed_time then
-				return false
-			end
-		elseif danger_type == danger_type_bullet_ricochet then
-			if danger_settings.danger_inertion_time_ricochet <= passed_time then
-				return false
-			end
-		end
-	else
-		if danger_type == danger_type_grenade then
-			if def_danger_inertion_time_grenade <= passed_time then
-				return false
-			end
-		elseif danger_type == danger_type_entity_corpse then
-			if def_danger_inertion_time_corpse <= passed_time then
-				return false
-			end
-		elseif danger_type == danger_type_entity_attacked
-		or danger_type == danger_type_attacked then
-			if def_danger_inertion_time_hit <= passed_time then
-				return false
-			end
-		elseif danger_type == danger_type_enemy_sound
-		or danger_type == danger_type_attack_sound
-		or danger_type == danger_type_entity_death then
-			if def_danger_inertion_time_sound <= passed_time then
-				return false
-			end
-		elseif danger_type == danger_type_bullet_ricochet then
-			if def_danger_inertion_time_ricochet <= passed_time then
-				return false
-			end
-		end
+	if danger_type == danger_type_grenade then
+		return passed_time < danger_settings.danger_inertion_time_grenade
+	end
+
+	if danger_type == danger_type_entity_corpse then
+		return passed_time < danger_settings.danger_inertion_time_corpse
+	end
+
+	if danger_type == danger_type_entity_attacked
+	or danger_type == danger_type_attacked then
+		return passed_time < danger_settings.danger_inertion_time_hit
+	end
+
+	if danger_type == danger_type_enemy_sound
+	or danger_type == danger_type_attack_sound
+	or danger_type == danger_type_entity_death then
+		return passed_time < danger_settings.danger_inertion_time_sound
+	end
+
+	if danger_type == danger_type_bullet_ricochet then
+		return passed_time < danger_settings.danger_inertion_time_ricochet
 	end
 
 	return true
 end
 
-function check_danger_distance(npc, danger)
+function is_danger_nearby(npc, danger)
 
 	local danger_settings = db.storage[npc:id()].danger
 --	local danger_distance_sqr = danger:position():distance_to_sqr(npc:position())
 	local distance_to_danger = danger:position():distance_to(npc:position()) -- nv130412 also changed in reset_danger()
 
-	if danger_settings ~= nil then
-		if distance_to_danger >= danger_settings.ignore_distance then
-			return false
-		end
-		local danger_type = danger:type()
-		if danger_type == danger_type_grenade then
-			if distance_to_danger >= danger_settings.ignore_distance_grenade then
-				return false
-			end
-		elseif danger_type == danger_type_entity_corpse then
-			if distance_to_danger >= danger_settings.ignore_distance_corpse then
-				return false
-			end
-		elseif danger_type == danger_type_entity_attacked
-		or danger_type == danger_type_attacked then
-			if distance_to_danger >= danger_settings.ignore_distance_hit then
-				return false
-			end
-		elseif danger_type == danger_type_enemy_sound
-		or danger_type == danger_type_attack_sound
-		or danger_type == danger_type_bullet_ricochet -- SRP addition
-		or danger_type == danger_type_entity_death then
-			if distance_to_danger >= danger_settings.ignore_distance_sound then
-				return false
-			end
-		end
-	else
-		if distance_to_danger >= def_ignore_distance then
-			return false
-		end
-		local danger_type = danger:type()
-		if danger_type == danger_type_grenade then
-			if distance_to_danger >= def_ignore_distance_grenade then
-				return false
-			end
-		elseif danger_type == danger_type_entity_corpse then
-			if distance_to_danger >= def_ignore_distance_corpse then
-				return false
-			end
-		elseif danger_type == danger_type_entity_attacked
-		or danger_type == danger_type_attacked then
-			if distance_to_danger >= def_ignore_distance_hit then
-				return false
-			end
-		elseif danger_type == danger_type_enemy_sound
-		or danger_type == danger_type_attack_sound
-		or danger_type == danger_type_bullet_ricochet -- SRP addition
-		or danger_type == danger_type_entity_death then
-			if distance_to_danger >= def_ignore_distance_sound then
-				return false
-			end
-		end
+	if distance_to_danger >= danger_settings.ignore_distance then
+		return false
+	end
+
+	local danger_type = danger:type()
+
+	if danger_type == danger_type_grenade then
+		return distance_to_danger < danger_settings.ignore_distance_grenade
+	end
+
+	if danger_type == danger_type_entity_corpse then
+		return distance_to_danger < danger_settings.ignore_distance_corpse
+	end
+
+	if danger_type == danger_type_entity_attacked
+	or danger_type == danger_type_attacked then
+		return distance_to_danger < danger_settings.ignore_distance_hit
+	end
+
+	if danger_type == danger_type_enemy_sound
+	or danger_type == danger_type_attack_sound
+	or danger_type == danger_type_bullet_ricochet -- SRP addition
+	or danger_type == danger_type_entity_death then
+		return distance_to_danger < danger_settings.ignore_distance_sound
 	end
 
 	return true

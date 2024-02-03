@@ -229,7 +229,6 @@ function load_dialog:load_game_internal()
 		console:execute("disconnect")
 		console:execute("start server(" .. fname .. "/single/alife/load) client(localhost)")
 	else
-		bind_stalker.quitting_game = true
 		console:execute("load " .. fname)
 	end
 end

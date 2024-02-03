@@ -1,14 +1,6 @@
 ------------------------- Copyright 2007-2008 DEXXX ---------------------------
 
-function set_lc()
-	del_so("red_level_changer_to_limansk")
-	spawn_lc(6001, "fm_limansk", vector():set(11.643, -0.0078, -386.676), "red_forest", vector():set(-180.117, 0.138, -285.48), "level_changer_right", "st_lchanger_to_red_forest", 0, vector():set(0, -1, 0))
-	spawn_lc(6002, "fm_red_forest", vector():set(-183.811, 2.238, -289.468), "limansk", vector():set(7.675, -0.009, -382.109), "level_changer_left_up", "st_lchanger_to_limansk", 0, vector():set(0, 0, 0), "[pt_move_if_reject]\npath = red_level_changer_to_limansk_reject_way")
---	spawn_lc(6003, "fm_stancia_2", vector():set(-60.516, 0.149, 381.135), "limansk", vector():set(56.247, 3.299, 327.082), "level_changer_down_left", "st_lchanger_to_limansk", 0, vector():set(0, 3.14, 0))
-	spawn_lc(6003, "fm_stancia_2", vector():set(-60.516, 0.149, 381.135), "limansk", vector():set(-3.338, 28.518, 199.411), "level_changer_down_left", "st_lchanger_to_limansk", 0, vector():set(0, 3.14, 0))
-end
-
-function del_so(name)
+local function del_so(name)
 	local sim = _G.sim
 	local se_obj = sim:object(name)
 	if se_obj ~= nil then
@@ -16,6 +8,13 @@ function del_so(name)
 --	else
 --		dbglog("Found no server object with name '%s'.", name)
 	end
+end
+
+local function set_lc()
+	del_so("red_level_changer_to_limansk")
+	spawn_lc(6001, "fm_limansk", vector():set(11.643, -0.0078, -386.676), "red_forest", vector():set(-180.117, 0.138, -285.48), "level_changer_right", "st_lchanger_to_red_forest", vector():set(0, -1, 0))
+	spawn_lc(6002, "fm_red_forest", vector():set(-183.811, 2.238, -289.468), "limansk", vector():set(7.675, -0.009, -382.109), "level_changer_left_up", "st_lchanger_to_limansk", vector():set(0, 0, 0), "[pt_move_if_reject]\npath = red_level_changer_to_limansk_reject_way")
+	spawn_lc(6003, "fm_stancia_2", vector():set(-60.516, 0.149, 381.135), "limansk", vector():set(-3.338, 28.518, 199.411), "level_changer_down_left", "st_lchanger_to_limansk", vector():set(0, 3.14, 0))
 end
 
 function armagezdec()
@@ -32,14 +31,11 @@ function armagezdec()
 	del_so("stc_scene_manager_restrictor")
 	del_so("stc_cut_scene_final")
 	del_so("stc_quest_controller")
---	local obj_by_id = level.object_by_id
---	for id = 1, 65535 do
 	for id, obj in pairs (db.storage) do
 		if id ~= 0 then -- 0 = actor ID
 			local npc = obj.object
---			local npc = obj_by_id(id)
-			if npc ~= nil and npc:alive() == true then
-				npc:kill(npc)				-- kill every online NPC at the CNPP
+			if npc ~= nil and npc:alive() then
+				npc:kill(npc) -- kill every online NPC at the CNPP
 			end
 		end
 	end
@@ -47,23 +43,18 @@ function armagezdec()
 end
 
 function teleport()
-	local act = db.actor
---	if not has_alife_info("set_changers") then
---		act:give_info_portion("set_changers")
-		set_lc()
---	end
+	set_lc()
 	level_weathers.get_weather_manager():reset()
 	level.remove_pp_effector(20080704)
 	level.remove_cam_effector(20080705)
-	act:set_actor_position(vector():set(133.6553, -0.0013, 268.5011))
-	act:set_actor_direction(2.7)
+	db.actor:set_actor_position(vector():set(133.6553, -0.0013, 268.5011))
+	db.actor:set_actor_direction(2.7)
 end
 
 function awakening()
 
 	-- Delete CS presence from Limansk:
 
---	del_so("lim_final_squad_spawn_restr")
 	xr_effects.remove_squad(nil, nil, {"lim_allyes_recon_squad"})
 	xr_effects.remove_squad(nil, nil, {"lim_allyes_final_squad"})
 	xr_effects.remove_squad(nil, nil, {"lim_allyes_final_squad2"})
@@ -83,140 +74,125 @@ function awakening()
 
 	-- Delete marsh Lebedev:
 
---	del_so("mar_csky_commander")	-- done via his logic script anyway
+--	del_so("mar_csky_commander") -- done via his logic script anyway
 
 	level.add_cam_effector("camera_effects\\prison_1.anm", 25, false, "")
 	level.add_pp_effector("snd_shock.ppe", 20080401, false)
 	level.add_cam_effector("camera_effects\\hit_back_left.anm", 26, false, "")
 --	local snd_obj = sound_object("actor\\breath_1")
 --	snd_obj:play_no_feedback(db.actor, sound_object.s2d, 0, vector(), 1.0)
---	local obj = alife():story_object(6003)
---	if obj ~= nil then
---		level.map_add_object_spot_ser(obj.id, "level_changer_down_left", "st_lchanger_to_limansk")
---	end
 end
 
-function spawn_lc(sid, from_level, from_pos, dest_level, dest_pos, spot, hint, mode, dest_dir, custom)
+function spawn_lc(sid, from_level, from_pos, dest_level, dest_pos, spot, hint, dest_dir, custom)
 
-	local vertexes = {
-
-		fm_limansk	=	{lvid = 31944,	gvid = 1562},
-		red_forest	=	{lvid = 3002,	gvid = 1012},
-		fm_red_forest	=	{lvid = 2709,	gvid = 1012},
-		limansk		=	{lvid = 29060,	gvid = 1563},
-		fm_stancia_2	=	{lvid = 171,	gvid = 1572}
-
-			}
+	local vertexes =
+	{
+		fm_limansk    = {lvid = 31944, gvid = 1562},
+		red_forest    = {lvid = 3002,  gvid = 1012},
+		fm_red_forest = {lvid = 2709,  gvid = 1012},
+		limansk       = {lvid = 29060, gvid = 1563},
+		fm_stancia_2  = {lvid = 171,   gvid = 1572},
+	}
 
 	local obj = _G.sim:create("level_changer", from_pos, vertexes[from_level]["lvid"], vertexes[from_level]["gvid"])
 
---	if sid ~= 6003 then
-		level.map_add_object_spot_ser(obj.id, spot, hint)
---	end
+	level.map_add_object_spot_ser(obj.id, spot, hint)
 
-	if obj ~= nil then
+	local packet = net_packet()
 
-		local packet = net_packet()
-		packet:w_begin(0)		-- needed for CS
-		obj:STATE_Write(packet)
-		packet:r_seek(2)			-- ditto
-		local game_vertex_id = packet:r_u16()
-		local cse_alife_object__unk1_f32 = packet:r_float()
-		local cse_alife_object__unk2_u32 = packet:r_s32()
-		local level_vertex_id = packet:r_s32()
-		local object_flags = packet:r_s32()
-		local custom_data = packet:r_stringZ()
-		local story_id = packet:r_s32()
-		local cse_alife_object__unk3_u32 = packet:r_s32()
+	packet:w_begin(0) -- needed for CS
+	obj:STATE_Write(packet)
+	packet:r_seek(2) -- ditto
 
-		local shape_count = packet:r_u8()
-		local shape_type
---		local center
---		local radius
+	local game_vertex_id = packet:r_u16()
+	local cse_alife_object__unk1_f32 = packet:r_float()
+	local cse_alife_object__unk2_u32 = packet:r_s32()
+	local level_vertex_id = packet:r_s32()
+	local object_flags = packet:r_s32()
+	local custom_data = packet:r_stringZ()
+	local story_id = packet:r_s32()
+	local cse_alife_object__unk3_u32 = packet:r_s32()
 
-		if shape_count == 0 then
-			shape_type = 0
---			center = vector():set(0,0,0)
---			radius = 10.0
-			shape_count = 1
-		else
-			for i = 1, shape_count do
+	local shape_count = packet:r_u8()
+	local shape_type
 
-				local shape_type = packet:r_u8()
-				if shape_type == 0 then
-					local center = packet:r_vec3()
-					local radius = packet:r_float()
-				else
-					local v1 = packet:r_vec3()
-					local v2 = packet:r_vec3()
-					local v3 = packet:r_vec3()
-					local v4 = packet:r_vec3()
-				end
-			end
-		end
-
-		local restrictor_type = packet:r_u8()
-
-		local dest_game_vertex_id = packet:r_u16()
-		local dest_level_vertex_id = packet:r_s32()
-		local dest_position = packet:r_vec3()
-		local dest_direction = packet:r_vec3()
-		local dest_level_name = packet:r_stringZ()
-		local dest_graph_point = packet:r_stringZ()
-		local silent_mode = packet:r_u8()
-
-		local enabled = packet:r_u8()
-		local hint = packet:r_stringZ()
-		local se_level_changer__marker = packet:r_u16()
-
-		packet:w_u16(game_vertex_id)
-		packet:w_float(cse_alife_object__unk1_f32)
-		packet:w_s32(cse_alife_object__unk2_u32)
-		packet:w_s32(level_vertex_id)
-		packet:w_s32(object_flags)
-
-		if custom ~= nil then
-			packet:w_stringZ(custom)
-		else
-			packet:w_stringZ(custom_data)
-		end
-
-		packet:w_s32(sid)
-		packet:w_s32(cse_alife_object__unk3_u32)
-
-		packet:w_u8(shape_count)
-
+	if shape_count == 0 then
+		shape_type = 0
+		shape_count = 1
+	else
 		for i = 1, shape_count do
-
-			packet:w_u8(shape_type)
-
+			local shape_type = packet:r_u8()
 			if shape_type == 0 then
-				packet:w_vec3(vector():set(0,0,0))
-				packet:w_float(3)
+				local center = packet:r_vec3()
+				local radius = packet:r_float()
 			else
-				packet:w_vec3(vector():set(3,0,0))
-				packet:w_vec3(vector():set(0,3,0))
-				packet:w_vec3(vector():set(0,0,3))
-				packet:w_vec3(vector():set(0,0,0))
+				local v1 = packet:r_vec3()
+				local v2 = packet:r_vec3()
+				local v3 = packet:r_vec3()
+				local v4 = packet:r_vec3()
 			end
 		end
-
-		packet:w_u8(restrictor_type)
-
-		packet:w_u16(vertexes[dest_level]["gvid"])
-		packet:w_s32(vertexes[dest_level]["lvid"])
-		packet:w_vec3(dest_pos)
-		packet:w_vec3(dest_dir)
-		packet:w_stringZ(dest_level)
-		packet:w_stringZ(dest_graph_point)
-		packet:w_u8(mode)
-
-		packet:w_u8(enabled)
-		packet:w_stringZ(hint)
-		packet:w_u16(se_level_changer__marker)
-
-		obj:STATE_Read(packet, packet:w_tell() - packet:r_tell())
 	end
+
+	local restrictor_type = packet:r_u8()
+
+	local dest_game_vertex_id = packet:r_u16()
+	local dest_level_vertex_id = packet:r_s32()
+	local dest_position = packet:r_vec3()
+	local dest_direction = packet:r_vec3()
+	local dest_level_name = packet:r_stringZ()
+	local dest_graph_point = packet:r_stringZ()
+	local silent_mode = packet:r_u8()
+
+	local enabled = packet:r_u8()
+	local hint = packet:r_stringZ()
+	local se_level_changer__marker = packet:r_u16()
+
+	packet:w_u16(game_vertex_id)
+	packet:w_float(cse_alife_object__unk1_f32)
+	packet:w_s32(cse_alife_object__unk2_u32)
+	packet:w_s32(level_vertex_id)
+	packet:w_s32(object_flags)
+
+	if custom ~= nil then
+		packet:w_stringZ(custom)
+	else
+		packet:w_stringZ(custom_data)
+	end
+
+	packet:w_s32(sid)
+	packet:w_s32(cse_alife_object__unk3_u32)
+
+	packet:w_u8(shape_count)
+
+	for i = 1, shape_count do
+		packet:w_u8(shape_type)
+		if shape_type == 0 then
+			packet:w_vec3(vector():set(0,0,0))
+			packet:w_float(3)
+		else
+			packet:w_vec3(vector():set(3,0,0))
+			packet:w_vec3(vector():set(0,3,0))
+			packet:w_vec3(vector():set(0,0,3))
+			packet:w_vec3(vector():set(0,0,0))
+		end
+	end
+
+	packet:w_u8(restrictor_type)
+
+	packet:w_u16(vertexes[dest_level]["gvid"])
+	packet:w_s32(vertexes[dest_level]["lvid"])
+	packet:w_vec3(dest_pos)
+	packet:w_vec3(dest_dir)
+	packet:w_stringZ(dest_level)
+	packet:w_stringZ(dest_graph_point)
+	packet:w_u8(0)
+
+	packet:w_u8(enabled)
+	packet:w_stringZ(hint)
+	packet:w_u16(se_level_changer__marker)
+
+	obj:STATE_Read(packet, packet:w_tell() - packet:r_tell())
 end
 
 ----------------------- Функции фриплея для OGSM 2.x --------------------------
@@ -225,16 +201,16 @@ end
 
 --[[
 
-If you're going to use the whole of this script or its parts in your own creative 
-developments for the S.T.A.L.K.E.R. game, please don't become such a goddamn 
-motherfucker like the notorious author of the ABC Mod - Carbrobro. Leave the 
-copyrights, note the real author(s) and don't claim others' ideas and their 
+If you're going to use the whole of this script or its parts in your own creative
+developments for the S.T.A.L.K.E.R. game, please don't become such a goddamn
+motherfucker like the notorious author of the ABC Mod - Carbrobro. Leave the
+copyrights, note the real author(s) and don't claim others' ideas and their
 realization to be your own ones. It's just simple Modmakers' Ethics. Thank you!
 
-Если вы собираетесь использовать данный скрипт целиком или частично в своих 
-разработках по игре S.T.A.L.K.E.R., пожалуйста не опускайтесь до уровня печально 
-известного автора ABC мода - Carbrobro. Не удаляйте копирайты, указывайте настоящего 
-автора(ов) и не выдавайте чужие идеи и их реализацию за свои. Ведь это элементарная 
+Если вы собираетесь использовать данный скрипт целиком или частично в своих
+разработках по игре S.T.A.L.K.E.R., пожалуйста не опускайтесь до уровня печально
+известного автора ABC мода - Carbrobro. Не удаляйте копирайты, указывайте настоящего
+автора(ов) и не выдавайте чужие идеи и их реализацию за свои. Ведь это элементарная
 этика модостроителей! Спасибо за понимание.
 
 ]]--

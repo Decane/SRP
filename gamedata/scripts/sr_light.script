@@ -49,7 +49,7 @@ function check_light(npc)
 		return
 	end
 --[[
-	if npc:best_enemy() ~= nil then
+	if npc:best_enemy() ~= nil and npc:character_community() ~= "zombied" then
 		torch:enable_attachable_item(false)
 		return
 	end

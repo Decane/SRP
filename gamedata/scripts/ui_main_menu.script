@@ -91,7 +91,6 @@ local function LoadLastSave()
 	local newest = flist:GetAt(0)
 	local fname = string.sub(newest:NameFull(), 1, -5)
 	if valid_saved_game(fname) then
-		bind_stalker.quitting_game = true
 		console:execute("load " .. fname)
 	else
 		dbglog("Last save '%s' is invalid, can't load it", fname)
@@ -140,13 +139,11 @@ function main_menu:OnButton_disconnect_clicked()
 end
 
 function main_menu:OnMessageQuitGame()
-	bind_stalker.quitting_game = true
 	_ver_static:SetText("Disconnecting...")
 	get_console():execute("disconnect")
 end
 
 function main_menu:OnMessageQuitWin()
-	bind_stalker.quitting_game = true
 	_ver_static:SetText("Quitting...")
 	get_console():execute("quit")
 end
@@ -266,8 +263,6 @@ end
 function main_menu:OnKeyboard(dik, keyboard_action) -- virtual function
 
 	CUIScriptWnd.OnKeyboard(self, dik, keyboard_action)
-
---	if bind_stalker.quitting_game then return end -- breaks keys after quit to main menu
 
 	if keyboard_action == ui_events.WINDOW_KEY_PRESSED then
 		_ver_static:SetText(self.version)
