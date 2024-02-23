@@ -608,6 +608,10 @@ function CCombat_manager:update_squad(id, data)
 			else
 				data._start_attack_wait = game_time
 			end
+			-- Actor needs to be valid in pick_section_from_condlist below.
+			if db.actor == nil then
+				return false
+			end
 			local GG
 			local my_squad_level_id
 			local casualities
@@ -628,6 +632,10 @@ function CCombat_manager:update_squad(id, data)
 							if enemy_squad.squad_power > kdata._squad_power then
 --								if not enemy_squad.squad_online then
 									for npc_id in pairs (enemy_squad.squad_npc) do
+										local se_npc = sim:object(npc_id)
+										if se_npc.death_condlist ~= nil then
+											xr_logic.pick_section_from_condlist(db.actor, se_npc, se_npc.death_condlist)
+										end
 										enemy_squad:remove_npc(npc_id)
 										if enemy_squad.squad_power <= kdata._squad_power then
 											break

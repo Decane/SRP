@@ -7,6 +7,7 @@ This file provides a comprehensive changelog / version history for the SRP.
 
 v1.1.5
 
++ Fixed the issue where the player could receive a task with Wild Napr as its target after Wild Napr has died offline, crashing the game: ! [LUA][ERROR] ERROR: wrong target for storyline quest: logic@work5,gar_smart_terrain_6_3. - Decane
 + Fixed the issue where completing the 'Flood the underground' task would mistakenly increase Clear Sky's goodwill towards the player instead of Duty's. - Decane
 + Fixed the issue where the 'Find the teleport that leads to the heat pipeline' task would not be cancelled when the player disables Strelok's PSI protection, leaving it active in freeplay mode with no chance of completion. - Decane
 + Fixed the wrong ambient sounds being loaded for saves created at the CNPP in freeplay mode before leaving the level for the first time. - Decane
