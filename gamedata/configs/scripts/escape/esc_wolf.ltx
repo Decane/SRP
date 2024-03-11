@@ -1,7 +1,7 @@
 [logic@wolf]
 active			= walker@wait
 suitable		= {=check_npc_name(esc_wolf)} true
-on_death		= death
+;on_death		= death
 level_spot		= quest_npc
 
 [walker@wait]
@@ -32,5 +32,7 @@ use			= true
 use_wpn			= false
 abuse			= true
 
-[death]
-on_info			= %+esc_wolf_dead%
+; This is now handled in spawn_sections_escape.ltx to prevent Wolf's
+; offline "death" going unnoticed by scripts.
+;[death]
+;on_info			= %+esc_wolf_dead%
