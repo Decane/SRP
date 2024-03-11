@@ -240,7 +240,8 @@ name = esc_wolf_brother_1_name
 text = esc_wolf_brother_1_text
 target_story_ids = 429
 condlist_0 = {+esc_wolf_brother_2} complete
-condlist_1 = {+esc_wolf_brother_fail} fail, {+esc_wolf_dead} reversed, {=gulag_enemy_actor(esc_smart_terrain_2_12)} reversed
+condlist_1 = {+esc_wolf_brother_fail} fail
+condlist_2 = {=gulag_enemy_actor(esc_smart_terrain_2_12)} reversed
 prior = 8
 wait_time = -1
 community_relation_delta_fail=-100
@@ -254,7 +255,8 @@ name = esc_wolf_brother_2_name
 text = esc_wolf_brother_2_text
 target_story_ids = 429
 condlist_0 = {+esc_wolf_brother_3} complete
-condlist_1 = {+esc_wolf_brother_fail} fail, {+esc_wolf_dead} reversed, {=gulag_enemy_actor(esc_smart_terrain_2_12)} reversed
+condlist_1 = {+esc_wolf_brother_fail} fail
+condlist_2 = {=gulag_enemy_actor(esc_smart_terrain_2_12)} reversed
 prior = 8
 wait_time = -1
 community_relation_delta_fail=-50
@@ -268,7 +270,8 @@ name = esc_wolf_brother_3_name
 text = esc_wolf_brother_3_text
 target_story_ids = 431
 condlist_0 = {+esc_wolf_brother_4} complete
-condlist_1 = {+esc_wolf_brother_fail} fail, {+esc_wolf_dead} reversed, {=gulag_enemy_actor(esc_smart_terrain_2_12)} reversed
+condlist_1 = {+esc_wolf_brother_fail} fail
+condlist_2 = {=gulag_enemy_actor(esc_smart_terrain_2_12)} reversed, {+esc_wolf_dead} reversed
 immediate_reward = true
 prior = 8
 wait_time = -1
@@ -282,7 +285,8 @@ name = esc_novice_stalker_1_name
 text = esc_novice_stalker_1_text
 target_story_ids = 433
 condlist_0 = {+esc_wolf_novice_2} complete
-condlist_1 = {+esc_stalker_novice_fail} fail, {+esc_wolf_dead} reversed, {=gulag_enemy_actor(esc_smart_terrain_2_12)} reversed
+condlist_1 = {+esc_stalker_novice_fail} fail
+condlist_2 = {=gulag_enemy_actor(esc_smart_terrain_2_12)} reversed
 prior = 8
 wait_time = -1
 community_relation_delta_fail=-100
@@ -296,7 +300,8 @@ name = esc_novice_stalker_2_name
 text = esc_novice_stalker_2_text
 target_story_ids = 433
 condlist_0 = {+esc_wolf_novice_3} complete
-condlist_1 = {+esc_stalker_novice_fail} fail, {+esc_wolf_dead} reversed, {=gulag_enemy_actor(esc_smart_terrain_2_12)} reversed
+condlist_1 = {+esc_stalker_novice_fail} fail
+condlist_2 = {=gulag_enemy_actor(esc_smart_terrain_2_12)} reversed
 prior = 8
 wait_time = -1
 community_relation_delta_fail=-50
@@ -310,7 +315,8 @@ name = esc_novice_stalker_3_name
 text = esc_novice_stalker_3_text
 target_story_ids = 431
 condlist_0 = {+esc_wolf_novice_4} complete
-condlist_1 = {+esc_stalker_novice_fail} fail, {+esc_wolf_dead} reversed, {=gulag_enemy_actor(esc_smart_terrain_2_12)} reversed
+condlist_1 = {+esc_stalker_novice_fail} fail
+condlist_2 = {=gulag_enemy_actor(esc_smart_terrain_2_12)} reversed, {+esc_wolf_dead} reversed
 prior = 8
 wait_time = -1
 community_relation_delta_fail=-50
