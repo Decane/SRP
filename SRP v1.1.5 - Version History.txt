@@ -13,6 +13,7 @@ v1.1.5
 + Fixed the issue where completing the 'Flood the underground' task would mistakenly increase Clear Sky's goodwill towards the player instead of Duty's. - Decane
 + Fixed the issue where the 'Find the teleport that leads to the heat pipeline' task would not be cancelled when the player disables Strelok's PSI protection, leaving it active in freeplay mode with no chance of completion. - Decane
 + Fixed the wrong ambient sounds being loaded for saves created at the CNPP in freeplay mode before leaving the level for the first time. - Decane
++ Fixed an outdated parameter name reference repeated in several logic scripts that prevented mutants from behaving aggressively when intended during several scripted encounters. - Decane
 ~ Replaced canned NPC death animations with ragdoll physics in the optional 'Alternative Ballistics' feature.
 + (Optional) Added a feature to reduce the size of the player icon on the world map.
 + (Optional) Added a feature to move faster through bodies of water. - TehGlitch

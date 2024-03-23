@@ -197,7 +197,7 @@ Gameplay fixes:
 + Fixed the wrong location-based multiplier being used to spawn faction equipment chest supplies for scripted squads loaded from a savegame (as opposed to spawning into the Zone in the current game session).
 + Fixed the issue where supply boxes on smart terrains controlled by online squads would generate more supplies with every game reload.
 + Fixed the issue where NPCs would drop the wrong type of ammo for some weapons.
-+ Fixed mutants not behaving aggressively on patrol paths linking them to attack-targets unless aggravated by an external force (e.g. the player).
++ Fixed mutants not behaving aggressively when intended during some scripted encounters and on patrol paths linking them to attack-targets unless aggravated by an external force (e.g. the player).
 + Fixed the issues where (i) Chekhov, Lingov, and Sakharov would not be marked as important characters on the map and (ii) the Duty outpost commander at Agroprom would be flagged as an important character even after he has become functionally generic.
 + Fixed the mechanic specialization tooltip displaying 'none' for Aydar, Yar, and Thunderov, despite all of them having a specialization.
 + Fixed the issue where squad info tooltips would fail to update properly and would, consequently, sometimes display the wrong target location.
