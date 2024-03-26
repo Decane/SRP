@@ -13,6 +13,7 @@ class "npc_sound"
 
 function npc_sound:__init(ini, section)
 	self.class_id             = "npc_sound"
+	self.fake_pda_snd         = utils.cfg_get_bool(ini, section, "fake_pda_snd", nil, false, false)
 	self.prefix               = utils.cfg_get_bool(ini, section, "npc_prefix", nil, false, false)
 	self.path                 = utils.cfg_get_string(ini, section, "path", nil, true, "")
 	self.shuffle              = utils.cfg_get_string(ini, section, "shuffle", nil, false, "", "rnd")
@@ -187,9 +188,9 @@ function npc_sound:play(npc_id, faction, point)
 	local table_id = self.played_id + 1
 	local snd = self.sound_path[npc_id][table_id]
 
-	if getFS():exist("$game_sounds$", snd.."_pda.ogg")
+	if (self.fake_pda_snd or getFS():exist("$game_sounds$", snd.."_pda.ogg"))
 	and npc:position():distance_to_sqr(db.actor:position()) >= 100 then
-		self.pda_snd_obj = sound_object(snd.."_pda")
+		self.pda_snd_obj = sound_object(self.fake_pda_snd and snd or snd.."_pda")
 		self.pda_snd_obj:play_at_pos(db.actor, vector():set(0,0,0), 0, sound_object.s2d)
 		self.pda_snd_obj.volume = 0.8
 	end
