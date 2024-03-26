@@ -195,28 +195,21 @@ function npc_sound:play(npc_id, faction, point)
 		self.pda_snd_obj.volume = 0.8
 	end
 
-	local snd_st = string.gsub(snd, "\\", "_")
-
 	if self.group_snd then
 		self.can_play_group_sound = false
 	else
 		self.can_play_sound[npc_id] = false
 	end
 
-	if game.translate_string(snd_st) ~= snd_st then
-		if not faction then
-			faction = npc:character_community()
-		end
-		if not point then
-			point = npc:profile_name().."_name"
-			if game.translate_string(point) == point then
-				point = nil
-			end
-		end
-		news_manager.send_sound(npc, faction, point, snd, snd_st)
-	else
-		news_manager.send_sound(npc, faction, point, snd)
+	if faction == nil then
+		faction = npc:character_community()
 	end
+
+	if point == nil then
+		point = npc:character_name()
+	end
+
+	news_manager.send_sound(npc, faction, point, snd)
 
 	return true
 end
