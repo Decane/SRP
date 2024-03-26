@@ -97,25 +97,23 @@ function send_tip(actor, news_id, timeout, sender, showtime, sender_id)
 	actor:give_game_news(news_caption, news_text, texture, timeout * 1000, showtime, 1)
 end
 
-function send_sound(npc, faction, point, str, str2)
+function send_sound(npc, faction, point, str)
 
 	if faction == nil then
 		return
 	end
 
-	local txt
-
-	if str2 == nil then
-		txt = string.gsub(str, "^characters_voice\\human_..\\", "", 1)
-		txt = string.gsub(txt, "\\", "_")
-	else
-		txt = str2
-	end
-
+	local txt = string.gsub(str, "\\", "_")
 	local news_text = game.translate_string(txt)
 
 	if news_text == txt then
-		return
+		txt = str:gsub("^characters_voice\\human_..\\", "", 1)
+		         :gsub("^characters_voice\\(scenario\\)", "%1", 1) -- for marsh creature scene subtitles
+		         :gsub("\\", "_")
+		news_text = game.translate_string(txt)
+		if news_text == txt then
+			return
+		end
 	end
 
 	local texture
@@ -136,7 +134,9 @@ function send_sound(npc, faction, point, str, str2)
 		else
 			point_name = game.translate_string(point)
 		end
-		news_caption = news_caption..". "..point_name
+--		if point_name ~= point then
+			news_caption = news_caption..". "..point_name
+--		end
 	end
 
 	news_caption = news_caption..":"
