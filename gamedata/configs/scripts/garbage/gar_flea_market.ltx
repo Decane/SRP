@@ -2,7 +2,7 @@
 
 [logic@work1]
 active = walker@trade_work1
-suitable = {=npc_community(stalker) !is_smart_in_combat(gar_smart_terrain_6_3)}
+suitable = {=npc_community(stalker) !is_smart_in_combat(gar_smart_terrain_6_3) !npc_is_in_attacking_squad}
 prior = 120
 trade = misc\trade\trade_trader_gar_digger_3.ltx
 level_spot = trader
@@ -40,7 +40,7 @@ trade_enable = false
 
 [logic@work2]
 active = walker@trade_work2
-suitable = {-gar_flea_market_fixer_dead =check_npc_name(gar_digger_fixer) !is_smart_in_combat(gar_smart_terrain_6_3)}, {+gar_flea_market_fixer_dead =npc_community(stalker) !is_smart_in_combat(gar_smart_terrain_6_3)}
+suitable = {-gar_flea_market_fixer_dead =check_npc_name(gar_digger_fixer) !is_smart_in_combat(gar_smart_terrain_6_3)}, {+gar_flea_market_fixer_dead =npc_community(stalker) !is_smart_in_combat(gar_smart_terrain_6_3) !npc_is_in_attacking_squad}
 prior = 128
 on_death = death@work2
 trade = misc\trade\trade_trader_gar_digger_2.ltx
@@ -82,7 +82,7 @@ on_info = nil %+gar_flea_market_fixer_dead%
 
 [logic@work3]
 active = walker@trade_work3
-suitable = {=npc_community(stalker) !is_smart_in_combat(gar_smart_terrain_6_3)}
+suitable = {=npc_community(stalker) !is_smart_in_combat(gar_smart_terrain_6_3) !npc_is_in_attacking_squad}
 prior = 119
 trade = misc\trade\trade_trader_gar_digger_1.ltx
 level_spot = trader
@@ -248,7 +248,7 @@ trade_enable = false
 
 [logic@work6]
 active = walker@work6
-suitable = {=is_dark_night =npc_community(stalker) =time_period(50:25) !is_smart_in_combat(gar_smart_terrain_6_3)}
+suitable = {=is_dark_night =npc_community(stalker) =time_period(50:25) !is_smart_in_combat(gar_smart_terrain_6_3) !npc_is_in_attacking_squad}
 prior = 117
 
 [walker@work6]
@@ -262,7 +262,7 @@ def_state_moving3 = walk
 
 [logic@work7]
 active = walker@work7
-suitable = {!is_day =npc_community(stalker) =time_period(40:20) !is_smart_in_combat(gar_smart_terrain_6_3)}
+suitable = {!is_day =npc_community(stalker) =time_period(40:20) !is_smart_in_combat(gar_smart_terrain_6_3) !npc_is_in_attacking_squad}
 prior = 116
 
 [walker@work7]
@@ -276,7 +276,7 @@ def_state_moving3 = walk
 
 [logic@work8]
 active = walker@work8
-suitable = {=npc_community(stalker) =time_period(30:15) !is_smart_in_combat(gar_smart_terrain_6_3)}
+suitable = {=npc_community(stalker) =time_period(30:15) !is_smart_in_combat(gar_smart_terrain_6_3) !npc_is_in_attacking_squad}
 prior = 118
 
 [walker@work8]
@@ -290,27 +290,27 @@ def_state_moving3 = walk
 
 [logic@work9]
 active = kamp
-suitable = {=is_dark_night =npc_community(stalker) !is_smart_in_combat(gar_smart_terrain_6_3)}
+suitable = {=is_dark_night =npc_community(stalker) !is_smart_in_combat(gar_smart_terrain_6_3) !npc_is_in_attacking_squad}
 prior = 115
 
 [logic@work10]
 active = kamp
-suitable = {=is_dark_night =npc_community(stalker) !is_smart_in_combat(gar_smart_terrain_6_3)}
+suitable = {=is_dark_night =npc_community(stalker) !is_smart_in_combat(gar_smart_terrain_6_3) !npc_is_in_attacking_squad}
 prior = 115
 
 [logic@work11]
 active = kamp
-suitable = {=is_dark_night =npc_community(stalker) !is_smart_in_combat(gar_smart_terrain_6_3)}
+suitable = {=is_dark_night =npc_community(stalker) !is_smart_in_combat(gar_smart_terrain_6_3) !npc_is_in_attacking_squad}
 prior = 115
 
 [logic@work12]
 active = kamp
-suitable = {=is_dark_night =npc_community(stalker) !is_smart_in_combat(gar_smart_terrain_6_3)}
+suitable = {=is_dark_night =npc_community(stalker) !is_smart_in_combat(gar_smart_terrain_6_3) !npc_is_in_attacking_squad}
 prior = 115
 
 [logic@work13]
 active = kamp
-suitable = {=is_dark_night =npc_community(stalker) !is_smart_in_combat(gar_smart_terrain_6_3)}
+suitable = {=is_dark_night =npc_community(stalker) !is_smart_in_combat(gar_smart_terrain_6_3) !npc_is_in_attacking_squad}
 prior = 115
 
 [kamp]
