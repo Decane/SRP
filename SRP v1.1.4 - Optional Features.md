@@ -1,0 +1,235 @@
+# Optional Features
+This file provides detailed descriptions of each optional feature in the SRP.
+Features recommended for all players are marked with an asterisk (*).
+
+***
+## Alternative Ballistics
+
+Rebalances the game's ballistics, makes stealth feasible and fixes a few problems whose fixing requires more artistic liberties than are permissible in the core of the SRP.
+
+Includes the 'Feasible Stealth' and 'Restored Pistol Ironsights Aiming' features.
+
+### Complete feature list
+
++ Fixed a few bizarre inconsistencies in some weapon files, e.g. certain recoil stats being worse when aiming through the iron-sights than when shooting from the hip.
++ If playing in widescreen mode, weapon attachment icons are now properly aligned except when in the primary weapon slot (engine limitation). If playing in non-widescreen mode, attachment icons are now always properly aligned.
++ The silencer icon no longer leaks outside of the inventory grid of the weapon to which it is attached. To achieve this, all pistol icons were made two grids wide.
++ All pistols except the Desert Eagle can now take a silencer.
++ Silencers no longer butcher weapon stats when used: they suppress and nothing more as is (generally) the case in real life.
++ The hit probability system has been removed: every well-aimed shot will hit its target without the game tossing a coin to determine whether it will be so.
++ Aiming with pistols now happens with the iron-sights.
++ Maximum trajectory ranges have been revised: pistols and shotguns no longer have an effective range of only about 50 meters.
++ Slightly increased the range of the knife from 1.6 meters to 1.8 meters to compensate for large NPC collision boxes (decreasing the size of the collision boxes themselves would cause other problems).
++ Different ammo classes and types have distinct benefits and limitations, as in real life. Higher calibers have large damage advantages compared to lower calibers: the performance trade-off when upgrading to a more common caliber may no longer be worth it.
++ All weapons are more accurate. However, upgrades are still required to make a sniper rifle out of an assault rifle.
++ All weapons have 'realistic' properties, e.g. muzzle velocity, rate-of-fire, weight, reliability stats, etc. Recoil stats have been barely altered because GSC's default values were quite realistic.
++ Weapon damage ratings have been revised to rise with (1) caliber and (2) rarity: an MP5 submachine gun no longer deals more damage than a VSS sniper rifle. Damages have been kept moderate overall.
++ Made stealth feasible by reducing the perceived volume of player footsteps and enabling the possibility to remain hidden behind vegetation so long as NPCs are not in an alerted state.
++ NPCs take realistic damage proportions to different body parts. Bandits no longer 'shake off' getting shot through the throat with a 7.62x54 mmR sniper round.
++ NPC armor damage modifiers have been revised so that every different armor and helmet-type has its own unique protection stats.
++ Reduced the exaggerated zoom effect when aiming down iron-sights: doing so should only simulate focus and not give you a free, invisible 2x scope.
++ Tracers are enabled on all ammo types except those that leave behind a particle trail (e.g. OG-7V rockets, EM1 accumulators).
+
+## Feasible Stealth (*)
+Makes stealth feasible by reducing the perceived volume of the player's footsteps and by preventing visual detection of the player behind vegetation whilst an NPC is not in alerted mode.
+
+Note that in order to enjoy consistent success in sneaking up to an NPC, you must crouch for the last meter or so: walking will usually generate enough noise to alert the NPC to your presence just before you get close enough to strike with your knife.
+
+If you wish to be able to walk right up to the NPC as opposed to having to crouch for the last meter or so, open up gamedata\configs\creatures\m_stalker.ltx using any text editor and change the value of the 'npc' parameter under [stalker_sound_perceive] from 0.37 to 0.36, and then save the file. You will then be able to walk right up to an NPC without being detected, but running or sprinting in the NPC's proximity will still generate enough noise to alert the NPC.
+
+***
+## Improved LuaJIT Library
+Xetrill's modified LuaJIT library. Improves script engine performance and enables the SRP to print a stack trace to aid debugging if the game aborts.
+
+[More information (gsd-game.com)](https://www.gsc-game.com/index.php?t=community&s=forums&s_game_type=xr2&thm_page=1&thm_id=23321&page=1&sec_id=22&lang=en)
+
+***
+## Less Frequent Emissions
+In the unmodded game, the first time you enter a map for which an emission is permitted and the permission criteria are met, there is a 15% probability of an emission occurring. If one does not occur, then for each successive time you enter such a map, this probability will be 10 percentage points higher than the previous. Thus, the second time you enter such a map, there will be a 25% probability of an emission; the third time, a 35% probability; and so on. Eventually, an emission will occur. At this point, the probability of an emission occurring in the aforementioned type of map will drop back to 15% and the process will start over again.
+
+This feature makes it so emissions always have a 15% probability of occurring upon the player entering a map, regardless of how many times the player has in the past entered a map for which an emission is permitted and the permission criteria are met.
+
+This makes emissions much less frequent on average and should be a good compromise for those who find frequent emissions annoying but do not wish to disable the functionality altogether.
+
+***
+## No Emissions
+Disables random emissions entirely. Scripted emissions appearing as part of the storyline are not affected.
+
+***
+## No Enemy Map Spots (*)
+Removes the red enemy indicator icons from the world map. Applies to both human NPCs and mutants. Recommended for greater suspense and a more challenging game.
+
+Note that HUD mini-map spots are not affected and behave as in the unmodded game. To also remove enemy map spots from the mini-map, use the 'No Enemy Minimap Spots' feature.
+
+***
+## No Enemy Minimap Spots
+Removes the red enemy indicator icons from the HUD mini-map.
+
+***
+## No Intro Movies
+Makes the game skip the introductory developer videos on game launch and go straight to the main menu.
+
+***
+## No NPC Weapon Tossing Upon Death
+Makes the weapon an NPC has equipped upon dying get stored in the NPC's inventory instead of being tossed to the ground beside him.
+
+Note that this tweak has about a 90% success rate so you may still occasionally run into tossed weapons even with the tweak enabled.
+
+Also note that this tweak introduces a glitch wherewith the wrists and/or forearms of an NPC sometimes contort into a strange position when the NPC is killed.
+
+***
+## No Weapon Sway On Strafe
+Prevents weapon sway — and consequent momentary misalignment of front and rear sights — while strafing.
+
+***
+## Prefilled Stashes
+Makes it possible to acquire the contents of a stash without first buying or looting the stash coordinates.
+
+Coordinates can still be bought from NPCs and found randomly on corpses even with this functionality enabled.
+
+Requires a new game.
+
+***
+## Prefilled Randomized Stashes
+Does what 'Prefilled Stashes' does, but also randomizes the stash's spawn container on its designated map.
+
+Note that coordinate vendors will never know a stash's contents beforehand with this functionality enabled.
+
+Requires a new game.
+
+***
+## Real Weapon Names
+
+
+Enables weapon names that match their real-life counterparts.
+
+***
+## Reasonable Machine Gun Nest Lethality (*)
+
+In the unmodded game, mounted machine guns fire armor-piercing sniper rounds at 900 RPM with the accuracy of a VAL special assault rifle and a muzzle velocity higher than that of a Dragunov sniper rifle.
+
+This feature rebalances mounted machine gun nests to make survival upon encountering one less a game of chance and more a matter of skill.
+
+The Cordon military MG nest, in particular, should now be of a tolerable difficulty.
+
+***
+## Reduced Grenade Spam (*)
+
+
+Reduces grenade spam by simulating a lower probability of a potential enemy NPC using a grenade.
+
+It is strongly recommended that old and new players alike use this tweak for reduced frustration.
+
+Requires a new game to take effect.
+
+***
+## Restored Pistol Ironsights Aiming (*)
+
+
+Restores aiming through pistol ironsights, familiar from S.T.A.L.K.E.R.: Shadow of Chernobyl and S.T.A.L.K.E.R.: Call of Pripyat.
+
+
+
+***
+## Show Only Ally Map Spots
+
+
+Disables all squad icons on the world map except those of neutral and friendly units belonging to the same faction as the player.
+
+Recommended for players seeking maximal suspense and challenge; using this feature eliminates the possibility of deducing enemy locations from those of non-allied neutral and friendly units on the world map.
+
+Includes and overrides the 'No Enemy Map Spots' feature.
+
+Does not modify the behavior of special map spots, e.g. those of guides, barmen, traders, mechanics, and other important characters.
+
+***
+## Sleeping Bag + No Intro Movies
+
+Inserts a sleeping bag into the player's inventory. Also disables the introductory developer videos on game launch.
+
+To sleep, double-click the sleeping bag inventory icon to bring up the sleep dialog box, choose the number of hours you wish to sleep for, and then press the "Sleep" button.
+
+You may sleep for a maximum of 12 hours at a time.
+
+The sleep dialog box includes a "safety" bar which indicates whether you are safe to sleep in your current location, or if you are likely to wake up to find a hungry Flesh chewing on your legs. When the bar is yellow, you are safe. If it is red, you'd better choose another resting place.
+
+
+***
+## Smaller Crosshair (*)
+
+
+Reduces the size of the huge default crosshair.
+
+***
+## Smaller Inventory Grids (*)
+
+
+Makes the inventory 19 x 10 grids (for widescreen) or 18 x 9 grids (for 4:3) instead of the default 14 x 7 grids (for all aspect ratios).
+
+Also tweaks trade screens, corpses, and containers to display more items at once.
+
+Substantially reduces the need for scrolling in the inventory screen.
+
+
+***
+## SweetFX v1.5.1
+
+
+Enables (only) Subpixel Morphological Anti-Aliasing (SMAA) by default.
+
+Do not use in conjunction with the game's native anti-aliasing implementation.
+
+### Notes
+
++ On some configurations, SweetFX disables the possibility to use DX10/10.1.
+
++ SweetFX must not be installed on top of any conflicting mods. Your game may fail to launch if it is.
+
+[More feature information (guru3d.com)](https://forums.guru3d.com/showthread.php?t=395072)
+
+
+***
+## Transparent Inventory + Smaller Inventory Grids
+
+Makes the inventory partially transparent instead of fully opaque as in the unmodded game.
+
+Also reduces the size of inventory grids as detailed in the description of the 'Smaller Inventory Grids' feature.
+
+***
+## User Configuration Patch (*)
+
+Makes the SRP attempt to fix known user.ltx configuration -related issues (primarily graphics bugs).
+
+Works by executing a subset of console settings in gamedata\configs\user_settings.ltx the first time the game is launched with the patch installed, and another, much smaller sub-set (currently only one command) *each* time the game is launched with it installed.
+
+A backup of the previous user.ltx file is automatically created before patching is done for the first time.
+
+### Attempts to fix the following issues (if applicable)
+
++ Botched camera inertia settings introduced when the game auto-generates a new user.ltx file upon detecting that the old one has been deleted.
+
+   It is well known that deleting the user.ltx file and then launching the game without one in place will make the game auto-generate a new one.
+   Less well known is that this new file differs decisively from the one first generated by the game upon being installed and patched, and not to the former's credit.
+   [Details (gsc-game.com)](https://www.gsc-game.com/index.php?t=community&s=forums&s_game_type=xr2&thm_page=1&thm_id=21639&page=1&sort=DESC&sec_id=19&lang=en#289304)
+
++ Distracting shade differences between nearby and distant shadow draw areas due to bad r2_sun_depth_* and r2_sun_tsm_* settings.
+
+   In order for this fix to take effect properly, the 'r2_sun_depth_far_bias -0.000002' command is set to execute every time the game is launched.
+   This is because the game curtails the value of r2_sun_depth_far_bias to 5 decimal places and then strips any non-significant digits before writing it to user.ltx.
+   Hence -0.000002 is written to user.ltx as -0, which equals 0. Hence when the game is launched again, it effectively reads 0 as the value.
+   Hence the command needs to be re-executed each time the game is launched for the correct value to take effect.
+
++ Shadow striping / banding due to bad r2_sun_depth_* settings combined with a low default shadow map resolution. (Not completely fixed.)
+
++ Absent distant 'fake' shadows, making the 'filling' of the affected area by nearby shadows especially noticeable when the player gets close. (Not completely fixed.)
+
++ Bleached texture surfaces due to overzealous bloom settings.
+
+### Notes
+
++ This patch does not alter any graphical settings that can be edited from the in-game graphics options menu.
+
++ This patch does not fix all graphical glitches. Most notably, some shadow edges may still appear aliased and 'shimmer' or flicker periodically. Shadow gradation / banding may also still occasionally be visible.
+
++ Once installed, this patch can be re-applied from the main menu by pressing the 'R' keyboard button. A time-stamped backup of the user.ltx file is automatically created whenever this is done.
+
