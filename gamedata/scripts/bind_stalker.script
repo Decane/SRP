@@ -12,6 +12,7 @@ function defer_net_spawn(binder)
 	deferred_spawns[#deferred_spawns + 1] = binder
 end
 
+level_changed = false
 quitting_game = false
 delayed_alife_release_objects = {}
 
@@ -37,8 +38,6 @@ local first_update_done         = false
 local weapon_needs_hiding       = false
 local weapon_hidden             = false
 local zones_needing_weapon_hide = 0
-
-level_changed				= false
 --------------------------------------------------------------------------------
 class "actor_binder" (object_binder)
 --------------------------------------------------------------------------------
@@ -405,8 +404,8 @@ function actor_binder:update(delta)
 		else
 			local level_name = level.name()
 			if level_name ~= last_level_name then
-				level_changed = true
 				last_level_name = level_name
+				level_changed = true
 				time = xr_surge_hide.surge_can_be_started(level_name)
 				if time then
 					xr_surge_hide.activate_surge(time)
