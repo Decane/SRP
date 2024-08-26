@@ -13,6 +13,7 @@ v1.1.5
 + Fixed the issue where a squad at the Flea Market could be prevented from leaving to fulfil a 'capture' task taken via dialogue. - Decane
 + Fixed the issue where completing the 'Flood the underground' task would mistakenly increase Clear Sky's goodwill towards the player instead of Duty's. - Decane
 + Fixed the issue where the 'Find the teleport that leads to the heat pipeline' task would not be cancelled when the player disables Strelok's PSI protection, leaving it active in freeplay mode with no chance of completion. - Decane
++ Fixed the issue where important characters at the Duty base could inexplicably go offline due to Duty abandoning parts of its base for other camps or not respawning until sufficient storyline progress has been made (new game required for effect). - Decane
 + Fixed the wrong ambient sounds being loaded for saves created at the CNPP in freeplay mode before leaving the level for the first time. - Decane
 + Fixed Hog's walkie-talkie transmissions to Kostyan being inaudible outside of Hog's immediate vicinity. - Decane
 + Fixed an outdated parameter name reference repeated in several logic scripts that prevented mutants from behaving aggressively when intended during several scripted encounters. - Decane

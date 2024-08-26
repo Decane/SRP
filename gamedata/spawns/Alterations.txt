@@ -1375,6 +1375,14 @@ section_name = agr_stalker_base_mechanic
 
 ------------------------------------
 
+[8014]
+
+;sim_avail = {+agr_actor_inside_5} true
+
+• Commented out to enable Duty to re-capture agr_smart_terrain_1_6 before the player speaks to Krylov, as otherwise, important Duty characters can go perpetually missing - see https://github.com/Decane/SRP/issues/166.
+
+------------------------------------
+
 [8021]
 
 att_restr = agr_smart_terrain_4_4_near_2_att
@@ -1385,9 +1393,25 @@ att_restr = agr_smart_terrain_4_4_near_2_att
 
 [8022]
 
+;sim_avail = {+agr_actor_inside_5} true
+
+• Commented out to enable Duty to re-capture agr_smart_terrain_1_6_near_1 before the player speaks to Krylov, as otherwise, important Duty characters can go perpetually missing - see https://github.com/Decane/SRP/issues/166.
+
+------------------------------------
+
+[8022]
+
 ;att_restr = agr_smart_terrain_1_6_near_1_att
 
 • No such restrictor exists.
+
+------------------------------------
+
+[8023]
+
+;sim_avail = {+agr_actor_inside_5} true
+
+• Commented out to enable Duty to respawn at agr_smart_terrain_1_6_near_2 before the player speaks to Krylov, as otherwise, important Duty characters can go perpetually missing - see https://github.com/Decane/SRP/issues/166.
 
 ------------------------------------
 

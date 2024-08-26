@@ -19,7 +19,8 @@ military   = sim_default_duty_0,  5, sim_default_duty_1, 10, sim_default_duty_2,
 ;-----------------------
 
 [expansion_0]
-base_squad_number             = 0
+base_squad_number             = 15 ; 0
+precondition_target           = agr_smart_terrain_1_6, agr_smart_terrain_1_6_near_1, agr_smart_terrain_1_6_near_2 ; Duty base, Northern entrance, Eastern entrance
 precondition_cond             = {+val_deliver_pda_done} true, false
 
 ;-----------------------
@@ -130,4 +131,4 @@ red_stalker_gate_keepers_2              = red_smart_terrain_4_2        ; Camp ne
 red_stalker_gate_keepers_3              = red_smart_terrain_3_1        ; Camp on side of road
 red_stalker_gate_keepers_4              = red_smart_terrain_3_1        ; Camp on side of road
 mil_smart_terrain_4_5_duty_squad_1      = mil_smart_terrain_4_5        ; Crooked beam
-mil_smart_terrain_4_5_duty_squad_1      = mil_smart_terrain_4_5        ; Crooked beam
+mil_smart_terrain_4_5_duty_squad_2      = mil_smart_terrain_4_5        ; Crooked beam
