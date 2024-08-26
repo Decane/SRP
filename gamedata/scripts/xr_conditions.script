@@ -777,6 +777,6 @@ function actor_is_talking()
 	return pda.dialog_closed == false
 end
 
-function loading_into_level()
+function entering_level()
 	return bind_stalker.level_changed and device().precache_frame > 1
 end
